@@ -8,13 +8,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import sbes.Options;
+
 public class InternalClassloader {
 
 	private static final ClassLoader classLoader;
 
 	static {
 		try {
-			String classpath = "";//Options.getInnerClasspath();
+			String classpath = Options.I().getClassesPath();
 
 			ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
 

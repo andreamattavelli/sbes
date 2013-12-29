@@ -11,7 +11,7 @@ import org.kohsuke.args4j.CmdLineParser;
 public class SBES {
 
 	public static void main(String args[]) {
-		final Options arguments = new Options();
+		final Options arguments = Options.I();
 		final CmdLineParser parser = new CmdLineParser(arguments);
 
 		try {

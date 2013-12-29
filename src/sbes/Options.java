@@ -4,6 +4,17 @@ import org.kohsuke.args4j.Option;
 
 public class Options {
 
+	private static Options instance = null;
+
+	private Options() { }
+
+	public static Options I() {
+		if (instance == null) {
+			instance = new Options();
+		}
+		return instance;
+	}
+	
 	@Option(name = "--classes",
 			usage = "Path to classes",
 			required = true)
