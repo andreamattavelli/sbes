@@ -27,11 +27,11 @@ import japa.parser.ast.stmt.BlockStmt;
 import japa.parser.ast.stmt.ExpressionStmt;
 import japa.parser.ast.stmt.ForStmt;
 import japa.parser.ast.stmt.IfStmt;
+import japa.parser.ast.stmt.ReturnStmt;
 import japa.parser.ast.stmt.Statement;
 import japa.parser.ast.type.Type;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -140,6 +140,9 @@ public class Generator {
 		
 		
 		for (Method method : methods) {
+			if (method.getName().equals("equals")) {
+				continue; // FIXME: missing support for equals method (do we want it?)
+			}
 			Type returnType = getReturnType(method);
 			MethodDeclaration md = new MethodDeclaration(method.getModifiers(), returnType, method.getName());
 			
@@ -188,6 +191,9 @@ public class Generator {
 											increment, 
 											body);
 				stmts.add(forStmt);
+				
+				ReturnStmt ret = new ReturnStmt(ASTHelper.createNameExpr("res"));
+				stmts.add(ret);
 				
 			} else {
 				// for loop
@@ -285,7 +291,9 @@ public class Generator {
 		for (int i = 0; i < parameters.length; i++) {
 			java.lang.reflect.Type type = parameters[i];
 			VariableDeclaratorId id = new VariableDeclaratorId("p" + i);
-			Parameter p = new Parameter(ASTHelper.createReferenceType(type.toString(), 0), id); //FIXME: check cardinality array, type erasure, distinguish between primitive and reference types
+			String typeClass = type.toString();
+			typeClass = typeClass.indexOf(" ") >= 0 ? typeClass.split(" ")[1]: typeClass;
+			Parameter p = new Parameter(ASTHelper.createReferenceType(typeClass, 0), id); //FIXME: check cardinality array, type erasure, distinguish between primitive and reference types
 			toReturn.add(p);
 		}
 		
