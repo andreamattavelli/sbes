@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
+import sbes.stub.Generator;
+
 public class SBES {
 
 	public static void main(String args[]) {
@@ -18,8 +20,12 @@ public class SBES {
 			parser.parseArgument(processArgs(args));
 		} catch (CmdLineException e) {
 			printUsage(parser);
+			System.exit(-1);
 		}
 
+		Generator generator = new Generator();
+		generator.generateStub();
+		
 	}
 
 	private static void printUsage(final CmdLineParser parser) {

@@ -9,9 +9,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import sbes.Options;
+import sbes.logging.Logger;
 
 public class InternalClassloader {
 
+	private static final Logger logger = new Logger(InternalClassloader.class);
 	private static final ClassLoader classLoader;
 
 	static {
@@ -21,7 +23,7 @@ public class InternalClassloader {
 			ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
 
 			if (classpath == null || classpath.equals("")) {
-//				logger.debug("The inner classpath is empty, relying on SystemClassLoader");
+				logger.debug("The inner classpath is empty, relying on SystemClassLoader");
 				classLoader = systemClassLoader;
 			}
 			else {
@@ -48,18 +50,16 @@ public class InternalClassloader {
 			}
 
 		} catch (MalformedURLException e) {
-//			logger.error("Unable to append new classpath", e);
-//			throw new GenerationException(e);
-			throw new RuntimeException();
+			logger.error("Unable to append new classpath", e);
+			throw new GenerationException(e);
 		}
 		catch (SecurityException e) {
-//			logger.error("Unable to load ClassLoader", e);
-//			throw new GenerationException(e);
-			throw new RuntimeException();
+			logger.error("Unable to load ClassLoader", e);
+			throw new GenerationException(e);
 		}
 	}
 
-	public static ClassLoader getTestCaseClassLoader() {
+	public static ClassLoader getInternalClassLoader() {
 		return classLoader;
 	}
 	

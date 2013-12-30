@@ -19,4 +19,12 @@ public class ClassUtils {
 		return toReturn.toArray(new Method[0]);
 	}
 	
+	public static String getClassname(final String signature) {
+		return signature.substring(0, signature.lastIndexOf('.'));
+	}
+
+	public static String getMethodname(final String signature) {
+		return signature.substring(signature.lastIndexOf('.') + 1);
+	}
+	
 }
