@@ -20,7 +20,6 @@ import japa.parser.ast.expr.FieldAccessExpr;
 import japa.parser.ast.expr.IntegerLiteralExpr;
 import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.StringLiteralExpr;
-import japa.parser.ast.expr.ThisExpr;
 import japa.parser.ast.expr.UnaryExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.stmt.BlockStmt;
@@ -349,7 +348,7 @@ public class Generator {
 			distance_args.add(new ArrayAccessExpr(ASTHelper.createNameExpr(EXPECTED_STATE), ASTHelper.createNameExpr(Integer.toString(i))));
 			distance_args.add(new ArrayAccessExpr(ASTHelper.createNameExpr(ACTUAL_STATE), ASTHelper.createNameExpr(Integer.toString(i))));
 			
-			Expression left_state = new MethodCallExpr(new ThisExpr(), "distance", distance_args);
+			Expression left_state = new MethodCallExpr(null, "distance", distance_args);
 			Expression right_state = new IntegerLiteralExpr("0");
 			BinaryExpr stateCondition = new BinaryExpr(left_state, right_state, japa.parser.ast.expr.BinaryExpr.Operator.equals);
 			BinaryExpr newCondition = new BinaryExpr(resCondition, stateCondition, japa.parser.ast.expr.BinaryExpr.Operator.and);
