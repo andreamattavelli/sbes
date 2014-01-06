@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class Distance {
 
-	public static double calculateDistance(Object o1, Object o2) throws IllegalArgumentException, IllegalAccessException {
+	public static double calculateDistance(Object o1, Object o2) {
 		if (o1 == null && o2 == null) {
 			return 0;
 		}
@@ -54,85 +54,90 @@ public class Distance {
 			}
 			
 			for (int i = 0; i < fs1.size(); i++) {
-				Field f1 = fs1.get(i);
-				Field f2 = fs2.get(i);
-				
-				f1.setAccessible(true);
-				f2.setAccessible(true);
-				
-				if (Modifier.isFinal(f1.getModifiers()) && Modifier.isStatic(f1.getModifiers()) &&
-					Modifier.isFinal(f2.getModifiers()) && Modifier.isStatic(f2.getModifiers())) {
-					// it's a constant, skip it
-					System.out.println("SKIP: " + Modifier.toString(f1.getModifiers()) + " " + f1.getType() + " " + f1.getName());
-					continue;
-				}
-				else if (Modifier.isTransient(f1.getModifiers()) && Modifier.isTransient(f2.getModifiers())) {
-					// do we want to skip it?
-				}
-				
-				counterFields++;
-				
-				System.out.println(Modifier.toString(f1.getModifiers()) + " " + f1.getType() + " " + f1.getName());
-				
-				ComparisonType comparison = getComparisonType(f1.getType(), f2.getType());
-				if (comparison == ComparisonType.PRIMITIVE) {
-					distance += primitiveDistance(f1, obj1, f2, obj2);
-				}
-				else if (comparison == ComparisonType.STRING) {
-					distance += stringComparison(f1.get(obj1), f2.get(obj2));
-				}
-				else if (comparison == ComparisonType.ARRAY) {
-					//get array type
-					ComparisonType arrayType = getComparisonType(f1.getType().getComponentType(), f2.getType().getComponentType());
-					
-					if (arrayType == ComparisonType.OBJECT) {
-						// object
-						Object[] castedF1 = Object[].class.cast(f1.get(obj1));
-						Object[] castedF2 = Object[].class.cast(f2.get(obj2));
-						for (int j = 0; j < castedF1.length; j++) {
-							if (visited.put(castedF1[i], 1) == null &&
-								visited.put(castedF2[i], 1) == null) { // we skip circular references
-								worklist.add(new DistancePair(castedF1[i], castedF2[i]));
+				try {
+					Field f1 = fs1.get(i);
+					Field f2 = fs2.get(i);
+
+					f1.setAccessible(true);
+					f2.setAccessible(true);
+
+					if (Modifier.isFinal(f1.getModifiers()) && Modifier.isStatic(f1.getModifiers()) &&
+							Modifier.isFinal(f2.getModifiers()) && Modifier.isStatic(f2.getModifiers())) {
+						// it's a constant, skip it
+						System.out.println("SKIP: " + Modifier.toString(f1.getModifiers()) + " " + f1.getType() + " " + f1.getName());
+						continue;
+					}
+					else if (Modifier.isTransient(f1.getModifiers()) && Modifier.isTransient(f2.getModifiers())) {
+						// do we want to skip it?
+					}
+
+					counterFields++;
+
+					System.out.println(Modifier.toString(f1.getModifiers()) + " " + f1.getType() + " " + f1.getName());
+
+					ComparisonType comparison = getComparisonType(f1.getType(), f2.getType());
+					if (comparison == ComparisonType.PRIMITIVE) {
+						distance += primitiveDistance(f1, obj1, f2, obj2);
+					}
+					else if (comparison == ComparisonType.STRING) {
+						distance += stringComparison(f1.get(obj1), f2.get(obj2));
+					}
+					else if (comparison == ComparisonType.ARRAY) {
+						//get array type
+						ComparisonType arrayType = getComparisonType(f1.getType().getComponentType(), f2.getType().getComponentType());
+
+						if (arrayType == ComparisonType.OBJECT) {
+							// object
+							Object[] castedF1 = Object[].class.cast(f1.get(obj1));
+							Object[] castedF2 = Object[].class.cast(f2.get(obj2));
+							for (int j = 0; j < castedF1.length; j++) {
+								if (visited.put(castedF1[i], 1) == null &&
+										visited.put(castedF2[i], 1) == null) { // we skip circular references
+									worklist.add(new DistancePair(castedF1[i], castedF2[i]));
+								}
 							}
 						}
-					}
-					else if (arrayType == ComparisonType.STRING) {
-						String[] castedF1 = String[].class.cast(f1.get(obj1));
-						String[] castedF2 = String[].class.cast(f2.get(obj2));
-						for (int j = 0; j < castedF1.length; j++) {
-							distance += LevenshteinDistance.calculateDistance(castedF1[i], castedF2[i]);
-						} 
-					}
-					else if (arrayType == ComparisonType.PRIMITIVE) {
-						distance += primitiveArrayDistance(f1, obj1, f2, obj2);
-					}
-					else {
-						//TODO: array of array, recursion?
-					}
-				}
-				else {
-					Object obj1value = f1.get(obj1);
-					Object obj2value = f2.get(obj2);
-					if (visited.put(obj1value, 1) == null &&
-						visited.put(obj2value, 1) == null) { // we skip circular references
-						if (obj1 == null && obj2 == null) {
-							//distance: 0
-							continue;
+						else if (arrayType == ComparisonType.STRING) {
+							String[] castedF1 = String[].class.cast(f1.get(obj1));
+							String[] castedF2 = String[].class.cast(f2.get(obj2));
+							for (int j = 0; j < castedF1.length; j++) {
+								distance += LevenshteinDistance.calculateDistance(castedF1[i], castedF2[i]);
+							} 
 						}
-						else if (obj1 == null ^ obj2 == null) {
-							int fields = 0;
-							if (obj1 == null) {
-								fields = getInheritedPrivateFields(obj2.getClass()).size();
-							}
-							else {
-								fields = getInheritedPrivateFields(obj1.getClass()).size();
-							}
-							distance += fields;
+						else if (arrayType == ComparisonType.PRIMITIVE) {
+							distance += primitiveArrayDistance(f1, obj1, f2, obj2);
 						}
 						else {
-							worklist.add(new DistancePair(f1.get(obj1), f2.get(obj2)));
+							//TODO: array of array, recursion?
 						}
 					}
+					else {
+						Object obj1value = f1.get(obj1);
+						Object obj2value = f2.get(obj2);
+						if (visited.put(obj1value, 1) == null &&
+								visited.put(obj2value, 1) == null) { // we skip circular references
+							if (obj1 == null && obj2 == null) {
+								//distance: 0
+								continue;
+							}
+							else if (obj1 == null ^ obj2 == null) {
+								int fields = 0;
+								if (obj1 == null) {
+									fields = getInheritedPrivateFields(obj2.getClass()).size();
+								}
+								else {
+									fields = getInheritedPrivateFields(obj1.getClass()).size();
+								}
+								distance += fields;
+							}
+							else {
+								worklist.add(new DistancePair(f1.get(obj1), f2.get(obj2)));
+							}
+						}
+					}
+
+				} catch (IllegalArgumentException e) {
+				} catch (IllegalAccessException e) {
 				}
 			}
 		}
