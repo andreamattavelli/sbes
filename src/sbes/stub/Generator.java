@@ -116,19 +116,19 @@ public class Generator {
 		// stub helper arrays
 		ArrayCreationExpr es_ace = new ArrayCreationExpr(classType, dimension, 0);
 		VariableDeclarator expected_states = new VariableDeclarator(new VariableDeclaratorId(EXPECTED_STATE), es_ace);
-		BodyDeclaration es_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL | Modifier.STATIC, ASTHelper.createReferenceType(c.getSimpleName(), 1), expected_states);
+		BodyDeclaration es_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL, ASTHelper.createReferenceType(c.getSimpleName(), 1), expected_states);
 		
 		ArrayCreationExpr er_ace = new ArrayCreationExpr(targetReturnType, dimension, 0);
 		VariableDeclarator expected_results = new VariableDeclarator(new VariableDeclaratorId(EXPECTED_RESULT), er_ace);
-		BodyDeclaration er_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL | Modifier.STATIC, ASTHelper.createReferenceType(targetMethod.getGenericReturnType().toString(), 1), expected_results);
+		BodyDeclaration er_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL, ASTHelper.createReferenceType(targetMethod.getGenericReturnType().toString(), 1), expected_results);
 		
 		ArrayCreationExpr as_ace = new ArrayCreationExpr(classType, dimension, 0);
 		VariableDeclarator actual_states = new VariableDeclarator(new VariableDeclaratorId(ACTUAL_STATE), as_ace);
-		BodyDeclaration as_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL | Modifier.STATIC, ASTHelper.createReferenceType(c.getSimpleName(), 1), actual_states);
+		BodyDeclaration as_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL, ASTHelper.createReferenceType(c.getSimpleName(), 1), actual_states);
 		
 		ArrayCreationExpr ar_ace = new ArrayCreationExpr(targetReturnType, dimension, 0);
 		VariableDeclarator actual_results = new VariableDeclarator(new VariableDeclaratorId(ACTUAL_RESULT), ar_ace);
-		BodyDeclaration ar_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL | Modifier.STATIC, ASTHelper.createReferenceType(targetMethod.getGenericReturnType().toString(), 1), actual_results);
+		BodyDeclaration ar_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL, ASTHelper.createReferenceType(targetMethod.getGenericReturnType().toString(), 1), actual_results);
 		
 		List<BodyDeclaration> members = new ArrayList<BodyDeclaration>();
 		members.add(num_scenarios_bd);
