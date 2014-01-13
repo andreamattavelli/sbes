@@ -21,6 +21,9 @@ public class Distance {
 				return getInheritedPrivateFields(o2.getClass()).size();
 			}
 			else {
+				if (ReflectionUtils.isPrimitive(o1)) {
+					return PrimitiveDistance.basicDistance(o1);
+				}
 				return getInheritedPrivateFields(o1.getClass()).size();
 			}
 		}

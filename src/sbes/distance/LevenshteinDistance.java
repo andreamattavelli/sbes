@@ -1,6 +1,5 @@
 package sbes.distance;
 
-import sbes.logging.Logger;
 
 /*
  * The difference between this impl. and the standard one is that, rather
@@ -17,8 +16,6 @@ import sbes.logging.Logger;
  */
 public class LevenshteinDistance {
 
-	private static final Logger logger = new Logger(LevenshteinDistance.class);
-	
 	public static int calculateDistance(final String s, final String t) {
 		if (s == null || t == null) {
 			throw new IllegalArgumentException("Strings must not be null");
@@ -28,10 +25,8 @@ public class LevenshteinDistance {
 		int tLength = t.length(); // length of t
 
 		if (sLength == 0) {
-			logger.warn("First input trace is empty!");
 			return tLength;
 		} else if (tLength == 0) {
-			logger.warn("Second input trace is empty!");
 			return sLength;
 		}
 
