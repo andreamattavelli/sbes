@@ -68,7 +68,7 @@ public class PrimitiveDistance {
 					}
 				}
 				else {
-					distance = intDistance((int) obj1, 0);
+					distance = 1;
 				}
 			}
 			else if (clazz.equals(char.class) || clazz.equals(Character.class)) {
@@ -81,7 +81,7 @@ public class PrimitiveDistance {
 					}
 				}
 				else {
-					distance = charDistance((char) obj1, '0');
+					distance = 1;
 				}
 			}
 			else if (clazz.equals(short.class) || clazz.equals(Short.class)) {
@@ -94,7 +94,7 @@ public class PrimitiveDistance {
 					}
 				}
 				else {
-					distance = shortDistance((short) obj1, (short) 0);
+					distance = 1;
 				}
 			}
 			else if (clazz.equals(long.class) || clazz.equals(Long.class)) {
@@ -107,7 +107,7 @@ public class PrimitiveDistance {
 					}
 				}
 				else {
-					distance = longDistance((long) obj1, 0);
+					distance = 1;
 				}
 			}
 			else if (clazz.equals(float.class) || clazz.equals(Float.class)) {
@@ -120,7 +120,7 @@ public class PrimitiveDistance {
 					}
 				}
 				else {
-					distance = floatDistance((float) obj1, 0.0f);
+					distance = 1;
 				}
 			}
 			else if (clazz.equals(double.class) || clazz.equals(Double.class)) {
@@ -133,7 +133,7 @@ public class PrimitiveDistance {
 					}
 				}
 				else {
-					distance = doubleDistance((double) obj1, 0.0d);
+					distance = 1;
 				}
 			}
 			else if (clazz.equals(boolean.class) || clazz.equals(Boolean.class)) {
@@ -146,7 +146,7 @@ public class PrimitiveDistance {
 					}
 				}
 				else {
-					distance = booleanDistance((boolean) obj1, true);
+					distance = 1;
 				}
 			}
 			else if (clazz.equals(byte.class) || clazz.equals(Byte.class)) {
@@ -159,7 +159,7 @@ public class PrimitiveDistance {
 					}
 				}
 				else {
-					distance = byteDistance((byte) obj1, (byte) 0);
+					distance = 1;
 				}
 			}	
 		} catch (IllegalArgumentException e) {

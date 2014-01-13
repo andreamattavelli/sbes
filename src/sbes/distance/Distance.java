@@ -13,6 +13,7 @@ import sbes.util.ReflectionUtils;
 public class Distance {
 
 	public static double calculateDistance(Object o1, Object o2) {
+		System.out.println("CALCULATE");
 		if (o1 == null && o2 == null) {
 			return 0;
 		}
