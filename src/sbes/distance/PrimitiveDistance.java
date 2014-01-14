@@ -7,7 +7,7 @@ import sbes.util.ReflectionUtils;
 
 public class PrimitiveDistance {
 
-	private static final double ARRAY_CELL_FACTOR = 1.0d;
+	public static final double ARRAY_CELL_FACTOR = 1.0d;
 
 	public static double distance(Field f1, Object obj1, Field f2, Object obj2) {
 		double distance = 0.0d;
@@ -47,122 +47,6 @@ public class PrimitiveDistance {
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		
-		return distance;
-	}
-	
-	public static double basicDistance(Object obj1) {
-		double distance = 0.0d;
-		
-		Class<?> clazz = obj1.getClass().getComponentType() == null ? obj1.getClass() : obj1.getClass().getComponentType();
-		try {
-			if (clazz.equals(int.class) || clazz.equals(Integer.class)) {
-				if (obj1.getClass().isArray()) {
-					if (clazz.equals(Integer.class)) {
-						distance = intDistance(ArrayUtils.toPrimitive((Integer[]) obj1), new int[0]);
-					}
-					else {
-						distance = intDistance((int[]) obj1, new int[0]);
-					}
-				}
-				else {
-					distance = 1;
-				}
-			}
-			else if (clazz.equals(char.class) || clazz.equals(Character.class)) {
-				if (obj1.getClass().isArray()) {
-					if (clazz.equals(Character.class)) {
-						distance = charDistance(ArrayUtils.toPrimitive((Character[]) obj1), new char[0]);
-					}
-					else {
-						distance = charDistance((char[]) obj1, new char[0]);
-					}
-				}
-				else {
-					distance = 1;
-				}
-			}
-			else if (clazz.equals(short.class) || clazz.equals(Short.class)) {
-				if (obj1.getClass().isArray()) {
-					if (clazz.equals(Short.class)) {
-						distance = shortDistance(ArrayUtils.toPrimitive((Short[]) obj1), new short[0]);
-					}
-					else {
-						distance = shortDistance((short[]) obj1, new short[0]);
-					}
-				}
-				else {
-					distance = 1;
-				}
-			}
-			else if (clazz.equals(long.class) || clazz.equals(Long.class)) {
-				if (obj1.getClass().isArray()) {
-					if (clazz.equals(Long.class)) {
-						distance = longDistance(ArrayUtils.toPrimitive((Long[]) obj1), new long[0]);
-					}
-					else {
-						distance = longDistance((long[]) obj1, new long[0]);
-					}
-				}
-				else {
-					distance = 1;
-				}
-			}
-			else if (clazz.equals(float.class) || clazz.equals(Float.class)) {
-				if (obj1.getClass().isArray()) {
-					if (clazz.equals(Float.class)) {
-						distance = floatDistance(ArrayUtils.toPrimitive((Float[]) obj1), new float[0]);
-					}
-					else {
-						distance = floatDistance((float[]) obj1, new float[0]);
-					}
-				}
-				else {
-					distance = 1;
-				}
-			}
-			else if (clazz.equals(double.class) || clazz.equals(Double.class)) {
-				if (obj1.getClass().isArray()) {
-					if (clazz.equals(Double.class)) {
-						distance = doubleDistance(ArrayUtils.toPrimitive((Double[]) obj1), new double[0]);
-					}
-					else {
-						distance = doubleDistance((double[]) obj1, new double[0]);
-					}
-				}
-				else {
-					distance = 1;
-				}
-			}
-			else if (clazz.equals(boolean.class) || clazz.equals(Boolean.class)) {
-				if (obj1.getClass().isArray()) {
-					if (clazz.equals(Boolean.class)) {
-						distance = booleanDistance(ArrayUtils.toPrimitive((Boolean[]) obj1), new boolean[0]);
-					}
-					else {
-						distance = booleanDistance((boolean[]) obj1, new boolean[0]);
-					}
-				}
-				else {
-					distance = 1;
-				}
-			}
-			else if (clazz.equals(byte.class) || clazz.equals(Byte.class)) {
-				if (obj1.getClass().isArray()) {
-					if (clazz.equals(Byte.class)) {
-						distance = byteDistance(ArrayUtils.toPrimitive((Byte[]) obj1), new byte[0]);
-					}
-					else {
-						distance = byteDistance((byte[]) obj1, new byte[0]);
-					}
-				}
-				else {
-					distance = 1;
-				}
-			}	
-		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		}
 		

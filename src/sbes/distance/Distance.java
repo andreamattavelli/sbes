@@ -1,36 +1,38 @@
 package sbes.distance;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import sbes.distance.LevenshteinDistance;
+import sbes.distance.PrimitiveDistance;
+import sbes.logging.Logger;
 import sbes.util.ReflectionUtils;
 
 public class Distance {
 
-	public static double calculateDistance(Object o1, Object o2) {
-		System.out.println("CALCULATE");
+	private static final Logger logger = new Logger(Distance.class);
+	
+	private static List<DistancePair> worklist = new LinkedList<DistancePair>();
+	private static Map<Object, Integer> visited = new IdentityHashMap<Object, Integer>();
+	
+	private Distance() {}
+	
+	public static double distance(Object o1, Object o2) {
+		logger.debug("distance between: " + o1 + " and " + o2);
 		if (o1 == null && o2 == null) {
+			logger.debug("both null");
 			return 0;
 		}
 		else if (o1 == null ^ o2 == null) {
-			if (o1 == null) {
-				return getInheritedPrivateFields(o2.getClass()).size();
-			}
-			else {
-				if (ReflectionUtils.isPrimitive(o1)) {
-					return PrimitiveDistance.basicDistance(o1);
-				}
-				return getInheritedPrivateFields(o1.getClass()).size();
-			}
+			logger.debug("one of the two is null");
+			return ObjectDistance.getNullDistance(o1, o2);
 		}
-
-		double distance = 0.0;
-		int counterFields = 0;
+		
 		Class<?> c1 = o1.getClass();
 		Class<?> c2 = o2.getClass();
 
@@ -41,139 +43,213 @@ public class Distance {
 			 */
 			;
 		}
-
-		if (ReflectionUtils.isPrimitive(o1)) {
-			return PrimitiveDistance.distance(o1, o2);
-		}
-
-		Map<Object, Integer> visited = new IdentityHashMap<Object, Integer>();
-		List<DistancePair> worklist = new LinkedList<DistancePair>();
+		
+		worklist.clear();
+		visited.clear();
+		return calculate(o1, o2);
+	}
+	
+	private static double calculate(Object o1, Object o2) {
+		double distance = 0.0d;
+		int fieldCount = 0;
+		
 		worklist.add(new DistancePair(o1, o2));
 
 		while (!worklist.isEmpty()) {
 			DistancePair pair = worklist.remove(0);
 			Object obj1 = pair.o1;
 			Object obj2 = pair.o2;
-
-			List<Field> fs1 = getInheritedPrivateFields(obj1.getClass());
-			List<Field> fs2 = getInheritedPrivateFields(obj2.getClass());
-
-			if (fs1.size() != fs2.size()) {
-				// Not of the same type?
-				System.err.println("Odd..");
+			
+			//------------------NULL-------------------
+			if (obj1 == null && obj2 == null) {
+				continue;
 			}
-
+			else if (obj1 == null ^ obj2 == null) {
+				distance += ObjectDistance.getNullDistance(obj1, obj2);
+				System.out.println("\t\tDD: " + distance);
+				continue;
+			}
+			
+			//------------DIFFERENT CLASSES------------
+			else if (!obj1.getClass().equals(obj2.getClass())) {
+				logger.debug("different classes: " + obj1.getClass() + " vs " + obj2.getClass());
+				continue;
+			}
+			
+			//----------------PRIMITIVE----------------
+			else if (ReflectionUtils.isPrimitive(obj1)) {
+				distance += PrimitiveDistance.distance(obj1, obj2);
+				continue;
+			}
+			
+			//------------------STRING-----------------
+			else if (ReflectionUtils.isString(obj1)) {
+				distance += LevenshteinDistance.calculateDistance((String) obj1, (String) obj2);
+				continue;
+			}
+			
+			//-------------------ARRAY-----------------
+			else if (ReflectionUtils.isArray(obj1)) {
+				distance += handleArray(obj1, obj2);
+				continue;
+			}
+			
+			//-----------CIRCULAR DEPENDENCIES---------
+			else if (visited.put(obj1, 1) != null && visited.put(obj2, 2) != null) {
+				continue;
+			}
+			
+			//------------------OBJECT-----------------
+			List<Field> fs1 = ReflectionUtils.getInheritedPrivateFields(obj1.getClass());
+			List<Field> fs2 = ReflectionUtils.getInheritedPrivateFields(obj2.getClass());
 			for (int i = 0; i < fs1.size(); i++) {
 				try {
 					Field f1 = fs1.get(i);
 					Field f2 = fs2.get(i);
-
+					
 					f1.setAccessible(true);
 					f2.setAccessible(true);
-
-					if (Modifier.isFinal(f1.getModifiers()) && Modifier.isStatic(f1.getModifiers()) &&
-							Modifier.isFinal(f2.getModifiers()) && Modifier.isStatic(f2.getModifiers())) {
-						// it's a constant, skip it
-						System.out.println("SKIP: " + Modifier.toString(f1.getModifiers()) + " " + f1.getType() + " " + f1.getName());
+					
+					// skip comparison of constants
+					if (ReflectionUtils.isConstant(f1) && ReflectionUtils.isConstant(f2)) {
+						logger.debug("Skip: " + Modifier.toString(f1.getModifiers()) + " " + f1.getType() + " " + f1.getName());
 						continue;
 					}
-					else if (Modifier.isTransient(f1.getModifiers()) && Modifier.isTransient(f2.getModifiers())) {
-						// do we want to skip it?
-					}
-
-					counterFields++;
-
-					System.out.println(Modifier.toString(f1.getModifiers()) + " " + f1.getType() + " " + f1.getName());
-
-					ComparisonType comparison = getComparisonType(f1.getType(), f2.getType());
-					if (comparison == ComparisonType.PRIMITIVE) {
+					logger.debug("      " + Modifier.toString(f1.getModifiers()) + " " + f1.getType() + " " + f1.getName());
+					
+					ComparisonType type = getComparisonType(f1.getType(), f2.getType());
+					switch (type) {
+					case PRIMITIVE:
 						distance += PrimitiveDistance.distance(f1, obj1, f2, obj2);
-					}
-					else if (comparison == ComparisonType.STRING) {
-						distance += stringComparison(f1.get(obj1), f2.get(obj2));
-					}
-					else if (comparison == ComparisonType.ARRAY) {
-						//get array type
-						ComparisonType arrayType = getComparisonType(f1.getType().getComponentType(), f2.getType().getComponentType());
-
-						if (arrayType == ComparisonType.OBJECT) {
-							// object
-							Object[] castedF1 = Object[].class.cast(f1.get(obj1));
-							Object[] castedF2 = Object[].class.cast(f2.get(obj2));
-							for (int j = 0; j < castedF1.length; j++) {
-								if (visited.put(castedF1[j], 1) == null &&
-										visited.put(castedF2[j], 1) == null) { // we skip circular references
-									worklist.add(new DistancePair(castedF1[j], castedF2[j]));
-								}
-							}
-						}
-						else if (arrayType == ComparisonType.STRING) {
-							String[] castedF1 = String[].class.cast(f1.get(obj1));
-							String[] castedF2 = String[].class.cast(f2.get(obj2));
-							for (int j = 0; j < castedF1.length; j++) {
-								distance += LevenshteinDistance.calculateDistance(castedF1[j], castedF2[j]);
-							} 
-						}
-						else if (arrayType == ComparisonType.PRIMITIVE) {
-							distance += PrimitiveDistance.distance(f1, obj1, f2, obj2);
-						}
-						else {
-							//TODO: array of array, recursion?
-						}
-					}
-					else {
+						break;
+					case STRING:
+						distance += LevenshteinDistance.calculateDistance((String) f1.get(obj1), (String) f2.get(obj2));
+						break;
+					case ARRAY:
+						distance += handleArray(f1, obj1, f2, obj2);
+						break;
+					case OBJECT:
 						Object obj1value = f1.get(obj1);
 						Object obj2value = f2.get(obj2);
-
-						if (visited.put(obj1value, 1) == null &&
-								visited.put(obj2value, 1) == null) { // we skip circular references
-							if (obj1 == null && obj2 == null) {
-								//distance: 0
-								continue;
-							}
-							else if (obj1 == null ^ obj2 == null) {
-								int fields = 0;
-								if (obj1 == null) {
-									fields = getInheritedPrivateFields(obj2.getClass()).size();
-								}
-								else {
-									fields = getInheritedPrivateFields(obj1.getClass()).size();
-								}
-								distance += fields;
-							}
-							else {
-								worklist.add(new DistancePair(f1.get(obj1), f2.get(obj2)));
-							}
-						}
+						
+						// null values and corner cases are managed
+						// at the beginning of the iteration
+						worklist.add(new DistancePair(obj1value, obj2value));
+						break;
+					default:
+						logger.error("Unknown comparison type: " + type);
+						break;
 					}
-				} catch (IllegalArgumentException e) {
-				} catch (IllegalAccessException e) {
+				} catch (Exception e) {
+					logger.error("Error during distance calculation", e);
 				}
 			}
 		}
-
-		if (counterFields == 0) {
-			return 0;
+		
+		if (fieldCount > 0) {
+			return distance / (double) fieldCount; 
 		}
 		else {
-			return distance/counterFields;
+			return distance;
 		}
 	}
-
-	private static List<Field> getInheritedPrivateFields(Class<?> type) {
-		List<Field> result = new ArrayList<Field>();
-
-		Class<?> i = type;
-		while (i != null && i != Object.class) {
-			for (Field field : i.getDeclaredFields()) {
-				if (!field.isSynthetic()) {
-					result.add(field);
+	
+	private static double handleArray(Object obj1, Object obj2) {
+		double distance = 0.0d;
+		
+		ComparisonType arrayType = getComparisonType(obj1.getClass().getComponentType(), obj1.getClass().getComponentType());
+		switch (arrayType) {
+		case OBJECT:
+			try {
+				Object[] castedF1 = Object[].class.cast(obj1);
+				Object[] castedF2 = Object[].class.cast(obj2);
+				int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
+				for (int i = 0; i < length; i++) {
+					worklist.add(new DistancePair(castedF1[i], castedF2[i]));
 				}
+				distance += Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length * PrimitiveDistance.ARRAY_CELL_FACTOR;
 			}
-			i = i.getSuperclass();
+			catch (IllegalArgumentException e) {
+				logger.error("Error during cast", e);
+			}
+			break;
+		case PRIMITIVE:
+			distance += PrimitiveDistance.distance(obj1, obj2);
+			break;
+		case STRING:
+			try {
+				String[] castedF1 = String[].class.cast(obj1);
+				String[] castedF2 = String[].class.cast(obj2);
+				int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
+				for (int i = 0; i < length; i++) {
+					distance += LevenshteinDistance.calculateDistance(castedF1[i], castedF2[i]);
+				}
+				distance += Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length * PrimitiveDistance.ARRAY_CELL_FACTOR;
+			}
+			catch (IllegalArgumentException e) {
+				logger.error("Error during cast", e);
+			}
+			break;
+		case ARRAY:
+			int length = Math.min(Array.getLength(obj1), Array.getLength(obj2));
+			for (int i = 0; i < length; i++) {
+				distance += handleArray(Array.get(obj1, i), Array.get(obj2, i));
+			}
+			distance += Math.max(Array.getLength(obj1), Array.getLength(obj2)) - length * PrimitiveDistance.ARRAY_CELL_FACTOR;
+			break;
+		default:
+			logger.error("Unknown comparison type: " + arrayType);
+			break;
 		}
+		
+		return distance;
+	}
 
-		return result;
+	private static double handleArray(Field f1, Object obj1, Field f2, Object obj2) {
+		double distance = 0.0d;
+		
+		ComparisonType arrayType = getComparisonType(f1.getType().getComponentType(), f2.getType().getComponentType());
+		switch (arrayType) {
+		case OBJECT:
+			try {
+				Object[] castedF1 = Object[].class.cast(f1.get(obj1));
+				Object[] castedF2 = Object[].class.cast(f2.get(obj2));
+				int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
+				for (int i = 0; i < length; i++) {
+					worklist.add(new DistancePair(castedF1[i], castedF2[i]));
+				}
+				distance += Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length * PrimitiveDistance.ARRAY_CELL_FACTOR;
+			}
+			catch (IllegalArgumentException | IllegalAccessException e) {
+				logger.error("Error during cast", e);
+			}
+			break;
+		case PRIMITIVE:
+			distance += PrimitiveDistance.distance(f1, obj1, f2, obj2);
+			break;
+		case STRING:
+			try {
+				String[] castedF1 = String[].class.cast(f1.get(obj1));
+				String[] castedF2 = String[].class.cast(f2.get(obj2));
+				int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
+				for (int i = 0; i < length; i++) {
+					distance += LevenshteinDistance.calculateDistance(castedF1[i], castedF2[i]);
+				}
+				distance += Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length * PrimitiveDistance.ARRAY_CELL_FACTOR;
+			}
+			catch (IllegalArgumentException | IllegalAccessException e) {
+				logger.error("Error during cast", e);
+			}
+			break;
+		case ARRAY:
+			
+			break;
+		default:
+			logger.error("Unknown comparison type: " + arrayType);
+			break;
+		}
+		
+		return distance;
 	}
 
 	private static ComparisonType getComparisonType(Class<?> f1, Class<?> f2) {
@@ -188,11 +264,7 @@ public class Distance {
 		}
 		return ComparisonType.OBJECT;
 	}
-
-	private static int stringComparison(Object obj, Object obj2) {
-		return LevenshteinDistance.calculateDistance((String) obj, (String) obj2);
-	}
-
+	
 }
 
 enum ComparisonType {
