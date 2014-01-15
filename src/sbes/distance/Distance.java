@@ -16,9 +16,10 @@ import sbes.util.ReflectionUtils;
 public class Distance {
 
 	private static final Logger logger = new Logger(Distance.class);
-	
-	private static List<DistancePair> worklist = new LinkedList<DistancePair>();
-	private static Map<Object, Integer> visited = new IdentityHashMap<Object, Integer>();
+
+	private static final double DIFFERENT_CLASSES_WEIGHT = 1.0d;
+	private static final List<DistancePair> worklist = new LinkedList<DistancePair>();
+	private static final Map<Object, Integer> visited = new IdentityHashMap<Object, Integer>();
 	
 	private Distance() {}
 	
@@ -37,15 +38,15 @@ public class Distance {
 		Class<?> c2 = o2.getClass();
 
 		if (!c1.getClass().equals(c2.getClass())) {
-			/* Do we want to penalize it?
-			 * A penalty could affect the ability of the technique to synthesize
-			 *  equivalent sequences..or not?
+			/* Do we want to penalize it? A penalty could affect the ability of
+			 * the technique to synthesize equivalent sequences..or not?
 			 */
 			;
 		}
 		
 		worklist.clear();
 		visited.clear();
+		
 		return calculate(o1, o2);
 	}
 	
@@ -60,23 +61,26 @@ public class Distance {
 			Object obj1 = pair.o1;
 			Object obj2 = pair.o2;
 			
+			//========================================CORNER CASES========================================
 			//------------------NULL-------------------
 			if (obj1 == null && obj2 == null) {
 				continue;
 			}
 			else if (obj1 == null ^ obj2 == null) {
 				distance += ObjectDistance.getNullDistance(obj1, obj2);
-				System.out.println("\t\tDD: " + distance);
 				continue;
 			}
 			
 			//------------DIFFERENT CLASSES------------
 			else if (!obj1.getClass().equals(obj2.getClass())) {
 				logger.debug("different classes: " + obj1.getClass() + " vs " + obj2.getClass());
+				distance += DIFFERENT_CLASSES_WEIGHT;
 				continue;
 			}
 			
 			//----------------PRIMITIVE----------------
+			// this definition of primitive contains also
+			// primitive classes (e.g. Integer)
 			else if (ReflectionUtils.isPrimitive(obj1)) {
 				distance += PrimitiveDistance.distance(obj1, obj2);
 				continue;
@@ -88,13 +92,13 @@ public class Distance {
 				continue;
 			}
 			
-			//-------------------ARRAY-----------------
+			//-----------------ARRAYS------------------
 			else if (ReflectionUtils.isArray(obj1)) {
 				distance += handleArray(obj1, obj2);
 				continue;
 			}
 			
-			//-----------CIRCULAR DEPENDENCIES---------
+			//----------CIRCULAR DEPENDENCIES----------
 			else if (visited.put(obj1, 1) != null && visited.put(obj2, 2) != null) {
 				continue;
 			}
@@ -115,11 +119,14 @@ public class Distance {
 						logger.debug("Skip: " + Modifier.toString(f1.getModifiers()) + " " + f1.getType() + " " + f1.getName());
 						continue;
 					}
-					logger.debug("      " + Modifier.toString(f1.getModifiers()) + " " + f1.getType() + " " + f1.getName());
 					
 					ComparisonType type = getComparisonType(f1.getType(), f2.getType());
 					switch (type) {
 					case PRIMITIVE:
+						// this definition of primitives contains only real 
+						// primitive values (e.g int, char, ..) primitive 
+						// classes (e.g. Integer) are treated as object and 
+						// handled in the subsequent iteration as corner case
 						distance += PrimitiveDistance.distance(f1, obj1, f2, obj2);
 						break;
 					case STRING:
@@ -129,11 +136,10 @@ public class Distance {
 						distance += handleArray(f1, obj1, f2, obj2);
 						break;
 					case OBJECT:
+						// null values and corner cases are managed at the 
+						// beginning of the iteration
 						Object obj1value = f1.get(obj1);
 						Object obj2value = f2.get(obj2);
-						
-						// null values and corner cases are managed
-						// at the beginning of the iteration
 						worklist.add(new DistancePair(obj1value, obj2value));
 						break;
 					default:
