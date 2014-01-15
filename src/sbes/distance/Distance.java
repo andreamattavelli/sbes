@@ -27,7 +27,7 @@ public class Distance {
 		logger.debug("distance between: " + o1 + " and " + o2);
 		if (o1 == null && o2 == null) {
 			logger.debug("both null");
-			return 0;
+			return 0.0d;
 		}
 		else if (o1 == null ^ o2 == null) {
 			logger.debug("one of the two is null");
@@ -38,9 +38,8 @@ public class Distance {
 		Class<?> c2 = o2.getClass();
 
 		if (!c1.getClass().equals(c2.getClass())) {
-			/* Do we want to penalize it? A penalty could affect the ability of
-			 * the technique to synthesize equivalent sequences..or not?
-			 */
+			// Do we want to penalize it? A penalty could affect the ability of
+			// the technique to synthesize equivalent sequences..or not?
 			;
 		}
 		
