@@ -118,6 +118,10 @@ public class Distance {
 						logger.debug("Skip: " + Modifier.toString(f1.getModifiers()) + " " + f1.getType() + " " + f1.getName());
 						continue;
 					}
+					else if (FieldFilter.exclude(f1) || FieldFilter.exclude(f2)) {
+						logger.debug("Exclude: " + Modifier.toString(f1.getModifiers()) + " " + f1.getType() + " " + f1.getName());
+						continue;
+					}
 					
 					ComparisonType type = getComparisonType(f1.getType(), f2.getType());
 					switch (type) {
