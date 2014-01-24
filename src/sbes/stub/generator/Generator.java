@@ -2,6 +2,7 @@ package sbes.stub.generator;
 
 import japa.parser.ASTHelper;
 import japa.parser.ast.CompilationUnit;
+import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.body.BodyDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.Parameter;
@@ -9,9 +10,6 @@ import japa.parser.ast.body.TypeDeclaration;
 import japa.parser.ast.body.VariableDeclaratorId;
 import japa.parser.ast.type.Type;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +18,14 @@ import sbes.Options;
 import sbes.logging.Logger;
 import sbes.stub.GenerationException;
 import sbes.stub.InternalClassloader;
+import sbes.stub.Stub;
 import sbes.util.ClassUtils;
 
 public abstract class Generator {
 
 	private static final Logger logger = new Logger(Generator.class);
 	
+	protected static final int TEST_SCENARIOS = 1; //FIXME
 	protected static final String STUB_EXTENSION = "_Stub"; 
 	
 	private final ClassLoader classloader;
@@ -35,7 +35,7 @@ public abstract class Generator {
 		this.classloader = InternalClassloader.getInternalClassLoader();
 	}
 	
-	public void generateStub() {
+	public Stub generateStub() {
 		// check classpath: if the class is not found it raise an exception
 		checkClasspath();
 		
@@ -57,12 +57,11 @@ public abstract class Generator {
 		
 		// GENERATE STUB
 		CompilationUnit cu = new CompilationUnit();
+		cu.setImports(getImports());
 		
 		// class name
 		TypeDeclaration stubClass = getClassDeclaration(c.getSimpleName());
-		List<TypeDeclaration> fileTypes = new ArrayList<TypeDeclaration>();
-		fileTypes.add(stubClass);
-		cu.setTypes(fileTypes);
+		ASTHelper.addTypeDeclaration(cu, stubClass);
 		
 		// class members
 		List<BodyDeclaration> members = new ArrayList<BodyDeclaration>();
@@ -83,15 +82,16 @@ public abstract class Generator {
 		
 		stubClass.setMembers(members);
 		
-		dumpTestCase(cu, stubName);
+		return new Stub(cu, stubName);
 	}
-	
+
 	// ---------- ABSTRACT STRATEGY METHODS ----------
-	protected abstract List<BodyDeclaration> getClassFields(Method targetMethod, Class<?> c);
+	protected abstract List<ImportDeclaration> getImports();
 	protected abstract TypeDeclaration getClassDeclaration(String className);
-	protected abstract MethodDeclaration getMethodUnderTest();
-	protected abstract MethodDeclaration getSetResultsMethod(Method targetMethod);
+	protected abstract List<BodyDeclaration> getClassFields(Method targetMethod, Class<?> c);
 	protected abstract List<BodyDeclaration> getAdditionalMethods(Method[] methods);
+	protected abstract MethodDeclaration getSetResultsMethod(Method targetMethod);
+	protected abstract MethodDeclaration getMethodUnderTest();
 	
 	
 	// ---------- HELPER METHODS ----------
@@ -121,31 +121,10 @@ public abstract class Generator {
 		}
 		return targetMethod;
 	}
-	
-	private void dumpTestCase(CompilationUnit cu, String name) {
-		BufferedWriter out = null;
-		try {
-			String filename = name + ".java";
-			out = new BufferedWriter(new FileWriter(filename));
-			out.write(cu.toString());
-			out.close();
-		} catch(IOException e) {
-			logger.error("Unable to dump stub due to: " + e.getMessage());
-		} finally{
-			if (out != null) {
-				try {
-					out.close();
-				} catch (IOException e) {
-					logger.error("Unable to correctly dump stub due to: " + e.getMessage());
-				}
-			}
-		}
-	}
 
 	private void checkClasspath() {
 		logger.debug("Checking classpath");
 		checkClasspath(ClassUtils.getClassname(Options.I().getMethodSignature()));
-		// TODO: check evosuite jar existance
 		logger.debug("Classpath OK");
 	}
 
@@ -159,22 +138,22 @@ public abstract class Generator {
 	}
 	
 	protected Type getReturnType(Method method) {
-		java.lang.reflect.Type returnType = method.getGenericReturnType();
+		Class<?> returnType = method.getReturnType();
 		
-		if (returnType.toString().equals("void")) {
-			return ASTHelper.createReferenceType(returnType.toString(), 0); //FIXME: check cardinality array
+		if (returnType.getSimpleName().equals("void")) {
+			return ASTHelper.createReferenceType(returnType.getCanonicalName(), 0);
 		}
 		else {
-			return ASTHelper.createReferenceType(returnType.toString(), 1); //FIXME: check cardinality array
+			return ASTHelper.createReferenceType(returnType.getCanonicalName(), 1);
 		}
 	}
 	
-	protected List<Parameter> getParameterType(java.lang.reflect.Type[] parameters) {
+	protected List<Parameter> getParameterType(Class<?>[] parameters) {
 		List<Parameter> toReturn = new ArrayList<Parameter>();
 		for (int i = 0; i < parameters.length; i++) {
-			java.lang.reflect.Type type = parameters[i];
+			Class<?> type = parameters[i];
 			VariableDeclaratorId id = new VariableDeclaratorId("p" + i);
-			String typeClass = type.toString();
+			String typeClass = type.getCanonicalName();
 			typeClass = typeClass.indexOf(" ") >= 0 ? typeClass.split(" ")[1]: typeClass;
 			Parameter p = new Parameter(ASTHelper.createReferenceType(typeClass, 0), id); //FIXME: check cardinality array, type erasure, distinguish between primitive and reference types
 			toReturn.add(p);
