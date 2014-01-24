@@ -9,6 +9,9 @@ import japa.parser.ast.expr.AssignExpr.Operator;
 import japa.parser.ast.expr.ArrayAccessExpr;
 import japa.parser.ast.expr.BinaryExpr;
 import japa.parser.ast.expr.Expression;
+import japa.parser.ast.expr.FieldAccessExpr;
+import japa.parser.ast.expr.MethodCallExpr;
+import japa.parser.ast.expr.StringLiteralExpr;
 import japa.parser.ast.expr.UnaryExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.type.Type;
@@ -60,5 +63,11 @@ public class ASTUtils {
 		List<Expression> increment = new ArrayList<Expression>();
 		increment.add(new UnaryExpr(ASTHelper.createNameExpr(varId), operator));
 		return increment;
+	}
+	
+	public static MethodCallExpr createSystemOut(String message) {
+		List<Expression> args = new ArrayList<Expression>();
+		args.add(new StringLiteralExpr(message));
+		return new MethodCallExpr(new FieldAccessExpr(ASTHelper.createNameExpr("System"), "out"), "println", args);
 	}
 }

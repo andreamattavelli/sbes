@@ -13,15 +13,15 @@ import japa.parser.ast.body.VariableDeclaratorId;
 import japa.parser.ast.expr.ArrayAccessExpr;
 import japa.parser.ast.expr.ArrayCreationExpr;
 import japa.parser.ast.expr.AssignExpr;
+import japa.parser.ast.expr.AssignExpr.Operator;
 import japa.parser.ast.expr.BinaryExpr;
+import japa.parser.ast.expr.DoubleLiteralExpr;
 import japa.parser.ast.expr.Expression;
-import japa.parser.ast.expr.FieldAccessExpr;
 import japa.parser.ast.expr.IntegerLiteralExpr;
 import japa.parser.ast.expr.MethodCallExpr;
-import japa.parser.ast.expr.StringLiteralExpr;
+import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.UnaryExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
-import japa.parser.ast.expr.AssignExpr.Operator;
 import japa.parser.ast.stmt.BlockStmt;
 import japa.parser.ast.stmt.ExpressionStmt;
 import japa.parser.ast.stmt.ForStmt;
@@ -68,12 +68,12 @@ public class FirstPhaseStrategy extends Generator {
 		
 		List<Expression> arraysDimension = ASTUtils.getArraysDimension();
 		Type targetReturnType = ASTHelper.createReferenceType(targetMethod.getReturnType().getCanonicalName(), 0); //FIXME
-		Type classType = ASTHelper.createReferenceType(c.getSimpleName(), 0);
+		Type classType = ASTHelper.createReferenceType(c.getCanonicalName(), 0);
 		
 		// stub helper arrays
 		ArrayCreationExpr es_ace = new ArrayCreationExpr(classType, arraysDimension, 0);
 		VariableDeclarator expected_states = ASTUtils.createDeclarator(EXPECTED_STATE, es_ace);
-		BodyDeclaration es_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL, ASTHelper.createReferenceType(c.getSimpleName(), 1), expected_states);
+		BodyDeclaration es_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL, ASTHelper.createReferenceType(c.getCanonicalName(), 1), expected_states);
 		
 		ArrayCreationExpr er_ace = new ArrayCreationExpr(targetReturnType, arraysDimension, 0);
 		VariableDeclarator expected_results = ASTUtils.createDeclarator(EXPECTED_RESULT, er_ace);
@@ -81,7 +81,7 @@ public class FirstPhaseStrategy extends Generator {
 		
 		ArrayCreationExpr as_ace = new ArrayCreationExpr(classType, arraysDimension, 0);
 		VariableDeclarator actual_states = ASTUtils.createDeclarator(ACTUAL_STATE, as_ace);
-		BodyDeclaration as_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL, ASTHelper.createReferenceType(c.getSimpleName(), 1), actual_states);
+		BodyDeclaration as_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL, ASTHelper.createReferenceType(c.getCanonicalName(), 1), actual_states);
 		
 		ArrayCreationExpr ar_ace = new ArrayCreationExpr(targetReturnType, arraysDimension, 0);
 		VariableDeclarator actual_results = ASTUtils.createDeclarator(ACTUAL_RESULT, ar_ace);
@@ -187,20 +187,17 @@ public class FirstPhaseStrategy extends Generator {
 		parameters.add(new Parameter(ASTHelper.createReferenceType(getReturnType(targetMethod).toString(), 1), new VariableDeclaratorId("res")));
 		set_results.setParameters(parameters);
 		
-		List<Expression> init = new ArrayList<Expression>();
-		List<VariableDeclarator> decls = new ArrayList<VariableDeclarator>();
-		decls.add(new VariableDeclarator(new VariableDeclaratorId("i")));
-		init.add(new AssignExpr(new VariableDeclarationExpr(ASTHelper.INT_TYPE, decls), new IntegerLiteralExpr("0"), Operator.assign));
-		Expression condition = new BinaryExpr(ASTHelper.createNameExpr("i"), ASTHelper.createNameExpr(NUM_SCENARIOS), japa.parser.ast.expr.BinaryExpr.Operator.less);
-		List<Expression> increment = new ArrayList<Expression>();
-		increment.add(new UnaryExpr(ASTHelper.createNameExpr("i"), japa.parser.ast.expr.UnaryExpr.Operator.posIncrement));
+		List<Expression> init = ASTUtils.createForInit("i", ASTHelper.INT_TYPE, new IntegerLiteralExpr("0"), Operator.assign);
+		Expression compare = ASTUtils.createForCondition("i", NUM_SCENARIOS, japa.parser.ast.expr.BinaryExpr.Operator.less);
+		List<Expression> update = ASTUtils.createForIncrement("i", japa.parser.ast.expr.UnaryExpr.Operator.posIncrement);
+		
 		BlockStmt forBody = new BlockStmt();
-		Expression left = new ArrayAccessExpr(ASTHelper.createNameExpr(ACTUAL_RESULT), ASTHelper.createNameExpr("i"));
-		Expression right = new ArrayAccessExpr(ASTHelper.createNameExpr("res"), ASTHelper.createNameExpr("i"));
+		Expression left = ASTUtils.createArrayAccess(ACTUAL_RESULT, "i");
+		Expression right = ASTUtils.createArrayAccess("res", "i");
 		AssignExpr assignment = new AssignExpr(left, right, Operator.assign);
 		ASTHelper.addStmt(forBody, assignment);
 		
-		ForStmt forStmt = new ForStmt(init, condition, increment, forBody);
+		ForStmt forStmt = new ForStmt(init, compare, update, forBody);
 		
 		BlockStmt methodBody = new BlockStmt();
 		ASTHelper.addStmt(methodBody, forStmt);
@@ -212,27 +209,31 @@ public class FirstPhaseStrategy extends Generator {
 	@Override
 	protected MethodDeclaration getMethodUnderTest() {
 		MethodDeclaration set_results = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "method_under_test");
+		
 		BlockStmt stmt = new BlockStmt();
-		
-		List<Expression> args = new ArrayList<Expression>();
-		args.add(new StringLiteralExpr("Executed"));
-		MethodCallExpr syso = new MethodCallExpr(new FieldAccessExpr(ASTHelper.createNameExpr("System"), "out"), "println", args);
-		
 		BinaryExpr condition = null;
 		for (int i = 0; i < TEST_SCENARIOS; i++) {
-			Expression left_res = new ArrayAccessExpr(ASTHelper.createNameExpr(EXPECTED_RESULT), ASTHelper.createNameExpr(Integer.toString(i)));
-			Expression right_res = new ArrayAccessExpr(ASTHelper.createNameExpr(ACTUAL_RESULT), ASTHelper.createNameExpr(Integer.toString(i)));
-			BinaryExpr resCondition = new BinaryExpr(left_res, right_res, japa.parser.ast.expr.BinaryExpr.Operator.equals);
+			Expression zeroDouble = new DoubleLiteralExpr("0.0d");
 			
-			List<Expression> distance_args = new ArrayList<Expression>();
-			distance_args.add(new ArrayAccessExpr(ASTHelper.createNameExpr(EXPECTED_STATE), ASTHelper.createNameExpr(Integer.toString(i))));
-			distance_args.add(new ArrayAccessExpr(ASTHelper.createNameExpr(ACTUAL_STATE), ASTHelper.createNameExpr(Integer.toString(i))));
+			NameExpr distanceClass = ASTHelper.createNameExpr("Distance");
+			String distanceMethod = "distance";
 			
-			Expression left_state = new MethodCallExpr(null, "distance", distance_args);
-			Expression right_state = new IntegerLiteralExpr("0");
-			BinaryExpr stateCondition = new BinaryExpr(left_state, right_state, japa.parser.ast.expr.BinaryExpr.Operator.equals);
-			BinaryExpr newCondition = new BinaryExpr(resCondition, stateCondition, japa.parser.ast.expr.BinaryExpr.Operator.and);
+			// Distance.distance(expected_states[0], actual_states[0]) == 0.0d
+			List<Expression> distanceStateArgs = new ArrayList<Expression>();
+			distanceStateArgs.add(ASTUtils.createArrayAccess(EXPECTED_STATE, Integer.toString(i)));
+			distanceStateArgs.add(ASTUtils.createArrayAccess(ACTUAL_STATE, Integer.toString(i)));
+			Expression state = new MethodCallExpr(distanceClass, distanceMethod, distanceStateArgs);
+			BinaryExpr stateCondition = new BinaryExpr(state, zeroDouble, japa.parser.ast.expr.BinaryExpr.Operator.equals);
 			
+			// Distance.distance(expected_results[0], actual_results[0]) == 0.0d
+			List<Expression> distanceResultArgs = new ArrayList<Expression>();
+			distanceResultArgs.add(ASTUtils.createArrayAccess(EXPECTED_RESULT, Integer.toString(i)));
+			distanceResultArgs.add(ASTUtils.createArrayAccess(ACTUAL_RESULT, Integer.toString(i)));
+			Expression result = new MethodCallExpr(distanceClass, distanceMethod, distanceResultArgs);
+			BinaryExpr resultCondition = new BinaryExpr(result, zeroDouble, japa.parser.ast.expr.BinaryExpr.Operator.equals);
+			
+			// concatenate conditions
+			BinaryExpr newCondition = new BinaryExpr(resultCondition, stateCondition, japa.parser.ast.expr.BinaryExpr.Operator.and);
 			if (condition != null) {
 				condition = new BinaryExpr(condition, newCondition, japa.parser.ast.expr.BinaryExpr.Operator.and);
 			}
@@ -241,7 +242,7 @@ public class FirstPhaseStrategy extends Generator {
 			}
 		}
 		
-		IfStmt ifStmt = new IfStmt(condition, new ExpressionStmt(syso), null);
+		IfStmt ifStmt = new IfStmt(condition, new ExpressionStmt(ASTUtils.createSystemOut("Executed")), null);
 		ASTHelper.addStmt(stmt, ifStmt);
 		set_results.setBody(stmt);
 		
