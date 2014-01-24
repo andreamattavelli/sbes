@@ -1,12 +1,15 @@
 package sbes.util;
 
 import japa.parser.ASTHelper;
+import japa.parser.ast.body.BodyDeclaration;
+import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.body.Parameter;
 import japa.parser.ast.body.VariableDeclarator;
 import japa.parser.ast.body.VariableDeclaratorId;
+import japa.parser.ast.expr.ArrayAccessExpr;
+import japa.parser.ast.expr.ArrayCreationExpr;
 import japa.parser.ast.expr.AssignExpr;
 import japa.parser.ast.expr.AssignExpr.Operator;
-import japa.parser.ast.expr.ArrayAccessExpr;
 import japa.parser.ast.expr.BinaryExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.FieldAccessExpr;
@@ -16,6 +19,7 @@ import japa.parser.ast.expr.UnaryExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.type.Type;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +39,13 @@ public class ASTUtils {
 	
 	public static Expression createArrayAccess(String arrayId, String indexId) {
 		return new ArrayAccessExpr(ASTHelper.createNameExpr(arrayId), ASTHelper.createNameExpr(indexId));
+	}
+	
+	public static BodyDeclaration createStubHelperArray(String classType, String varId) {
+		ArrayCreationExpr es_ace = new ArrayCreationExpr(ASTHelper.createReferenceType(classType, 0), ASTUtils.getArraysDimension(), 0);
+		VariableDeclarator expected_states = ASTUtils.createDeclarator(varId, es_ace);
+		BodyDeclaration es_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL, ASTHelper.createReferenceType(classType, 1), expected_states);
+		return es_bd;
 	}
 	
 	public static List<Expression> createParameters(List<Parameter> parameters) {
