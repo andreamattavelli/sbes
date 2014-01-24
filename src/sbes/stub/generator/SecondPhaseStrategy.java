@@ -10,7 +10,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SecondPhaseGenerator extends Generator {
+public class SecondPhaseStrategy extends Generator {
 
 	@Override
 	protected TypeDeclaration getClassDeclaration(String className) {

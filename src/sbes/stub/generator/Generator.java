@@ -36,46 +36,49 @@ public abstract class Generator {
 	}
 	
 	public void generateStub() {
+		// check classpath: if the class is not found it raise an exception
 		checkClasspath();
 		
 		Class<?> c;
 		try {
 			c = Class.forName(ClassUtils.getClassname(Options.I().getMethodSignature()), false, classloader);
 		} catch (ClassNotFoundException e) {
-			// infeasible
+			// infeasible, we already checked the classpath
 			throw new GenerationException("Target class not found");
 		}
 		
+		// get class' methods
 		Method[] methods = ClassUtils.getClassMethods(c);
-		String methodName = ClassUtils.getMethodname(Options.I().getMethodSignature());
+		String methodSignature = ClassUtils.getMethodname(Options.I().getMethodSignature());
 		
 		// get target method from the list of class' methods
-		Method targetMethod = findTargetMethod(methods, methodName);
+		Method targetMethod = findTargetMethod(methods, methodSignature);
 		
+		
+		// ---- generate stub ----
 		CompilationUnit cu = new CompilationUnit();
 		
 		// class name
-		TypeDeclaration td = getClassDeclaration(c.getSimpleName());
-		List<TypeDeclaration> types = new ArrayList<TypeDeclaration>();
-		types.add(td);
-		cu.setTypes(types);
+		TypeDeclaration stubClass = getClassDeclaration(c.getSimpleName());
+		List<TypeDeclaration> fileTypes = new ArrayList<TypeDeclaration>();
+		fileTypes.add(stubClass);
+		cu.setTypes(fileTypes);
 		
 		// class fields
 		List<BodyDeclaration> members = new ArrayList<BodyDeclaration>();
 		members.addAll(getClassFields(targetMethod, c));
-		
 		members.addAll(additionalMethods(methods));
 		
-		// set_results artificial method
+		// artificial methods
 		members.add(createSetResultsMethod(targetMethod));
 		members.add(createMethodUnderTest());
 		
-		td.setMembers(members);
+		stubClass.setMembers(members);
 		
 		dumpTestCase(cu, c.getSimpleName() + "_Stub");
 	}
 	
-	// ---------- ABSTRACT METHODS ----------
+	// ---------- ABSTRACT STRATEGY METHODS ----------
 	protected abstract List<BodyDeclaration> getClassFields(Method targetMethod, Class<?> c);
 	protected abstract TypeDeclaration getClassDeclaration(String className);
 	protected abstract MethodDeclaration createMethodUnderTest();

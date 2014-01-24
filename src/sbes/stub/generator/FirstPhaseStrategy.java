@@ -36,7 +36,7 @@ import java.util.List;
 
 import sbes.util.MethodUtils;
 
-public class FirstPhaseGenerator extends Generator {
+public class FirstPhaseStrategy extends Generator {
 
 	private static final String NUM_SCENARIOS = "NUM_SCENARIOS";
 	private static final String EXPECTED_STATE = "expected_states";

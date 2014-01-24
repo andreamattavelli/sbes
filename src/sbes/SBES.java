@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
-import sbes.stub.generator.FirstPhaseGenerator;
+import sbes.stub.generator.FirstPhaseStrategy;
 import sbes.stub.generator.Generator;
 
 public class SBES {
@@ -24,7 +24,7 @@ public class SBES {
 			System.exit(-1);
 		}
 
-		Generator generator = new FirstPhaseGenerator();
+		Generator generator = new FirstPhaseStrategy();
 		generator.generateStub();
 	}
 
