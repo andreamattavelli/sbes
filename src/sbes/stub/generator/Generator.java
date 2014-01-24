@@ -75,7 +75,7 @@ public abstract class Generator {
 		
 		stubClass.setMembers(members);
 		
-		dumpTestCase(cu, c.getSimpleName() + "_Stub");
+		dumpTestCase(cu, stubName);
 	}
 	
 	// ---------- ABSTRACT STRATEGY METHODS ----------
