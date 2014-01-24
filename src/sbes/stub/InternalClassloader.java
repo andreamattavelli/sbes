@@ -10,6 +10,7 @@ import java.util.List;
 
 import sbes.Options;
 import sbes.logging.Logger;
+import sbes.stub.generator.Generator;
 
 public class InternalClassloader {
 
