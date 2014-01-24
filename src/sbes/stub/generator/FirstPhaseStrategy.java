@@ -91,7 +91,7 @@ public class FirstPhaseStrategy extends Generator {
 	}
 	
 	@Override
-	protected List<BodyDeclaration> additionalMethods(Method[] methods) {
+	protected List<BodyDeclaration> getAdditionalMethods(Method[] methods) {
 		List<BodyDeclaration> members = new ArrayList<BodyDeclaration>();
 		
 		for (Method method : methods) {
@@ -188,7 +188,7 @@ public class FirstPhaseStrategy extends Generator {
 	}
 	
 	@Override
-	protected MethodDeclaration createSetResultsMethod(Method targetMethod) {
+	protected MethodDeclaration getSetResultsMethod(Method targetMethod) {
 		MethodDeclaration set_results = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "set_results");
 		List<Parameter> parameters = new ArrayList<Parameter>();
 		parameters.add(new Parameter(ASTHelper.createReferenceType(getReturnType(targetMethod).toString(), 1), new VariableDeclaratorId("res")));
@@ -217,7 +217,7 @@ public class FirstPhaseStrategy extends Generator {
 	}
 	
 	@Override
-	protected MethodDeclaration createMethodUnderTest() {
+	protected MethodDeclaration getMethodUnderTest() {
 		MethodDeclaration set_results = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "method_under_test");
 		BlockStmt stmt = new BlockStmt();
 		

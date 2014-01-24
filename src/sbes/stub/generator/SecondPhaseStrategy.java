@@ -22,20 +22,22 @@ public class SecondPhaseStrategy extends Generator {
 	protected List<BodyDeclaration> getClassFields(Method targetMethod, Class<?> c) {
 		return new ArrayList<BodyDeclaration>();
 	}
+	
+	@Override
+	protected List<BodyDeclaration> getAdditionalMethods(Method[] methods) {
+		return new ArrayList<BodyDeclaration>();
+	}
 
 	@Override
-	protected MethodDeclaration createMethodUnderTest() {
+	protected MethodDeclaration getMethodUnderTest() {
 		return null;
 	}
 
 	@Override
-	protected MethodDeclaration createSetResultsMethod(Method targetMethod) {
+	protected MethodDeclaration getSetResultsMethod(Method targetMethod) {
 		return null;
 	}
 
-	@Override
-	protected List<BodyDeclaration> additionalMethods(Method[] methods) {
-		return null;
-	}
+	
 
 }

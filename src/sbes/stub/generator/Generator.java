@@ -49,13 +49,13 @@ public abstract class Generator {
 		
 		// get class' methods
 		Method[] methods = ClassUtils.getClassMethods(c);
+		// get method signature
 		String methodSignature = ClassUtils.getMethodname(Options.I().getMethodSignature());
-		
 		// get target method from the list of class' methods
 		Method targetMethod = findTargetMethod(methods, methodSignature);
 		
 		
-		// ---- generate stub ----
+		// GENERATE STUB
 		CompilationUnit cu = new CompilationUnit();
 		
 		// class name
@@ -64,14 +64,22 @@ public abstract class Generator {
 		fileTypes.add(stubClass);
 		cu.setTypes(fileTypes);
 		
-		// class fields
+		// class members
 		List<BodyDeclaration> members = new ArrayList<BodyDeclaration>();
+		
+		// class fields (only phase 1)
 		members.addAll(getClassFields(targetMethod, c));
-		members.addAll(additionalMethods(methods));
+		
+		// original methods (only phase 1)
+		members.addAll(getAdditionalMethods(methods));
 		
 		// artificial methods
-		members.add(createSetResultsMethod(targetMethod));
-		members.add(createMethodUnderTest());
+		BodyDeclaration setResult = getSetResultsMethod(targetMethod); 
+		if (setResult != null) {
+			// only phase 1
+			members.add(setResult);
+		}
+		members.add(getMethodUnderTest());
 		
 		stubClass.setMembers(members);
 		
@@ -81,9 +89,9 @@ public abstract class Generator {
 	// ---------- ABSTRACT STRATEGY METHODS ----------
 	protected abstract List<BodyDeclaration> getClassFields(Method targetMethod, Class<?> c);
 	protected abstract TypeDeclaration getClassDeclaration(String className);
-	protected abstract MethodDeclaration createMethodUnderTest();
-	protected abstract MethodDeclaration createSetResultsMethod(Method targetMethod);
-	protected abstract List<BodyDeclaration> additionalMethods(Method[] methods);
+	protected abstract MethodDeclaration getMethodUnderTest();
+	protected abstract MethodDeclaration getSetResultsMethod(Method targetMethod);
+	protected abstract List<BodyDeclaration> getAdditionalMethods(Method[] methods);
 	
 	
 	// ---------- HELPER METHODS ----------
