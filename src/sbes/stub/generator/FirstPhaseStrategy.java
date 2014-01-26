@@ -69,9 +69,9 @@ public class FirstPhaseStrategy extends Generator {
 		
 		// stub helper arrays
 		declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), EXPECTED_STATE));
-		declarations.add(ASTUtils.createStubHelperArray(getReturnType(targetMethod).toString(), EXPECTED_RESULT));
+		declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnType(targetMethod).toString(), EXPECTED_RESULT));
 		declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), ACTUAL_STATE));
-		declarations.add(ASTUtils.createStubHelperArray(getReturnType(targetMethod).toString(), ACTUAL_RESULT));
+		declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnType(targetMethod).toString(), ACTUAL_RESULT));
 		
 		return declarations;
 	}
@@ -90,8 +90,8 @@ public class FirstPhaseStrategy extends Generator {
 				continue;
 			}
 			
-			Type returnType = getReturnType(method);
-			Type returnStubType = getReturnTypeAsArray(method);
+			Type returnType = ASTUtils.getReturnType(method);
+			Type returnStubType = ASTUtils.getReturnTypeAsArray(method);
 			MethodDeclaration md = new MethodDeclaration(method.getModifiers(), returnStubType, method.getName());
 			
 			//parameters
@@ -175,14 +175,14 @@ public class FirstPhaseStrategy extends Generator {
 
 	@Override
 	protected MethodDeclaration getSetResultsMethod(Method targetMethod) {
-		Type returnType = getReturnType(targetMethod);
+		Type returnType = ASTUtils.getReturnType(targetMethod);
 		if (returnType.toString().equals("void")) {
 			return null;
 		}
 		
 		MethodDeclaration set_results = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "set_results");
 		List<Parameter> parameters = new ArrayList<Parameter>();
-		parameters.add(new Parameter(ASTHelper.createReferenceType(getReturnType(targetMethod).toString(), 1), new VariableDeclaratorId("res")));
+		parameters.add(new Parameter(ASTHelper.createReferenceType(ASTUtils.getReturnType(targetMethod).toString(), 1), new VariableDeclaratorId("res")));
 		set_results.setParameters(parameters);
 		
 		List<Expression> init = ASTUtils.createForInit("i", ASTHelper.INT_TYPE, new IntegerLiteralExpr("0"), Operator.assign);

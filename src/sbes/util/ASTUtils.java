@@ -19,6 +19,7 @@ import japa.parser.ast.expr.UnaryExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.type.Type;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,27 @@ import sbes.stub.generator.FirstPhaseStrategy;
 
 public class ASTUtils {
 
+	public static Type getReturnType(Method method) {
+		if (method.getReturnType().isArray()) {
+			return ASTHelper.createReferenceType(method.getReturnType().getComponentType().getCanonicalName(), ReflectionUtils.getArrayDimensionCount(method.getReturnType()));
+		}
+		else { 
+			return ASTHelper.createReferenceType(method.getReturnType().getCanonicalName(), 0);
+		}
+	}
+	
+	public static Type getReturnTypeAsArray(Method method) {
+		Class<?> returnType = method.getReturnType();
+		
+		if (returnType.getSimpleName().equals("void")) {
+			return ASTHelper.createReferenceType(returnType.getCanonicalName(), 0);
+		}
+		else {
+			return ASTHelper.createReferenceType(returnType.getCanonicalName(), 1);
+		}
+	}
+	
+	
 	public static List<Expression> getArraysDimension() {
 		List<Expression> arraysDimension = new ArrayList<Expression>();
 		arraysDimension.add(ASTHelper.createNameExpr(FirstPhaseStrategy.NUM_SCENARIOS));

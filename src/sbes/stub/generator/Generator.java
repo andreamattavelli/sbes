@@ -8,7 +8,6 @@ import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.Parameter;
 import japa.parser.ast.body.TypeDeclaration;
 import japa.parser.ast.body.VariableDeclaratorId;
-import japa.parser.ast.type.Type;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -20,7 +19,6 @@ import sbes.stub.GenerationException;
 import sbes.stub.InternalClassloader;
 import sbes.stub.Stub;
 import sbes.util.ClassUtils;
-import sbes.util.ReflectionUtils;
 
 public abstract class Generator {
 
@@ -138,26 +136,6 @@ public abstract class Generator {
 		}
 	}
 	
-	protected Type getReturnType(Method method) {
-		if (method.getReturnType().isArray()) {
-			return ASTHelper.createReferenceType(method.getReturnType().getComponentType().getCanonicalName(), ReflectionUtils.getArrayDimensionCount(method.getReturnType()));
-		}
-		else { 
-			return ASTHelper.createReferenceType(method.getReturnType().getCanonicalName(), 0);
-		}
-	}
-	
-	protected Type getReturnTypeAsArray(Method method) {
-		Class<?> returnType = method.getReturnType();
-		
-		if (returnType.getSimpleName().equals("void")) {
-			return ASTHelper.createReferenceType(returnType.getCanonicalName(), 0);
-		}
-		else {
-			return ASTHelper.createReferenceType(returnType.getCanonicalName(), 1);
-		}
-	}
-	
 	protected List<Parameter> getParameterType(Class<?>[] parameters) {
 		List<Parameter> toReturn = new ArrayList<Parameter>();
 		for (int i = 0; i < parameters.length; i++) {
@@ -165,7 +143,8 @@ public abstract class Generator {
 			VariableDeclaratorId id = new VariableDeclaratorId("p" + i);
 			String typeClass = type.getCanonicalName();
 			typeClass = typeClass.indexOf(" ") >= 0 ? typeClass.split(" ")[1]: typeClass;
-			Parameter p = new Parameter(ASTHelper.createReferenceType(typeClass, 0), id); //FIXME: check cardinality array, type erasure, distinguish between primitive and reference types
+			//FIXME: check cardinality array, distinguish between primitive and reference types
+			Parameter p = new Parameter(ASTHelper.createReferenceType(typeClass, 0), id);
 			toReturn.add(p);
 		}
 		
