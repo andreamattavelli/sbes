@@ -43,7 +43,7 @@ public class SecondPhaseStrategy extends Generator {
 	}
 	
 	@Override
-	protected List<BodyDeclaration> getAdditionalMethods(Method[] methods) {
+	protected List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods) {
 		return new ArrayList<BodyDeclaration>();
 	}
 

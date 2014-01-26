@@ -25,12 +25,29 @@ public class Options {
 			required = true)
 	private String methodSignature;
 
+	@Option(name = "--m_bloat_factor",
+			usage = "Method bloat factor")
+	private int methodBloatFactor = 20;
+	
+	@Option(name = "--dir",
+			usage = "Directory where to store the stubs")
+	private String dir = ".";
+
+
 	public String getClassesPath() {
 		return classesPath;
 	}
 
 	public String getMethodSignature() {
 		return methodSignature;
+	}
+
+	public int getMethodBloatFactor() {
+		return methodBloatFactor;
+	}
+	
+	public String getDir() {
+		return dir;
 	}
 	
 }

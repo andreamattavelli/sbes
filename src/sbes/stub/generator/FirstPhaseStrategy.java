@@ -26,6 +26,7 @@ import japa.parser.ast.stmt.ForStmt;
 import japa.parser.ast.stmt.IfStmt;
 import japa.parser.ast.stmt.ReturnStmt;
 import japa.parser.ast.stmt.Statement;
+import japa.parser.ast.type.ReferenceType;
 import japa.parser.ast.type.Type;
 
 import java.lang.reflect.Method;
@@ -33,6 +34,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import sbes.Options;
 import sbes.util.ASTUtils;
 import sbes.util.MethodUtils;
 
@@ -67,23 +69,30 @@ public class FirstPhaseStrategy extends Generator {
 		
 		// stub helper arrays
 		declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), EXPECTED_STATE));
-		declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), EXPECTED_RESULT));
+		declarations.add(ASTUtils.createStubHelperArray(getReturnType(targetMethod).toString(), EXPECTED_RESULT));
 		declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), ACTUAL_STATE));
-		declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), ACTUAL_RESULT));
+		declarations.add(ASTUtils.createStubHelperArray(getReturnType(targetMethod).toString(), ACTUAL_RESULT));
 		
 		return declarations;
 	}
 	
 	@Override
-	protected List<BodyDeclaration> getAdditionalMethods(Method[] methods) {
+	protected List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods) {
 		List<BodyDeclaration> members = new ArrayList<BodyDeclaration>();
+		
+		methods = preventMethodBloat(targetMethod, methods);
 		
 		for (Method method : methods) {
 			if (MethodUtils.methodFilter(method)) {
 				continue;
 			}
+			else if (method.equals(targetMethod)) {
+				continue;
+			}
+			
 			Type returnType = getReturnType(method);
-			MethodDeclaration md = new MethodDeclaration(method.getModifiers(), returnType, method.getName());
+			Type returnStubType = getReturnTypeAsArray(method);
+			MethodDeclaration md = new MethodDeclaration(method.getModifiers(), returnStubType, method.getName());
 			
 			//parameters
 			List<Parameter> parameters = new ArrayList<Parameter>();
@@ -94,39 +103,45 @@ public class FirstPhaseStrategy extends Generator {
 			BlockStmt stmt = new BlockStmt();
 			List<Statement> stmts = new ArrayList<Statement>();
 			
-			VariableDeclarationExpr res = ASTHelper.createVariableDeclarationExpr(returnType, "res");
-			
-			Type cleanReturnType = ASTHelper.createReferenceType(method.getReturnType().getCanonicalName(), 0);
+			VariableDeclarationExpr res = ASTHelper.createVariableDeclarationExpr(returnStubType, "res");
 			
 			// for loop
 			List<Expression> init = ASTUtils.createForInit("i", ASTHelper.INT_TYPE, new IntegerLiteralExpr("0"), Operator.assign);
 			Expression compare = ASTUtils.createForCondition("i", NUM_SCENARIOS, japa.parser.ast.expr.BinaryExpr.Operator.less);
 			List<Expression> update = ASTUtils.createForIncrement("i", japa.parser.ast.expr.UnaryExpr.Operator.posIncrement);
 			
+			// for loop body
 			List<Expression> methodParameters = ASTUtils.createParameters(parameters);
 			Expression right = new MethodCallExpr(ASTUtils.createArrayAccess(ACTUAL_STATE, "i"), method.getName(), methodParameters);
 			
 			BlockStmt body = new BlockStmt();
-			
-			if (returnType.toString().equals("void")) {
+			if (returnStubType.toString().equals("void")) {
+				// return type void - no need for return array
 				ASTHelper.addStmt(body, right);
 			}
 			else {
+				// return type non void - need to build a return array
 				List<Expression> arraysDimension = ASTUtils.getArraysDimension();
-				ArrayCreationExpr ace = new ArrayCreationExpr(cleanReturnType, arraysDimension, 0);
+				ArrayCreationExpr ace = new ArrayCreationExpr(returnType, arraysDimension, 0);
+				if (returnType instanceof ReferenceType) {
+					ReferenceType rtype = (ReferenceType) returnType;
+					if (rtype.getArrayCount() > 0) {
+						ace = new ArrayCreationExpr(rtype.getType(), arraysDimension, rtype.getArrayCount());
+					}
+				}
 				AssignExpr resAssign = new AssignExpr(res, ace, Operator.assign);
 				ExpressionStmt resStmt = new ExpressionStmt(resAssign);
 				stmts.add(resStmt);
 				
 				Expression left = ASTUtils.createArrayAccess("res", "i");
-				AssignExpr call_result = new AssignExpr(left, right, Operator.assign);
-				ASTHelper.addStmt(body, call_result);
+				AssignExpr callResult = new AssignExpr(left, right, Operator.assign);
+				ASTHelper.addStmt(body, callResult);
 			}
 			
 			ForStmt forStmt = new ForStmt(init, compare, update, body);
 			stmts.add(forStmt);
 			
-			if (!returnType.toString().equals("void")) {
+			if (!returnStubType.toString().equals("void")) {
 				ReturnStmt ret = new ReturnStmt(ASTHelper.createNameExpr("res"));
 				stmts.add(ret);
 			}
@@ -138,9 +153,33 @@ public class FirstPhaseStrategy extends Generator {
 		}
 		return members;
 	}
-	
+
+	private Method[] preventMethodBloat(Method targetMethod, Method[] methods) {
+		if (methods.length > Options.I().getMethodBloatFactor()) {
+			List<Method> toReturn = new ArrayList<Method>();
+			for (Method method : methods) {
+				if (method.getDeclaringClass().equals(Object.class) ||
+						method.getName().equals("toArray") ||
+						method.getName().contains("iterator") ||
+						method.getName().contains("Iterator")) {
+					continue;
+				}
+				toReturn.add(method);
+			}
+			return toReturn.toArray(new Method[0]);
+		}
+		else {
+			return methods;
+		}
+	}
+
 	@Override
 	protected MethodDeclaration getSetResultsMethod(Method targetMethod) {
+		Type returnType = getReturnType(targetMethod);
+		if (returnType.toString().equals("void")) {
+			return null;
+		}
+		
 		MethodDeclaration set_results = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "set_results");
 		List<Parameter> parameters = new ArrayList<Parameter>();
 		parameters.add(new Parameter(ASTHelper.createReferenceType(getReturnType(targetMethod).toString(), 1), new VariableDeclaratorId("res")));

@@ -81,5 +81,15 @@ public class ReflectionUtils {
 		}
 		return obj.getClass().isArray();
 	}
+	
+	public static int getArrayDimensionCount(Class<?> array) {
+		int count = 0;
+		Class<?> arrayClass = array;
+		while (arrayClass.isArray()) {
+			count++;
+			arrayClass = arrayClass.getComponentType();
+		}
+		return count;
+	}
 
 }

@@ -20,6 +20,7 @@ import sbes.stub.GenerationException;
 import sbes.stub.InternalClassloader;
 import sbes.stub.Stub;
 import sbes.util.ClassUtils;
+import sbes.util.ReflectionUtils;
 
 public abstract class Generator {
 
@@ -70,7 +71,7 @@ public abstract class Generator {
 		members.addAll(getClassFields(targetMethod, c));
 		
 		// original methods (only phase 1)
-		members.addAll(getAdditionalMethods(methods));
+		members.addAll(getAdditionalMethods(targetMethod, methods));
 		
 		// artificial methods
 		BodyDeclaration setResult = getSetResultsMethod(targetMethod); 
@@ -89,7 +90,7 @@ public abstract class Generator {
 	protected abstract List<ImportDeclaration> getImports();
 	protected abstract TypeDeclaration getClassDeclaration(String className);
 	protected abstract List<BodyDeclaration> getClassFields(Method targetMethod, Class<?> c);
-	protected abstract List<BodyDeclaration> getAdditionalMethods(Method[] methods);
+	protected abstract List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods);
 	protected abstract MethodDeclaration getSetResultsMethod(Method targetMethod);
 	protected abstract MethodDeclaration getMethodUnderTest();
 	
@@ -138,6 +139,15 @@ public abstract class Generator {
 	}
 	
 	protected Type getReturnType(Method method) {
+		if (method.getReturnType().isArray()) {
+			return ASTHelper.createReferenceType(method.getReturnType().getComponentType().getCanonicalName(), ReflectionUtils.getArrayDimensionCount(method.getReturnType()));
+		}
+		else { 
+			return ASTHelper.createReferenceType(method.getReturnType().getCanonicalName(), 0);
+		}
+	}
+	
+	protected Type getReturnTypeAsArray(Method method) {
 		Class<?> returnType = method.getReturnType();
 		
 		if (returnType.getSimpleName().equals("void")) {

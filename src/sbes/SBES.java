@@ -25,10 +25,10 @@ public class SBES {
 			System.exit(-1);
 		}
 
-		Generator generator = new FirstPhaseStrategy();
-		Stub stub = generator.generateStub();
+		Generator firstPhaseGenerator = new FirstPhaseStrategy();
+		Stub firstPhaseStub = firstPhaseGenerator.generateStub();
 		
-		stub.dumpStub(".");
+		firstPhaseStub.dumpStub(".");
 	}
 
 	private static void printUsage(final CmdLineParser parser) {
