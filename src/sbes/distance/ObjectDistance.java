@@ -12,7 +12,8 @@ public class ObjectDistance {
 				return 1.0 * NULL_WEIGHT;
 			}
 			else {
-				return ReflectionUtils.getInheritedPrivateFields(o2.getClass()).size() * NULL_WEIGHT;
+				int size = ReflectionUtils.getInheritedPrivateFields(o2.getClass()).size();
+				return size > 0 ? size * NULL_WEIGHT : NULL_WEIGHT;
 			}
 		}
 		else {
@@ -20,7 +21,8 @@ public class ObjectDistance {
 				return 1.0 * NULL_WEIGHT;
 			}
 			else {
-				return ReflectionUtils.getInheritedPrivateFields(o1.getClass()).size() * NULL_WEIGHT;
+				int size = ReflectionUtils.getInheritedPrivateFields(o1.getClass()).size();
+				return size > 0 ? size * NULL_WEIGHT : NULL_WEIGHT;
 			}
 		}
 	}
