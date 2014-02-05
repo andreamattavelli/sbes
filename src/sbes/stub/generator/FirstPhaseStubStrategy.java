@@ -38,7 +38,7 @@ import sbes.Options;
 import sbes.util.ASTUtils;
 import sbes.util.MethodUtils;
 
-public class FirstPhaseStrategy extends Generator {
+public class FirstPhaseStubStrategy extends StubGenerator {
 
 	public static final String NUM_SCENARIOS = "NUM_SCENARIOS";
 	public static final String EXPECTED_STATE = "expected_states";

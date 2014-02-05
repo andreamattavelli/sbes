@@ -13,7 +13,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SecondPhaseStrategy extends Generator {
+public class SecondPhaseStubStrategy extends StubGenerator {
 
 	@Override
 	protected List<ImportDeclaration> getImports() {

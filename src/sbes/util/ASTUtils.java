@@ -24,7 +24,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import sbes.stub.generator.FirstPhaseStrategy;
+import sbes.stub.generator.FirstPhaseStubStrategy;
 
 public class ASTUtils {
 
@@ -51,7 +51,7 @@ public class ASTUtils {
 	
 	public static List<Expression> getArraysDimension() {
 		List<Expression> arraysDimension = new ArrayList<Expression>();
-		arraysDimension.add(ASTHelper.createNameExpr(FirstPhaseStrategy.NUM_SCENARIOS));
+		arraysDimension.add(ASTHelper.createNameExpr(FirstPhaseStubStrategy.NUM_SCENARIOS));
 		return arraysDimension;
 	}
 	

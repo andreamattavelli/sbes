@@ -1,4 +1,4 @@
-package sbes.stub;
+package sbes.execution;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -10,7 +10,8 @@ import java.util.List;
 
 import sbes.Options;
 import sbes.logging.Logger;
-import sbes.stub.generator.Generator;
+import sbes.stub.GenerationException;
+import sbes.stub.generator.StubGenerator;
 
 public class InternalClassloader {
 
@@ -47,7 +48,7 @@ public class InternalClassloader {
 				for (File newPath : paths) {
 					urls.add(newPath.toURI().toURL());
 				}
-				classLoader = new URLClassLoader(urls.toArray(new URL[0]), Generator.class.getClassLoader());
+				classLoader = new URLClassLoader(urls.toArray(new URL[0]), StubGenerator.class.getClassLoader());
 			}
 
 		} catch (MalformedURLException e) {

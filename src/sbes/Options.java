@@ -32,6 +32,14 @@ public class Options {
 	@Option(name = "--dir",
 			usage = "Directory where to store the stubs")
 	private String dir = ".";
+	
+	@Option(name = "--max_iterations",
+			usage = "Maximum number of iterations of stages 1/2")
+	private int maxIterations;
+
+	@Option(name = "--search_budget",
+			usage = "Search budget for test case generation")
+	private int searchBudget = 60;
 
 
 	public String getClassesPath() {
@@ -48,6 +56,14 @@ public class Options {
 	
 	public String getDir() {
 		return dir;
+	}
+
+	public int getMaxIterations() {
+		return maxIterations;
+	}
+
+	public int getSearchBudget() {
+		return searchBudget;
 	}
 	
 }

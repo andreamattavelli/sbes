@@ -27,4 +27,45 @@ public class ClassUtils {
 		return signature.substring(signature.lastIndexOf('.') + 1);
 	}
 	
+	public static String getBytecodeSignature(final Method m) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(m.getName());
+		builder.append('(');
+		for (int i = 0; i < m.getParameterTypes().length; i++) {
+			builder.append(getBytecodeRepresentation(m.getParameterTypes()[i]));
+		}
+		builder.append(')');
+		builder.append(getBytecodeRepresentation(m.getReturnType()));
+		return builder.toString();
+	}
+
+	private static String getBytecodeRepresentation(final Class<?> c) {
+		String className = c.getName();
+		if (className.charAt(0) == '[') {
+			return className.replaceAll("\\.", "/");
+		}
+		else {
+			if (className.equals("byte")) {
+				return "B";
+			} else if (className.equals("char")) {
+				return "C";
+			} else if (className.equals("double")) {
+				return "D";
+			} else if (className.equals("float")) {
+				return "F";
+			} else if (className.equals("int")) {
+				return "I";
+			} else if (className.equals("long")) {
+				return "J";
+			} else if (className.equals("short")) {
+				return "S";
+			} else if (className.equals("void")) {
+				return "V";
+			} else if (className.equals("boolean")) {
+				return "Z";
+			}
+			return "L" + className.replaceAll("\\.", "/") + ";";
+		}
+	}
+	
 }

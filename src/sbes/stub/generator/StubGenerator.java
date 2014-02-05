@@ -14,15 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sbes.Options;
+import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
 import sbes.stub.GenerationException;
-import sbes.stub.InternalClassloader;
 import sbes.stub.Stub;
 import sbes.util.ClassUtils;
 
-public abstract class Generator {
+public abstract class StubGenerator {
 
-	private static final Logger logger = new Logger(Generator.class);
+	private static final Logger logger = new Logger(StubGenerator.class);
 	
 	protected static final int TEST_SCENARIOS = 1; //FIXME
 	protected static final String STUB_EXTENSION = "_Stub"; 
@@ -30,14 +30,11 @@ public abstract class Generator {
 	private final ClassLoader classloader;
 	protected String stubName;
 	
-	public Generator() {
+	public StubGenerator() {
 		this.classloader = InternalClassloader.getInternalClassLoader();
 	}
 	
 	public Stub generateStub() {
-		// check classpath: if the class is not found it raise an exception
-		checkClasspath();
-		
 		Class<?> c;
 		try {
 			c = Class.forName(ClassUtils.getClassname(Options.I().getMethodSignature()), false, classloader);
@@ -119,21 +116,6 @@ public abstract class Generator {
 			throw new GenerationException("Target method not found"); // failed to find method, give up
 		}
 		return targetMethod;
-	}
-
-	private void checkClasspath() {
-		logger.debug("Checking classpath");
-		checkClasspath(ClassUtils.getClassname(Options.I().getMethodSignature()));
-		logger.debug("Classpath OK");
-	}
-
-	private void checkClasspath(final String className) {
-		try {
-			Class.forName(className, false, this.classloader);
-		} catch (ClassNotFoundException e) {
-			logger.error("Could not find class under test: " + className);
-			throw new GenerationException(e);
-		}
 	}
 	
 	protected List<Parameter> getParameterType(Class<?>[] parameters) {

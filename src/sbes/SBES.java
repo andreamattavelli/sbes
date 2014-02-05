@@ -8,13 +8,19 @@ import java.util.regex.Pattern;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
+import sbes.logging.Logger;
+import sbes.scenario.TestScenarioGenerator;
 import sbes.stub.Stub;
-import sbes.stub.generator.FirstPhaseStrategy;
-import sbes.stub.generator.Generator;
+import sbes.stub.generator.FirstPhaseStubStrategy;
+import sbes.stub.generator.StubGenerator;
+import sbes.util.ClasspathHandler;
 
 public class SBES {
 
+	private static final Logger logger = new Logger(SBES.class);
+	
 	public static void main(String args[]) {
+		logger.info("SBES started");
 		final Options arguments = Options.I();
 		final CmdLineParser parser = new CmdLineParser(arguments);
 
@@ -25,10 +31,22 @@ public class SBES {
 			System.exit(-1);
 		}
 
-		Generator firstPhaseGenerator = new FirstPhaseStrategy();
-		Stub firstPhaseStub = firstPhaseGenerator.generateStub();
-		
-		firstPhaseStub.dumpStub(".");
+		try {
+			ClasspathHandler.checkClasspath();
+
+			TestScenarioGenerator scenarioGenerator = new TestScenarioGenerator();
+			scenarioGenerator.generateTestScenarios();
+			
+			StubGenerator firstPhaseGenerator = new FirstPhaseStubStrategy();
+			Stub firstPhaseStub = firstPhaseGenerator.generateStub();
+
+			firstPhaseStub.dumpStub(".");
+			
+			logger.info("SBES ended successfully");
+		}
+		catch (SBESException e) {
+			logger.fatal("Execution aborted due: " + e.getMessage());
+		}
 	}
 
 	private static void printUsage(final CmdLineParser parser) {
