@@ -37,7 +37,7 @@ public abstract class StubGenerator {
 	public Stub generateStub() {
 		Class<?> c;
 		try {
-			c = Class.forName(ClassUtils.getClassname(Options.I().getMethodSignature()), false, classloader);
+			c = Class.forName(ClassUtils.getCanonicalClassname(Options.I().getMethodSignature()), false, classloader);
 		} catch (ClassNotFoundException e) {
 			// infeasible, we already checked the classpath
 			throw new GenerationException("Target class not found");

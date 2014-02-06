@@ -21,17 +21,17 @@ public class EvosuiteTestScenarioStrategy extends Evosuite {
 		evo.addAll(Arrays.asList(javaCommand));
 		evo.add("-jar");
 		evo.add(jarName);
-		evo.add("-DCP="+Options.I().getClassesPath());
+		evo.add("-DCP=" + Options.I().getClassesPath());
 		evo.add("-class");
 		evo.add(classSignature);
 		evo.add("-Dtarget_method=" + getTargetMethodSignature());
 		evo.add("-Dsearch_budget=10");
-		evo.add("-Dtest_dir=" + this.outputDir);
+		evo.add("-Dtest_dir=" + outputDir);
 		evo.add("-Dassertions=false");
 		evo.add("-Dhtml=false");
 		evo.add("-generateSuite");
 		evo.add("-Dshow_progress=false");
-		evo.add("-Dcriterion=branch"); 
+		evo.add("-Dcriterion=branch");
 		evo.add("-Dtest_factory=RANDOM");
 		command = evo.toString();
 		return evo.toArray(new String[0]);
@@ -46,7 +46,7 @@ public class EvosuiteTestScenarioStrategy extends Evosuite {
 		String toReturn = null;
 		Class<?> c;
 		try {
-			c = Class.forName(classname, false, this.classLoader);
+			c = Class.forName(classname, false, classLoader);
 			String method = methodname.split("\\[")[0];
 			String args[] = methodname.split("\\[")[1].replaceAll("\\]", "").split(",");
 			if (args.length == 1) {
@@ -70,9 +70,11 @@ public class EvosuiteTestScenarioStrategy extends Evosuite {
 			logger.error("Unable to find class", e);
 			throw new SBESException("Unable to find class");
 		}
+		
 		if (toReturn == null) {
 			throw new SBESException("Method not found: " + classname + "." + methodname);
 		}
+		
 		return toReturn;
 	}
 	

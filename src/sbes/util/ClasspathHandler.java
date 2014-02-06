@@ -12,7 +12,7 @@ public class ClasspathHandler {
 	public static void checkClasspath() {
 		// check classpath: if the class is not found it raise an exception
 		logger.debug("Checking classpath");
-		checkClasspath(ClassUtils.getClassname(Options.I().getMethodSignature()));
+		checkClasspath(ClassUtils.getCanonicalClassname(Options.I().getMethodSignature()));
 		logger.debug("Classpath OK");
 	}
 	

@@ -7,6 +7,7 @@ import java.util.List;
 import sbes.Options;
 import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
+import sbes.util.ClassUtils;
 
 public abstract class Evosuite {
 
@@ -20,12 +21,14 @@ public abstract class Evosuite {
 	protected final String methodSignature;
 	protected final String outputDir;
 	protected String command;
+	protected String filename;
 
 	public Evosuite(final String classSignature, final String methodSignature) {
 		this.classSignature = classSignature;
 		this.methodSignature = methodSignature;
 		this.classLoader = InternalClassloader.getInternalClassLoader();
 		this.outputDir = "evosuite-test";
+		this.filename = ClassUtils.getSimpleClassname(Options.I().getMethodSignature()) + "EvoSuiteTest.java";
 	}
 
 	public String[] getCommand() {
@@ -35,7 +38,7 @@ public abstract class Evosuite {
 		evo.add(jarName);
 		evo.add("-DCP="+ Options.I().getClassesPath());
 		evo.add("-class");
-		evo.add(this.classSignature);
+		evo.add(classSignature);
 		evo.add("-Dtarget_method=" + getTargetMethodSignature());
 		evo.add("-Dsearch_budget=" + Options.I().getSearchBudget());
 		evo.add("-Dtest_dir=" + outputDir);
@@ -50,8 +53,8 @@ public abstract class Evosuite {
 		return outputDir;
 	}
 
-	public static String getTestName(final String classname) {
-		return "Test" + classname + ".java";
+	public String getTestFilename() {
+		return filename;
 	}
 	
 	@Override

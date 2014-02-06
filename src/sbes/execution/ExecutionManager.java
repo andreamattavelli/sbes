@@ -23,7 +23,7 @@ public class ExecutionManager {
 
 		boolean result = false;
 		try {
-			result = executor.awaitTermination((long)(Options.I().getSearchBudget() * 1.5), TimeUnit.SECONDS);
+			result = executor.awaitTermination(calculateTimeout(), TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			logger.fatal("Timeout during test case generation");
 			throw new WorkerException("Timeout during test case generation");
@@ -44,6 +44,19 @@ public class ExecutionManager {
 		}
 
 		return toReturn;
+	}
+
+	private long calculateTimeout() {
+		int searchBudget = Options.I().getSearchBudget();
+		if (searchBudget < 60) {
+			return searchBudget * 2;
+		}
+		else if (searchBudget < 120){
+			return (long)(searchBudget * 1.5);			
+		}
+		else {
+			return searchBudget + 60;
+		}
 	}	
 	
 }
