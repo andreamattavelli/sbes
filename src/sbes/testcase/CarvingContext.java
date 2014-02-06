@@ -2,8 +2,8 @@ package sbes.testcase;
 
 public class CarvingContext {
 
-	private String testDirectory;
-	private String testFilename;
+	protected String testDirectory;
+	protected String testFilename;
 	
 	public CarvingContext(String testDirectory, String testFilename) {
 		this.testDirectory = testDirectory;

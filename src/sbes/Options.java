@@ -20,6 +20,16 @@ public class Options {
 			required = true)
 	private String classesPath;
 	
+	@Option(name = "--junit",
+			usage = "Path to JUnit 4 jar",
+			required = true)
+	private String junitPath;
+	
+	@Option(name = "--evosuite",
+			usage = "Path to EvoSuite jar",
+			required = true)
+	private String evosuitePath;
+	
 	@Option(name = "--method",
 			usage = "Java-like method signature under investigation",
 			required = true)
@@ -64,6 +74,14 @@ public class Options {
 
 	public int getSearchBudget() {
 		return searchBudget;
+	}
+
+	public String getJunitPath() {
+		return junitPath;
+	}
+	
+	public String getEvosuitePath() {
+		return evosuitePath;
 	}
 	
 }

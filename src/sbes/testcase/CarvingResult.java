@@ -22,5 +22,10 @@ public class CarvingResult {
 	public List<ImportDeclaration> getImports() {
 		return imports;
 	}
+
+	@Override
+	public String toString() {
+		return body.toString();
+	}
 	
 }
