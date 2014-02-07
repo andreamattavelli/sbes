@@ -13,8 +13,21 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import sbes.logging.Logger;
+import sbes.stub.Stub;
+
 public class SecondPhaseStubStrategy extends StubGenerator {
 
+	private static final Logger logger = new Logger(SecondPhaseStubStrategy.class);
+	
+	@Override
+	public Stub generateStub() {
+		logger.info("Generating stub for second phase");
+		Stub stub = super.generateStub(); 
+		logger.info("Generating stub for second phase - done");
+		return stub;
+	}
+	
 	@Override
 	protected List<ImportDeclaration> getImports() {
 		List<ImportDeclaration> imports = new ArrayList<>();

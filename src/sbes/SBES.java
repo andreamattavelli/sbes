@@ -35,11 +35,12 @@ public class SBES {
 		try {
 			ClasspathHandler.checkClasspath();
 
-			List<TestScenario> initialScenarios = TestScenarioGenerator.generateTestScenarios();
+			TestScenarioGenerator scenarioGenerator = TestScenarioGenerator.getInstance();
+			scenarioGenerator.generateTestScenarios();
 			
-			System.out.println(initialScenarios.toString());
+			List<TestScenario> initialScenarios = scenarioGenerator.getScenarios();
 			
-			StubGenerator firstPhaseGenerator = new FirstPhaseStubStrategy();
+			StubGenerator firstPhaseGenerator = new FirstPhaseStubStrategy(initialScenarios);
 			Stub firstPhaseStub = firstPhaseGenerator.generateStub();
 
 			firstPhaseStub.dumpStub(".");

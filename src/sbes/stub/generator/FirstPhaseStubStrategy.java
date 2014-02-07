@@ -35,17 +35,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sbes.Options;
+import sbes.logging.Logger;
+import sbes.scenario.TestScenario;
+import sbes.stub.Stub;
 import sbes.util.ASTUtils;
 import sbes.util.MethodUtils;
 
 public class FirstPhaseStubStrategy extends StubGenerator {
 
+	private static final Logger logger = new Logger(FirstPhaseStubStrategy.class);
+	
 	public static final String NUM_SCENARIOS = "NUM_SCENARIOS";
 	public static final String EXPECTED_STATE = "expected_states";
 	public static final String EXPECTED_RESULT = "expected_results";
 	public static final String ACTUAL_STATE = "actual_states";
 	public static final String ACTUAL_RESULT = "actual_results";
 
+	private List<TestScenario> scenarios;
+	
+	public FirstPhaseStubStrategy(List<TestScenario> scenarios) {
+		this.scenarios = scenarios;
+	}
+	
+	@Override
+	public Stub generateStub() {
+		logger.info("Generating stub for first phase");
+		Stub stub = super.generateStub(); 
+		logger.info("Generating stub for first phase - done");
+		return stub;
+	}
+	
 	@Override
 	protected List<ImportDeclaration> getImports() {
 		List<ImportDeclaration> imports = new ArrayList<>();
@@ -61,9 +80,10 @@ public class FirstPhaseStubStrategy extends StubGenerator {
 
 	@Override
 	protected List<BodyDeclaration> getClassFields(Method targetMethod, Class<?> c) {
+		logger.debug("Adding class fields");
 		List<BodyDeclaration> declarations = new ArrayList<BodyDeclaration>();
 		
-		VariableDeclarator num_scenarios = ASTUtils.createDeclarator(NUM_SCENARIOS, new IntegerLiteralExpr(Integer.toString(TEST_SCENARIOS)));
+		VariableDeclarator num_scenarios = ASTUtils.createDeclarator(NUM_SCENARIOS, new IntegerLiteralExpr(Integer.toString(scenarios.size())));
 		BodyDeclaration num_scenarios_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL | Modifier.STATIC, ASTHelper.INT_TYPE, num_scenarios);
 		declarations.add(num_scenarios_bd);
 		
@@ -73,11 +93,15 @@ public class FirstPhaseStubStrategy extends StubGenerator {
 		declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), ACTUAL_STATE));
 		declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnType(targetMethod).toString(), ACTUAL_RESULT));
 		
+		logger.debug("Adding class fields - done");
+		
 		return declarations;
 	}
 	
 	@Override
 	protected List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods) {
+		logger.debug("Adding original class method wrappers");
+		
 		List<BodyDeclaration> members = new ArrayList<BodyDeclaration>();
 		
 		methods = preventMethodBloat(targetMethod, methods);
@@ -151,6 +175,10 @@ public class FirstPhaseStubStrategy extends StubGenerator {
 			
 			members.add(md);
 		}
+		
+		logger.debug("Generated " + members.size() + " class method wrappers");
+		logger.debug("Adding original class method wrappers - done");
+		
 		return members;
 	}
 
@@ -175,8 +203,10 @@ public class FirstPhaseStubStrategy extends StubGenerator {
 
 	@Override
 	protected MethodDeclaration getSetResultsMethod(Method targetMethod) {
+		logger.debug("Adding set_results method");
 		Type returnType = ASTUtils.getReturnType(targetMethod);
 		if (returnType.toString().equals("void")) {
+			logger.debug("Original method's return value is void, stopping");
 			return null;
 		}
 		
@@ -201,16 +231,19 @@ public class FirstPhaseStubStrategy extends StubGenerator {
 		ASTHelper.addStmt(methodBody, forStmt);
 		set_results.setBody(methodBody);
 		
+		logger.debug("Adding set_results method - done");
+		
 		return set_results;
 	}
 	
 	@Override
 	protected MethodDeclaration getMethodUnderTest() {
+		logger.debug("Adding method_under_test method");
 		MethodDeclaration set_results = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "method_under_test");
 		
 		BlockStmt stmt = new BlockStmt();
 		BinaryExpr condition = null;
-		for (int i = 0; i < TEST_SCENARIOS; i++) {
+		for (int i = 0; i < scenarios.size(); i++) {
 			Expression zeroDouble = new DoubleLiteralExpr("0.0d");
 			
 			NameExpr distanceClass = ASTHelper.createNameExpr("Distance");
@@ -243,6 +276,8 @@ public class FirstPhaseStubStrategy extends StubGenerator {
 		IfStmt ifStmt = new IfStmt(condition, new ExpressionStmt(ASTUtils.createSystemOut("Executed")), null);
 		ASTHelper.addStmt(stmt, ifStmt);
 		set_results.setBody(stmt);
+		
+		logger.debug("Adding method_under_test method - done");
 		
 		return set_results;
 	}

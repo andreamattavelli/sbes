@@ -24,7 +24,6 @@ public abstract class StubGenerator {
 
 	private static final Logger logger = new Logger(StubGenerator.class);
 	
-	protected static final int TEST_SCENARIOS = 1; //FIXME
 	protected static final String STUB_EXTENSION = "_Stub"; 
 	
 	private final ClassLoader classloader;
@@ -50,6 +49,8 @@ public abstract class StubGenerator {
 		// get target method from the list of class' methods
 		Method targetMethod = findTargetMethod(methods, methodSignature);
 		
+		logger.debug("Found " + methods.length + " methods for class " + c.getCanonicalName());
+		logger.debug("Generating stub for target method " + targetMethod.toGenericString());
 		
 		// GENERATE STUB
 		CompilationUnit cu = new CompilationUnit();

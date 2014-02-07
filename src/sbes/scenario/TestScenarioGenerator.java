@@ -35,7 +35,22 @@ public class TestScenarioGenerator {
 	
 	private static final Logger logger = new Logger(TestScenarioGenerator.class);
 
-	public static List<TestScenario> generateTestScenarios() throws SBESException {
+	private static TestScenarioGenerator instance;
+	
+	private List<TestScenario> scenarios;
+	
+	private TestScenarioGenerator() {
+		scenarios = new ArrayList<TestScenario>();
+	}
+	
+	public static TestScenarioGenerator getInstance() {
+		if (instance == null) {
+			instance = new TestScenarioGenerator();
+		}
+		return instance;
+	}
+	
+	public void generateTestScenarios() throws SBESException {
 		logger.info("Generating initial test scenarios");
 		try {
 			ExecutionResult result = generate();
@@ -50,16 +65,16 @@ public class TestScenarioGenerator {
 				throw new SBESException("Unable to generate any test scenarios, give up!");
 			}
 			
-			List<TestScenario> scenarios = testToArrayScenario(carvedTests);
+			testToArrayScenario(carvedTests);
+			 
 			logger.info("Generated " + scenarios.size() + " initial test scenarios - Done");
-			return scenarios;
 		} catch (WorkerException e) {
 			logger.fatal("Stopping test scenario generation: " + e.getMessage());
 			throw new SBESException("Unable to generate initial test scenarios");
 		}
 	}
 
-	private static boolean isCompilable(ExecutionResult result) {
+	private boolean isCompilable(ExecutionResult result) {
 		String signature = Options.I().getMethodSignature();
 		String packagename = ClassUtils.getPackage(signature).replaceAll("\\.", File.separator);
 		String testDirectory = DirectoryUtils.toPath(result.getOutputDir(), packagename);
@@ -71,14 +86,14 @@ public class TestScenarioGenerator {
 		return Compilation.compile(new CompilationContext(testDirectory, result.getFilename(), classPath));
 	}
 
-	private static  ExecutionResult generate() {
+	private  ExecutionResult generate() {
 		ExecutionManager manager = new ExecutionManager();
 		Evosuite evosuiteCommand = new EvosuiteTestScenarioStrategy(ClassUtils.getCanonicalClassname(Options.I().getMethodSignature()), 
 																	ClassUtils.getMethodname(Options.I().getMethodSignature()));
 		return manager.execute(evosuiteCommand);
 	}
 	
-	private static List<CarvingResult> carveTestScenarios(ExecutionResult result) {
+	private List<CarvingResult> carveTestScenarios(ExecutionResult result) {
 		String signature = Options.I().getMethodSignature();
 		String packagename = ClassUtils.getPackage(signature).replaceAll("\\.", File.separator);
 		String testDirectory = DirectoryUtils.toPath(result.getOutputDir(), packagename);
@@ -89,19 +104,15 @@ public class TestScenarioGenerator {
 		return carver.carveBodyFromTests();
 	}
 	
-	private static List<TestScenario> testToArrayScenario(List<CarvingResult> carvedTests) {
+	private void testToArrayScenario(List<CarvingResult> carvedTests) {
 		logger.debug("Generalizing carved bodies to array-based test scenarios");
-		List<TestScenario> scenarios = new ArrayList<TestScenario>();
-		
 		for (CarvingResult carvedTest : carvedTests) {
 			scenarios.add(generalizeTestToScenario(carvedTest));
 		}
-		
 		logger.debug("Generalization - done");
-		return scenarios;
 	}
 	
-	private static TestScenario generalizeTestToScenario(CarvingResult carvedTest) {
+	private TestScenario generalizeTestToScenario(CarvingResult carvedTest) {
 		logger.debug("Generalizing carved body");
 		
 		CloneVisitor cloner = new CloneVisitor();
@@ -118,15 +129,16 @@ public class TestScenarioGenerator {
 					 * so we can safely assume to get element 0
 					 */
 					VariableDeclarationExpr vde = (VariableDeclarationExpr) estmt.getExpression();
+					int index = scenarios.size();
 					if (vde.getType().toString().equals(className)) {
-						Expression target = ASTUtils.createArrayAccess(FirstPhaseStubStrategy.EXPECTED_STATE, Integer.toString(0));
+						Expression target = ASTUtils.createArrayAccess(FirstPhaseStubStrategy.EXPECTED_STATE, Integer.toString(index));
 						Expression value = vde.getVars().get(0).getInit();
 						AssignExpr ae = new AssignExpr(target, value, Operator.assign);
 						cloned.getStmts().remove(i);
 						cloned.getStmts().add(i, new ExpressionStmt(ae));
 					}
 					else if (vde.getVars().get(0).getInit().toString().contains(methodName)) {
-						Expression target = ASTUtils.createArrayAccess(FirstPhaseStubStrategy.EXPECTED_RESULT, Integer.toString(0));
+						Expression target = ASTUtils.createArrayAccess(FirstPhaseStubStrategy.EXPECTED_RESULT, Integer.toString(index));
 						Expression value = vde.getVars().get(0).getInit();
 						AssignExpr ae = new AssignExpr(target, value, Operator.assign);
 						cloned.getStmts().remove(i);
@@ -137,6 +149,16 @@ public class TestScenarioGenerator {
 		}
 		
 		return new TestScenario(cloned, carvedTest.getImports());
+	}
+	
+	public TestScenario carvedTestToScenario(CarvingResult carvedTest) {
+		TestScenario scenario = generalizeTestToScenario(carvedTest);
+		scenarios.add(scenario);
+		return scenario;
+	}
+
+	public List<TestScenario> getScenarios() {
+		return scenarios;
 	}
 	
 }

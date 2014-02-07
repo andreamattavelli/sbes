@@ -44,7 +44,7 @@ public class Stub {
 			out = new BufferedWriter(new FileWriter(filename));
 			out.write(ast.toString());
 			out.close();
-		} catch(IOException e) {
+		} catch(Throwable e) {
 			logger.error("Unable to dump stub due to: " + e.getMessage());
 		} finally{
 			if (out != null) {
