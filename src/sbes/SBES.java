@@ -9,6 +9,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
 import sbes.logging.Logger;
+import sbes.scenario.TestScenario;
 import sbes.scenario.TestScenarioGenerator;
 import sbes.stub.Stub;
 import sbes.stub.generator.FirstPhaseStubStrategy;
@@ -34,8 +35,9 @@ public class SBES {
 		try {
 			ClasspathHandler.checkClasspath();
 
-			TestScenarioGenerator scenarioGenerator = new TestScenarioGenerator();
-			scenarioGenerator.generateTestScenarios();
+			List<TestScenario> initialScenarios = TestScenarioGenerator.generateTestScenarios();
+			
+			System.out.println(initialScenarios.toString());
 			
 			StubGenerator firstPhaseGenerator = new FirstPhaseStubStrategy();
 			Stub firstPhaseStub = firstPhaseGenerator.generateStub();

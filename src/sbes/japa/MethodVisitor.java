@@ -8,9 +8,11 @@ import java.util.List;
 
 public class MethodVisitor extends VoidVisitorAdapter<Void> {
 	private final List<MethodDeclaration> tests;
+	
 	public MethodVisitor() {
 		this.tests = new ArrayList<MethodDeclaration>();
 	}
+	
 	@Override
 	public void visit(final MethodDeclaration n, final Void arg) {
 		if (!n.getName().equals("initEvoSuiteFramework")) {
@@ -18,7 +20,9 @@ public class MethodVisitor extends VoidVisitorAdapter<Void> {
 		}
 		super.visit(n, arg);
 	}
+	
 	public List<MethodDeclaration> getTests() {
 		return this.tests;
 	}
+	
 }

@@ -25,7 +25,7 @@ public class EvosuiteTestScenarioStrategy extends Evosuite {
 		evo.add("-class");
 		evo.add(classSignature);
 		evo.add("-Dtarget_method=" + getTargetMethodSignature());
-		evo.add("-Dsearch_budget=10");
+		evo.add("-Dsearch_budget=" + Options.I().getSearchBudget());
 		evo.add("-Dtest_dir=" + outputDir);
 		evo.add("-Dassertions=false");
 		evo.add("-Dhtml=false");
