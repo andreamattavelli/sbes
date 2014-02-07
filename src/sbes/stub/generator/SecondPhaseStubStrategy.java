@@ -56,6 +56,11 @@ public class SecondPhaseStubStrategy extends StubGenerator {
 	}
 	
 	@Override
+	protected List<BodyDeclaration> getStubConstructor(Method targetMethod, Class<?> c) {
+		return new ArrayList<BodyDeclaration>();
+	}
+	
+	@Override
 	protected List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods) {
 		return new ArrayList<BodyDeclaration>();
 	}

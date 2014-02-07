@@ -1,8 +1,12 @@
 package sbes.scenario;
 
+import japa.parser.ast.body.VariableDeclaratorId;
 import japa.parser.ast.expr.AssignExpr;
 import japa.parser.ast.expr.AssignExpr.Operator;
+import japa.parser.ast.expr.CastExpr;
 import japa.parser.ast.expr.Expression;
+import japa.parser.ast.expr.MethodCallExpr;
+import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.stmt.BlockStmt;
 import japa.parser.ast.stmt.ExpressionStmt;
@@ -117,9 +121,13 @@ public class TestScenarioGenerator {
 		
 		CloneVisitor cloner = new CloneVisitor();
 		BlockStmt cloned = (BlockStmt) cloner.visit(carvedTest.getBody(), null);
+		List<Statement> actualStatements = new ArrayList<Statement>();
 		
 		String className = ClassUtils.getSimpleClassname(Options.I().getMethodSignature());
 		String methodName = ClassUtils.getMethodname(Options.I().getMethodSignature().split("\\[")[0]);
+		
+		VariableDeclaratorId var = null;
+		int index = scenarios.size();
 		for (int i = 0; i < cloned.getStmts().size(); i++) {
 			Statement stmt = cloned.getStmts().get(i);
 			if (stmt instanceof ExpressionStmt) {
@@ -129,26 +137,58 @@ public class TestScenarioGenerator {
 					 * so we can safely assume to get element 0
 					 */
 					VariableDeclarationExpr vde = (VariableDeclarationExpr) estmt.getExpression();
-					int index = scenarios.size();
 					if (vde.getType().toString().equals(className)) {
+						var = vde.getVars().get(0).getId();
 						Expression target = ASTUtils.createArrayAccess(FirstPhaseStubStrategy.EXPECTED_STATE, Integer.toString(index));
 						Expression value = vde.getVars().get(0).getInit();
 						AssignExpr ae = new AssignExpr(target, value, Operator.assign);
 						cloned.getStmts().remove(i);
 						cloned.getStmts().add(i, new ExpressionStmt(ae));
+						
+						Expression target_act = ASTUtils.createArrayAccess(FirstPhaseStubStrategy.ACTUAL_RESULT, Integer.toString(index));
+						AssignExpr ae_act = new AssignExpr(target_act, value, Operator.assign);
+						actualStatements.add(new ExpressionStmt(ae_act));
 					}
 					else if (vde.getVars().get(0).getInit().toString().contains(methodName)) {
 						Expression target = ASTUtils.createArrayAccess(FirstPhaseStubStrategy.EXPECTED_RESULT, Integer.toString(index));
 						Expression value = vde.getVars().get(0).getInit();
+						if (value instanceof MethodCallExpr) {
+							MethodCallExpr mce = (MethodCallExpr) value;
+							mce.setScope(ASTUtils.createArrayAccess(FirstPhaseStubStrategy.EXPECTED_STATE, Integer.toString(index)));
+						}
+						else if (value instanceof CastExpr) {
+							CastExpr cast = (CastExpr) value;
+							MethodCallExpr mce = (MethodCallExpr) cast.getExpr(); // safe cast: in our case it is always a method call
+							mce.setScope(ASTUtils.createArrayAccess(FirstPhaseStubStrategy.EXPECTED_STATE, Integer.toString(index)));
+						}
 						AssignExpr ae = new AssignExpr(target, value, Operator.assign);
 						cloned.getStmts().remove(i);
 						cloned.getStmts().add(i, new ExpressionStmt(ae));
 					}
 				}
+				else if (estmt.getExpression() instanceof MethodCallExpr) {
+					if (var == null) {
+						continue;
+					}
+					MethodCallExpr mce = (MethodCallExpr) estmt.getExpression();
+					if (mce.getScope() instanceof NameExpr) {
+						NameExpr scopeName = (NameExpr) mce.getScope();
+						if (scopeName.getName().equals(var.getName())) {
+							CloneVisitor mceCloner = new CloneVisitor();
+							MethodCallExpr clonedMce = (MethodCallExpr) mceCloner.visit(mce, null);
+							
+							mce.setScope(ASTUtils.createArrayAccess(FirstPhaseStubStrategy.EXPECTED_STATE, Integer.toString(index)));
+							clonedMce.setScope(ASTUtils.createArrayAccess(FirstPhaseStubStrategy.ACTUAL_STATE, Integer.toString(index)));
+							actualStatements.add(new ExpressionStmt(clonedMce));
+						}
+					}
+				}
 			}
 		}
 		
-		return new TestScenario(cloned, carvedTest.getImports());
+		cloned.getStmts().addAll(actualStatements);
+		
+		return new TestScenario(carvedTest, cloned);
 	}
 	
 	public TestScenario carvedTestToScenario(CarvingResult carvedTest) {

@@ -66,6 +66,9 @@ public abstract class StubGenerator {
 		// class fields (only phase 1)
 		members.addAll(getClassFields(targetMethod, c));
 		
+		// stub constructor (only phase 1)
+		members.addAll(getStubConstructor(targetMethod, c));
+		
 		// original methods (only phase 1)
 		members.addAll(getAdditionalMethods(targetMethod, methods));
 		
@@ -86,6 +89,7 @@ public abstract class StubGenerator {
 	protected abstract List<ImportDeclaration> getImports();
 	protected abstract TypeDeclaration getClassDeclaration(String className);
 	protected abstract List<BodyDeclaration> getClassFields(Method targetMethod, Class<?> c);
+	protected abstract List<BodyDeclaration> getStubConstructor(Method targetMethod, Class<?> c);
 	protected abstract List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods);
 	protected abstract MethodDeclaration getSetResultsMethod(Method targetMethod);
 	protected abstract MethodDeclaration getMethodUnderTest();

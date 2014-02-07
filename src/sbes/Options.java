@@ -83,5 +83,11 @@ public class Options {
 	public String getEvosuitePath() {
 		return evosuitePath;
 	}
+
+	public void setMethodSignature(String methodSignature) {
+		this.methodSignature = methodSignature;
+	}
+	
+	
 	
 }

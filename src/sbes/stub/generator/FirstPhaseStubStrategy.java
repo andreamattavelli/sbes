@@ -4,6 +4,7 @@ import japa.parser.ASTHelper;
 import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.body.BodyDeclaration;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
+import japa.parser.ast.body.ConstructorDeclaration;
 import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.Parameter;
@@ -96,6 +97,21 @@ public class FirstPhaseStubStrategy extends StubGenerator {
 		logger.debug("Adding class fields - done");
 		
 		return declarations;
+	}
+	
+	@Override
+	protected List<BodyDeclaration> getStubConstructor(Method targetMethod, Class<?> c) {
+		List<BodyDeclaration> constructors = new ArrayList<BodyDeclaration>();
+		ConstructorDeclaration constructor = new ConstructorDeclaration(Modifier.PUBLIC, stubName);
+		List<Statement> statements = new ArrayList<Statement>();
+		BlockStmt body = new BlockStmt();
+		for (int i = 0; i < scenarios.size(); i++) {
+			statements.addAll(scenarios.get(i).getScenario().getStmts());
+		}
+		body.setStmts(statements);
+		constructor.setBlock(body);
+		constructors.add(constructor);
+		return constructors;
 	}
 	
 	@Override
