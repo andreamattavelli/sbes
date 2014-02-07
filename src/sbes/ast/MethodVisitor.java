@@ -1,4 +1,4 @@
-package sbes.japa;
+package sbes.ast;
 
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
