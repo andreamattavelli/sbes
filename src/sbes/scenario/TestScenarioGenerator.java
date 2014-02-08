@@ -145,7 +145,7 @@ public class TestScenarioGenerator {
 						cloned.getStmts().remove(i);
 						cloned.getStmts().add(i, new ExpressionStmt(ae));
 						
-						Expression target_act = ASTUtils.createArrayAccess(FirstPhaseStubStrategy.ACTUAL_RESULT, Integer.toString(index));
+						Expression target_act = ASTUtils.createArrayAccess(FirstPhaseStubStrategy.ACTUAL_STATE, Integer.toString(index));
 						AssignExpr ae_act = new AssignExpr(target_act, value, Operator.assign);
 						actualStatements.add(new ExpressionStmt(ae_act));
 					}

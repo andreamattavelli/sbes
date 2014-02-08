@@ -11,7 +11,9 @@ public class ClassUtils {
 		
 		for (Method method : c.getMethods()) {
 			if (!method.getDeclaringClass().equals(Class.class) &&
-				!method.getDeclaringClass().equals(Object.class)) {
+				!method.getDeclaringClass().equals(Object.class) &&
+				!method.isBridge() &&
+				!method.isSynthetic()) {
 				toReturn.add(method);
 			}
 		}

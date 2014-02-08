@@ -3,6 +3,7 @@ package sbes.testcase;
 import japa.parser.JavaParser;
 import japa.parser.ParseException;
 import japa.parser.ast.CompilationUnit;
+import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 
 import java.io.File;
@@ -61,7 +62,7 @@ public class Carver {
 
 					if (callVisitor.isFound()) {
 						logger.debug(" * " + method.getName() + " contains explicit method invocation");
-						bodies.add(new CarvingResult(method.getBody(), cu.getImports()));
+						bodies.add(new CarvingResult(method.getBody(), getCleanImports(cu)));
 					}
 					else {
 						logger.debug(" * " + method.getName() + " does not contain explicit method invocation.");
@@ -87,4 +88,18 @@ public class Carver {
 		}
 		return false;
 	}
+	
+	private List<ImportDeclaration> getCleanImports(CompilationUnit cu) {
+		List<ImportDeclaration> cleanImports = new ArrayList<ImportDeclaration>();
+		if (cu.getImports() != null) {
+			for (int i = 0; i < cu.getImports().size(); i++) {
+				String name = cu.getImports().get(i).getName().toString();
+				if (!name.equals("org.evosuite") && !name.startsWith("org.junit")) {
+					cleanImports.add(cu.getImports().get(i));
+				}
+			}
+		}
+		return cleanImports;
+	}
+	
 }

@@ -70,6 +70,7 @@ public class FirstPhaseStubStrategy extends StubGenerator {
 	protected List<ImportDeclaration> getImports() {
 		List<ImportDeclaration> imports = new ArrayList<>();
 		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("sbes.distance.Distance"), false, false));
+		imports.addAll(scenarios.get(0).getImports()); //FIXME
 		return imports;
 	}
 	
@@ -132,7 +133,7 @@ public class FirstPhaseStubStrategy extends StubGenerator {
 			
 			Type returnType = ASTUtils.getReturnType(method);
 			Type returnStubType = ASTUtils.getReturnTypeAsArray(method);
-			MethodDeclaration md = new MethodDeclaration(method.getModifiers(), returnStubType, method.getName());
+			MethodDeclaration md = new MethodDeclaration(method.getModifiers() & Modifier.TRANSIENT & Modifier.VOLATILE, returnStubType, method.getName());
 			
 			//parameters
 			List<Parameter> parameters = new ArrayList<Parameter>();

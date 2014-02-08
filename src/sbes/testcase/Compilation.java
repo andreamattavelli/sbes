@@ -52,7 +52,7 @@ public class Compilation {
 							 ).call();
 
 			if (diagnostics.getDiagnostics().size() > 0) {
-				logger.debug("Compilation succeeded with either warnings or errors");
+				logger.debug("Compilation ended with either warnings or errors");
 				for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
 					if (diagnostic.getKind() == Kind.ERROR) {
 						succeed = false;
