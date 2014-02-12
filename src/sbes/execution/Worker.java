@@ -7,6 +7,7 @@ import java.util.concurrent.Callable;
 
 import sbes.evosuite.Evosuite;
 import sbes.logging.Logger;
+import sbes.util.DirectoryUtils;
 
 public class Worker implements Callable<ExecutionResult> {
 
@@ -28,7 +29,7 @@ public class Worker implements Callable<ExecutionResult> {
 
 		try {
 			ProcessBuilder pb = new ProcessBuilder(evosuite.getCommand());
-			pb = pb.directory(new File("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/sbes")); //FIXME
+			pb = pb.directory(new File(DirectoryUtils.getInstance().getExperimentDir())); //FIXME
 
 			logger.debug("Going to execute: " + evosuite.toString());
 

@@ -1,5 +1,7 @@
 package sbes.evosuite;
 
+import java.util.Arrays;
+
 import sbes.util.ArrayUtils;
 
 public class EvosuiteFirstStageStrategy extends Evosuite {
@@ -9,7 +11,9 @@ public class EvosuiteFirstStageStrategy extends Evosuite {
 	}
 
 	public String[] getCommand() {
-		return ArrayUtils.add(super.getCommand(), "-stage=1");
+		String[] evo = ArrayUtils.add(super.getCommand(), "-Dstage=1");
+		this.command = Arrays.toString(evo);
+		return evo;
 	}
 
 	@Override

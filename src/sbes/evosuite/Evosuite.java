@@ -1,5 +1,6 @@
 package sbes.evosuite;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,6 +9,7 @@ import sbes.Options;
 import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
 import sbes.util.ClassUtils;
+import sbes.util.DirectoryUtils;
 
 public abstract class Evosuite {
 
@@ -27,7 +29,7 @@ public abstract class Evosuite {
 		this.classSignature = classSignature;
 		this.methodSignature = methodSignature;
 		this.classLoader = InternalClassloader.getInternalClassLoader();
-		this.outputDir = "evosuite-test";
+		this.outputDir = DirectoryUtils.toPath(DirectoryUtils.getInstance().getExperimentDir(), "evosuite-test");
 		this.filename = ClassUtils.getSimpleClassname(Options.I().getMethodSignature()) + "EvoSuiteTest.java";
 	}
 
@@ -36,7 +38,7 @@ public abstract class Evosuite {
 		evo.addAll(Arrays.asList(javaCommand));
 		evo.add("-jar");
 		evo.add(jarName);
-		evo.add("-DCP="+ Options.I().getClassesPath());
+		evo.add("-DCP="+ Options.I().getClassesPath() + File.pathSeparatorChar + ".");
 		evo.add("-class");
 		evo.add(classSignature);
 		evo.add("-Dtarget_method=" + getTargetMethodSignature());

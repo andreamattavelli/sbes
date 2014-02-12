@@ -40,7 +40,7 @@ public class ExecutionManager {
 		try {
 			toReturn = firstResult.get();
 		} catch (InterruptedException | ExecutionException e) {
-			throw new WorkerException("Error occurred during test case generation: " + e.getMessage());
+			throw new WorkerException("Error occurred during test case generation: " + e.getMessage(), e);
 		}
 
 		return toReturn;

@@ -1,6 +1,5 @@
 package sbes;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -10,14 +9,6 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
 import sbes.logging.Logger;
-import sbes.scenario.TestScenario;
-import sbes.scenario.TestScenarioGenerator;
-import sbes.stub.Stub;
-import sbes.stub.generator.FirstPhaseStubStrategy;
-import sbes.stub.generator.StubGenerator;
-import sbes.testcase.Compilation;
-import sbes.testcase.CompilationContext;
-import sbes.util.ClasspathHandler;
 
 public class SBES {
 
@@ -36,21 +27,9 @@ public class SBES {
 		}
 
 		try {
-			ClasspathHandler.checkClasspath();
+			SBESGenerator generator = new SBESGenerator();
+			generator.generateES();
 
-			TestScenarioGenerator scenarioGenerator = TestScenarioGenerator.getInstance();
-			scenarioGenerator.generateTestScenarios();
-			
-			List<TestScenario> initialScenarios = scenarioGenerator.getScenarios();
-			
-			StubGenerator firstPhaseGenerator = new FirstPhaseStubStrategy(initialScenarios);
-			Stub firstPhaseStub = firstPhaseGenerator.generateStub();
-
-			firstPhaseStub.dumpStub(".");
-			
-			CompilationContext cc = new CompilationContext(".", firstPhaseStub.getStubName() + ".java", Options.I().getClassesPath() + File.pathSeparatorChar + SBES.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-			Compilation.compile(cc);
-			
 			logger.info("SBES ended successfully");
 		}
 		catch (SBESException e) {

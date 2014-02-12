@@ -2,6 +2,7 @@ package sbes.util;
 
 import java.io.File;
 
+import sbes.Options;
 import sbes.logging.Logger;
 
 public class DirectoryUtils {
@@ -10,9 +11,12 @@ public class DirectoryUtils {
 
 	private static DirectoryUtils instance = null;
 	private static final String baseDirectory = System.getProperty("user.dir");
-	private static String dumpDirectory = null;
+	private final String experimentDir;
 
-	private DirectoryUtils() {}
+	private DirectoryUtils() {
+		String method = Options.I().getMethodSignature();
+		experimentDir = method.substring(0, method.indexOf('['));
+	}
 
 	public static DirectoryUtils getInstance() {
 		if (instance == null) {
@@ -25,19 +29,23 @@ public class DirectoryUtils {
 		return baseDirectory;
 	}
 
-	public static String createExperimentDir() {
-		logger.info("Creating experiment directory");
+	public String createExperimentDir() {
+		logger.debug("Creating experiment directory");
 		
 		String toReturn;
-		String dirName = Long.toString(System.currentTimeMillis());
-		toReturn = toPath(baseDirectory, dirName);
+		toReturn = toPath(baseDirectory, experimentDir);
 		File dir = new File(toReturn);
 		if (!dir.exists()) {
 			dir.mkdirs();
 		}
-		logger.info("Experiment directory created successfully: " + dumpDirectory);
 
+		logger.debug("Creating experiment directory - done");
+		
 		return toReturn;
+	}
+	
+	public String getExperimentDir() {
+		return experimentDir;
 	}
 
 	public static String toPath(final String ... args) {

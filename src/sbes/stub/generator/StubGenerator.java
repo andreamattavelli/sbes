@@ -3,6 +3,7 @@ package sbes.stub.generator;
 import japa.parser.ASTHelper;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.ImportDeclaration;
+import japa.parser.ast.PackageDeclaration;
 import japa.parser.ast.body.BodyDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.Parameter;
@@ -54,6 +55,7 @@ public abstract class StubGenerator {
 		
 		// GENERATE STUB
 		CompilationUnit cu = new CompilationUnit();
+		cu.setPackage(new PackageDeclaration(ASTHelper.createNameExpr(targetMethod.getDeclaringClass().getPackage().getName())));
 		cu.setImports(getImports());
 		
 		// class name

@@ -48,14 +48,5 @@ public class ExecutionResult {
 	public void setStderr(final String stderr) {
 		this.stderr = stderr;
 	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((this.filename == null) ? 0 : this.filename.hashCode());
-		result = prime * result + ((this.outputDir == null) ? 0 : this.outputDir.hashCode());
-		return result;
-	}
 	
 }

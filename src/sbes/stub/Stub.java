@@ -5,7 +5,6 @@ import japa.parser.ast.CompilationUnit;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 
 import sbes.logging.Logger;
 
@@ -38,22 +37,11 @@ public class Stub {
 	}
 	
 	public void dumpStub(String directory) {
-		BufferedWriter out = null;
-		try {
-			String filename = directory + File.separator + stubName + ".java";
-			out = new BufferedWriter(new FileWriter(filename));
+		String filename = directory + File.separator + stubName + ".java";
+		try (BufferedWriter out = new BufferedWriter(new FileWriter(filename))) {
 			out.write(ast.toString());
-			out.close();
 		} catch(Throwable e) {
 			logger.error("Unable to dump stub due to: " + e.getMessage());
-		} finally{
-			if (out != null) {
-				try {
-					out.close();
-				} catch (IOException e) {
-					logger.error("Unable to correctly dump stub due to: " + e.getMessage());
-				}
-			}
 		}
 	}
 	

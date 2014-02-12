@@ -31,7 +31,7 @@ public class Compilation {
 			final StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
 
 			final String[] options = new String[] {
-					"-d", ".",
+					"-d",  DirectoryUtils.toPath(DirectoryUtils.getInstance().getExperimentDir(), "evosuite-test"),
 					"-classpath", context.getClassPath()
 			};
 
