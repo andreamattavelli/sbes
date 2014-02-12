@@ -29,7 +29,7 @@ public class Worker implements Callable<ExecutionResult> {
 
 		try {
 			ProcessBuilder pb = new ProcessBuilder(evosuite.getCommand());
-			pb = pb.directory(new File(DirectoryUtils.getInstance().getExperimentDir())); //FIXME
+			pb = pb.directory(new File(DirectoryUtils.I().getBaseDirectory()));
 
 			logger.debug("Going to execute: " + evosuite.toString());
 

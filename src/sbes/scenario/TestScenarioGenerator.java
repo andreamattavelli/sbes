@@ -33,7 +33,8 @@ import sbes.testcase.Compilation;
 import sbes.testcase.CompilationContext;
 import sbes.util.ASTUtils;
 import sbes.util.ClassUtils;
-import sbes.util.DirectoryUtils;
+import sbes.util.EvosuiteUtils;
+import sbes.util.IOUtils;
 
 public class TestScenarioGenerator {
 	
@@ -59,6 +60,11 @@ public class TestScenarioGenerator {
 		try {
 			ExecutionResult result = generate();
 			
+			logger.debug("Check whether the generation was successful");
+			if (!EvosuiteUtils.checkEvosuiteOutput(result.getStdout(), result.getStderr())) {
+				throw new SBESException("Generation failed due " + result.getStdout() + "\n" + result.getStderr()); //FIXME
+			}
+			
 			logger.debug("Check whether the generated test cases compile");
 			if (!isCompilable(result)) {
 				throw new SBESException("Unable to generate compilable test scenarios, give up!");
@@ -80,8 +86,8 @@ public class TestScenarioGenerator {
 
 	private boolean isCompilable(ExecutionResult result) {
 		String signature = Options.I().getMethodSignature();
-		String packagename = ClassUtils.getPackage(signature).replaceAll("\\.", File.separator);
-		String testDirectory = DirectoryUtils.toPath(result.getOutputDir(), packagename);
+		String packagename = IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
+		String testDirectory = IOUtils.concatPath(result.getOutputDir(), packagename);
 		
 		String classPath =	Options.I().getClassesPath() + File.pathSeparatorChar + 
 							Options.I().getJunitPath() + File.pathSeparatorChar +
@@ -99,8 +105,8 @@ public class TestScenarioGenerator {
 	
 	private List<CarvingResult> carveTestScenarios(ExecutionResult result) {
 		String signature = Options.I().getMethodSignature();
-		String packagename = ClassUtils.getPackage(signature).replaceAll("\\.", File.separator);
-		String testDirectory = DirectoryUtils.toPath(result.getOutputDir(), packagename);
+		String packagename = IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
+		String testDirectory = IOUtils.concatPath(result.getOutputDir(), packagename);
 		
 		CarvingContext context = new CarvingContext(testDirectory, result.getFilename());
 		

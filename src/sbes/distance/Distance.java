@@ -8,8 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import sbes.distance.LevenshteinDistance;
-import sbes.distance.PrimitiveDistance;
 import sbes.logging.Logger;
 import sbes.util.ReflectionUtils;
 

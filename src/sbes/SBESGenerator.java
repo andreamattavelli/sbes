@@ -21,38 +21,38 @@ import sbes.util.DirectoryUtils;
 public class SBESGenerator {
 
 	public void generateES() throws SBESException {
+		// =================================== INIT =================================== 
+		DirectoryUtils directory = DirectoryUtils.I();
 		ClasspathHandler.checkClasspath();
-		
-		DirectoryUtils directory = DirectoryUtils.getInstance();
-		directory.createExperimentDir();
 
+		// ===================== INITIAL TEST SCENARIO GENERATION =====================
 		TestScenarioGenerator scenarioGenerator = TestScenarioGenerator.getInstance();
 		scenarioGenerator.generateTestScenarios();
-
 		List<TestScenario> initialScenarios = scenarioGenerator.getScenarios();
 
+		// ======================= FIRST PHASE STUB GENERATION ========================
 		StubGenerator firstPhaseGenerator = new FirstPhaseStubStrategy(initialScenarios);
 		Stub firstPhaseStub = firstPhaseGenerator.generateStub();
+		directory.createFirstStubDir();
+		firstPhaseStub.dumpStub(directory.getFirstStubDir());
 
-		firstPhaseStub.dumpStub(DirectoryUtils.getInstance().getExperimentDir() + File.separator +
-								"evosuite-test/org/graphstream/graph/implementations"); //FIXME
-
-		CompilationContext cc = new CompilationContext(DirectoryUtils.getInstance().getExperimentDir() + File.separator +
-				"evosuite-test/org/graphstream/graph/implementations", firstPhaseStub.getStubName() + ".java",
-				Options.I().getClassesPath() + File.pathSeparatorChar + 
-				SBES.class.getProtectionDomain().getCodeSource().getLocation().getPath()); //FIXME
-
-		if (!Compilation.compile(cc)) {
-			throw new SBESException("");
-		}
-
-		ExecutionManager manager = new ExecutionManager();
-		Evosuite evosuiteCommand = new EvosuiteFirstStageStrategy(firstPhaseStub.getStubName(), 
-				ClassUtils.getMethodname(Options.I().getMethodSignature()));
-		ExecutionResult result = manager.execute(evosuiteCommand);
-
-		System.out.println(result.getStderr());
-		System.out.println(result.getStdout());
+//		CompilationContext cc = new CompilationContext(directory.getExperimentDir(), firstPhaseStub.getStubName() + ".java",
+//				Options.I().getClassesPath() + File.pathSeparatorChar + 
+//				SBES.class.getProtectionDomain().getCodeSource().getLocation().getPath()); //FIXME
+//
+//		if (!Compilation.compile(cc)) {
+//			throw new SBESException("Unable to generate compilable stub, give up!");
+//		}
+		
+//		while (foundSolution || iterations > maxIterations)
+		// ========================== FIRST PHASE SYNTHESIS ===========================
+//		ExecutionManager manager = new ExecutionManager();
+//		Evosuite evosuiteCommand = new EvosuiteFirstStageStrategy(firstPhaseStub.getStubName(), 
+//				ClassUtils.getMethodname(Options.I().getMethodSignature()));
+//		ExecutionResult result = manager.execute(evosuiteCommand);
+		
+		// ======================= SECOND PHASE STUB GENERATION =======================
+		// ========================== SECOND PHASE SYNTHESIS ==========================
 	}
 
 }

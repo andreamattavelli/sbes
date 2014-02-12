@@ -8,11 +8,13 @@ import java.util.List;
 import sbes.Options;
 import sbes.SBESException;
 import sbes.util.ClassUtils;
+import sbes.util.DirectoryUtils;
 
 public class EvosuiteTestScenarioStrategy extends Evosuite {
 
 	public EvosuiteTestScenarioStrategy(String classSignature, String methodSignature) {
 		super(classSignature, methodSignature);
+		this.outputDir =  DirectoryUtils.I().getTestScenarioDir();
 	}
 	
 	@Override

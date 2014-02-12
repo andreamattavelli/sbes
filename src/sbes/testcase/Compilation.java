@@ -12,7 +12,7 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
 import sbes.logging.Logger;
-import sbes.util.DirectoryUtils;
+import sbes.util.IOUtils;
 import sbes.util.NullWriter;
 
 public class Compilation {
@@ -22,7 +22,7 @@ public class Compilation {
 	public static boolean compile(CompilationContext context) {
 		logger.debug("Compiling file: " + context.getTestFilename());
 		
-		String testPath = DirectoryUtils.toPath(context.getTestDirectory(), context.getTestFilename());
+		String testPath = IOUtils.concatPath(context.getTestDirectory(), context.getTestFilename());
 		
 		boolean succeed = true;
 		try {
@@ -31,7 +31,7 @@ public class Compilation {
 			final StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
 
 			final String[] options = new String[] {
-					"-d",  DirectoryUtils.toPath(DirectoryUtils.getInstance().getExperimentDir(), "evosuite-test"),
+					"-d",  context.getTestDirectory(), // compile directly into source dir
 					"-classpath", context.getClassPath()
 			};
 

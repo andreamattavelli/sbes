@@ -9,7 +9,7 @@ public class EvosuiteSecondStageStrategy extends Evosuite {
 	}
 
 	public String[] getCommand() {
-		return ArrayUtils.add(super.getCommand(), "-stage=2");
+		return ArrayUtils.add(super.getCommand(), "-Dstage=2");
 	}
 
 	@Override

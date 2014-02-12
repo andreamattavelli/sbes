@@ -10,6 +10,7 @@ import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
 import sbes.util.ClassUtils;
 import sbes.util.DirectoryUtils;
+import sbes.util.IOUtils;
 
 public abstract class Evosuite {
 
@@ -21,7 +22,7 @@ public abstract class Evosuite {
 
 	protected final String classSignature;
 	protected final String methodSignature;
-	protected final String outputDir;
+	protected String outputDir;
 	protected String command;
 	protected String filename;
 
@@ -29,7 +30,7 @@ public abstract class Evosuite {
 		this.classSignature = classSignature;
 		this.methodSignature = methodSignature;
 		this.classLoader = InternalClassloader.getInternalClassLoader();
-		this.outputDir = DirectoryUtils.toPath(DirectoryUtils.getInstance().getExperimentDir(), "evosuite-test");
+		this.outputDir = IOUtils.concatPath(DirectoryUtils.I().getExperimentDir(), "evosuite-test");
 		this.filename = ClassUtils.getSimpleClassname(Options.I().getMethodSignature()) + "EvoSuiteTest.java";
 	}
 

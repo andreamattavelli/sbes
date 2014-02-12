@@ -16,7 +16,7 @@ import sbes.ast.MethodCallVisitor;
 import sbes.ast.MethodVisitor;
 import sbes.logging.Logger;
 import sbes.util.ClassUtils;
-import sbes.util.DirectoryUtils;
+import sbes.util.IOUtils;
 
 public class Carver {
 
@@ -46,7 +46,7 @@ public class Carver {
 		try {
 			String testClassname = context.getTestFilename();
 			logger.debug("Loading generated test: " + testClassname);
-			String testPath = DirectoryUtils.toPath(context.getTestDirectory(), testClassname);
+			String testPath = IOUtils.concatPath(context.getTestDirectory(), testClassname);
 			CompilationUnit cu = JavaParser.parse(new File(testPath));
 			
 			MethodVisitor visitor = new MethodVisitor();
