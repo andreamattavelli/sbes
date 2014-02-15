@@ -31,7 +31,7 @@ public class Compilation {
 			final StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
 
 			final String[] options = new String[] {
-					"-d",  context.getTestDirectory(), // compile directly into source dir
+					"-d",  context.getDestinationDirectory(),
 					"-classpath", context.getClassPath()
 			};
 

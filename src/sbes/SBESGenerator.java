@@ -1,26 +1,27 @@
 package sbes;
 
-import java.io.File;
 import java.util.List;
 
-import sbes.evosuite.Evosuite;
-import sbes.evosuite.EvosuiteFirstStageStrategy;
-import sbes.execution.ExecutionManager;
-import sbes.execution.ExecutionResult;
 import sbes.scenario.TestScenario;
 import sbes.scenario.TestScenarioGenerator;
+import sbes.statistics.Statistics;
 import sbes.stub.Stub;
 import sbes.stub.generator.FirstPhaseStubStrategy;
 import sbes.stub.generator.StubGenerator;
-import sbes.testcase.Compilation;
-import sbes.testcase.CompilationContext;
-import sbes.util.ClassUtils;
 import sbes.util.ClasspathHandler;
 import sbes.util.DirectoryUtils;
 
 public class SBESGenerator {
 
+	private Statistics statistics;
+	
+	public SBESGenerator() {
+		this.statistics = new Statistics();
+	}
+	
 	public void generateES() throws SBESException {
+		statistics.synthesisStarted();
+		
 		// =================================== INIT =================================== 
 		DirectoryUtils directory = DirectoryUtils.I();
 		ClasspathHandler.checkClasspath();
@@ -36,23 +37,32 @@ public class SBESGenerator {
 		directory.createFirstStubDir();
 		firstPhaseStub.dumpStub(directory.getFirstStubDir());
 
-//		CompilationContext cc = new CompilationContext(directory.getExperimentDir(), firstPhaseStub.getStubName() + ".java",
-//				Options.I().getClassesPath() + File.pathSeparatorChar + 
-//				SBES.class.getProtectionDomain().getCodeSource().getLocation().getPath()); //FIXME
-//
-//		if (!Compilation.compile(cc)) {
-//			throw new SBESException("Unable to generate compilable stub, give up!");
-//		}
-		
-//		while (foundSolution || iterations > maxIterations)
+		boolean terminated = false;
+		while (terminated) {
 		// ========================== FIRST PHASE SYNTHESIS ===========================
-//		ExecutionManager manager = new ExecutionManager();
-//		Evosuite evosuiteCommand = new EvosuiteFirstStageStrategy(firstPhaseStub.getStubName(), 
-//				ClassUtils.getMethodname(Options.I().getMethodSignature()));
-//		ExecutionResult result = manager.execute(evosuiteCommand);
-		
+			// compile stub
+			// run evosuite
+			// analyze test case
+			// carve result
+			
 		// ======================= SECOND PHASE STUB GENERATION =======================
+			// generate second stub from carved test case
+			
 		// ========================== SECOND PHASE SYNTHESIS ==========================
+			// compile second stub
+			// run evosuite
+			// analyze test case
+			// carve result
+			
+			// if solution is not found: add test scenario to stub
+			
+			// determine exit condition: solutionFound || time expired
+			terminated = true;
+		}
+		
+		statistics.synthesisFinished();
+		
+		statistics.print();
 	}
 
 }

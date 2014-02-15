@@ -47,11 +47,19 @@ public class Options {
 			usage = "Maximum number of iterations of stages 1/2")
 	private int maxIterations;
 
-	@Option(name = "--search_budget",
+	@Option(name = "--test_search_budget",
 			usage = "Search budget for test case generation")
-	private int searchBudget = 60;
+	private int testSearchBudget = 60;
 
-
+	@Option(name = "--search_budget",
+			usage = "Search budget for equivalent sequence synthesis")
+	private int searchBudget = 180;
+	
+	@Option(name = "--max_time",
+			usage = "Maximum time limit for synthesis (test scenario generation excluded)")
+	private int maxTime = 180;
+	
+	
 	public String getClassesPath() {
 		return classesPath;
 	}
@@ -72,6 +80,10 @@ public class Options {
 		return maxIterations;
 	}
 
+	public int getTestSearchBudget() {
+		return testSearchBudget;
+	}
+	
 	public int getSearchBudget() {
 		return searchBudget;
 	}

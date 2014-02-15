@@ -47,7 +47,7 @@ public class ExecutionManager {
 	}
 
 	private long calculateTimeout() {
-		int searchBudget = Options.I().getSearchBudget();
+		int searchBudget = Options.I().getTestSearchBudget();
 		if (searchBudget < 60) {
 			return searchBudget * 2;
 		}

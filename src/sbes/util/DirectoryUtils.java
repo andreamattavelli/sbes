@@ -12,8 +12,8 @@ public class DirectoryUtils {
 	private static DirectoryUtils instance = null;
 	private static String baseDirectory = System.getProperty("user.dir");
 	private static String stubDir = "stubs";
-	private static String firstStubDir = "first-stubs";
-	private static String secondStubDir = "second-stubs";
+	private static String firstStubDir = "first-stage";
+	private static String secondStubDir = "second-stage";
 	private static String iterationPrefix = "iteration_";
 	private static String scenariosDir = "init-scenarios";
 	private static String experimentDir;
@@ -23,7 +23,7 @@ public class DirectoryUtils {
 
 	private DirectoryUtils() {
 		String method = Options.I().getMethodSignature();
-		experimentDir = method.substring(0, method.indexOf('['));
+		experimentDir = method.replace('[', '(').replace(']', ')');
 		firstStubs = 0;
 		secondStubs = 0;
 	}
@@ -74,11 +74,11 @@ public class DirectoryUtils {
 	}
 
 	public String getFirstStubDir() {
-		return IOUtils.concatPath(baseDirectory, experimentDir, stubDir, firstStubDir, iterationPrefix, Integer.toString(firstStubs));
+		return IOUtils.concatPath(baseDirectory, experimentDir, stubDir, firstStubDir, iterationPrefix + Integer.toString(firstStubs));
 	}
 
 	public String getSecondStubDir() {
-		return IOUtils.concatPath(baseDirectory, experimentDir, stubDir, secondStubDir, iterationPrefix, Integer.toString(secondStubs));
+		return IOUtils.concatPath(baseDirectory, experimentDir, stubDir, secondStubDir, iterationPrefix + Integer.toString(secondStubs));
 	}
 
 	public void createFirstStubDir() {
@@ -87,7 +87,7 @@ public class DirectoryUtils {
 		
 		try {
 			String toReturn;
-			toReturn = IOUtils.concatPath(baseDirectory, experimentDir, stubDir, firstStubDir, iterationPrefix, Integer.toString(firstStubs));
+			toReturn = IOUtils.concatPath(baseDirectory, experimentDir, stubDir, firstStubDir, iterationPrefix + Integer.toString(firstStubs));
 			File stub = new File(toReturn);
 			if (!stub.exists()) {
 				stub.mkdirs();
@@ -106,7 +106,7 @@ public class DirectoryUtils {
 		
 		try {
 			String toReturn;
-			toReturn = IOUtils.concatPath(baseDirectory, experimentDir, stubDir, secondStubDir, iterationPrefix, Integer.toString(secondStubs));
+			toReturn = IOUtils.concatPath(baseDirectory, experimentDir, stubDir, secondStubDir, iterationPrefix + Integer.toString(secondStubs));
 			File stub = new File(toReturn);
 			if (!stub.exists()) {
 				stub.mkdirs();

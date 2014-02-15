@@ -93,7 +93,7 @@ public class TestScenarioGenerator {
 							Options.I().getJunitPath() + File.pathSeparatorChar +
 							Options.I().getEvosuitePath();
 		
-		return Compilation.compile(new CompilationContext(testDirectory, result.getFilename(), classPath));
+		return Compilation.compile(new CompilationContext(testDirectory, result.getFilename(), result.getOutputDir(), classPath));
 	}
 
 	private  ExecutionResult generate() {
