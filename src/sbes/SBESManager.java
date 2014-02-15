@@ -129,7 +129,10 @@ public class SBESManager {
 		Carver carver = new Carver(carvingContext, false);
 		List<CarvingResult> candidates = carver.carveBodyFromTests();
 		
-		if (candidates.size() > 1) {
+		if (candidates.isEmpty()) {
+			throw new SBESException("Unable to carve any candidate");
+		}
+		else if (candidates.size() > 1) {
 			logger.warn("More than one candidate! Pruning to first one");
 		}
 		
