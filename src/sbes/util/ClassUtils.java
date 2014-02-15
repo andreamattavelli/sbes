@@ -30,6 +30,10 @@ public class ClassUtils {
 		return canonical.substring(canonical.lastIndexOf('.') + 1);
 	}
 	
+	public static String getSimpleClassnameFromCanonical(final String canonical) {
+		return canonical.substring(canonical.lastIndexOf('.') + 1);
+	}
+	
 	public static String getPackage(final String signature) {
 		String canonical = getCanonicalClassname(signature); 
 		return canonical.substring(0, canonical.lastIndexOf('.'));

@@ -61,7 +61,7 @@ public class TestScenarioGenerator {
 			ExecutionResult result = generate();
 			
 			logger.debug("Check whether the generation was successful");
-			if (!EvosuiteUtils.checkEvosuiteOutput(result.getStdout(), result.getStderr())) {
+			if (!EvosuiteUtils.succeeded(result.getStdout(), result.getStderr())) {
 				throw new SBESException("Generation failed due " + result.getStdout() + "\n" + result.getStderr()); //FIXME
 			}
 			
@@ -110,7 +110,7 @@ public class TestScenarioGenerator {
 		
 		CarvingContext context = new CarvingContext(testDirectory, result.getFilename());
 		
-		Carver carver = new Carver(context);
+		Carver carver = new Carver(context, true);
 		return carver.carveBodyFromTests();
 	}
 	

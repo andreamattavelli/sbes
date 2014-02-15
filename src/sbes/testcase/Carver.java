@@ -23,9 +23,11 @@ public class Carver {
 	private static final Logger logger = new Logger(Carver.class);
 
 	private final CarvingContext context;
+	private final boolean strictCheck;
 
-	public Carver(final CarvingContext context) {
+	public Carver(final CarvingContext context, final boolean strictCheck) {
 		this.context = context;
+		this.strictCheck = strictCheck;
 	}
 
 	public List<CarvingResult> carveBodyFromTests() {
@@ -60,8 +62,10 @@ public class Carver {
 					MethodCallVisitor callVisitor = new MethodCallVisitor(methodName, parametersNumber);
 					callVisitor.visit(method, null);
 
-					if (callVisitor.isFound()) {
-						logger.debug(" * " + method.getName() + " contains explicit method invocation");
+					if (!strictCheck || (strictCheck && callVisitor.isFound())) {
+						if (strictCheck) {
+							logger.debug(" * " + method.getName() + " contains explicit method invocation");
+						}
 						bodies.add(new CarvingResult(method.getBody(), getCleanImports(cu)));
 					}
 					else {

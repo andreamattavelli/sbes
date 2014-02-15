@@ -2,7 +2,7 @@ package sbes.util;
 
 public class EvosuiteUtils {
 
-	public static boolean checkEvosuiteOutput(String stdout, String stderr) {
+	public static boolean succeeded(String stdout, String stderr) {
 		if (stdout.contains("ERROR") || stderr.contains("ERROR")) {
 			return false;
 		}
@@ -11,6 +11,13 @@ public class EvosuiteUtils {
 		}
 		
 		return true;
+	}
+	
+	public static boolean generatedCandidate(String stdout) {
+		if (stdout.contains("Covered 1/1 goals")) {
+			return true;
+		}
+		return false;
 	}
 	
 }
