@@ -70,7 +70,14 @@ public class FirstPhaseStubStrategy extends StubGenerator {
 	protected List<ImportDeclaration> getImports() {
 		List<ImportDeclaration> imports = new ArrayList<>();
 		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("sbes.distance.Distance"), false, false));
-		imports.addAll(scenarios.get(0).getImports()); //FIXME
+		for (TestScenario scenario : scenarios) {
+			List<ImportDeclaration> scenarioImports  = scenario.getImports();
+			for (ImportDeclaration importDeclaration : scenarioImports) {
+				if (!imports.contains(importDeclaration)) {
+					imports.add(importDeclaration);
+				}
+			}
+		}
 		return imports;
 	}
 	
@@ -254,7 +261,7 @@ public class FirstPhaseStubStrategy extends StubGenerator {
 	}
 	
 	@Override
-	protected MethodDeclaration getMethodUnderTest() {
+	protected MethodDeclaration getMethodUnderTest(Method targetMethod) {
 		logger.debug("Adding method_under_test method");
 		MethodDeclaration set_results = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "method_under_test");
 		

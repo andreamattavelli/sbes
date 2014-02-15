@@ -13,6 +13,7 @@ import sbes.scenario.TestScenarioGenerator;
 import sbes.statistics.Statistics;
 import sbes.stub.Stub;
 import sbes.stub.generator.FirstPhaseStubStrategy;
+import sbes.stub.generator.SecondPhaseStubStrategy;
 import sbes.stub.generator.StubGenerator;
 import sbes.testcase.Carver;
 import sbes.testcase.CarvingContext;
@@ -62,12 +63,18 @@ public class SBESManager {
 			// ======================== FIRST PHASE SYNTHESIS =========================
 			CarvingResult candidateES = synthesizeEquivalentSequence(stub, manager, directory);
 			
+			
 			// ===================== SECOND PHASE STUB GENERATION =====================
 			// generate second stub from carved test case
-//			StubGenerator secondPhaseGenerator = new SecondPhaseStubStrategy();
-//			Stub secondStub = secondPhaseGenerator.generateStub();
-//			directory.createSecondStubDir();
-//			secondStub.dumpStub(directory.getSecondStubDir());
+			StubGenerator secondPhaseGenerator = new SecondPhaseStubStrategy(stub, candidateES);
+			Stub secondStub = secondPhaseGenerator.generateStub();
+			directory.createSecondStubDir();
+			secondStub.dumpStub(directory.getSecondStubDir());
+			
+			System.out.println(secondStub.getAst().toString());
+			
+			System.exit(-1);
+			
 			
 			// ================== SECOND PHASE COUNTEREXAMPLE SEARCH ==================
 			// compile second stub

@@ -80,7 +80,7 @@ public abstract class StubGenerator {
 			// only phase 1
 			members.add(setResult);
 		}
-		members.add(getMethodUnderTest());
+		members.add(getMethodUnderTest(targetMethod));
 		
 		stubClass.setMembers(members);
 		
@@ -94,7 +94,7 @@ public abstract class StubGenerator {
 	protected abstract List<BodyDeclaration> getStubConstructor(Method targetMethod, Class<?> c);
 	protected abstract List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods);
 	protected abstract MethodDeclaration getSetResultsMethod(Method targetMethod);
-	protected abstract MethodDeclaration getMethodUnderTest();
+	protected abstract MethodDeclaration getMethodUnderTest(Method targetMethod);
 	
 	
 	// ---------- HELPER METHODS ----------
