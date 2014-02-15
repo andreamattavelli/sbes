@@ -27,7 +27,7 @@ public class SBES {
 		}
 
 		try {
-			SBESGenerator generator = new SBESGenerator();
+			SBESManager generator = new SBESManager();
 			generator.generateES();
 
 			logger.info("SBES ended successfully");

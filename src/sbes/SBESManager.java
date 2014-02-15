@@ -11,11 +11,11 @@ import sbes.stub.generator.StubGenerator;
 import sbes.util.ClasspathHandler;
 import sbes.util.DirectoryUtils;
 
-public class SBESGenerator {
+public class SBESManager {
 
 	private Statistics statistics;
 	
-	public SBESGenerator() {
+	public SBESManager() {
 		this.statistics = new Statistics();
 	}
 	
