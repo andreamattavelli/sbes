@@ -4,8 +4,8 @@ import java.io.File;
 import java.util.List;
 
 import sbes.evosuite.Evosuite;
-import sbes.evosuite.EvosuiteFirstStageStrategy;
-import sbes.evosuite.EvosuiteSecondStageStrategy;
+import sbes.evosuite.EvosuiteFirstStage;
+import sbes.evosuite.EvosuiteSecondStage;
 import sbes.execution.ExecutionManager;
 import sbes.execution.ExecutionResult;
 import sbes.logging.Logger;
@@ -117,7 +117,7 @@ public class SBESManager {
 		
 		// run evosuite
 		String stubSignature = ClassUtils.getPackage(Options.I().getMethodSignature()) + '.' + stub.getStubName();
-		Evosuite evosuite = new EvosuiteFirstStageStrategy(stubSignature, 
+		Evosuite evosuite = new EvosuiteFirstStage(stubSignature, 
 															ClassUtils.getMethodname(Options.I().getMethodSignature()), 
 															classPath);
 		ExecutionResult result = manager.execute(evosuite);
@@ -172,7 +172,7 @@ public class SBESManager {
 		
 		// run evosuite
 		String stubSignature = ClassUtils.getPackage(Options.I().getMethodSignature()) + '.' + secondStub.getStubName();
-		Evosuite evosuite = new EvosuiteSecondStageStrategy(stubSignature, 
+		Evosuite evosuite = new EvosuiteSecondStage(stubSignature, 
 															ClassUtils.getMethodname(Options.I().getMethodSignature()), 
 															classPath);
 		ExecutionResult result = manager.execute(evosuite);
