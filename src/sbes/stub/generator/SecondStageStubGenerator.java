@@ -4,6 +4,7 @@ import japa.parser.ASTHelper;
 import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.body.BodyDeclaration;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
+import japa.parser.ast.body.ConstructorDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.TypeDeclaration;
 import japa.parser.ast.body.VariableDeclarator;
@@ -20,12 +21,14 @@ import japa.parser.ast.expr.ObjectCreationExpr;
 import japa.parser.ast.expr.ThisExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.stmt.BlockStmt;
+import japa.parser.ast.stmt.ExplicitConstructorInvocationStmt;
 import japa.parser.ast.stmt.ExpressionStmt;
 import japa.parser.ast.stmt.IfStmt;
 import japa.parser.ast.stmt.Statement;
 import japa.parser.ast.type.ClassOrInterfaceType;
 import japa.parser.ast.visitor.CloneVisitor;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -86,7 +89,28 @@ public class SecondStageStubGenerator extends StubGenerator {
 	
 	@Override
 	protected List<BodyDeclaration> getStubConstructor(Method targetMethod, Class<?> c) {
-		return new ArrayList<BodyDeclaration>();
+		/*
+		 * We must adhere to inheritance as defined in Java, which imposes to
+		 * add constructor to a child if an explicit constructor is defined in
+		 * the parent.
+		 */
+		List<BodyDeclaration> toReturn = new ArrayList<BodyDeclaration>(); 
+		Constructor<?> constructors[] = c.getDeclaredConstructors();
+		for (Constructor<?> constructor : constructors) {
+			if (!constructor.isSynthetic()) {
+				ConstructorDeclaration cons = new ConstructorDeclaration(constructor.getModifiers(), stubName);
+				cons.setParameters(getParameterType(constructor.getParameterTypes()));
+				List<Expression> methodParameters = ASTUtils.createParameters(cons.getParameters());
+				
+				BlockStmt stmt = new BlockStmt();
+				ExplicitConstructorInvocationStmt ecis = new ExplicitConstructorInvocationStmt(false, null, methodParameters);
+				ASTHelper.addStmt(stmt, ecis);
+				cons.setBlock(stmt);
+				toReturn.add(cons);
+			}
+		}
+		
+		return toReturn;
 	}
 	
 	@Override

@@ -118,11 +118,15 @@ public class SBESManager {
 															classPath);
 		ExecutionResult result = manager.execute(evosuite);
 		
+		System.out.println(result.getStdout());
+		System.out.println(result.getStderr());
+		
 		// analyze synthesis process
-		if (!EvosuiteUtils.succeeded(result.getStdout(), result.getStderr())) {
-			throw new SBESException("Unable to synthesize a valid candidate");
-		}
 		if (!EvosuiteUtils.generatedCandidate(result.getStdout())) {
+			if (!EvosuiteUtils.succeeded(result.getStdout(), result.getStderr())) {
+				logger.error(result.getStdout());
+				logger.error(result.getStderr());
+			}
 			throw new SBESException("Unable to synthesize a valid candidate");
 		}
 		
@@ -170,6 +174,8 @@ public class SBESManager {
 															ClassUtils.getMethodname(Options.I().getMethodSignature()), 
 															classPath);
 		ExecutionResult result = manager.execute(evosuite);
+		
+		System.out.println(result.getStdout());
 		
 		// analyze test case
 		// carve result
