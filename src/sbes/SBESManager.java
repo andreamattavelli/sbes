@@ -75,11 +75,13 @@ public class SBESManager {
 			// compile second stub
 			CarvingResult counterexample = generateCounterexample(secondStub, manager, directory);
 			
-			// if solution is not found: add test scenario to stub
-			
 			// determine exit condition: solutionFound || time expired
 			if (counterexample == null) {
+				// if solution is found: found equivalent sequence, terminate!
 				terminated = true;
+			}
+			else {
+				// if solution is found: add test scenario to stub
 			}
 			statistics.iterationFinished();
 		}
@@ -90,6 +92,7 @@ public class SBESManager {
 	}
 	
 	private CarvingResult synthesizeEquivalentSequence(Stub stub, ExecutionManager manager, DirectoryUtils directory) {
+		logger.info("Synthesising equivalent sequence candidate");
 		String signature = Options.I().getMethodSignature();
 		String packagename = IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
 		String testDirectory = IOUtils.concatPath(directory.getFirstStubDir(), packagename);
@@ -118,9 +121,6 @@ public class SBESManager {
 															classPath);
 		ExecutionResult result = manager.execute(evosuite);
 		
-		System.out.println(result.getStdout());
-		System.out.println(result.getStderr());
-		
 		// analyze synthesis process
 		if (!EvosuiteUtils.generatedCandidate(result.getStdout())) {
 			if (!EvosuiteUtils.succeeded(result.getStdout(), result.getStderr())) {
@@ -142,10 +142,12 @@ public class SBESManager {
 			logger.warn("More than one candidate! Pruning to first one");
 		}
 		
+		logger.info("Synthesising equivalent sequence candidate - done");
 		return candidates.get(0);
 	}
 
 	private CarvingResult generateCounterexample(Stub secondStub, ExecutionManager manager, DirectoryUtils directory) {
+		logger.info("Generating counterexample");
 		String signature = Options.I().getMethodSignature();
 		String packagename = IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
 		String testDirectory = IOUtils.concatPath(directory.getSecondStubDir(), packagename);
@@ -167,7 +169,6 @@ public class SBESManager {
 			throw new SBESException("Unable to compile second-stage stub " + secondStub.getStubName());
 		}
 		
-		
 		// run evosuite
 		String stubSignature = ClassUtils.getPackage(Options.I().getMethodSignature()) + '.' + secondStub.getStubName();
 		Evosuite evosuite = new EvosuiteSecondStageStrategy(stubSignature, 
@@ -175,12 +176,25 @@ public class SBESManager {
 															classPath);
 		ExecutionResult result = manager.execute(evosuite);
 		
-		System.out.println(result.getStdout());
-		
-		// analyze test case
 		// carve result
+		CarvingContext carvingContext = new CarvingContext(IOUtils.concatPath(result.getOutputDir(), packagename), result.getFilename());
+		Carver carver = new Carver(carvingContext, false);
+		List<CarvingResult> candidates = carver.carveBodyFromTests();
+
+		CarvingResult toReturn = null;
+		if (candidates.isEmpty()) {
+			logger.info("No counterexample found!");
+		}
+		else {
+			logger.info("Counterexample found");
+			if (candidates.size() > 1) {
+				logger.warn("More than one counterexample! Pruning to first one");
+			}
+			toReturn = candidates.get(0);
+		}
 		
-		return null;
+		logger.info("Generating counterexample - done");
+		return toReturn;
 	}
 	
 }
