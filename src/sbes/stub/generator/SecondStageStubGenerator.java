@@ -36,14 +36,14 @@ import sbes.stub.Stub;
 import sbes.testcase.CarvingResult;
 import sbes.util.ASTUtils;
 
-public class SecondPhaseStubStrategy extends StubGenerator {
+public class SecondStageStubGenerator extends StubGenerator {
 
-	private static final Logger logger = new Logger(SecondPhaseStubStrategy.class);
+	private static final Logger logger = new Logger(SecondStageStubGenerator.class);
 	
 	private CarvingResult candidateES;
 	private Stub stub;
 	
-	public SecondPhaseStubStrategy(Stub stub, CarvingResult candidateES) {
+	public SecondStageStubGenerator(Stub stub, CarvingResult candidateES) {
 		this.stub = stub;
 		this.candidateES = candidateES;
 	}
@@ -60,7 +60,7 @@ public class SecondPhaseStubStrategy extends StubGenerator {
 	protected List<ImportDeclaration> getImports() {
 		List<ImportDeclaration> imports = new ArrayList<>();
 		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("sbes.distance.Distance"), false, false));
-		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("com.rits.cloning.Cloner"), false, false));
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("sbes.cloning.Cloner"), false, false));
 		return imports;
 	}
 	

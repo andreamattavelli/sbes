@@ -5,6 +5,7 @@ import java.util.List;
 
 import sbes.evosuite.Evosuite;
 import sbes.evosuite.EvosuiteFirstStageStrategy;
+import sbes.evosuite.EvosuiteSecondStageStrategy;
 import sbes.execution.ExecutionManager;
 import sbes.execution.ExecutionResult;
 import sbes.logging.Logger;
@@ -12,8 +13,8 @@ import sbes.scenario.TestScenario;
 import sbes.scenario.TestScenarioGenerator;
 import sbes.statistics.Statistics;
 import sbes.stub.Stub;
-import sbes.stub.generator.FirstPhaseStubStrategy;
-import sbes.stub.generator.SecondPhaseStubStrategy;
+import sbes.stub.generator.FirstStageStubGenerator;
+import sbes.stub.generator.SecondStageStubGenerator;
 import sbes.stub.generator.StubGenerator;
 import sbes.testcase.Carver;
 import sbes.testcase.CarvingContext;
@@ -21,7 +22,7 @@ import sbes.testcase.CarvingResult;
 import sbes.testcase.Compilation;
 import sbes.testcase.CompilationContext;
 import sbes.util.ClassUtils;
-import sbes.util.ClasspathHandler;
+import sbes.util.ClasspathUtils;
 import sbes.util.DirectoryUtils;
 import sbes.util.EvosuiteUtils;
 import sbes.util.IOUtils;
@@ -41,7 +42,7 @@ public class SBESManager {
 		
 		// =================================== INIT =================================== 
 		DirectoryUtils directory = DirectoryUtils.I();
-		ClasspathHandler.checkClasspath();
+		ClasspathUtils.checkClasspath();
 
 		// ===================== INITIAL TEST SCENARIO GENERATION =====================
 		TestScenarioGenerator scenarioGenerator = TestScenarioGenerator.getInstance();
@@ -49,7 +50,7 @@ public class SBESManager {
 		List<TestScenario> initialScenarios = scenarioGenerator.getScenarios();
 
 		// ======================= FIRST PHASE STUB GENERATION ========================
-		StubGenerator firstPhaseGenerator = new FirstPhaseStubStrategy(initialScenarios);
+		StubGenerator firstPhaseGenerator = new FirstStageStubGenerator(initialScenarios);
 		Stub initialStub = firstPhaseGenerator.generateStub();
 		directory.createFirstStubDir();
 		initialStub.dumpStub(directory.getFirstStubDir());
@@ -63,22 +64,16 @@ public class SBESManager {
 			// ======================== FIRST PHASE SYNTHESIS =========================
 			CarvingResult candidateES = synthesizeEquivalentSequence(stub, manager, directory);
 			
-			
 			// ===================== SECOND PHASE STUB GENERATION =====================
 			// generate second stub from carved test case
-			StubGenerator secondPhaseGenerator = new SecondPhaseStubStrategy(stub, candidateES);
+			StubGenerator secondPhaseGenerator = new SecondStageStubGenerator(stub, candidateES);
 			Stub secondStub = secondPhaseGenerator.generateStub();
 			directory.createSecondStubDir();
 			secondStub.dumpStub(directory.getSecondStubDir());
 			
-			System.out.println(secondStub.getAst().toString());
-			
-			System.exit(-1);
-			
-			
 			// ================== SECOND PHASE COUNTEREXAMPLE SEARCH ==================
 			// compile second stub
-			CarvingResult counterexample = generateCounterexample();
+			CarvingResult counterexample = generateCounterexample(secondStub, manager, directory);
 			
 			// if solution is not found: add test scenario to stub
 			
@@ -146,17 +141,35 @@ public class SBESManager {
 		return candidates.get(0);
 	}
 
-	private CarvingResult generateCounterexample() {
-		// compile second stub
-//		CompilationContext secondStageContext = new CompilationContext("", stub.getStubName(), "", "");
-//		boolean secondCompilationSucceeded = Compilation.compile(secondStageContext);
-//		if (!secondCompilationSucceeded) {
-//			throw new SBESException("Unable to compile second-stage stub " + stub.getStubName());
-//		}
+	private CarvingResult generateCounterexample(Stub secondStub, ExecutionManager manager, DirectoryUtils directory) {
+		String signature = Options.I().getMethodSignature();
+		String packagename = IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
+		String testDirectory = IOUtils.concatPath(directory.getSecondStubDir(), packagename);
+		
+		String classPath =	Options.I().getClassesPath() + File.pathSeparatorChar + 
+							Options.I().getJunitPath() + File.pathSeparatorChar +
+							Options.I().getEvosuitePath() + File.pathSeparatorChar +
+							directory.getSecondStubDir() + File.pathSeparatorChar +
+							this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		
+		// compile stub
+		CompilationContext compilationContext = new CompilationContext(	testDirectory, 
+																		secondStub.getStubName() + ".java", 
+																		directory.getSecondStubDir(), 
+																		classPath);
+		
+		boolean compilationSucceeded = Compilation.compile(compilationContext);
+		if (!compilationSucceeded) {
+			throw new SBESException("Unable to compile second-stage stub " + secondStub.getStubName());
+		}
+		
 		
 		// run evosuite
-//		Evosuite secondStageEvosuite = new EvosuiteSecondStageStrategy("classSignature", "methodSignature");
-//		manager.execute(secondStageEvosuite);
+		String stubSignature = ClassUtils.getPackage(Options.I().getMethodSignature()) + '.' + secondStub.getStubName();
+		Evosuite evosuite = new EvosuiteSecondStageStrategy(stubSignature, 
+															ClassUtils.getMethodname(Options.I().getMethodSignature()), 
+															classPath);
+		ExecutionResult result = manager.execute(evosuite);
 		
 		// analyze test case
 		// carve result

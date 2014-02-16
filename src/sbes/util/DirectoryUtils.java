@@ -11,12 +11,13 @@ public class DirectoryUtils {
 
 	private static DirectoryUtils instance = null;
 	private static String baseDirectory = System.getProperty("user.dir");
+	private static String experimentDir;
+	private static String scenariosDir = "init-scenarios";
+	private static String synthesisDir = "evosuite-tests";
 	private static String stubDir = "stubs";
 	private static String firstStubDir = "first-stage";
 	private static String secondStubDir = "second-stage";
 	private static String iterationPrefix = "iteration_";
-	private static String scenariosDir = "init-scenarios";
-	private static String experimentDir;
 	
 	private int firstStubs;
 	private int secondStubs;
@@ -53,6 +54,12 @@ public class DirectoryUtils {
 			if (!stub.exists()) {
 				stub.mkdirs();
 			}
+			// synthesis dir
+			toReturn = IOUtils.concatPath(baseDirectory, experimentDir, synthesisDir);
+			File synthesis = new File(toReturn);
+			if (!synthesis.exists()) {
+				synthesis.mkdirs();
+			}
 		}
 		catch (SecurityException e) {
 			logger.error("Unable to create experiment directories due: ", e);
@@ -73,6 +80,14 @@ public class DirectoryUtils {
 		return IOUtils.concatPath(baseDirectory, experimentDir, scenariosDir);
 	}
 
+	public String getFirstStubEvosuiteDir() {
+		return IOUtils.concatPath(baseDirectory, experimentDir, synthesisDir, firstStubDir, iterationPrefix + Integer.toString(firstStubs));
+	}
+
+	public String getSecondStubEvosuiteDir() {
+		return IOUtils.concatPath(baseDirectory, experimentDir, synthesisDir, secondStubDir, iterationPrefix + Integer.toString(secondStubs));
+	}
+	
 	public String getFirstStubDir() {
 		return IOUtils.concatPath(baseDirectory, experimentDir, stubDir, firstStubDir, iterationPrefix + Integer.toString(firstStubs));
 	}
@@ -92,6 +107,11 @@ public class DirectoryUtils {
 			if (!stub.exists()) {
 				stub.mkdirs();
 			}
+			toReturn = IOUtils.concatPath(baseDirectory, experimentDir, synthesisDir, firstStubDir, iterationPrefix + Integer.toString(firstStubs));
+			File synthesis = new File(toReturn);
+			if (!synthesis.exists()) {
+				synthesis.mkdirs();
+			}
 		}
 		catch (SecurityException e) {
 			logger.error("Unable to create first stage stub directory due: ", e);
@@ -110,6 +130,11 @@ public class DirectoryUtils {
 			File stub = new File(toReturn);
 			if (!stub.exists()) {
 				stub.mkdirs();
+			}
+			toReturn = IOUtils.concatPath(baseDirectory, experimentDir, synthesisDir, secondStubDir, iterationPrefix + Integer.toString(secondStubs));
+			File synthesis = new File(toReturn);
+			if (!synthesis.exists()) {
+				synthesis.mkdirs();
 			}
 		}
 		catch (SecurityException e) {

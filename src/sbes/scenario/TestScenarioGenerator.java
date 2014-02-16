@@ -25,7 +25,7 @@ import sbes.execution.ExecutionManager;
 import sbes.execution.ExecutionResult;
 import sbes.execution.WorkerException;
 import sbes.logging.Logger;
-import sbes.stub.generator.FirstPhaseStubStrategy;
+import sbes.stub.generator.FirstStageStubGenerator;
 import sbes.testcase.Carver;
 import sbes.testcase.CarvingContext;
 import sbes.testcase.CarvingResult;
@@ -145,27 +145,27 @@ public class TestScenarioGenerator {
 					VariableDeclarationExpr vde = (VariableDeclarationExpr) estmt.getExpression();
 					if (vde.getType().toString().equals(className)) {
 						var = vde.getVars().get(0).getId();
-						Expression target = ASTUtils.createArrayAccess(FirstPhaseStubStrategy.EXPECTED_STATE, Integer.toString(index));
+						Expression target = ASTUtils.createArrayAccess(FirstStageStubGenerator.EXPECTED_STATE, Integer.toString(index));
 						Expression value = vde.getVars().get(0).getInit();
 						AssignExpr ae = new AssignExpr(target, value, Operator.assign);
 						cloned.getStmts().remove(i);
 						cloned.getStmts().add(i, new ExpressionStmt(ae));
 						
-						Expression target_act = ASTUtils.createArrayAccess(FirstPhaseStubStrategy.ACTUAL_STATE, Integer.toString(index));
+						Expression target_act = ASTUtils.createArrayAccess(FirstStageStubGenerator.ACTUAL_STATE, Integer.toString(index));
 						AssignExpr ae_act = new AssignExpr(target_act, value, Operator.assign);
 						actualStatements.add(new ExpressionStmt(ae_act));
 					}
 					else if (vde.getVars().get(0).getInit().toString().contains(methodName)) {
-						Expression target = ASTUtils.createArrayAccess(FirstPhaseStubStrategy.EXPECTED_RESULT, Integer.toString(index));
+						Expression target = ASTUtils.createArrayAccess(FirstStageStubGenerator.EXPECTED_RESULT, Integer.toString(index));
 						Expression value = vde.getVars().get(0).getInit();
 						if (value instanceof MethodCallExpr) {
 							MethodCallExpr mce = (MethodCallExpr) value;
-							mce.setScope(ASTUtils.createArrayAccess(FirstPhaseStubStrategy.EXPECTED_STATE, Integer.toString(index)));
+							mce.setScope(ASTUtils.createArrayAccess(FirstStageStubGenerator.EXPECTED_STATE, Integer.toString(index)));
 						}
 						else if (value instanceof CastExpr) {
 							CastExpr cast = (CastExpr) value;
 							MethodCallExpr mce = (MethodCallExpr) cast.getExpr(); // safe cast: in our case it is always a method call
-							mce.setScope(ASTUtils.createArrayAccess(FirstPhaseStubStrategy.EXPECTED_STATE, Integer.toString(index)));
+							mce.setScope(ASTUtils.createArrayAccess(FirstStageStubGenerator.EXPECTED_STATE, Integer.toString(index)));
 						}
 						AssignExpr ae = new AssignExpr(target, value, Operator.assign);
 						cloned.getStmts().remove(i);
@@ -183,8 +183,8 @@ public class TestScenarioGenerator {
 							CloneVisitor mceCloner = new CloneVisitor();
 							MethodCallExpr clonedMce = (MethodCallExpr) mceCloner.visit(mce, null);
 							
-							mce.setScope(ASTUtils.createArrayAccess(FirstPhaseStubStrategy.EXPECTED_STATE, Integer.toString(index)));
-							clonedMce.setScope(ASTUtils.createArrayAccess(FirstPhaseStubStrategy.ACTUAL_STATE, Integer.toString(index)));
+							mce.setScope(ASTUtils.createArrayAccess(FirstStageStubGenerator.EXPECTED_STATE, Integer.toString(index)));
+							clonedMce.setScope(ASTUtils.createArrayAccess(FirstStageStubGenerator.ACTUAL_STATE, Integer.toString(index)));
 							actualStatements.add(new ExpressionStmt(clonedMce));
 						}
 					}

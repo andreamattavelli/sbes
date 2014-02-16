@@ -42,9 +42,9 @@ import sbes.stub.Stub;
 import sbes.util.ASTUtils;
 import sbes.util.MethodUtils;
 
-public class FirstPhaseStubStrategy extends StubGenerator {
+public class FirstStageStubGenerator extends StubGenerator {
 
-	private static final Logger logger = new Logger(FirstPhaseStubStrategy.class);
+	private static final Logger logger = new Logger(FirstStageStubGenerator.class);
 	
 	public static final String NUM_SCENARIOS = "NUM_SCENARIOS";
 	public static final String EXPECTED_STATE = "expected_states";
@@ -54,7 +54,7 @@ public class FirstPhaseStubStrategy extends StubGenerator {
 
 	private List<TestScenario> scenarios;
 	
-	public FirstPhaseStubStrategy(List<TestScenario> scenarios) {
+	public FirstStageStubGenerator(List<TestScenario> scenarios) {
 		this.scenarios = scenarios;
 	}
 	
