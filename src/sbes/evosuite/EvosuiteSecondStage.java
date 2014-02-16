@@ -8,11 +8,11 @@ import java.util.List;
 import sbes.option.Options;
 import sbes.util.DirectoryUtils;
 
-public class EvosuiteSecondStageStrategy extends Evosuite {
+public class EvosuiteSecondStage extends Evosuite {
 	
 	private final String additionalClasspath;
 	
-	public EvosuiteSecondStageStrategy(String classSignature, String methodSignature, String additionalClasspath) {
+	public EvosuiteSecondStage(String classSignature, String methodSignature, String additionalClasspath) {
 		super(classSignature, methodSignature);
 		this.additionalClasspath = additionalClasspath;
 		this.outputDir = DirectoryUtils.I().getSecondStubEvosuiteDir();

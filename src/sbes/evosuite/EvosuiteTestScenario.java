@@ -10,9 +10,9 @@ import sbes.option.Options;
 import sbes.util.ClassUtils;
 import sbes.util.DirectoryUtils;
 
-public class EvosuiteTestScenarioStrategy extends Evosuite {
+public class EvosuiteTestScenario extends Evosuite {
 
-	public EvosuiteTestScenarioStrategy(String classSignature, String methodSignature) {
+	public EvosuiteTestScenario(String classSignature, String methodSignature) {
 		super(classSignature, methodSignature);
 		this.outputDir =  DirectoryUtils.I().getTestScenarioDir();
 	}
