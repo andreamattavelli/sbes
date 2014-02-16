@@ -17,7 +17,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import sbes.Options;
 import sbes.SBESException;
 import sbes.evosuite.Evosuite;
 import sbes.evosuite.EvosuiteTestScenarioStrategy;
@@ -25,6 +24,7 @@ import sbes.execution.ExecutionManager;
 import sbes.execution.ExecutionResult;
 import sbes.execution.WorkerException;
 import sbes.logging.Logger;
+import sbes.option.Options;
 import sbes.stub.generator.FirstStageStubGenerator;
 import sbes.testcase.Carver;
 import sbes.testcase.CarvingContext;

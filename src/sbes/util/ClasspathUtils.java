@@ -2,11 +2,11 @@ package sbes.util;
 
 import java.io.File;
 
-import sbes.Options;
 import sbes.SBESException;
 import sbes.evosuite.Evosuite;
 import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
+import sbes.option.Options;
 
 public class ClasspathUtils {
 

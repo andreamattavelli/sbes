@@ -9,6 +9,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
 import sbes.logging.Logger;
+import sbes.option.Options;
 
 public class SBES {
 

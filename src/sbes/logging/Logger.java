@@ -7,7 +7,7 @@ import java.util.Date;
 public class Logger {
 
 	private final SimpleDateFormat dateFmt = new SimpleDateFormat("yy-MM-dd HH:mm:ss.SSS");
-	private static Level level = Level.fromString("debug");
+	public static Level level = Level.fromString("debug");
 
 	public static void setLevel(final Level level) {
 		Logger.level = level;

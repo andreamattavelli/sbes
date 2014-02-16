@@ -1,6 +1,8 @@
-package sbes;
+package sbes.option;
 
 import org.kohsuke.args4j.Option;
+
+import sbes.logging.Level;
 
 public class Options {
 
@@ -59,6 +61,10 @@ public class Options {
 			usage = "Maximum time limit for synthesis (test scenario generation excluded)")
 	private int maxTime = 180;
 	
+	@Option(name = "--log_level",
+			usage = "Logging level to be used: FATAL, ERROR, WARN, INFO, DEBUG",
+			handler = LevelHandler.class)
+	private Level logLevel;
 	
 	public String getClassesPath() {
 		return classesPath;

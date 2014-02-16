@@ -9,6 +9,7 @@ import sbes.evosuite.EvosuiteSecondStageStrategy;
 import sbes.execution.ExecutionManager;
 import sbes.execution.ExecutionResult;
 import sbes.logging.Logger;
+import sbes.option.Options;
 import sbes.scenario.TestScenario;
 import sbes.scenario.TestScenarioGenerator;
 import sbes.statistics.Statistics;

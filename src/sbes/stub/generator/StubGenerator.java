@@ -14,9 +14,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import sbes.Options;
 import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
+import sbes.option.Options;
 import sbes.stub.GenerationException;
 import sbes.stub.Stub;
 import sbes.util.ClassUtils;

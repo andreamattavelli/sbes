@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import sbes.Options;
+import sbes.option.Options;
 import sbes.util.DirectoryUtils;
 
 public class EvosuiteFirstStageStrategy extends Evosuite {
@@ -27,7 +27,7 @@ public class EvosuiteFirstStageStrategy extends Evosuite {
 		evo.add("-class");
 		evo.add(classSignature);
 		evo.add("-Dtarget_method=" + getTargetMethodSignature());
-		evo.add("-Dsearch_budget=" + Options.I().getTestSearchBudget());
+		evo.add("-Dsearch_budget=" + Options.I().getSearchBudget());
 		evo.add("-Dtest_dir=" + outputDir);
 		evo.add("-Dassertions=false");
 		evo.add("-Dhtml=false");

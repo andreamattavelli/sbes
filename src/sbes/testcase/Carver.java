@@ -11,10 +11,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import sbes.Options;
 import sbes.ast.MethodCallVisitor;
 import sbes.ast.MethodVisitor;
 import sbes.logging.Logger;
+import sbes.option.Options;
 import sbes.util.ClassUtils;
 import sbes.util.IOUtils;
 

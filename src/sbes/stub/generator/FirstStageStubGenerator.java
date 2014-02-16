@@ -35,8 +35,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import sbes.Options;
 import sbes.logging.Logger;
+import sbes.option.Options;
 import sbes.scenario.TestScenario;
 import sbes.stub.Stub;
 import sbes.util.ASTUtils;
@@ -208,12 +208,14 @@ public class FirstStageStubGenerator extends StubGenerator {
 
 	private Method[] preventMethodBloat(Method targetMethod, Method[] methods) {
 		if (methods.length > Options.I().getMethodBloatFactor()) {
+			logger.debug("Preventing method bloat");
 			List<Method> toReturn = new ArrayList<Method>();
 			for (Method method : methods) {
 				if (method.getDeclaringClass().equals(Object.class) ||
 						method.getName().equals("toArray") ||
 						method.getName().contains("iterator") ||
 						method.getName().contains("Iterator")) {
+					logger.debug(" * Removed method " + method);
 					continue;
 				}
 				toReturn.add(method);

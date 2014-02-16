@@ -6,9 +6,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import sbes.Options;
 import sbes.evosuite.Evosuite;
 import sbes.logging.Logger;
+import sbes.option.Options;
 
 public class ExecutionManager {
 

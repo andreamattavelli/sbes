@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import sbes.Options;
 import sbes.SBESException;
+import sbes.option.Options;
 import sbes.util.ClassUtils;
 import sbes.util.DirectoryUtils;
 
