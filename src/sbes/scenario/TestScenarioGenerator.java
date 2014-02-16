@@ -19,7 +19,7 @@ import java.util.List;
 
 import sbes.SBESException;
 import sbes.evosuite.Evosuite;
-import sbes.evosuite.EvosuiteTestScenarioStrategy;
+import sbes.evosuite.EvosuiteTestScenario;
 import sbes.execution.ExecutionManager;
 import sbes.execution.ExecutionResult;
 import sbes.execution.WorkerException;
@@ -98,7 +98,7 @@ public class TestScenarioGenerator {
 
 	private  ExecutionResult generate() {
 		ExecutionManager manager = new ExecutionManager();
-		Evosuite evosuiteCommand = new EvosuiteTestScenarioStrategy(ClassUtils.getCanonicalClassname(Options.I().getMethodSignature()), 
+		Evosuite evosuiteCommand = new EvosuiteTestScenario(ClassUtils.getCanonicalClassname(Options.I().getMethodSignature()), 
 																	ClassUtils.getMethodname(Options.I().getMethodSignature()));
 		return manager.execute(evosuiteCommand);
 	}
