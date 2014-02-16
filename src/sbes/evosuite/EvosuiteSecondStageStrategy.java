@@ -15,7 +15,7 @@ public class EvosuiteSecondStageStrategy extends Evosuite {
 	public EvosuiteSecondStageStrategy(String classSignature, String methodSignature, String additionalClasspath) {
 		super(classSignature, methodSignature);
 		this.additionalClasspath = additionalClasspath;
-		this.outputDir = DirectoryUtils.I().getFirstStubEvosuiteDir();
+		this.outputDir = DirectoryUtils.I().getSecondStubEvosuiteDir();
 	}
 
 	public String[] getCommand() {
