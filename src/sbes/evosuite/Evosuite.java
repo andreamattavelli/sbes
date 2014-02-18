@@ -2,7 +2,6 @@ package sbes.evosuite;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import sbes.execution.InternalClassloader;
@@ -14,7 +13,7 @@ import sbes.util.IOUtils;
 public abstract class Evosuite {
 
 	protected static final Logger logger = new Logger(Evosuite.class);
-	protected static final String javaCommand[] = {"java", "-Xmx2G"};
+	
 	public static final String jarName = "evosuite.jar";
 
 	protected final ClassLoader classLoader;
@@ -34,14 +33,15 @@ public abstract class Evosuite {
 
 	public String[] getCommand() {
 		List<String> evo = new ArrayList<String>();
-		evo.addAll(Arrays.asList(javaCommand));
-		evo.add("-jar");
 		if (!Options.I().getJavaPath().equals("")) {
-			evo.add(IOUtils.concatPath(Options.I().getJavaPath(), jarName));
+			evo.add(IOUtils.concatPath(Options.I().getJavaPath(), "java"));
 		}
 		else {
-			evo.add(jarName);
+			evo.add("java");
 		}
+		evo.add("-Xmx2G");
+		evo.add("-jar");
+		evo.add(jarName);
 		evo.add("-DCP="+ Options.I().getClassesPath() + File.pathSeparatorChar + ".");
 		evo.add("-class");
 		evo.add(classSignature);

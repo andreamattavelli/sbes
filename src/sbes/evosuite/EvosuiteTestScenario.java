@@ -2,7 +2,6 @@ package sbes.evosuite;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import sbes.SBESException;
@@ -21,14 +20,15 @@ public class EvosuiteTestScenario extends Evosuite {
 	@Override
 	public String[] getCommand() {
 		List<String> evo = new ArrayList<String>();
-		evo.addAll(Arrays.asList(javaCommand));
-		evo.add("-jar");
 		if (!Options.I().getJavaPath().equals("")) {
-			evo.add(IOUtils.concatPath(Options.I().getJavaPath(), jarName));
+			evo.add(IOUtils.concatPath(Options.I().getJavaPath(), "java"));
 		}
 		else {
-			evo.add(jarName);
+			evo.add("java");
 		}
+		evo.add("-Xmx2G");
+		evo.add("-jar");
+		evo.add(jarName);
 		evo.add("-DCP=" + Options.I().getClassesPath());
 		evo.add("-class");
 		evo.add(classSignature);
