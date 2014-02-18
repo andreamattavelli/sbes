@@ -8,7 +8,6 @@ import sbes.SBESException;
 import sbes.option.Options;
 import sbes.util.ClassUtils;
 import sbes.util.DirectoryUtils;
-import sbes.util.IOUtils;
 
 public class EvosuiteTestScenario extends Evosuite {
 
@@ -21,7 +20,7 @@ public class EvosuiteTestScenario extends Evosuite {
 	public String[] getCommand() {
 		List<String> evo = new ArrayList<String>();
 		if (!Options.I().getJavaPath().equals("")) {
-			evo.add(IOUtils.concatPath(Options.I().getJavaPath(), "java"));
+			evo.add(Options.I().getJavaPath() + "java");
 		}
 		else {
 			evo.add("java");

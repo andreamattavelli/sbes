@@ -8,7 +8,6 @@ import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.util.ClassUtils;
-import sbes.util.IOUtils;
 
 public abstract class Evosuite {
 
@@ -34,7 +33,7 @@ public abstract class Evosuite {
 	public String[] getCommand() {
 		List<String> evo = new ArrayList<String>();
 		if (!Options.I().getJavaPath().equals("")) {
-			evo.add(IOUtils.concatPath(Options.I().getJavaPath(), "java"));
+			evo.add(Options.I().getJavaPath() + "java");
 		}
 		else {
 			evo.add("java");

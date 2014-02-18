@@ -6,7 +6,6 @@ import java.util.List;
 
 import sbes.option.Options;
 import sbes.util.DirectoryUtils;
-import sbes.util.IOUtils;
 
 public class EvosuiteFirstStage extends Evosuite {
 
@@ -21,7 +20,7 @@ public class EvosuiteFirstStage extends Evosuite {
 	public String[] getCommand() {
 		List<String> evo = new ArrayList<String>();
 		if (!Options.I().getJavaPath().equals("")) {
-			evo.add(IOUtils.concatPath(Options.I().getJavaPath(), "java"));
+			evo.add(Options.I().getJavaPath() + "java");
 		}
 		else {
 			evo.add("java");
