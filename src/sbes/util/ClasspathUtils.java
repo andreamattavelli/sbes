@@ -3,7 +3,6 @@ package sbes.util;
 import java.io.File;
 
 import sbes.SBESException;
-import sbes.evosuite.Evosuite;
 import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
 import sbes.option.Options;
@@ -18,7 +17,7 @@ public class ClasspathUtils {
 		checkClasspath(ClassUtils.getCanonicalClassname(Options.I().getMethodSignature()));
 		logger.debug("Classpath OK");
 		logger.debug("Checking EvoSuite");
-		File evo = new File(IOUtils.concatPath(DirectoryUtils.I().getBaseDirectory(), Evosuite.jarName));
+		File evo = new File(Options.I().getEvosuitePath());
 		if (!evo.exists() || !evo.canRead()) {
 			logger.error("Could not find or execute EvoSuite!");
 			throw new SBESException("Unable to find or run EvoSuite");
