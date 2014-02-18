@@ -27,6 +27,10 @@ public class Options {
 			required = true)
 	private String junitPath;
 	
+	@Option(name = "--java",
+			usage = "Path to Java excutable")
+	private String javaPath = "";
+	
 	@Option(name = "--evosuite",
 			usage = "Path to EvoSuite jar",
 			required = true)
@@ -96,6 +100,10 @@ public class Options {
 
 	public String getJunitPath() {
 		return junitPath;
+	}
+	
+	public String getJavaPath() {
+		return javaPath;
 	}
 	
 	public String getEvosuitePath() {

@@ -7,6 +7,7 @@ import java.util.List;
 
 import sbes.option.Options;
 import sbes.util.DirectoryUtils;
+import sbes.util.IOUtils;
 
 public class EvosuiteSecondStage extends Evosuite {
 	
@@ -22,7 +23,12 @@ public class EvosuiteSecondStage extends Evosuite {
 		List<String> evo = new ArrayList<String>();
 		evo.addAll(Arrays.asList(javaCommand));
 		evo.add("-jar");
-		evo.add(jarName);
+		if (!Options.I().getJavaPath().equals("")) {
+			evo.add(IOUtils.concatPath(Options.I().getJavaPath(), jarName));
+		}
+		else {
+			evo.add(jarName);
+		}
 		evo.add("-DCP="+ Options.I().getClassesPath() + File.pathSeparatorChar + "." + File.pathSeparatorChar + additionalClasspath);
 		evo.add("-class");
 		evo.add(classSignature);

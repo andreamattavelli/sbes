@@ -9,6 +9,7 @@ import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.util.ClassUtils;
+import sbes.util.IOUtils;
 
 public abstract class Evosuite {
 
@@ -35,7 +36,12 @@ public abstract class Evosuite {
 		List<String> evo = new ArrayList<String>();
 		evo.addAll(Arrays.asList(javaCommand));
 		evo.add("-jar");
-		evo.add(jarName);
+		if (!Options.I().getJavaPath().equals("")) {
+			evo.add(IOUtils.concatPath(Options.I().getJavaPath(), jarName));
+		}
+		else {
+			evo.add(jarName);
+		}
 		evo.add("-DCP="+ Options.I().getClassesPath() + File.pathSeparatorChar + ".");
 		evo.add("-class");
 		evo.add(classSignature);
