@@ -20,7 +20,7 @@ public class EvosuiteSecondStage extends Evosuite {
 	public String[] getCommand() {
 		List<String> evo = new ArrayList<String>();
 		if (!Options.I().getJavaPath().equals("")) {
-			evo.add(Options.I().getJavaPath() + "java");
+			evo.add(Options.I().getJavaPath() + File.separatorChar + "java");
 		}
 		else {
 			evo.add("java");
