@@ -10,6 +10,7 @@ import org.kohsuke.args4j.CmdLineParser;
 
 import sbes.logging.Logger;
 import sbes.option.Options;
+import sbes.stub.GenerationException;
 
 public class SBES {
 
@@ -33,7 +34,7 @@ public class SBES {
 
 			logger.info("SBES ended successfully");
 		}
-		catch (SBESException e) {
+		catch (SBESException | GenerationException e) {
 			logger.fatal("Execution aborted due: " + e.getMessage());
 		}
 	}

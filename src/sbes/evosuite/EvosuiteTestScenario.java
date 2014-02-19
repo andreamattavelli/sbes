@@ -13,7 +13,7 @@ public class EvosuiteTestScenario extends Evosuite {
 
 	public EvosuiteTestScenario(String classSignature, String methodSignature) {
 		super(classSignature, methodSignature);
-		this.outputDir =  DirectoryUtils.I().getTestScenarioDir();
+		this.outputDir = DirectoryUtils.I().getTestScenarioDir();
 	}
 	
 	@Override
@@ -38,6 +38,7 @@ public class EvosuiteTestScenario extends Evosuite {
 		additional.add("-Dshow_progress=false");
 		additional.add("-Dcriterion=branch");
 		additional.add("-Dtest_factory=RANDOM");
+		additional.add("-Dlimit_search_to_target=true");
 		return additional;
 	}
 	

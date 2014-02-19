@@ -6,6 +6,7 @@ import japa.parser.ast.body.BodyDeclaration;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.ConstructorDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
+import japa.parser.ast.body.Parameter;
 import japa.parser.ast.body.TypeDeclaration;
 import japa.parser.ast.body.VariableDeclarator;
 import japa.parser.ast.body.VariableDeclaratorId;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sbes.logging.Logger;
+import sbes.stub.GenerationException;
 import sbes.stub.Stub;
 import sbes.testcase.CarvingResult;
 import sbes.util.ASTUtils;
@@ -123,6 +125,10 @@ public class SecondStageStubGenerator extends StubGenerator {
 		logger.debug("Adding method_under_test method");
 		MethodDeclaration method_under_test = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "method_under_test");
 		
+		Class<?>[] parameters = targetMethod.getParameterTypes();
+		List<Parameter> param = getParameterType(parameters);
+		method_under_test.setParameters(param);
+		
 		BlockStmt stmt = new BlockStmt();
 		
 		// Cloner c = new Cloner();
@@ -132,10 +138,13 @@ public class SecondStageStubGenerator extends StubGenerator {
 		ASTHelper.addStmt(stmt, createCloneObj(targetMethod));
 		
 		// RESULT_CLASS expected_result = this.METHOD
-		ASTHelper.addStmt(stmt, createExpectedResult(targetMethod));
+		ASTHelper.addStmt(stmt, createExpectedResult(targetMethod, param));
 		
 		// RESULT_CLASS actual_result = clone.CARVED_METHOD(S)
 		List<Statement> stmts = createActualResult(targetMethod, candidateES);
+		if (stmts.isEmpty()) {
+			throw new GenerationException("Unable to carve candidate: no statements!");
+		}
 		stmt.getStmts().addAll(stmts);
 		
 		NameExpr distanceClass = ASTHelper.createNameExpr("Distance");
@@ -187,8 +196,11 @@ public class SecondStageStubGenerator extends StubGenerator {
 		return new ExpressionStmt(assignment);
 	}
 	
-	private Statement createExpectedResult(Method targetMethod) {
+	private Statement createExpectedResult(Method targetMethod, List<Parameter> parameters) {
 		List<Expression> methodParameters = new ArrayList<Expression>();
+		for (Parameter parameter : parameters) {
+			methodParameters.add(ASTHelper.createNameExpr(parameter.getId().getName()));
+		}
 		Expression right = new MethodCallExpr(new ThisExpr(), targetMethod.getName(), methodParameters);
 		List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
 		vars.add(new VariableDeclarator(new VariableDeclaratorId("expected_result")));

@@ -94,7 +94,7 @@ public class SBESManager {
 	}
 	
 	private CarvingResult synthesizeEquivalentSequence(Stub stub, ExecutionManager manager, DirectoryUtils directory) {
-		logger.info("Synthesising equivalent sequence candidate");
+		logger.info("Synthesizing equivalent sequence candidate");
 		String signature = Options.I().getMethodSignature();
 		String packagename = IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
 		String testDirectory = IOUtils.concatPath(directory.getFirstStubDir(), packagename);
@@ -144,7 +144,7 @@ public class SBESManager {
 			logger.warn("More than one candidate! Pruning to first one");
 		}
 		
-		logger.info("Synthesising equivalent sequence candidate - done");
+		logger.info("Synthesizing equivalent sequence candidate - done");
 		return candidates.get(0);
 	}
 
