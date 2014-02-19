@@ -57,7 +57,7 @@ public abstract class Evosuite {
 	
 	protected abstract String getClassPath();
 	protected abstract String getTargetMethodSignature();
-	protected abstract int getSearchBudget();
+	public abstract int getSearchBudget();
 	protected abstract Collection<String> getAdditionalParameters();
 
 	public String getTestDirectory() {

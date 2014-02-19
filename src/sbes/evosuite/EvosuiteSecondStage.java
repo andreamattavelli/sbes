@@ -23,7 +23,7 @@ public class EvosuiteSecondStage extends Evosuite {
 	}
 	
 	@Override
-	protected int getSearchBudget() {
+	public int getSearchBudget() {
 		return Options.I().getSearchBudget();
 	}
 	

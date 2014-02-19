@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 
 import sbes.evosuite.Evosuite;
 import sbes.logging.Logger;
-import sbes.option.Options;
 
 public class ExecutionManager {
 
@@ -23,7 +22,7 @@ public class ExecutionManager {
 
 		boolean result = false;
 		try {
-			result = executor.awaitTermination(calculateTimeout(), TimeUnit.SECONDS);
+			result = executor.awaitTermination(calculateTimeout(evosuite), TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			logger.fatal("Timeout during test case generation");
 			throw new WorkerException("Timeout during test case generation");
@@ -46,8 +45,8 @@ public class ExecutionManager {
 		return toReturn;
 	}
 
-	private long calculateTimeout() {
-		int searchBudget = Options.I().getTestSearchBudget();
+	private long calculateTimeout(Evosuite evosuite) {
+		int searchBudget = evosuite.getSearchBudget();
 		if (searchBudget <= 60) {
 			return searchBudget * 2;
 		}
