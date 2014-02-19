@@ -40,7 +40,7 @@ public abstract class Evosuite {
 		}
 		evo.add("-Xmx2G");
 		evo.add("-jar");
-		evo.add(jarName);
+		evo.add(Options.I().getEvosuitePath() + File.separatorChar + jarName);
 		evo.add("-DCP="+ Options.I().getClassesPath() + File.pathSeparatorChar + ".");
 		evo.add("-class");
 		evo.add(classSignature);

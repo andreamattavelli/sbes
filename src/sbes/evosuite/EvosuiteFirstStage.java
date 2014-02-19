@@ -27,7 +27,7 @@ public class EvosuiteFirstStage extends Evosuite {
 		}
 		evo.add("-Xmx2G");
 		evo.add("-jar");
-		evo.add(jarName);
+		evo.add(Options.I().getEvosuitePath() + File.separatorChar + jarName);
 		evo.add("-DCP="+ Options.I().getClassesPath() + File.pathSeparatorChar + "." + File.pathSeparatorChar + additionalClasspath);
 		evo.add("-class");
 		evo.add(classSignature);
