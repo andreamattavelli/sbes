@@ -64,8 +64,8 @@ public class TestScenarioGenerator {
 			ExecutionResult result = generate();
 
 			logger.debug("Check whether the generation was successful");
-			if (!EvosuiteUtils.succeeded(result.getStdout(), result.getStderr())) {
-				throw new SBESException("Generation failed due " + result.getStdout() + "\n" + result.getStderr()); //FIXME
+			if (result.getExitStatus() != 0 && !EvosuiteUtils.succeeded(result.getStdout(), result.getStderr())) {
+				throw new SBESException("Generation failed due " + result.getStdout() + System.lineSeparator() + result.getStderr());
 			}
 
 			logger.debug("Check whether the generated test cases compile");
@@ -120,7 +120,10 @@ public class TestScenarioGenerator {
 	private void testToArrayScenario(List<CarvingResult> carvedTests) {
 		logger.debug("Generalizing carved bodies to array-based test scenarios");
 		for (CarvingResult carvedTest : carvedTests) {
-			scenarios.add(generalizeTestToScenario(carvedTest));
+			TestScenario ts = generalizeTestToScenario(carvedTest);
+			if (ts != null) {
+				scenarios.add(ts);
+			}
 		}
 		logger.debug("Generalization - done");
 	}
@@ -148,6 +151,7 @@ public class TestScenarioGenerator {
 					 */
 					VariableDeclarationExpr vde = (VariableDeclarationExpr) estmt.getExpression();
 					if (vde.getType().toString().equals(className)) {
+						// EXPECTED_STATE
 						var = vde.getVars().get(0).getId();
 						Expression target = ASTUtils.createArrayAccess(FirstStageStubGenerator.EXPECTED_STATE, Integer.toString(index));
 						Expression value = vde.getVars().get(0).getInit();
@@ -160,11 +164,16 @@ public class TestScenarioGenerator {
 						actualStatements.add(new ExpressionStmt(ae_act));
 					}
 					else if (vde.getVars().get(0).getInit().toString().contains(methodName)) {
+						// EXPECTED_RESULT = EXPECTED_STATE.METHOD
 						Expression target = ASTUtils.createArrayAccess(FirstStageStubGenerator.EXPECTED_RESULT, Integer.toString(index));
 						Expression value = vde.getVars().get(0).getInit();
 						if (value instanceof MethodCallExpr) {
 							MethodCallExpr mce = (MethodCallExpr) value;
 							mce.setScope(ASTUtils.createArrayAccess(FirstStageStubGenerator.EXPECTED_STATE, Integer.toString(index)));
+							if (isArgumentNull(mce.getArgs())) {
+								// if the arguments are null, we discard the test since it is not meaningful
+								return null;
+							}
 							handleArguments(transformationMap, mce.getArgs());
 						}
 						else if (value instanceof CastExpr) {
@@ -223,6 +232,30 @@ public class TestScenarioGenerator {
 		return new TestScenario(carvedTest, cloned);
 	}
 	
+	private boolean isArgumentNull(List<Expression> args) {
+		/*
+		 * we should use more powerful dynamic analyses to understand the value
+		 * of a variable
+		 */
+		for (Expression arg : args) {
+			if (arg instanceof NameExpr) {
+				NameExpr ne = (NameExpr) arg;
+				if (!ne.getName().equals("null")) {
+					return false;
+				}
+			} else if (arg instanceof CastExpr) {
+				CastExpr cast = (CastExpr) arg;
+				if (cast.getExpr() instanceof NameExpr) {
+					NameExpr ne = (NameExpr) cast.getExpr();
+					if (!ne.getName().equals("null")) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
 	private void handleArguments(Map<String, String> transformationMap, List<Expression> args) {
 		if (args == null) {
 			return;

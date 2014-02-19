@@ -50,6 +50,7 @@ public class Worker implements Callable<ExecutionResult> {
 			result.setStdout(getOutStream());
 			result.setStderr(getErrStream());
 			result.setFilename(evosuite.getTestFilename());
+			result.setExitStatus(this.exitStatus);
 		}
 		catch (IOException | InterruptedException e) {
 			logger.error("Unable to execute command", e);

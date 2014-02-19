@@ -8,6 +8,7 @@ public class ExecutionResult {
 	private String[] command;
 	private String stdout;
 	private String stderr;
+	private int exitStatus;
 
 	public ExecutionResult(final String outputDir) {
 		this.outputDir = outputDir;
@@ -47,6 +48,14 @@ public class ExecutionResult {
 
 	public void setStderr(final String stderr) {
 		this.stderr = stderr;
+	}
+	
+	public int getExitStatus() {
+		return exitStatus;
+	}
+	
+	public void setExitStatus(int exitStatus) {
+		this.exitStatus = exitStatus;
 	}
 	
 }
