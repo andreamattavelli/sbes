@@ -1,9 +1,8 @@
 package sbes.evosuite;
 
-import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import sbes.SBESException;
 import sbes.option.Options;
@@ -18,36 +17,28 @@ public class EvosuiteTestScenario extends Evosuite {
 	}
 	
 	@Override
-	public String[] getCommand() {
-		List<String> evo = new ArrayList<String>();
-		if (!Options.I().getJavaPath().equals("")) {
-			evo.add(Options.I().getJavaPath() + File.separatorChar + "java");
-		}
-		else {
-			evo.add("java");
-		}
-		evo.add("-Xmx2G");
-		evo.add("-jar");
-		evo.add(Options.I().getEvosuitePath() + File.separatorChar + jarName);
-		evo.add("-DCP=" + Options.I().getClassesPath());
-		evo.add("-class");
-		evo.add(classSignature);
-		evo.add("-Dtarget_method=" + getTargetMethodSignature());
-		evo.add("-Dsearch_budget=" + Options.I().getTestSearchBudget());
-		evo.add("-Dtest_dir=" + outputDir);
-		evo.add("-Dassertions=false");
-		evo.add("-Dhtml=false");
-		evo.add("-generateSuite");
-		evo.add("-Dshow_progress=false");
-		evo.add("-Dcriterion=branch");
-		evo.add("-Dtest_factory=RANDOM");
-		command = evo.toString();
-		return evo.toArray(new String[0]);
+	protected String getClassPath() {
+		return Options.I().getClassesPath();
 	}
 
 	@Override
 	protected String getTargetMethodSignature() {
 		return getBytecodeSignature(classSignature, methodSignature);
+	}
+	
+	@Override
+	protected int getSearchBudget() {
+		return Options.I().getTestSearchBudget();
+	}
+	
+	@Override
+	protected Collection<String> getAdditionalParameters() {
+		Collection<String> additional = new ArrayList<String>();
+		additional.add("-generateSuite");
+		additional.add("-Dshow_progress=false");
+		additional.add("-Dcriterion=branch");
+		additional.add("-Dtest_factory=RANDOM");
+		return additional;
 	}
 	
 	private String getBytecodeSignature(final String classname, final String methodname) {

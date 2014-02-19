@@ -60,9 +60,6 @@ public class TestScenarioGenerator {
 		try {
 			ExecutionResult result = generate();
 			
-			System.out.println(result.getStdout());
-			System.out.println(result.getStderr());
-			
 			logger.debug("Check whether the generation was successful");
 			if (!EvosuiteUtils.succeeded(result.getStdout(), result.getStderr())) {
 				throw new SBESException("Generation failed due " + result.getStdout() + "\n" + result.getStderr()); //FIXME

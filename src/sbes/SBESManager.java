@@ -83,6 +83,7 @@ public class SBESManager {
 			}
 			else {
 				// if solution is found: add test scenario to stub
+				TestScenario ts = TestScenarioGenerator.getInstance().carvedTestToScenario(counterexample);
 			}
 			statistics.iterationFinished();
 		}

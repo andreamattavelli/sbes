@@ -32,8 +32,8 @@ public class Options {
 	private String javaPath = "";
 	
 	@Option(name = "--evosuite",
-			usage = "Path to EvoSuite jar")
-	private String evosuitePath = ".";
+			usage = "Path to EvoSuite jar (included jar name)")
+	private String evosuitePath = "./evosuite.jar";
 	
 	@Option(name = "--method",
 			usage = "Java-like method signature under investigation",

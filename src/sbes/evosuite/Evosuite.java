@@ -2,6 +2,7 @@ package sbes.evosuite;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import sbes.execution.InternalClassloader;
@@ -40,19 +41,24 @@ public abstract class Evosuite {
 		}
 		evo.add("-Xmx2G");
 		evo.add("-jar");
-		evo.add(Options.I().getEvosuitePath() + File.separatorChar + jarName);
-		evo.add("-DCP="+ Options.I().getClassesPath() + File.pathSeparatorChar + ".");
+		evo.add(Options.I().getEvosuitePath());
+		evo.add("-DCP="+ getClassPath());
 		evo.add("-class");
 		evo.add(classSignature);
 		evo.add("-Dtarget_method=" + getTargetMethodSignature());
-		evo.add("-Dsearch_budget=" + Options.I().getTestSearchBudget());
+		evo.add("-Dsearch_budget=" + getSearchBudget());
 		evo.add("-Dtest_dir=" + outputDir);
 		evo.add("-Dassertions=false");
 		evo.add("-Dhtml=false");
+		evo.addAll(getAdditionalParameters());
+		this.command = evo.toString();
 		return evo.toArray(new String[0]);
 	}
 	
+	protected abstract String getClassPath();
 	protected abstract String getTargetMethodSignature();
+	protected abstract int getSearchBudget();
+	protected abstract Collection<String> getAdditionalParameters();
 
 	public String getTestDirectory() {
 		return outputDir;
