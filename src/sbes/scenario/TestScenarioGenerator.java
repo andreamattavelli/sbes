@@ -233,6 +233,9 @@ public class TestScenarioGenerator {
 	}
 	
 	private boolean isArgumentNull(List<Expression> args) {
+		if (args == null) {
+			return false;
+		}
 		/*
 		 * we should use more powerful dynamic analyses to understand the value
 		 * of a variable
