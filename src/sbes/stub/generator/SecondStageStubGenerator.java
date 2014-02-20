@@ -259,6 +259,18 @@ public class SecondStageStubGenerator extends StubGenerator {
 							mce.setScope(ASTHelper.createNameExpr("clone"));
 						}
 					}
+					else if (varName != null) {
+						Expression expr = vde.getVars().get(0).getInit();
+						if (expr instanceof MethodCallExpr) {
+							MethodCallExpr mce = (MethodCallExpr) expr;
+							if (mce.getScope() instanceof NameExpr) {
+								NameExpr ne = (NameExpr) mce.getScope();
+								if (ne.getName().equals(varName)) {
+									mce.setScope(ASTHelper.createNameExpr("clone"));
+								}
+							}
+						}
+					}
 				}
 				else if (estmt.getExpression() instanceof MethodCallExpr) {
 					if (varName == null) {
