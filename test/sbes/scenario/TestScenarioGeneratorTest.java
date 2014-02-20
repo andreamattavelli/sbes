@@ -1,6 +1,5 @@
 package sbes.scenario;
 
-import static org.junit.Assert.*;
 import japa.parser.JavaParser;
 import japa.parser.ParseException;
 import japa.parser.ast.ImportDeclaration;
@@ -10,7 +9,7 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
-import sbes.Options;
+import sbes.option.Options;
 import sbes.testcase.CarvingResult;
 
 public class TestScenarioGeneratorTest {
@@ -70,6 +69,51 @@ public class TestScenarioGeneratorTest {
 			System.out.println(ts.getScenario().toString());
 			
 		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	@Test
+	public void test3() throws Exception {
+		try {
+			BlockStmt block = JavaParser.parseBlock("{SingleGraph singleGraph0 = new SingleGraph((String) null);"+
+												    "MultiNode multiNode0 = new MultiNode((AbstractGraph) singleGraph0, \"asd\");"+
+												    "SingleNode singleNode0 = new SingleNode(singleGraph0, \"4d\");"+
+												    "AbstractEdge abstractEdge0 = new AbstractEdge(\"4d\", multiNode0, singleNode0, true);"+
+												    "MultiNode multiNode1 = (MultiNode)abstractEdge0.getOpposite((Node) singleNode0);}");
+			
+			Options.I().setMethodSignature("org.graphstream.graph.implementations.AbstractEdge.getOpposite[Node]");
+			
+			CarvingResult result = new CarvingResult(block, new ArrayList<ImportDeclaration>());
+			
+			TestScenario ts = TestScenarioGenerator.getInstance().carvedTestToScenario(result);
+			
+			System.out.println(ts.getScenario().toString());
+			
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void test4() throws Exception {
+		try {
+			BlockStmt block = JavaParser.parseBlock("" +
+					"{AdjacencyListGraph adjacencyListGraph0 = new AdjacencyListGraph(\"asd\", false, false, 1258, 1258);"+
+					"AdjacencyListNode adjacencyListNode0 = new AdjacencyListNode(adjacencyListGraph0, \"daddad\");" +
+					"AbstractEdge abstractEdge0 = new AbstractEdge(\"dddaaddddd\", adjacencyListNode0, adjacencyListNode0, false);" +
+					"AdjacencyListNode adjacencyListNode1 = abstractEdge0.getSourceNode();" +
+					"AdjacencyListNode adjacencyListNode2 = abstractEdge0.getOpposite((Node) adjacencyListNode1);}");
+			
+			Options.I().setMethodSignature("org.graphstream.graph.implementations.AbstractEdge.getOpposite[Node]");
+			
+			CarvingResult result = new CarvingResult(block, new ArrayList<ImportDeclaration>());
+			
+			TestScenario ts = TestScenarioGenerator.getInstance().carvedTestToScenario(result);
+			
+			System.out.println(ts.getScenario().toString());
+	  } catch (ParseException e) {
 			e.printStackTrace();
 		}
 	}
