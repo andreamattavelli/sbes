@@ -52,12 +52,13 @@ public class SBESManager {
 		scenarioGenerator.generateTestScenarios();
 		List<TestScenario> initialScenarios = scenarioGenerator.getScenarios();
 
-		if (initialScenarios.size() == 1) {
-			standardSynthesis(directory, initialScenarios);
-		}
-		else {
-			multipleSynthesis(directory, initialScenarios);
-		}
+		standardSynthesis(directory, initialScenarios);
+//		if (initialScenarios.size() == 1) {
+//			standardSynthesis(directory, initialScenarios);
+//		}
+//		else {
+//			multipleSynthesis(directory, initialScenarios);
+//		}
 		
 		statistics.synthesisFinished();
 		
