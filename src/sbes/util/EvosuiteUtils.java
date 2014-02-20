@@ -1,12 +1,26 @@
 package sbes.util;
 
+import java.io.File;
+
+import sbes.execution.ExecutionResult;
+import sbes.option.Options;
+
 public class EvosuiteUtils {
 
-	public static boolean succeeded(String stdout, String stderr) {
-		if (stdout.contains("ERROR") || stderr.contains("ERROR")) {
+	public static boolean succeeded(ExecutionResult result) {
+		String signature = Options.I().getMethodSignature();
+		String packagename = IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
+		String testDirectory = IOUtils.concatPath(result.getOutputDir(), packagename);
+		
+		String file = testDirectory + File.separatorChar + result.getFilename();
+		if (!new File(file).exists()) {
 			return false;
 		}
-		else if (stdout.contains("Error when generating tests") || stderr.contains("Error when generating tests")) {
+		
+		if (result.getStdout().contains("ERROR") || result.getStderr().contains("ERROR")) {
+			return false;
+		}
+		else if (result.getStdout().contains("Error when generating tests") || result.getStderr().contains("Error when generating tests")) {
 			return false;
 		}
 		

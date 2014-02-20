@@ -15,9 +15,7 @@ public abstract class Evosuite {
 	protected static final Logger logger = new Logger(Evosuite.class);
 	
 	public static final String jarName = "evosuite.jar";
-
-	protected final ClassLoader classLoader;
-
+	
 	protected final String classSignature;
 	protected final String methodSignature;
 	protected String outputDir;
@@ -27,7 +25,6 @@ public abstract class Evosuite {
 	public Evosuite(final String classSignature, final String methodSignature) {
 		this.classSignature = classSignature;
 		this.methodSignature = methodSignature;
-		this.classLoader = InternalClassloader.getInternalClassLoader();
 		this.filename = ClassUtils.getSimpleClassnameFromCanonical(classSignature) + "EvoSuiteTest.java";
 	}
 
@@ -59,7 +56,7 @@ public abstract class Evosuite {
 	protected abstract String getTargetMethodSignature();
 	public abstract int getSearchBudget();
 	protected abstract Collection<String> getAdditionalParameters();
-
+	
 	public String getTestDirectory() {
 		return outputDir;
 	}

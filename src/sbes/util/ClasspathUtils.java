@@ -27,7 +27,8 @@ public class ClasspathUtils {
 	
 	private static void checkClasspath(final String className) {
 		try {
-			Class.forName(className, false, InternalClassloader.getInternalClassLoader());
+			InternalClassloader ic = new InternalClassloader(Options.I().getClassesPath());
+			Class.forName(className, false, ic.getClassLoader());
 		} catch (ClassNotFoundException e) {
 			logger.error("Could not find class under test: " + className);
 			throw new SBESException(e);

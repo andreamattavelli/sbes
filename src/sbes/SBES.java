@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
+import sbes.execution.WorkerException;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.stub.GenerationException;
@@ -34,7 +35,7 @@ public class SBES {
 
 			logger.info("SBES ended successfully");
 		}
-		catch (SBESException | GenerationException e) {
+		catch (SBESException | GenerationException | WorkerException e) {
 			logger.fatal("Execution aborted due: " + e.getMessage());
 		}
 	}

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import sbes.SBESException;
+import sbes.execution.InternalClassloader;
 import sbes.option.Options;
 import sbes.util.ClassUtils;
 import sbes.util.DirectoryUtils;
@@ -46,7 +47,8 @@ public class EvosuiteTestScenario extends Evosuite {
 		String toReturn = null;
 		Class<?> c;
 		try {
-			c = Class.forName(classname, false, classLoader);
+			InternalClassloader ic = new InternalClassloader(Options.I().getClassesPath());
+			c = Class.forName(classname, false, ic.getClassLoader());
 			String method = methodname.split("\\[")[0];
 			String args[] = methodname.split("\\[")[1].replaceAll("\\]", "").split(",");
 			if (args.length == 1) {

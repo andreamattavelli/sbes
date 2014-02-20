@@ -9,19 +9,16 @@ import java.util.Arrays;
 import java.util.List;
 
 import sbes.logging.Logger;
-import sbes.option.Options;
 import sbes.stub.GenerationException;
 import sbes.stub.generator.StubGenerator;
 
 public class InternalClassloader {
 
 	private static final Logger logger = new Logger(InternalClassloader.class);
-	private static final ClassLoader classLoader;
+	private final ClassLoader classLoader;
 
-	static {
+	public InternalClassloader(String classpath) {
 		try {
-			String classpath = Options.I().getClassesPath();
-
 			ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
 
 			if (classpath == null || classpath.equals("")) {
@@ -56,9 +53,9 @@ public class InternalClassloader {
 			throw new GenerationException(e);
 		}
 	}
-
-	public static ClassLoader getInternalClassLoader() {
+	
+	public ClassLoader getClassLoader() {
 		return classLoader;
 	}
-	
+
 }

@@ -1,10 +1,14 @@
 package sbes.evosuite;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import sbes.SBESException;
+import sbes.execution.InternalClassloader;
 import sbes.option.Options;
+import sbes.util.ClassUtils;
 import sbes.util.DirectoryUtils;
 
 public class EvosuiteSecondStage extends Evosuite {
@@ -36,7 +40,35 @@ public class EvosuiteSecondStage extends Evosuite {
 
 	@Override
 	protected String getTargetMethodSignature() {
-		return "method_under_test()V";
+		return getBytecodeSignature();
+	}
+
+	private String getBytecodeSignature() {
+		String toReturn = null;
+		Class<?> c;
+		try {
+			InternalClassloader ic = new InternalClassloader(Options.I().getClassesPath()
+																+ File.pathSeparatorChar
+																+ DirectoryUtils.I().getSecondStubDir());
+			c = Class.forName(classSignature, false, ic.getClassLoader());
+			String method = "method_under_test";
+			for (Method m : c.getMethods()) {
+				// Simple case, we define only a method in the stub
+				if (m.getName().equals(method)) {
+					toReturn = ClassUtils.getBytecodeSignature(m);
+					break;
+				}
+			}
+		} catch (ClassNotFoundException e) {
+			logger.error("Unable to find class", e);
+			throw new SBESException("Unable to find class");
+		}
+		
+		if (toReturn == null) {
+			throw new SBESException("Method not found: " + classSignature + "." + methodSignature);
+		}
+		
+		return toReturn;
 	}
 	
 }

@@ -31,7 +31,8 @@ public abstract class StubGenerator {
 	protected String stubName;
 	
 	public StubGenerator() {
-		this.classloader = InternalClassloader.getInternalClassLoader();
+		InternalClassloader ic = new InternalClassloader(Options.I().getClassesPath());
+		this.classloader = ic.getClassLoader();
 	}
 	
 	public Stub generateStub() {

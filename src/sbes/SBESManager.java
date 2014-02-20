@@ -1,6 +1,7 @@
 package sbes;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import sbes.evosuite.Evosuite;
@@ -13,6 +14,7 @@ import sbes.option.Options;
 import sbes.scenario.TestScenario;
 import sbes.scenario.TestScenarioGenerator;
 import sbes.statistics.Statistics;
+import sbes.stub.GenerationException;
 import sbes.stub.Stub;
 import sbes.stub.generator.FirstStageStubGenerator;
 import sbes.stub.generator.SecondStageStubGenerator;
@@ -50,6 +52,19 @@ public class SBESManager {
 		scenarioGenerator.generateTestScenarios();
 		List<TestScenario> initialScenarios = scenarioGenerator.getScenarios();
 
+		if (initialScenarios.size() == 1) {
+			standardSynthesis(directory, initialScenarios);
+		}
+		else {
+			multipleSynthesis(directory, initialScenarios);
+		}
+		
+		statistics.synthesisFinished();
+		
+		statistics.print();
+	}
+
+	private void standardSynthesis(DirectoryUtils directory, List<TestScenario> initialScenarios) {
 		// ======================= FIRST PHASE STUB GENERATION ========================
 		StubGenerator firstPhaseGenerator = new FirstStageStubGenerator(initialScenarios);
 		Stub initialStub = firstPhaseGenerator.generateStub();
@@ -87,10 +102,21 @@ public class SBESManager {
 			}
 			statistics.iterationFinished();
 		}
-		
-		statistics.synthesisFinished();
-		
-		statistics.print();
+	}
+	
+	// Experimental feature
+	private void multipleSynthesis(DirectoryUtils directory, List<TestScenario> initialScenarios) {
+		for (TestScenario testScenario : initialScenarios) {
+			List<TestScenario> scenarios = new ArrayList<TestScenario>();
+			scenarios.add(testScenario);
+			try {
+				standardSynthesis(directory, scenarios);
+				break; //succeeded
+			}
+			catch(SBESException | GenerationException e) {
+				logger.error("Generation with scenario" + testScenario + " failed");
+			}
+		}		
 	}
 	
 	private CarvingResult synthesizeEquivalentSequence(Stub stub, ExecutionManager manager, DirectoryUtils directory) {
@@ -125,7 +151,7 @@ public class SBESManager {
 		
 		// analyze synthesis process
 		if (!EvosuiteUtils.generatedCandidate(result.getStdout())) {
-			if (!EvosuiteUtils.succeeded(result.getStdout(), result.getStderr())) {
+			if (!EvosuiteUtils.succeeded(result)) {
 				logger.error(result.getStdout());
 				logger.error(result.getStderr());
 			}

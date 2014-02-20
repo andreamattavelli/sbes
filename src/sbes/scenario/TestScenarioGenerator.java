@@ -63,8 +63,11 @@ public class TestScenarioGenerator {
 		try {
 			ExecutionResult result = generate();
 
+			logger.debug(result.getStdout());
+			logger.debug(result.getStderr());
+			
 			logger.debug("Check whether the generation was successful");
-			if (result.getExitStatus() != 0 && !EvosuiteUtils.succeeded(result.getStdout(), result.getStderr())) {
+			if (result.getExitStatus() != 0 && !EvosuiteUtils.succeeded(result)) {
 				throw new SBESException("Generation failed due " + result.getStdout() + System.lineSeparator() + result.getStderr());
 			}
 
@@ -139,7 +142,7 @@ public class TestScenarioGenerator {
 		String methodName = ClassUtils.getMethodname(Options.I().getMethodSignature().split("\\[")[0]);
 
 		Map<String, String> transformationMap = new HashMap<String, String>();
-		VariableDeclaratorId var = null;
+		String varName = null;
 		int index = scenarios.size();
 		for (int i = 0; i < cloned.getStmts().size(); i++) {
 			Statement stmt = cloned.getStmts().get(i);
@@ -152,7 +155,7 @@ public class TestScenarioGenerator {
 					VariableDeclarationExpr vde = (VariableDeclarationExpr) estmt.getExpression();
 					if (vde.getType().toString().equals(className)) {
 						// EXPECTED_STATE
-						var = vde.getVars().get(0).getId();
+						varName = vde.getVars().get(0).getId().getName();
 						Expression target = ASTUtils.createArrayAccess(FirstStageStubGenerator.EXPECTED_STATE, Integer.toString(index));
 						Expression value = vde.getVars().get(0).getInit();
 						AssignExpr ae = new AssignExpr(target, value, Operator.assign);
@@ -186,6 +189,18 @@ public class TestScenarioGenerator {
 						cloned.getStmts().remove(i);
 						cloned.getStmts().add(i, new ExpressionStmt(ae));
 					}
+					else if (varName != null) {
+						Expression expr = vde.getVars().get(0).getInit();
+						if (expr instanceof MethodCallExpr) {
+							MethodCallExpr mce = (MethodCallExpr) expr;
+							if (mce.getScope() instanceof NameExpr) {
+								NameExpr ne = (NameExpr) mce.getScope();
+								if (ne.getName().equals(varName)) {
+									mce.setScope(ASTUtils.createArrayAccess(FirstStageStubGenerator.EXPECTED_STATE, Integer.toString(index)));
+								}
+							}
+						}
+					}
 					/*
 					 * If we have multiple scenarios we have to handle multiple
 					 * declarations (EvoSuite use a fix pattern for names)
@@ -204,7 +219,7 @@ public class TestScenarioGenerator {
 					MethodCallExpr mce = (MethodCallExpr) estmt.getExpression();
 					if (mce.getScope() instanceof NameExpr) {
 						NameExpr scopeName = (NameExpr) mce.getScope();
-						if (var != null && scopeName.getName().equals(var.getName())) {
+						if (varName != null && scopeName.getName().equals(varName)) {
 							CloneVisitor mceCloner = new CloneVisitor();
 							MethodCallExpr clonedMce = (MethodCallExpr) mceCloner.visit(mce, null);
 
