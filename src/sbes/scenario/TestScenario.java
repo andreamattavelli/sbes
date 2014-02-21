@@ -5,7 +5,7 @@ import sbes.testcase.CarvingResult;
 
 public class TestScenario extends CarvingResult {
 	
-	private BlockStmt scenarioBody;
+	protected BlockStmt scenarioBody;
 	
 	public TestScenario(CarvingResult carvedTest, BlockStmt scenarioBody) {
 		super(carvedTest.getBody(), carvedTest.getImports());

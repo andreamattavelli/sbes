@@ -117,5 +117,25 @@ public class TestScenarioGeneratorTest {
 			e.printStackTrace();
 		}
 	}
+	
+	@Test
+	public void testGenerics() throws Exception {
+		try {
+			BlockStmt block = JavaParser.parseBlock("{Stack<Integer> stack0 = new Stack<Integer>();"+
+									      			"Integer integer0 = new Integer(0);"+
+									      			"Integer integer1 = stack0.push(integer0);}");
+			
+			Options.I().setMethodSignature("stack.util.Stack.push[Object]");
+			
+			CarvingResult result = new CarvingResult(block, new ArrayList<ImportDeclaration>());
+			
+			TestScenario ts = TestScenarioGenerator.getInstance().carvedTestToScenario(result);
+			
+			System.out.println(ts.getScenario().toString());
+		}
+		catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
 
 }
