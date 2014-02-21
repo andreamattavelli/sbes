@@ -1,7 +1,6 @@
 package sbes;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import sbes.evosuite.Evosuite;
@@ -14,7 +13,6 @@ import sbes.option.Options;
 import sbes.scenario.TestScenario;
 import sbes.scenario.TestScenarioGenerator;
 import sbes.statistics.Statistics;
-import sbes.stub.GenerationException;
 import sbes.stub.Stub;
 import sbes.stub.generator.FirstStageStubGenerator;
 import sbes.stub.generator.SecondStageStubGenerator;
@@ -52,20 +50,6 @@ public class SBESManager {
 		scenarioGenerator.generateTestScenarios();
 		List<TestScenario> initialScenarios = scenarioGenerator.getScenarios();
 
-		standardSynthesis(directory, initialScenarios);
-//		if (initialScenarios.size() == 1) {
-//			standardSynthesis(directory, initialScenarios);
-//		}
-//		else {
-//			multipleSynthesis(directory, initialScenarios);
-//		}
-		
-		statistics.synthesisFinished();
-		
-		statistics.print();
-	}
-
-	private void standardSynthesis(DirectoryUtils directory, List<TestScenario> initialScenarios) {
 		// ======================= FIRST PHASE STUB GENERATION ========================
 		StubGenerator firstPhaseGenerator = new FirstStageStubGenerator(initialScenarios);
 		Stub initialStub = firstPhaseGenerator.generateStub();
@@ -74,24 +58,24 @@ public class SBESManager {
 
 		Stub stub = initialStub;
 		ExecutionManager manager = new ExecutionManager();
-		
+
 		boolean terminated = false;
 		while (!terminated) {
 			statistics.iterationStarted();
 			// ======================== FIRST PHASE SYNTHESIS =========================
 			CarvingResult candidateES = synthesizeEquivalentSequence(stub, manager, directory);
-			
+
 			// ===================== SECOND PHASE STUB GENERATION =====================
 			// generate second stub from carved test case
 			StubGenerator secondPhaseGenerator = new SecondStageStubGenerator(stub, candidateES);
 			Stub secondStub = secondPhaseGenerator.generateStub();
 			directory.createSecondStubDir();
 			secondStub.dumpStub(directory.getSecondStubDir());
-			
+
 			// ================== SECOND PHASE COUNTEREXAMPLE SEARCH ==================
 			// compile second stub
 			CarvingResult counterexample = generateCounterexample(secondStub, manager, directory);
-			
+
 			// determine exit condition: solutionFound || time expired
 			if (counterexample == null) {
 				// if solution is found: found equivalent sequence, terminate!
@@ -100,24 +84,18 @@ public class SBESManager {
 			else {
 				// if solution is found: add test scenario to stub
 				TestScenario ts = TestScenarioGenerator.getInstance().carvedTestToScenario(counterexample);
+				initialScenarios.add(ts);
+				StubGenerator counterexampleGenerator = new FirstStageStubGenerator(initialScenarios);
+				stub = counterexampleGenerator.generateStub();
+				directory.createFirstStubDir();
+				stub.dumpStub(directory.getFirstStubDir());
 			}
 			statistics.iterationFinished();
 		}
-	}
-	
-	// Experimental feature
-	private void multipleSynthesis(DirectoryUtils directory, List<TestScenario> initialScenarios) {
-		for (TestScenario testScenario : initialScenarios) {
-			List<TestScenario> scenarios = new ArrayList<TestScenario>();
-			scenarios.add(testScenario);
-			try {
-				standardSynthesis(directory, scenarios);
-				break; //succeeded
-			}
-			catch(SBESException | GenerationException e) {
-				logger.error("Generation with scenario" + testScenario + " failed");
-			}
-		}		
+		
+		statistics.synthesisFinished();
+		
+		statistics.print();
 	}
 	
 	private CarvingResult synthesizeEquivalentSequence(Stub stub, ExecutionManager manager, DirectoryUtils directory) {
@@ -149,6 +127,9 @@ public class SBESManager {
 															ClassUtils.getMethodname(Options.I().getMethodSignature()), 
 															classPath);
 		ExecutionResult result = manager.execute(evosuite);
+		
+		logger.debug(result.getStdout());
+		logger.debug(result.getStderr());
 		
 		// analyze synthesis process
 		if (!EvosuiteUtils.generatedCandidate(result.getStdout())) {
@@ -204,6 +185,9 @@ public class SBESManager {
 															ClassUtils.getMethodname(Options.I().getMethodSignature()), 
 															classPath);
 		ExecutionResult result = manager.execute(evosuite);
+		
+		logger.debug(result.getStdout());
+		logger.debug(result.getStderr());
 		
 		// carve result
 		CarvingContext carvingContext = new CarvingContext(IOUtils.concatPath(result.getOutputDir(), packagename), result.getFilename());
