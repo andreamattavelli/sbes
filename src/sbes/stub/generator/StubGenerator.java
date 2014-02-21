@@ -11,6 +11,7 @@ import japa.parser.ast.body.TypeDeclaration;
 import japa.parser.ast.body.VariableDeclaratorId;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +29,7 @@ public abstract class StubGenerator {
 	protected static final String STUB_EXTENSION = "_Stub"; 
 	
 	private final ClassLoader classloader;
+	protected TypeVariable<?>[] generics;
 	protected String stubName;
 	
 	public StubGenerator() {
@@ -43,6 +45,9 @@ public abstract class StubGenerator {
 			// infeasible, we already checked the classpath
 			throw new GenerationException("Target class not found");
 		}
+		
+		// get generic types (if any)
+		generics = c.getTypeParameters();
 		
 		// get class' methods
 		Method[] methods = ClassUtils.getClassMethods(c);
@@ -69,7 +74,7 @@ public abstract class StubGenerator {
 		// class fields (only phase 1)
 		members.addAll(getClassFields(targetMethod, c));
 		
-		// stub constructor (only phase 1)
+		// stub constructor
 		members.addAll(getStubConstructor(targetMethod, c));
 		
 		// original methods (only phase 1)
@@ -133,7 +138,7 @@ public abstract class StubGenerator {
 			VariableDeclaratorId id = new VariableDeclaratorId("p" + i);
 			String typeClass = type.getCanonicalName();
 			typeClass = typeClass.indexOf(" ") >= 0 ? typeClass.split(" ")[1]: typeClass;
-			//FIXME: check cardinality array, distinguish between primitive and reference types
+			//FIXME: check cardinality array
 			Parameter p = new Parameter(ASTHelper.createReferenceType(typeClass, 0), id);
 			toReturn.add(p);
 		}

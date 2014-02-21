@@ -17,10 +17,12 @@ import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.StringLiteralExpr;
 import japa.parser.ast.expr.UnaryExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
+import japa.parser.ast.type.ReferenceType;
 import japa.parser.ast.type.Type;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +39,25 @@ public class ASTUtils {
 		}
 	}
 	
+	public static Type getReturnConcreteType(TypeVariable<?>[] generics, String concreteClass, Method method) {
+		String canonicalName = "";
+		int arrayDimension = 0;
+		
+		if (method.getReturnType().isArray()) {
+			arrayDimension = ReflectionUtils.getArrayDimensionCount(method.getReturnType());
+		}
+		
+		java.lang.reflect.Type genericReturn = method.getGenericReturnType();
+		if (ArrayUtils.contains(generics, genericReturn)) {
+			canonicalName = concreteClass;
+		}
+		else {
+			canonicalName = method.getReturnType().getCanonicalName();
+		}
+
+		return ASTHelper.createReferenceType(canonicalName, arrayDimension);
+	}
+	
 	public static Type getReturnTypeAsArray(Method method) {
 		Class<?> returnType = method.getReturnType();
 		
@@ -48,6 +69,18 @@ public class ASTUtils {
 		}
 	}
 	
+	public static Type getReturnConcreteTypeAsArray(TypeVariable<?>[] generics, String concreteClass, Method method) {
+		Class<?> returnType = method.getReturnType();
+		
+		if (returnType.getSimpleName().equals("void")) {
+			return ASTHelper.createReferenceType(returnType.getCanonicalName(), 0);
+		}
+		else {
+			ReferenceType t = (ReferenceType) getReturnConcreteType(generics, concreteClass, method);
+			t.setArrayCount(t.getArrayCount() + 1);
+			return t;
+		}
+	}	
 	
 	public static List<Expression> getArraysDimension() {
 		List<Expression> arraysDimension = new ArrayList<Expression>();
@@ -67,6 +100,13 @@ public class ASTUtils {
 		ArrayCreationExpr es_ace = new ArrayCreationExpr(ASTHelper.createReferenceType(classType, 0), ASTUtils.getArraysDimension(), 0);
 		VariableDeclarator expected_states = ASTUtils.createDeclarator(varId, es_ace);
 		BodyDeclaration es_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL, ASTHelper.createReferenceType(classType, 1), expected_states);
+		return es_bd;
+	}
+	
+	public static BodyDeclaration createGenericStubHelperArray(String classType, String concreteClass, String varId) {
+		ArrayCreationExpr es_ace = new ArrayCreationExpr(ASTHelper.createReferenceType(classType, 0), ASTUtils.getArraysDimension(), 0);
+		VariableDeclarator expected_states = ASTUtils.createDeclarator(varId, es_ace);
+		BodyDeclaration es_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL, ASTHelper.createReferenceType(classType + "<"+concreteClass+">", 1), expected_states);
 		return es_bd;
 	}
 	

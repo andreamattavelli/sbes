@@ -10,10 +10,12 @@ import sbes.execution.ExecutionManager;
 import sbes.execution.ExecutionResult;
 import sbes.logging.Logger;
 import sbes.option.Options;
+import sbes.scenario.GenericTestScenario;
 import sbes.scenario.TestScenario;
 import sbes.scenario.TestScenarioGenerator;
 import sbes.statistics.Statistics;
 import sbes.stub.Stub;
+import sbes.stub.generator.FirstStageGenericStubGenerator;
 import sbes.stub.generator.FirstStageStubGenerator;
 import sbes.stub.generator.SecondStageStubGenerator;
 import sbes.stub.generator.StubGenerator;
@@ -51,7 +53,20 @@ public class SBESManager {
 		List<TestScenario> initialScenarios = scenarioGenerator.getScenarios();
 
 		// ======================= FIRST PHASE STUB GENERATION ========================
-		StubGenerator firstPhaseGenerator = new FirstStageStubGenerator(initialScenarios);
+		boolean generics = false;
+		for (TestScenario testScenario : initialScenarios) {
+			if (testScenario instanceof GenericTestScenario) {
+				generics = true;
+				break;
+			}
+		}
+		StubGenerator firstPhaseGenerator;
+		if (generics) {
+			firstPhaseGenerator = new FirstStageGenericStubGenerator(initialScenarios);
+		}
+		else {
+			firstPhaseGenerator = new FirstStageStubGenerator(initialScenarios);
+		}
 		Stub initialStub = firstPhaseGenerator.generateStub();
 		directory.createFirstStubDir();
 		initialStub.dumpStub(directory.getFirstStubDir());

@@ -40,6 +40,7 @@ public class EvosuiteTestScenario extends Evosuite {
 		additional.add("-Dcriterion=branch");
 		additional.add("-Dtest_factory=RANDOM");
 		additional.add("-Dlimit_search_to_target=true");
+		additional.add("-Dgeneric_primitives=true");
 		return additional;
 	}
 	

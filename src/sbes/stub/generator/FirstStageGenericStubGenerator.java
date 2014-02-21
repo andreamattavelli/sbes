@@ -1,30 +1,22 @@
 package sbes.stub.generator;
 
 import japa.parser.ASTHelper;
-import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.body.BodyDeclaration;
-import japa.parser.ast.body.ClassOrInterfaceDeclaration;
-import japa.parser.ast.body.ConstructorDeclaration;
 import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.Parameter;
-import japa.parser.ast.body.TypeDeclaration;
 import japa.parser.ast.body.VariableDeclarator;
 import japa.parser.ast.body.VariableDeclaratorId;
 import japa.parser.ast.expr.ArrayCreationExpr;
 import japa.parser.ast.expr.AssignExpr;
 import japa.parser.ast.expr.AssignExpr.Operator;
-import japa.parser.ast.expr.BinaryExpr;
-import japa.parser.ast.expr.DoubleLiteralExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.IntegerLiteralExpr;
 import japa.parser.ast.expr.MethodCallExpr;
-import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.stmt.BlockStmt;
 import japa.parser.ast.stmt.ExpressionStmt;
 import japa.parser.ast.stmt.ForStmt;
-import japa.parser.ast.stmt.IfStmt;
 import japa.parser.ast.stmt.ReturnStmt;
 import japa.parser.ast.stmt.Statement;
 import japa.parser.ast.type.ReferenceType;
@@ -32,59 +24,54 @@ import japa.parser.ast.type.Type;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import sbes.logging.Logger;
-import sbes.option.Options;
+import sbes.scenario.GenericTestScenario;
 import sbes.scenario.TestScenario;
-import sbes.stub.Stub;
+import sbes.stub.GenerationException;
 import sbes.util.ASTUtils;
 import sbes.util.MethodUtils;
 
-public class FirstStageStubGenerator extends StubGenerator {
+public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 
-	private static final Logger logger = new Logger(FirstStageStubGenerator.class);
+	private static final Logger logger = new Logger(FirstStageGenericStubGenerator.class);
 	
-	public static final String NUM_SCENARIOS = "NUM_SCENARIOS";
-	public static final String EXPECTED_STATE = "expected_states";
-	public static final String EXPECTED_RESULT = "expected_results";
-	public static final String ACTUAL_STATE = "actual_states";
-	public static final String ACTUAL_RESULT = "actual_results";
-
-	protected List<TestScenario> scenarios;
+	private String concreteClass;
 	
-	public FirstStageStubGenerator(List<TestScenario> scenarios) {
-		this.scenarios = scenarios;
+	public FirstStageGenericStubGenerator(List<TestScenario> scenarios) {
+		super(scenarios);
+		checkConcreteClasses();
 	}
 	
-	@Override
-	public Stub generateStub() {
-		logger.info("Generating stub for first phase");
-		Stub stub = super.generateStub(); 
-		logger.info("Generating stub for first phase - done");
-		return stub;
-	}
-	
-	@Override
-	protected List<ImportDeclaration> getImports() {
-		List<ImportDeclaration> imports = new ArrayList<>();
-		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("sbes.distance.Distance"), false, false));
+	private void checkConcreteClasses() {
+		Map<String, Integer> concretes = new HashMap<String, Integer>();
 		for (TestScenario scenario : scenarios) {
-			List<ImportDeclaration> scenarioImports  = scenario.getImports();
-			for (ImportDeclaration importDeclaration : scenarioImports) {
-				if (!imports.contains(importDeclaration)) {
-					imports.add(importDeclaration);
+			if (scenario instanceof GenericTestScenario) {
+				GenericTestScenario generic = (GenericTestScenario) scenario;
+				if (concretes.containsKey(generic.getGenericClass())) {
+					Integer i = concretes.get(generic.getGenericClass());
+					concretes.put(generic.getGenericClass(), ++i);
+				}
+				else {
+					concretes.put(generic.getGenericClass(), 1);
 				}
 			}
 		}
-		return imports;
-	}
-	
-	@Override
-	protected TypeDeclaration getClassDeclaration(String className) {
-		stubName = className + STUB_EXTENSION;
-		return new ClassOrInterfaceDeclaration(Modifier.PUBLIC, false, stubName);
+		if (concretes.keySet().size() > 1) {
+			logger.warn("Many concrete types for the same generic type. Choosing the most used one");
+			throw new GenerationException("Many concrete types for the same generic type. NOT IMPLEMENTED YET");
+		}
+		else {
+			for (String concrete : concretes.keySet()) { //trick
+				concreteClass = concrete;
+				break;
+			}
+		}
 	}
 
 	@Override
@@ -97,29 +84,14 @@ public class FirstStageStubGenerator extends StubGenerator {
 		declarations.add(num_scenarios_bd);
 		
 		// stub helper arrays
-		declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), EXPECTED_STATE));
-		declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnType(targetMethod).toString(), EXPECTED_RESULT));
-		declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), ACTUAL_STATE));
-		declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnType(targetMethod).toString(), ACTUAL_RESULT));
+		declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), concreteClass, EXPECTED_STATE));
+		declarations.add(ASTUtils.createStubHelperArray(concreteClass, EXPECTED_RESULT));
+		declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), concreteClass, ACTUAL_STATE));
+		declarations.add(ASTUtils.createStubHelperArray(concreteClass, ACTUAL_RESULT));
 		
 		logger.debug("Adding class fields - done");
 		
 		return declarations;
-	}
-	
-	@Override
-	protected List<BodyDeclaration> getStubConstructor(Method targetMethod, Class<?> c) {
-		List<BodyDeclaration> constructors = new ArrayList<BodyDeclaration>();
-		ConstructorDeclaration constructor = new ConstructorDeclaration(Modifier.PUBLIC, stubName);
-		List<Statement> statements = new ArrayList<Statement>();
-		BlockStmt body = new BlockStmt();
-		for (int i = 0; i < scenarios.size(); i++) {
-			statements.addAll(scenarios.get(i).getScenario().getStmts());
-		}
-		body.setStmts(statements);
-		constructor.setBlock(body);
-		constructors.add(constructor);
-		return constructors;
 	}
 	
 	@Override
@@ -138,13 +110,15 @@ public class FirstStageStubGenerator extends StubGenerator {
 				continue;
 			}
 			
-			Type returnType = ASTUtils.getReturnType(method);
-			Type returnStubType = ASTUtils.getReturnTypeAsArray(method);
+			logger.debug(method.toGenericString());
+			
+			Type returnType = ASTUtils.getReturnConcreteType(generics, concreteClass, method);
+			Type returnStubType = ASTUtils.getReturnConcreteTypeAsArray(generics, concreteClass, method);
 			MethodDeclaration md = new MethodDeclaration(method.getModifiers() & Modifier.TRANSIENT & Modifier.VOLATILE, returnStubType, method.getName());
 			
 			//parameters
 			List<Parameter> parameters = new ArrayList<Parameter>();
-			parameters.addAll(getParameterType(method.getParameterTypes()));
+			parameters.addAll(getParameterType(method.getParameterTypes(), method.getGenericParameterTypes()));
 			md.setParameters(parameters);
 			
 			//body
@@ -205,29 +179,35 @@ public class FirstStageStubGenerator extends StubGenerator {
 		
 		return members;
 	}
-
-	protected Method[] preventMethodBloat(Method targetMethod, Method[] methods) {
-		if (methods.length > Options.I().getMethodBloatFactor()) {
-			logger.debug("Preventing method bloat");
-			List<Method> toReturn = new ArrayList<Method>();
-			for (Method method : methods) {
-				if (method.getDeclaringClass().equals(Object.class) ||
-						method.getName().equals("toArray") ||
-						method.getName().contains("iterator") ||
-						method.getName().contains("Iterator") ||
-						method.getReturnType().isEnum()) {
-					logger.debug(" * Removed method " + method);
-					continue;
+	
+	protected List<Parameter> getParameterType(Class<?>[] parameterTypes, java.lang.reflect.Type[] genericParameterTypes) {
+		List<Parameter> toReturn = new ArrayList<Parameter>();
+		for (int i = 0; i < parameterTypes.length; i++) {
+			VariableDeclaratorId id = new VariableDeclaratorId("p" + i);
+			String typeClass;
+			boolean found = false;
+			if (genericParameterTypes.length > i) {
+				for (TypeVariable<?> generic : generics) {
+					if (generic.toString().equals(genericParameterTypes[i].toString())) {
+						found = true;
+					}
 				}
-				toReturn.add(method);
 			}
-			return toReturn.toArray(new Method[0]);
+			if (found) {
+				typeClass = concreteClass;
+			}
+			else if (parameterTypes[i].getSimpleName().equals("Object")) {
+				typeClass = concreteClass;
+			} else {
+				typeClass = parameterTypes[i].getCanonicalName();
+				typeClass = typeClass.indexOf(" ") >= 0 ? typeClass.split(" ")[1] : typeClass;
+			}
+			Parameter p = new Parameter(ASTHelper.createReferenceType(typeClass, 0), id);
+			toReturn.add(p);
 		}
-		else {
-			return methods;
-		}
+		return toReturn;
 	}
-
+	
 	@Override
 	protected MethodDeclaration getSetResultsMethod(Method targetMethod) {
 		logger.debug("Adding set_results method");
@@ -239,7 +219,7 @@ public class FirstStageStubGenerator extends StubGenerator {
 		
 		MethodDeclaration set_results = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "set_results");
 		List<Parameter> parameters = new ArrayList<Parameter>();
-		parameters.add(new Parameter(ASTHelper.createReferenceType(ASTUtils.getReturnType(targetMethod).toString(), 1), new VariableDeclaratorId("res")));
+		parameters.add(new Parameter(ASTHelper.createReferenceType(concreteClass, 1), new VariableDeclaratorId("res")));
 		set_results.setParameters(parameters);
 		
 		List<Expression> init = ASTUtils.createForInit("i", ASTHelper.INT_TYPE, new IntegerLiteralExpr("0"), Operator.assign);
@@ -259,52 +239,6 @@ public class FirstStageStubGenerator extends StubGenerator {
 		set_results.setBody(methodBody);
 		
 		logger.debug("Adding set_results method - done");
-		
-		return set_results;
-	}
-	
-	@Override
-	protected MethodDeclaration getMethodUnderTest(Method targetMethod) {
-		logger.debug("Adding method_under_test method");
-		MethodDeclaration set_results = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "method_under_test");
-		
-		BlockStmt stmt = new BlockStmt();
-		BinaryExpr condition = null;
-		for (int i = 0; i < scenarios.size(); i++) {
-			Expression zeroDouble = new DoubleLiteralExpr("0.0d");
-			
-			NameExpr distanceClass = ASTHelper.createNameExpr("Distance");
-			String distanceMethod = "distance";
-			
-			// Distance.distance(expected_states[0], actual_states[0]) == 0.0d
-			List<Expression> distanceStateArgs = new ArrayList<Expression>();
-			distanceStateArgs.add(ASTUtils.createArrayAccess(EXPECTED_STATE, Integer.toString(i)));
-			distanceStateArgs.add(ASTUtils.createArrayAccess(ACTUAL_STATE, Integer.toString(i)));
-			Expression state = new MethodCallExpr(distanceClass, distanceMethod, distanceStateArgs);
-			BinaryExpr stateCondition = new BinaryExpr(state, zeroDouble, japa.parser.ast.expr.BinaryExpr.Operator.equals);
-			
-			// Distance.distance(expected_results[0], actual_results[0]) == 0.0d
-			List<Expression> distanceResultArgs = new ArrayList<Expression>();
-			distanceResultArgs.add(ASTUtils.createArrayAccess(EXPECTED_RESULT, Integer.toString(i)));
-			distanceResultArgs.add(ASTUtils.createArrayAccess(ACTUAL_RESULT, Integer.toString(i)));
-			Expression result = new MethodCallExpr(distanceClass, distanceMethod, distanceResultArgs);
-			BinaryExpr resultCondition = new BinaryExpr(result, zeroDouble, japa.parser.ast.expr.BinaryExpr.Operator.equals);
-			
-			// concatenate conditions
-			BinaryExpr newCondition = new BinaryExpr(resultCondition, stateCondition, japa.parser.ast.expr.BinaryExpr.Operator.and);
-			if (condition != null) {
-				condition = new BinaryExpr(condition, newCondition, japa.parser.ast.expr.BinaryExpr.Operator.and);
-			}
-			else {
-				condition = newCondition;
-			}
-		}
-		
-		IfStmt ifStmt = new IfStmt(condition, new ExpressionStmt(ASTUtils.createSystemOut("Executed")), null);
-		ASTHelper.addStmt(stmt, ifStmt);
-		set_results.setBody(stmt);
-		
-		logger.debug("Adding method_under_test method - done");
 		
 		return set_results;
 	}
