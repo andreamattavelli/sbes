@@ -1,5 +1,6 @@
 package sbes.scenario;
 
+import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.body.VariableDeclaratorId;
 import japa.parser.ast.expr.AssignExpr;
 import japa.parser.ast.expr.AssignExpr.Operator;
@@ -17,6 +18,7 @@ import japa.parser.ast.type.ReferenceType;
 import japa.parser.ast.type.Type;
 import japa.parser.ast.visitor.CloneVisitor;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,11 +47,13 @@ public class TestScenarioGeneralizer {
 		CloneVisitor cloner = new CloneVisitor();
 		BlockStmt cloned = (BlockStmt) cloner.visit(carvedTest.getBody(), null);
 		List<Statement> actualStatements = new ArrayList<Statement>();
+		List<FieldDeclaration> inputs = new ArrayList<FieldDeclaration>();
 
 		String className = ClassUtils.getSimpleClassname(Options.I().getMethodSignature());
 		String methodName = ClassUtils.getMethodname(Options.I().getMethodSignature().split("\\[")[0]);
 		String genericClass = null;
 
+		Map<String, Integer> variablesMap = new HashMap<String, Integer>();
 		Map<String, String> transformationMap = new HashMap<String, String>();
 		String varName = null;
 		for (int i = 0; i < cloned.getStmts().size(); i++) {
@@ -61,12 +65,15 @@ public class TestScenarioGeneralizer {
 					 * so we can safely assume to get element 0
 					 */
 					VariableDeclarationExpr vde = (VariableDeclarationExpr) estmt.getExpression();
+					variablesMap.put(vde.getVars().get(0).getId().getName(), i);
+					
 					if (vde.getType().toString().startsWith(className)) {
 						/*
 						 * We need to use startsWith to support correctly
-						 * generic classes, e.g. Stack<Integer>, Stack<? extends Collection<String>>
+						 * generic classes, e.g. Stack class should match both 
+						 * Stack<Integer> and Stack<? extends Collection<String>>
 						 */
-						// EXPECTED_STATE
+						// CLASS CONSTRUCTOR ===> EXPECTED_STATE
 						genericClass = extractConcreteClass(vde);
 						varName = vde.getVars().get(0).getId().getName();
 						Expression target = ASTUtils.createArrayAccess(FirstStageStubGenerator.EXPECTED_STATE, Integer.toString(index));
@@ -80,7 +87,7 @@ public class TestScenarioGeneralizer {
 						actualStatements.add(new ExpressionStmt(ae_act));
 					}
 					else if (vde.getVars().get(0).getInit().toString().contains(methodName)) {
-						// EXPECTED_RESULT = EXPECTED_STATE.METHOD
+						// TARGET METHOD CALL ===> EXPECTED_RESULT = EXPECTED_STATE.METHOD
 						Expression target = ASTUtils.createArrayAccess(FirstStageStubGenerator.EXPECTED_RESULT, Integer.toString(index));
 						Expression value = vde.getVars().get(0).getInit();
 						if (value instanceof MethodCallExpr) {
@@ -90,12 +97,41 @@ public class TestScenarioGeneralizer {
 								// if the arguments are null, we discard the test since it is not meaningful
 								return null;
 							}
-							handleArguments(transformationMap, mce.getArgs());
+							else {
+								int staticRefCount = 0;
+								for (Expression expression : mce.getArgs()) {
+									if (expression instanceof NameExpr) {
+										NameExpr ne = (NameExpr) expression;
+										if (variablesMap.containsKey(ne.getName())) {
+											// create new public static field,
+											// remove variable and update
+											// references
+											int varIndex = variablesMap.get(ne.getName());
+											Statement ref = cloned.getStmts().get(varIndex);
+											if (ref instanceof ExpressionStmt) {
+												ExpressionStmt eRef = (ExpressionStmt) ref;
+												if (eRef.getExpression() instanceof VariableDeclarationExpr) {
+													VariableDeclarationExpr vdeRef = (VariableDeclarationExpr) eRef.getExpression();
+													vdeRef.getVars().get(0).getId().setName("ELEMENT_" + staticRefCount);
+													FieldDeclaration fd = new FieldDeclaration(Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, 
+																								vdeRef.getType(), vdeRef.getVars());
+													inputs.add(fd);
+												}
+											}
+											cloned.getStmts().remove(varIndex);
+											i--;
+											ne.setName("ELEMENT_" + staticRefCount++);
+										}
+									}
+								}
+								handleArguments(transformationMap, mce.getArgs());
+							}
 						}
 						else if (value instanceof CastExpr) {
 							CastExpr cast = (CastExpr) value;
 							MethodCallExpr mce = (MethodCallExpr) cast.getExpr(); // safe cast: in our case it is always a method call
 							mce.setScope(ASTUtils.createArrayAccess(FirstStageStubGenerator.EXPECTED_STATE, Integer.toString(index)));
+							System.out.println("qwe "+mce.getArgs());
 							handleArguments(transformationMap, mce.getArgs());
 						}
 						AssignExpr ae = new AssignExpr(target, value, Operator.assign);
@@ -103,6 +139,7 @@ public class TestScenarioGeneralizer {
 						cloned.getStmts().add(i, new ExpressionStmt(ae));
 					}
 					else if (varName != null) {
+						// A GENERIC METHOD CALL OBJ.METHOD ===> EXPECTED_STATE.METHOD
 						Expression expr = vde.getVars().get(0).getInit();
 						if (expr instanceof MethodCallExpr) {
 							MethodCallExpr mce = (MethodCallExpr) expr;
@@ -129,6 +166,7 @@ public class TestScenarioGeneralizer {
 					}
 				}
 				else if (estmt.getExpression() instanceof MethodCallExpr) {
+					// A GENERIC METHOD CALL OBJ.METHOD ===> EXPECTED_STATE.METHOD
 					MethodCallExpr mce = (MethodCallExpr) estmt.getExpression();
 					if (mce.getScope() instanceof NameExpr) {
 						NameExpr scopeName = (NameExpr) mce.getScope();
@@ -158,9 +196,9 @@ public class TestScenarioGeneralizer {
 		cloned.getStmts().addAll(actualStatements);
 		
 		if (genericClass != null) {
-			return new GenericTestScenario(carvedTest, cloned, genericClass);
+			return new GenericTestScenario(carvedTest, cloned, inputs, genericClass);
 		} else {
-			return new TestScenario(carvedTest, cloned);
+			return new TestScenario(carvedTest, cloned, inputs);
 		}
 	}
 	
@@ -184,8 +222,8 @@ public class TestScenarioGeneralizer {
 			return false;
 		}
 		/*
-		 * we should use more powerful dynamic analyses to understand the value
-		 * of a variable
+		 * TODO: we should use dynamic analysis to understand the value of a
+		 * variable
 		 */
 		for (Expression arg : args) {
 			if (arg instanceof NameExpr) {

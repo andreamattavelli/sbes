@@ -102,6 +102,10 @@ public class FirstStageStubGenerator extends StubGenerator {
 		declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), ACTUAL_STATE));
 		declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnType(targetMethod).toString(), ACTUAL_RESULT));
 		
+		for (TestScenario scenario : scenarios) {
+			declarations.addAll(scenario.getInputs());
+		}
+		
 		logger.debug("Adding class fields - done");
 		
 		return declarations;
