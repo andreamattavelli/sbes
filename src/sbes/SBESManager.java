@@ -10,12 +10,11 @@ import sbes.execution.ExecutionManager;
 import sbes.execution.ExecutionResult;
 import sbes.logging.Logger;
 import sbes.option.Options;
-import sbes.scenario.GenericTestScenario;
 import sbes.scenario.TestScenario;
 import sbes.scenario.TestScenarioGenerator;
 import sbes.statistics.Statistics;
 import sbes.stub.Stub;
-import sbes.stub.generator.FirstStageGenericStubGenerator;
+import sbes.stub.generator.FirstStageGeneratorFactory;
 import sbes.stub.generator.FirstStageStubGenerator;
 import sbes.stub.generator.SecondStageStubGenerator;
 import sbes.stub.generator.StubGenerator;
@@ -51,22 +50,12 @@ public class SBESManager {
 		TestScenarioGenerator scenarioGenerator = TestScenarioGenerator.getInstance();
 		scenarioGenerator.generateTestScenarios();
 		List<TestScenario> initialScenarios = scenarioGenerator.getScenarios();
+		if (initialScenarios.isEmpty()) {
+			throw new SBESException("Unable to generate any initial test scenarios");
+		}
 
 		// ======================= FIRST PHASE STUB GENERATION ========================
-		boolean generics = false;
-		for (TestScenario testScenario : initialScenarios) {
-			if (testScenario instanceof GenericTestScenario) {
-				generics = true;
-				break;
-			}
-		}
-		StubGenerator firstPhaseGenerator;
-		if (generics) {
-			firstPhaseGenerator = new FirstStageGenericStubGenerator(initialScenarios);
-		}
-		else {
-			firstPhaseGenerator = new FirstStageStubGenerator(initialScenarios);
-		}
+		StubGenerator firstPhaseGenerator = FirstStageGeneratorFactory.createGenerator(initialScenarios);
 		Stub initialStub = firstPhaseGenerator.generateStub();
 		directory.createFirstStubDir();
 		initialStub.dumpStub(directory.getFirstStubDir());
