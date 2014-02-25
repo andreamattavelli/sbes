@@ -40,20 +40,22 @@ public class SBESManager {
 	}
 	
 	public void generateES() throws SBESException {
-		statistics.synthesisStarted();
+		statistics.processStarted();
 		
 		// =================================== INIT =================================== 
 		DirectoryUtils directory = DirectoryUtils.I();
 		ClasspathUtils.checkClasspath();
 
 		// ===================== INITIAL TEST SCENARIO GENERATION =====================
+		statistics.scenarioStarted();
 		TestScenarioGenerator scenarioGenerator = TestScenarioGenerator.getInstance();
 		scenarioGenerator.generateTestScenarios();
 		List<TestScenario> initialScenarios = scenarioGenerator.getScenarios();
 		if (initialScenarios.isEmpty()) {
 			throw new SBESException("Unable to generate any initial test scenarios");
 		}
-
+		statistics.scenarioFinished();
+		
 		// ======================= FIRST PHASE STUB GENERATION ========================
 		StubGenerator firstPhaseGenerator = FirstStageGeneratorFactory.createGenerator(initialScenarios);
 		Stub initialStub = firstPhaseGenerator.generateStub();
@@ -97,13 +99,15 @@ public class SBESManager {
 			statistics.iterationFinished();
 		}
 		
-		statistics.synthesisFinished();
+		statistics.processFinished();
 		
-		statistics.print();
+		statistics.writeCSV();
 	}
 	
 	private CarvingResult synthesizeEquivalentSequence(Stub stub, ExecutionManager manager, DirectoryUtils directory) {
 		logger.info("Synthesizing equivalent sequence candidate");
+		statistics.synthesisStarted();
+		
 		String signature = Options.I().getMethodSignature();
 		String packagename = IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
 		String testDirectory = IOUtils.concatPath(directory.getFirstStubDir(), packagename);
@@ -156,12 +160,15 @@ public class SBESManager {
 			logger.warn("More than one candidate! Pruning to first one");
 		}
 		
+		statistics.synthesisFinished();
 		logger.info("Synthesizing equivalent sequence candidate - done");
 		return candidates.get(0);
 	}
 
 	private CarvingResult generateCounterexample(Stub secondStub, ExecutionManager manager, DirectoryUtils directory) {
 		logger.info("Generating counterexample");
+		statistics.counterexampleStarted();
+		
 		String signature = Options.I().getMethodSignature();
 		String packagename = IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
 		String testDirectory = IOUtils.concatPath(directory.getSecondStubDir(), packagename);
@@ -210,6 +217,7 @@ public class SBESManager {
 			toReturn = candidates.get(0);
 		}
 		
+		statistics.counterexampleFinished();
 		logger.info("Generating counterexample - done");
 		return toReturn;
 	}

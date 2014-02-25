@@ -128,7 +128,7 @@ public class TestScenarioGeneralizer {
 									}
 									else if (expression instanceof CastExpr) {
 										// should be e.g. (Integer) -1874
-										CastExpr cast = (CastExpr) value;
+										CastExpr cast = (CastExpr) expression;
 										Expression e = cast.getExpr();
 										if (e instanceof IntegerLiteralExpr) {
 											List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
