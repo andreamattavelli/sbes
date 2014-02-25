@@ -1,11 +1,14 @@
 package sbes.scenario;
 
+import japa.parser.ASTHelper;
 import japa.parser.ast.body.FieldDeclaration;
+import japa.parser.ast.body.VariableDeclarator;
 import japa.parser.ast.body.VariableDeclaratorId;
 import japa.parser.ast.expr.AssignExpr;
 import japa.parser.ast.expr.AssignExpr.Operator;
 import japa.parser.ast.expr.CastExpr;
 import japa.parser.ast.expr.Expression;
+import japa.parser.ast.expr.IntegerLiteralExpr;
 import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.ObjectCreationExpr;
@@ -121,6 +124,25 @@ public class TestScenarioGeneralizer {
 											cloned.getStmts().remove(varIndex);
 											i--;
 											ne.setName("ELEMENT_" + staticRefCount++);
+										}
+									}
+									else if (expression instanceof CastExpr) {
+										// should be e.g. (Integer) -1874
+										CastExpr cast = (CastExpr) value;
+										Expression e = cast.getExpr();
+										if (e instanceof IntegerLiteralExpr) {
+											List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+											List<Expression> args = new ArrayList<Expression>();
+											args.add(e);
+											Expression init = new ObjectCreationExpr(null, new ClassOrInterfaceType("Integer"), args);
+											VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("ELEMENT_" + staticRefCount), init);
+											vars.add(vd);
+											Type type = new ClassOrInterfaceType("Integer");
+											VariableDeclarationExpr vdeRef = new VariableDeclarationExpr(type, vars);
+											FieldDeclaration fd = new FieldDeclaration(Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, 
+																						vdeRef.getType(), vdeRef.getVars());
+											inputs.add(fd);
+											cast.setExpr(ASTHelper.createNameExpr("ELEMENT_" + staticRefCount++));
 										}
 									}
 								}
