@@ -109,4 +109,12 @@ public class Options {
 		this.methodSignature = methodSignature;
 	}
 	
+	public void setClassesPath(String classesPath) {
+		this.classesPath = classesPath;
+	}
+	
+	public void setLogLevel(Level logLevel) {
+		this.logLevel = logLevel;
+	}
+	
 }

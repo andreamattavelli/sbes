@@ -6,10 +6,12 @@ import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.stmt.BlockStmt;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
 import sbes.option.Options;
+import sbes.stub.generator.FirstStageGenericStubGenerator;
 import sbes.testcase.CarvingResult;
 
 public class TestScenarioGeneratorTest {
@@ -130,6 +132,11 @@ public class TestScenarioGeneratorTest {
 			CarvingResult result = new CarvingResult(block, new ArrayList<ImportDeclaration>());
 			
 			TestScenario ts = TestScenarioGenerator.getInstance().carvedTestToScenario(result);
+			
+			List<TestScenario> scenarios = new ArrayList<TestScenario>();
+			scenarios.add(ts);
+			FirstStageGenericStubGenerator fsgsg = new FirstStageGenericStubGenerator(scenarios);
+			System.out.println(fsgsg.generateStub().getAst().toString());
 			
 			System.out.println(ts.getScenario().toString());
 		}

@@ -4,7 +4,7 @@ import sbes.util.ReflectionUtils;
 
 public class ObjectDistance {
 
-	private static final double NULL_WEIGHT = 1.0d;
+	private static final double NULL_WEIGHT = 2.0d;
 	
 	public static double getNullDistance(Object o1, Object o2) {
 		if (o1 == null) {

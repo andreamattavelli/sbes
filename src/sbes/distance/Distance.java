@@ -225,7 +225,7 @@ public class Distance {
 				for (int i = 0; i < length; i++) {
 					worklist.add(new DistancePair(castedF1[i], castedF2[i]));
 				}
-				distance += Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length * PrimitiveDistance.ARRAY_CELL_FACTOR;
+				distance += (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length) * PrimitiveDistance.ARRAY_CELL_FACTOR;
 			}
 			catch (IllegalArgumentException | IllegalAccessException e) {
 				logger.error("Error during cast", e);
@@ -242,7 +242,7 @@ public class Distance {
 				for (int i = 0; i < length; i++) {
 					distance += LevenshteinDistance.calculateDistance(castedF1[i], castedF2[i]);
 				}
-				distance += Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length * PrimitiveDistance.ARRAY_CELL_FACTOR;
+				distance += (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length) * PrimitiveDistance.ARRAY_CELL_FACTOR;
 			}
 			catch (IllegalArgumentException | IllegalAccessException e) {
 				logger.error("Error during cast", e);

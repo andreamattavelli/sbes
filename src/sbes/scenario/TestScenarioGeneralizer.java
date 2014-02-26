@@ -98,6 +98,8 @@ public class TestScenarioGeneralizer {
 							mce.setScope(ASTUtils.createArrayAccess(FirstStageStubGenerator.EXPECTED_STATE, Integer.toString(index)));
 							if (isArgumentNull(mce.getArgs())) {
 								// if the arguments are null, we discard the test since it is not meaningful
+								logger.error("Argument null!");
+								logger.debug(cloned.toString());
 								return null;
 							}
 							else {

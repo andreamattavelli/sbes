@@ -10,12 +10,15 @@ import japa.parser.ast.body.Parameter;
 import japa.parser.ast.body.TypeDeclaration;
 import japa.parser.ast.body.VariableDeclarator;
 import japa.parser.ast.body.VariableDeclaratorId;
+import japa.parser.ast.expr.ArrayCreationExpr;
 import japa.parser.ast.expr.AssignExpr;
 import japa.parser.ast.expr.AssignExpr.Operator;
+import japa.parser.ast.expr.ArrayAccessExpr;
 import japa.parser.ast.expr.BinaryExpr;
 import japa.parser.ast.expr.CastExpr;
 import japa.parser.ast.expr.DoubleLiteralExpr;
 import japa.parser.ast.expr.Expression;
+import japa.parser.ast.expr.FieldAccessExpr;
 import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.ObjectCreationExpr;
@@ -33,7 +36,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import sbes.logging.Logger;
 import sbes.stub.GenerationException;
@@ -141,7 +147,7 @@ public class SecondStageStubGenerator extends StubGenerator {
 		ASTHelper.addStmt(stmt, createExpectedResult(targetMethod, param));
 		
 		// RESULT_CLASS actual_result = clone.CARVED_METHOD(S)
-		List<Statement> stmts = createActualResult(targetMethod, candidateES);
+		List<Statement> stmts = createActualResult(targetMethod, candidateES, param);
 		if (stmts.isEmpty()) {
 			throw new GenerationException("Unable to carve candidate: no statements!");
 		}
@@ -214,32 +220,38 @@ public class SecondStageStubGenerator extends StubGenerator {
 		return new ExpressionStmt(assignment);
 	}
 	
-	private List<Statement> createActualResult(Method targetMethod, CarvingResult candidateES2) {
+	private List<Statement> createActualResult(Method targetMethod, CarvingResult candidateES2, List<Parameter> param) {
 		List<Statement> stmts = new ArrayList<Statement>();
 		
 		BlockStmt carved = candidateES2.getBody();
 		CloneVisitor visitor = new CloneVisitor();
 		BlockStmt cloned = (BlockStmt) visitor.visit(carved, null);
 		
+		Map<String, Integer> vars = new HashMap<String, Integer>();
+		List<Integer> toRemove = new ArrayList<Integer>();
+		
 		String stubName = stub.getStubName();
-		String varName = null;
+		String stubObjectName = null;
 		
 		// generalize carved test
 		for (int i = 0; i < cloned.getStmts().size(); i++) {
 			Statement stmt = cloned.getStmts().get(i);
 			if (stmt instanceof ExpressionStmt) {
 				ExpressionStmt estmt = (ExpressionStmt) stmt;
+				
+				// VARIABLE
 				if (estmt.getExpression() instanceof VariableDeclarationExpr) {
 					/* Evosuite does not create variable declarations with multiple definitions,
 					 * so we can safely assume to get element 0
 					 */
 					VariableDeclarationExpr vde = (VariableDeclarationExpr) estmt.getExpression();
 					if (vde.getType().toString().equals(stubName)) {
-						varName = vde.getVars().get(0).getId().getName();
-						cloned.getStmts().remove(i);
-						i--;
+						// STUB CONSTRUCTOR ===> remove
+						stubObjectName = vde.getVars().get(0).getId().getName();
+						toRemove.add(i);
 					}
-					else if (vde.getVars().get(0).getInit().toString().contains(varName)) {
+					else if (vde.getVars().get(0).getInit().toString().contains(stubObjectName)) {
+						// ACTUAL_RESULT
 						int arrayDimension = 0;
 						if (targetMethod.getReturnType().isArray()) {
 							arrayDimension = 1;
@@ -259,36 +271,124 @@ public class SecondStageStubGenerator extends StubGenerator {
 							mce.setScope(ASTHelper.createNameExpr("clone"));
 						}
 					}
-					else if (varName != null) {
+					else if (stubObjectName != null) {
 						Expression expr = vde.getVars().get(0).getInit();
 						if (expr instanceof MethodCallExpr) {
 							MethodCallExpr mce = (MethodCallExpr) expr;
 							if (mce.getScope() instanceof NameExpr) {
 								NameExpr ne = (NameExpr) mce.getScope();
-								if (ne.getName().equals(varName)) {
+								if (ne.getName().equals(stubObjectName)) {
 									mce.setScope(ASTHelper.createNameExpr("clone"));
 								}
 							}
 						}
 					}
+					vars.put(vde.getVars().get(0).getId().getName(), i);
 				}
+				// METHOD CALL
 				else if (estmt.getExpression() instanceof MethodCallExpr) {
-					if (varName == null) {
+					if (stubObjectName == null) {
 						continue;
 					}
 					MethodCallExpr mce = (MethodCallExpr) estmt.getExpression();
-					if (mce.getName().equals("method_under_test") || mce.getName().equals("set_results")) {
-						cloned.getStmts().remove(i);
-						i--;
+					if (mce.getName().equals("method_under_test")) {
+						toRemove.add(i);
+					}
+					else if (mce.getName().equals("set_results")) {
+						for (Expression arg : mce.getArgs()) {
+							if (arg instanceof NameExpr) {
+								NameExpr ne = (NameExpr) arg;
+								if (vars.containsKey(ne.getName())) {
+									int index = vars.get(ne.getName());
+									Statement s = cloned.getStmts().get(index);
+									ExpressionStmt es = (ExpressionStmt) s;
+									if (es.getExpression() instanceof VariableDeclarationExpr) {
+										VariableDeclarationExpr v = (VariableDeclarationExpr) es.getExpression();
+										Expression e = v.getVars().get(0).getInit();
+										if (e instanceof FieldAccessExpr) {
+											FieldAccessExpr fae = (FieldAccessExpr) e;
+											if (fae.getField().startsWith("ELEMENT_")) {
+												ne.setName(param.get(0).getId().getName());
+												toRemove.add(index);
+											}
+										}
+										else if (e instanceof ArrayCreationExpr) {
+											for (int j = index + 1; j < i; j++) {
+												ExpressionStmt arr = (ExpressionStmt) cloned.getStmts().get(j);
+												if (arr.getExpression() instanceof AssignExpr) {
+													AssignExpr ae = (AssignExpr) arr.getExpression();
+													if (ae.getTarget() instanceof ArrayAccessExpr) {
+														ArrayAccessExpr aae = (ArrayAccessExpr) ae.getTarget();
+														if (((NameExpr)aae.getName()).getName().equals(v.getVars().get(0).getId().getName())) {
+															NameExpr value = (NameExpr) ae.getValue();
+															if (vars.containsKey(value.getName())) {
+																ExpressionStmt var = (ExpressionStmt) cloned.getStmts().get(vars.get(value.getName()));
+																if (var.getExpression() instanceof VariableDeclarationExpr) {
+																    VariableDeclarationExpr v2 = (VariableDeclarationExpr) var.getExpression();
+																    Expression e2 = v2.getVars().get(0).getInit();
+																    if (e2 instanceof FieldAccessExpr) {
+																        FieldAccessExpr fae2 = (FieldAccessExpr) e2;
+																        if (fae2.getField().startsWith("ELEMENT_")) {
+																            VariableDeclarationExpr actual = new VariableDeclarationExpr();
+																            actual.setType(param.get(0).getType());
+																            VariableDeclarator actualVal = new VariableDeclarator();
+																            actualVal.setId(new VariableDeclaratorId("actual_result"));
+																            actualVal.setInit(new NameExpr(param.get(0).getId().getName()));
+																            List<VariableDeclarator> vdes = new ArrayList<VariableDeclarator>();
+																            vdes.add(actualVal);
+																            actual.setVars(vdes);
+																            cloned.getStmts().set(i, new ExpressionStmt(actual));
+																            toRemove.add(index);
+																            toRemove.add(j);
+																        }
+																    }
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
 					}
 					else if (mce.getScope() instanceof NameExpr) {
 						NameExpr scopeName = (NameExpr) mce.getScope();
-						if (scopeName.getName().equals(varName)) {
+						if (scopeName.getName().equals(stubObjectName)) {
 							mce.setScope(ASTHelper.createNameExpr("clone"));
+						}
+						for (Expression arg : mce.getArgs()) {
+							if (arg instanceof NameExpr) {
+								NameExpr ne = (NameExpr) arg;
+								if (vars.containsKey(ne.getName())) {
+									int index = vars.get(ne.getName());
+									Statement s = cloned.getStmts().get(index);
+									ExpressionStmt es = (ExpressionStmt) s;
+									if (es.getExpression() instanceof VariableDeclarationExpr) {
+										VariableDeclarationExpr v = (VariableDeclarationExpr) es.getExpression();
+										Expression e = v.getVars().get(0).getInit();
+										if (e instanceof FieldAccessExpr) {
+											FieldAccessExpr fae = (FieldAccessExpr) e;
+											if (fae.getField().startsWith("ELEMENT_")) {
+												ne.setName(param.get(0).getId().getName());
+												toRemove.add(index);
+											}
+										}
+									}
+								}
+							}
 						}
 					}
 				}
 			}
+		}
+		
+		Collections.sort(toRemove);
+		int count = 0;
+		for (int rem : toRemove) {
+			cloned.getStmts().remove(rem - (count++));
 		}
 		
 		stmts.addAll(cloned.getStmts());

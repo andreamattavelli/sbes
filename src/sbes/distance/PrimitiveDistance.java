@@ -7,7 +7,7 @@ import sbes.util.ReflectionUtils;
 
 public class PrimitiveDistance {
 
-	public static final double ARRAY_CELL_FACTOR = 1.0d;
+	public static final double ARRAY_CELL_FACTOR = 2.0d;
 
 	public static double distance(Field f1, Object obj1, Field f2, Object obj2) {
 		double distance = 0.0d;
