@@ -17,54 +17,54 @@ public class Options {
 		return instance;
 	}
 	
-	@Option(name = "--classes",
+	@Option(name = "-classes",
 			usage = "Path to classes",
 			required = true)
 	private String classesPath;
 	
-	@Option(name = "--junit",
+	@Option(name = "-junit",
 			usage = "Path to JUnit 4 jar",
 			required = true)
 	private String junitPath;
 	
-	@Option(name = "--java",
+	@Option(name = "-java",
 			usage = "Path to Java excutable")
 	private String javaPath = "";
 	
-	@Option(name = "--evosuite",
-			usage = "Path to EvoSuite jar (included jar name)")
+	@Option(name = "-evosuite",
+			usage = "Path to EvoSuite jar (included jar name). Default: \"./evosuite.jar\"")
 	private String evosuitePath = "./evosuite.jar";
 	
-	@Option(name = "--method",
+	@Option(name = "-method",
 			usage = "Java-like method signature under investigation",
 			required = true)
 	private String methodSignature;
 
-	@Option(name = "--m_bloat_factor",
+	@Option(name = "-m_bloat_factor",
 			usage = "Method bloat factor")
 	private int methodBloatFactor = 20;
 	
-	@Option(name = "--dir",
-			usage = "Directory where to store the stubs")
-	private String dir = ".";
-	
-	@Option(name = "--max_iterations",
-			usage = "Maximum number of iterations of stages 1/2")
-	private int maxIterations;
+//	@Option(name = "--max_iterations",
+//			usage = "Maximum number of iterations of stages 1/2")
+//	private int maxIterations;
 
-	@Option(name = "--test_search_budget",
-			usage = "Search budget for test case generation")
-	private int testSearchBudget = 60;
+	@Option(name = "-scenario_budget",
+			usage = "Search budget for test case generation. Default: 30s")
+	private int scenarioBudget = 30;
 
-	@Option(name = "--search_budget",
-			usage = "Search budget for equivalent sequence synthesis")
-	private int searchBudget = 180;
+	@Option(name = "-synthesis_budget",
+			usage = "Search budget for equivalent sequence synthesis. Default: 180s")
+	private int synthesisBudget = 180;
 	
-	@Option(name = "--max_time",
-			usage = "Maximum time limit for synthesis (test scenario generation excluded)")
-	private int maxTime = 180;
+	@Option(name = "-counterexample_budget",
+			usage = "Search budget for counterexample synthesis. Default: 180s")
+	private int counterexampleBudget = 180;
 	
-	@Option(name = "--log_level",
+//	@Option(name = "--max_time",
+//			usage = "Maximum time limit for synthesis (test scenario generation excluded)")
+//	private int maxTime = 180;
+	
+	@Option(name = "-log_level",
 			usage = "Logging level to be used: FATAL, ERROR, WARN, INFO, DEBUG",
 			handler = LevelHandler.class)
 	private Level logLevel;
@@ -80,21 +80,17 @@ public class Options {
 	public int getMethodBloatFactor() {
 		return methodBloatFactor;
 	}
-	
-	public String getDir() {
-		return dir;
-	}
 
-	public int getMaxIterations() {
-		return maxIterations;
-	}
+//	public int getMaxIterations() {
+//		return maxIterations;
+//	}
 
 	public int getTestSearchBudget() {
-		return testSearchBudget;
+		return scenarioBudget;
 	}
 	
 	public int getSearchBudget() {
-		return searchBudget;
+		return synthesisBudget;
 	}
 
 	public String getJunitPath() {
@@ -112,7 +108,5 @@ public class Options {
 	public void setMethodSignature(String methodSignature) {
 		this.methodSignature = methodSignature;
 	}
-	
-	
 	
 }

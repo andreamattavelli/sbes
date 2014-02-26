@@ -44,11 +44,12 @@ public class SBES {
 		System.err.println("java Main <options>");
 		System.err.println("<options> are:");
 		// print the list of available options
+		parser.setUsageWidth(120);
 		parser.printUsage(System.err);
 	}
 
 	private static String[] processArgs(final String[] args) {
-		Pattern argPattern = Pattern.compile("(--[a-zA-Z_-]+)=(.*)");
+		Pattern argPattern = Pattern.compile("(-[a-zA-Z_-]+)=(.*)");
 		Pattern quotesPattern = Pattern.compile("^['\"](.*)['\"]$");
 		List<String> processedArgs = new ArrayList<String>();
 
@@ -56,7 +57,6 @@ public class SBES {
 			Matcher matcher = argPattern.matcher(arg);
 			if (matcher.matches()) {
 				processedArgs.add(matcher.group(1));
-
 				String value = matcher.group(2);
 				Matcher quotesMatcher = quotesPattern.matcher(value);
 				if (quotesMatcher.matches()) {

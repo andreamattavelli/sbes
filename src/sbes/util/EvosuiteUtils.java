@@ -23,6 +23,9 @@ public class EvosuiteUtils {
 		else if (result.getStdout().contains("Error when generating tests") || result.getStderr().contains("Error when generating tests")) {
 			return false;
 		}
+		else if (result.getStdout().contains("Failed to register client services") || result.getStderr().contains("Failed to register client services")) {
+			return false;
+		}
 		
 		return true;
 	}

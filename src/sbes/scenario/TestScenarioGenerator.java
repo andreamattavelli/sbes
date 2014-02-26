@@ -49,7 +49,7 @@ public class TestScenarioGenerator {
 			logger.debug(result.getStderr());
 			
 			logger.debug("Check whether the generation was successful");
-			if (result.getExitStatus() != 0 && !EvosuiteUtils.succeeded(result)) {
+			if (result.getExitStatus() != 0 || !EvosuiteUtils.succeeded(result)) {
 				throw new SBESException("Generation failed due " + result.getStdout() + System.lineSeparator() + result.getStderr());
 			}
 
