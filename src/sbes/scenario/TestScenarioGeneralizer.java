@@ -96,69 +96,68 @@ public class TestScenarioGeneralizer {
 						if (value instanceof MethodCallExpr) {
 							MethodCallExpr mce = (MethodCallExpr) value;
 							mce.setScope(ASTUtils.createArrayAccess(FirstStageStubGenerator.EXPECTED_STATE, Integer.toString(index)));
-							if (isArgumentNull(mce.getArgs())) {
-								// if the arguments are null, we discard the test since it is not meaningful
-								logger.error("Argument null!");
-								logger.debug(cloned.toString());
-								return null;
+//							if (isArgumentNull(mce.getArgs())) {
+//								// if the arguments are null, we discard the test since it is not meaningful
+//								logger.error("Argument null!");
+//								logger.debug(cloned.toString());
+//								return null;
+//							}
+//							else {
+							int staticRefCount = 0;
+							if (mce.getArgs() == null) {
+								continue;
 							}
-							else {
-								int staticRefCount = 0;
-								if (mce.getArgs() == null) {
-									continue;
-								}
-								for (Expression expression : mce.getArgs()) {
-									if (expression instanceof NameExpr) {
-										NameExpr ne = (NameExpr) expression;
-										if (variablesMap.containsKey(ne.getName())) {
-											// create new public static field,
-											// remove variable and update
-											// references
-											int varIndex = variablesMap.get(ne.getName());
-											Statement ref = cloned.getStmts().get(varIndex);
-											if (ref instanceof ExpressionStmt) {
-												ExpressionStmt eRef = (ExpressionStmt) ref;
-												if (eRef.getExpression() instanceof VariableDeclarationExpr) {
-													VariableDeclarationExpr vdeRef = (VariableDeclarationExpr) eRef.getExpression();
-													vdeRef.getVars().get(0).getId().setName("ELEMENT_" + staticRefCount);
-													FieldDeclaration fd = new FieldDeclaration(Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, 
-																								vdeRef.getType(), vdeRef.getVars());
-													inputs.add(fd);
-												}
+							for (Expression expression : mce.getArgs()) {
+								if (expression instanceof NameExpr) {
+									NameExpr ne = (NameExpr) expression;
+									if (variablesMap.containsKey(ne.getName())) {
+										// create new public static field,
+										// remove variable and update
+										// references
+										int varIndex = variablesMap.get(ne.getName());
+										Statement ref = cloned.getStmts().get(varIndex);
+										if (ref instanceof ExpressionStmt) {
+											ExpressionStmt eRef = (ExpressionStmt) ref;
+											if (eRef.getExpression() instanceof VariableDeclarationExpr) {
+												VariableDeclarationExpr vdeRef = (VariableDeclarationExpr) eRef.getExpression();
+												vdeRef.getVars().get(0).getId().setName("ELEMENT_" + staticRefCount);
+												FieldDeclaration fd = new FieldDeclaration(Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, 
+														vdeRef.getType(), vdeRef.getVars());
+												inputs.add(fd);
 											}
-											cloned.getStmts().remove(varIndex);
-											i--;
-											ne.setName("ELEMENT_" + staticRefCount++);
 										}
-									}
-									else if (expression instanceof CastExpr) {
-										// should be e.g. (Integer) -1874
-										CastExpr cast = (CastExpr) expression;
-										Expression e = cast.getExpr();
-										if (e instanceof IntegerLiteralExpr) {
-											List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
-											List<Expression> args = new ArrayList<Expression>();
-											args.add(e);
-											Expression init = new ObjectCreationExpr(null, new ClassOrInterfaceType("Integer"), args);
-											VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("ELEMENT_" + staticRefCount), init);
-											vars.add(vd);
-											Type type = new ClassOrInterfaceType("Integer");
-											VariableDeclarationExpr vdeRef = new VariableDeclarationExpr(type, vars);
-											FieldDeclaration fd = new FieldDeclaration(Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, 
-																						vdeRef.getType(), vdeRef.getVars());
-											inputs.add(fd);
-											cast.setExpr(ASTHelper.createNameExpr("ELEMENT_" + staticRefCount++));
-										}
+										cloned.getStmts().remove(varIndex);
+										i--;
+										ne.setName("ELEMENT_" + staticRefCount++);
 									}
 								}
-								handleArguments(transformationMap, mce.getArgs());
+								else if (expression instanceof CastExpr) {
+									// should be e.g. (Integer) -1874
+									CastExpr cast = (CastExpr) expression;
+									Expression e = cast.getExpr();
+									if (e instanceof IntegerLiteralExpr) {
+										List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+										List<Expression> args = new ArrayList<Expression>();
+										args.add(e);
+										Expression init = new ObjectCreationExpr(null, new ClassOrInterfaceType("Integer"), args);
+										VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("ELEMENT_" + staticRefCount), init);
+										vars.add(vd);
+										Type type = new ClassOrInterfaceType("Integer");
+										VariableDeclarationExpr vdeRef = new VariableDeclarationExpr(type, vars);
+										FieldDeclaration fd = new FieldDeclaration(Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, 
+												vdeRef.getType(), vdeRef.getVars());
+										inputs.add(fd);
+										cast.setExpr(ASTHelper.createNameExpr("ELEMENT_" + staticRefCount++));
+									}
+								}
 							}
+							handleArguments(transformationMap, mce.getArgs());
+//							}
 						}
 						else if (value instanceof CastExpr) {
 							CastExpr cast = (CastExpr) value;
 							MethodCallExpr mce = (MethodCallExpr) cast.getExpr(); // safe cast: in our case it is always a method call
 							mce.setScope(ASTUtils.createArrayAccess(FirstStageStubGenerator.EXPECTED_STATE, Integer.toString(index)));
-							System.out.println("qwe "+mce.getArgs());
 							handleArguments(transformationMap, mce.getArgs());
 						}
 						AssignExpr ae = new AssignExpr(target, value, Operator.assign);
@@ -244,32 +243,32 @@ public class TestScenarioGeneralizer {
 		return null;
 	}
 
-	private boolean isArgumentNull(List<Expression> args) {
-		if (args == null) {
-			return false;
-		}
-		/*
-		 * TODO: we should use dynamic analysis to understand the value of a
-		 * variable
-		 */
-		for (Expression arg : args) {
-			if (arg instanceof NameExpr) {
-				NameExpr ne = (NameExpr) arg;
-				if (!ne.getName().equals("null")) {
-					return false;
-				}
-			} else if (arg instanceof CastExpr) {
-				CastExpr cast = (CastExpr) arg;
-				if (cast.getExpr() instanceof NameExpr) {
-					NameExpr ne = (NameExpr) cast.getExpr();
-					if (!ne.getName().equals("null")) {
-						return false;
-					}
-				}
-			}
-		}
-		return true;
-	}
+//	private boolean isArgumentNull(List<Expression> args) {
+//		if (args == null) {
+//			return false;
+//		}
+//		/*
+//		 * TODO: we should use dynamic analysis to understand the value of a
+//		 * variable
+//		 */
+//		for (Expression arg : args) {
+//			if (arg instanceof NameExpr) {
+//				NameExpr ne = (NameExpr) arg;
+//				if (!ne.getName().equals("null")) {
+//					return false;
+//				}
+//			} else if (arg instanceof CastExpr) {
+//				CastExpr cast = (CastExpr) arg;
+//				if (cast.getExpr() instanceof NameExpr) {
+//					NameExpr ne = (NameExpr) cast.getExpr();
+//					if (!ne.getName().equals("null")) {
+//						return false;
+//					}
+//				}
+//			}
+//		}
+//		return true;
+//	}
 
 	private void handleArguments(Map<String, String> transformationMap, List<Expression> args) {
 		if (args == null) {
