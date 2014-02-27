@@ -353,6 +353,7 @@ public class SecondStageStubGenerator extends StubGenerator {
 								}
 							}
 						}
+						toRemove.add(i);
 					}
 					else if (mce.getScope() instanceof NameExpr) {
 						NameExpr scopeName = (NameExpr) mce.getScope();

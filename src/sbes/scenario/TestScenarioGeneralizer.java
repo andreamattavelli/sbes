@@ -104,6 +104,9 @@ public class TestScenarioGeneralizer {
 							}
 							else {
 								int staticRefCount = 0;
+								if (mce.getArgs() == null) {
+									continue;
+								}
 								for (Expression expression : mce.getArgs()) {
 									if (expression instanceof NameExpr) {
 										NameExpr ne = (NameExpr) expression;
