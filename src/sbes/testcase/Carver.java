@@ -56,8 +56,8 @@ public class Carver {
 			for (MethodDeclaration method : visitor.getTests()) {
 				if (isSearchedClass(cu)) {
 					String methodSignature = ClassUtils.getMethodname(Options.I().getMethodSignature());
-					String methodName = methodSignature.split("\\[")[0];
-					String parameters = methodSignature.substring(methodSignature.indexOf("[") + 1, methodSignature.indexOf("]"));
+					String methodName = methodSignature.split("\\(")[0];
+					String parameters = methodSignature.substring(methodSignature.indexOf("(") + 1, methodSignature.indexOf(")"));
 					int parametersNumber = parameters.equals("") ? 0 : parameters.split(",").length;
 					MethodCallVisitor callVisitor = new MethodCallVisitor(methodName, parametersNumber);
 					callVisitor.visit(method, null);

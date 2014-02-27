@@ -53,7 +53,7 @@ public class TestScenarioGeneralizer {
 		List<FieldDeclaration> inputs = new ArrayList<FieldDeclaration>();
 
 		String className = ClassUtils.getSimpleClassname(Options.I().getMethodSignature());
-		String methodName = ClassUtils.getMethodname(Options.I().getMethodSignature().split("\\[")[0]);
+		String methodName = ClassUtils.getMethodname(Options.I().getMethodSignature().split("\\(")[0]);
 		String genericClass = null;
 
 		Map<String, Integer> variablesMap = new HashMap<String, Integer>();

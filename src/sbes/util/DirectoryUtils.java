@@ -24,7 +24,7 @@ public class DirectoryUtils {
 
 	private DirectoryUtils() {
 		String method = Options.I().getMethodSignature();
-		experimentDir = method.replace('[', '(').replace(']', ')');
+		experimentDir = method;
 		firstStubs = 0;
 		secondStubs = 0;
 	}

@@ -106,8 +106,8 @@ public abstract class StubGenerator {
 	// ---------- HELPER METHODS ----------
 	private Method findTargetMethod(Method[] methods, String methodName) {
 		Method targetMethod = null;
-		String method = methodName.split("\\[")[0];
-		String args[] = methodName.split("\\[")[1].replaceAll("\\]", "").split(",");
+		String method = methodName.split("\\(")[0];
+		String args[] = methodName.split("\\(")[1].replaceAll("\\)", "").split(",");
 		if (args.length == 1) {
 			args = args[0].equals("") ? new String[0] : args;
 		}
