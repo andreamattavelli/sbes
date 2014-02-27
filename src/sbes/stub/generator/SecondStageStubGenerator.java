@@ -10,12 +10,11 @@ import japa.parser.ast.body.Parameter;
 import japa.parser.ast.body.TypeDeclaration;
 import japa.parser.ast.body.VariableDeclarator;
 import japa.parser.ast.body.VariableDeclaratorId;
+import japa.parser.ast.expr.ArrayAccessExpr;
 import japa.parser.ast.expr.ArrayCreationExpr;
 import japa.parser.ast.expr.AssignExpr;
 import japa.parser.ast.expr.AssignExpr.Operator;
-import japa.parser.ast.expr.ArrayAccessExpr;
 import japa.parser.ast.expr.BinaryExpr;
-import japa.parser.ast.expr.CastExpr;
 import japa.parser.ast.expr.DoubleLiteralExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.FieldAccessExpr;
@@ -36,11 +35,14 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import sbes.ast.ArrayCellDeclarationVisitor;
+import sbes.ast.EquivalentSequenceCallVisitor;
+import sbes.ast.MethodCallVisitor;
+import sbes.ast.StubObjToCloneObjVisitor;
+import sbes.ast.VariableDeclarationVisitor;
+import sbes.ast.VariableUses;
 import sbes.logging.Logger;
 import sbes.stub.GenerationException;
 import sbes.stub.Stub;
@@ -227,176 +229,265 @@ public class SecondStageStubGenerator extends StubGenerator {
 		CloneVisitor visitor = new CloneVisitor();
 		BlockStmt cloned = (BlockStmt) visitor.visit(carved, null);
 		
-		Map<String, Integer> vars = new HashMap<String, Integer>();
-		List<Integer> toRemove = new ArrayList<Integer>();
-		
-		String stubName = stub.getStubName();
-		String stubObjectName = null;
-		
-		// generalize carved test
-		for (int i = 0; i < cloned.getStmts().size(); i++) {
-			Statement stmt = cloned.getStmts().get(i);
-			if (stmt instanceof ExpressionStmt) {
-				ExpressionStmt estmt = (ExpressionStmt) stmt;
-				
-				// VARIABLE
-				if (estmt.getExpression() instanceof VariableDeclarationExpr) {
-					/* Evosuite does not create variable declarations with multiple definitions,
-					 * so we can safely assume to get element 0
-					 */
-					VariableDeclarationExpr vde = (VariableDeclarationExpr) estmt.getExpression();
-					if (vde.getType().toString().equals(stubName)) {
-						// STUB CONSTRUCTOR ===> remove
-						stubObjectName = vde.getVars().get(0).getId().getName();
-						toRemove.add(i);
-					}
-					else if (vde.getVars().get(0).getInit().toString().contains(stubObjectName)) {
-						// ACTUAL_RESULT
-						int arrayDimension = 0;
-						if (targetMethod.getReturnType().isArray()) {
-							arrayDimension = 1;
-						}
-						vde.setType(ASTHelper.createReferenceType(targetMethod.getReturnType().getCanonicalName(), arrayDimension));
-						
-						vde.getVars().get(0).setId(new VariableDeclaratorId("actual_result"));
-						
-						Expression value = vde.getVars().get(0).getInit();
-						if (value instanceof MethodCallExpr) {
-							MethodCallExpr mce = (MethodCallExpr) value;
-							mce.setScope(ASTHelper.createNameExpr("clone"));
-						}
-						else if (value instanceof CastExpr) {
-							CastExpr cast = (CastExpr) value;
-							MethodCallExpr mce = (MethodCallExpr) cast.getExpr(); // safe cast: in our case it is always a method call
-							mce.setScope(ASTHelper.createNameExpr("clone"));
-						}
-					}
-					else if (stubObjectName != null) {
-						Expression expr = vde.getVars().get(0).getInit();
-						if (expr instanceof MethodCallExpr) {
-							MethodCallExpr mce = (MethodCallExpr) expr;
-							if (mce.getScope() instanceof NameExpr) {
-								NameExpr ne = (NameExpr) mce.getScope();
-								if (ne.getName().equals(stubObjectName)) {
-									mce.setScope(ASTHelper.createNameExpr("clone"));
-								}
-							}
-						}
-					}
-					vars.put(vde.getVars().get(0).getId().getName(), i);
-				}
-				// METHOD CALL
-				else if (estmt.getExpression() instanceof MethodCallExpr) {
-					if (stubObjectName == null) {
-						continue;
-					}
-					MethodCallExpr mce = (MethodCallExpr) estmt.getExpression();
-					if (mce.getName().equals("method_under_test")) {
-						toRemove.add(i);
-					}
-					else if (mce.getName().equals("set_results")) {
-						for (Expression arg : mce.getArgs()) {
-							if (arg instanceof NameExpr) {
-								NameExpr ne = (NameExpr) arg;
-								if (vars.containsKey(ne.getName())) {
-									int index = vars.get(ne.getName());
-									Statement s = cloned.getStmts().get(index);
-									ExpressionStmt es = (ExpressionStmt) s;
-									if (es.getExpression() instanceof VariableDeclarationExpr) {
-										VariableDeclarationExpr v = (VariableDeclarationExpr) es.getExpression();
-										Expression e = v.getVars().get(0).getInit();
-										if (e instanceof FieldAccessExpr) {
-											FieldAccessExpr fae = (FieldAccessExpr) e;
-											if (fae.getField().startsWith("ELEMENT_")) {
-												ne.setName(param.get(0).getId().getName());
-												toRemove.add(index);
-											}
-										}
-										else if (e instanceof ArrayCreationExpr) {
-											for (int j = index + 1; j < i; j++) {
-												ExpressionStmt arr = (ExpressionStmt) cloned.getStmts().get(j);
-												if (arr.getExpression() instanceof AssignExpr) {
-													AssignExpr ae = (AssignExpr) arr.getExpression();
-													if (ae.getTarget() instanceof ArrayAccessExpr) {
-														ArrayAccessExpr aae = (ArrayAccessExpr) ae.getTarget();
-														if (((NameExpr)aae.getName()).getName().equals(v.getVars().get(0).getId().getName())) {
-															NameExpr value = (NameExpr) ae.getValue();
-															if (vars.containsKey(value.getName())) {
-																ExpressionStmt var = (ExpressionStmt) cloned.getStmts().get(vars.get(value.getName()));
-																if (var.getExpression() instanceof VariableDeclarationExpr) {
-																    VariableDeclarationExpr v2 = (VariableDeclarationExpr) var.getExpression();
-																    Expression e2 = v2.getVars().get(0).getInit();
-																    if (e2 instanceof FieldAccessExpr) {
-																        FieldAccessExpr fae2 = (FieldAccessExpr) e2;
-																        if (fae2.getField().startsWith("ELEMENT_")) {
-																            VariableDeclarationExpr actual = new VariableDeclarationExpr();
-																            actual.setType(param.get(0).getType());
-																            VariableDeclarator actualVal = new VariableDeclarator();
-																            actualVal.setId(new VariableDeclaratorId("actual_result"));
-																            actualVal.setInit(new NameExpr(param.get(0).getId().getName()));
-																            List<VariableDeclarator> vdes = new ArrayList<VariableDeclarator>();
-																            vdes.add(actualVal);
-																            actual.setVars(vdes);
-																            cloned.getStmts().set(i, new ExpressionStmt(actual));
-																            toRemove.add(index);
-																            toRemove.add(j);
-																        }
-																    }
-																}
-															}
-														}
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-						toRemove.add(i);
-					}
-					else if (mce.getScope() instanceof NameExpr) {
-						NameExpr scopeName = (NameExpr) mce.getScope();
-						if (scopeName.getName().equals(stubObjectName)) {
-							mce.setScope(ASTHelper.createNameExpr("clone"));
-						}
-						for (Expression arg : mce.getArgs()) {
-							if (arg instanceof NameExpr) {
-								NameExpr ne = (NameExpr) arg;
-								if (vars.containsKey(ne.getName())) {
-									int index = vars.get(ne.getName());
-									Statement s = cloned.getStmts().get(index);
-									ExpressionStmt es = (ExpressionStmt) s;
-									if (es.getExpression() instanceof VariableDeclarationExpr) {
-										VariableDeclarationExpr v = (VariableDeclarationExpr) es.getExpression();
-										Expression e = v.getVars().get(0).getInit();
-										if (e instanceof FieldAccessExpr) {
-											FieldAccessExpr fae = (FieldAccessExpr) e;
-											if (fae.getField().startsWith("ELEMENT_")) {
-												ne.setName(param.get(0).getId().getName());
-												toRemove.add(index);
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		
-		Collections.sort(toRemove);
-		int count = 0;
-		for (int rem : toRemove) {
-			cloned.getStmts().remove(rem - (count++));
-		}
+		//PHASE 0: clean carved result by removing method_under_test
+		removeMethodUnderTest(cloned);
+		//PHASE 1: remove accesses to the stub object and replace them to accesses to the clone object
+		stubObjToCloneObj(cloned);
+		//PHASE 2: identify equivalent sequence parameters
+		identifyEquivalentSequenceParameters(cloned, param);
+		//PHASE 3: identify actual_result
+		identifyActualResult(cloned, targetMethod, param);
+		//PHASE 4: remove dead code
+		deadCodeElimination(cloned);
 		
 		stmts.addAll(cloned.getStmts());
 		
 		return stmts;
 	}
 
+	/*
+	 * PHASE 0: remove method_under_test
+	 */
+	private void removeMethodUnderTest(BlockStmt cloned) {
+		for (int i = cloned.getStmts().size() - 1; i > 0; i--) {
+			Statement stmt = cloned.getStmts().get(i);
+			if (stmt instanceof ExpressionStmt) {
+				ExpressionStmt estmt = (ExpressionStmt) stmt;
+				if (estmt.getExpression() instanceof MethodCallExpr) {
+					MethodCallExpr mce = (MethodCallExpr) estmt.getExpression();
+					if (mce.getNameExpr().getName().equals("method_under_test")) {
+						cloned.getStmts().remove(i);
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	/*
+	 * PHASE 1: remove stub constructor and rename all occurrences of the
+	 * stub object to the cloned object
+	 */
+	private void stubObjToCloneObj(BlockStmt cloned) {
+		String stubName = stub.getStubName();
+		String stubObjectName = null;
+		for (int i = 0; i < cloned.getStmts().size(); i++) {
+			Statement stmt = cloned.getStmts().get(i);
+			if (stmt instanceof ExpressionStmt) {
+				ExpressionStmt estmt = (ExpressionStmt) stmt;
+				if (estmt.getExpression() instanceof VariableDeclarationExpr) {
+					VariableDeclarationExpr vde = (VariableDeclarationExpr) estmt.getExpression();
+					if (vde.getType().toString().equals(stubName)) {
+						// found stub constructor: REMOVE!
+						stubObjectName = vde.getVars().get(0).getId().getName();
+						cloned.getStmts().remove(i);
+						i--;
+						break;
+					}
+				}
+			}
+		}
+		
+		if (stubObjectName == null) {
+			throw new GenerationException("Stub object not found!");
+		}
+		
+		StubObjToCloneObjVisitor visitor = new StubObjToCloneObjVisitor(stubObjectName);
+		visitor.visit(cloned, null);
+	}
+	
+	/*
+	 * 	PHASE 2: identify parameters in all the calls on clone object and 
+	 * 	identify their source.
+	 *  this means that, if they are references to the static inputs in the
+	 *  first stub, we need to match an input in the current stub
+	 */
+	private void identifyEquivalentSequenceParameters(BlockStmt cloned, List<Parameter> param) {
+		EquivalentSequenceCallVisitor escv = new EquivalentSequenceCallVisitor();
+		escv.visit(cloned, null);
+		for (MethodCallExpr methodCall : escv.getDependencies()) {
+			for (int i = 0; i < methodCall.getArgs().size(); i++) { 
+				Expression arg = methodCall.getArgs().get(i);
+				VariableDeclarationExpr vde = null;
+				
+				String name = null;
+				if (arg instanceof ArrayAccessExpr) {
+					ArrayAccessExpr aae = (ArrayAccessExpr) arg;
+					ArrayCellDeclarationVisitor acdv = new ArrayCellDeclarationVisitor(ASTUtils.getName(aae.getName()), aae.getIndex().toString());
+					acdv.visit(cloned, null);
+					name = ASTUtils.getName(acdv.getValue());
+				}
+				else {
+					name = ASTUtils.getName(arg);
+				}
+				
+				if (name != null) {
+					VariableDeclarationVisitor visitor = new VariableDeclarationVisitor(name);
+					visitor.visit(cloned, null);
+					vde = visitor.getVariable();
+				}
+				
+				if (vde != null) {
+					Expression init = vde.getVars().get(0).getInit();
+					if (init instanceof FieldAccessExpr) {
+						FieldAccessExpr fae = (FieldAccessExpr) init;
+						if (fae.getField().startsWith("ELEMENT_")) {
+							// it is an input
+							methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(0).getId().getName())); // FIXME: check inputs
+						}
+					}
+					else if (init instanceof ArrayCreationExpr) {
+						// we should check what is inside the array
+						throw new UnsupportedOperationException("Creation of a second stage stub with array parameter non yet supported");
+					}
+				}
+			}
+		}
+	}
+	
+	/*
+	 * PHASE 3: search for set_results and then resolve the definition of the
+	 * variable used as input
+	 */
+	private void identifyActualResult(BlockStmt cloned, Method targetMethod, List<Parameter> param) {
+		MethodCallVisitor mcv = new MethodCallVisitor("set_results", 1);
+		mcv.visit(cloned, null);
+		MethodCallExpr mce = mcv.getMethodCall();
+		
+		Expression arg = mce.getArgs().get(0);
+		VariableDeclarationExpr vde = null;
+		String name = ASTUtils.getName(arg);
+		String resultType = targetMethod.getReturnType().getCanonicalName();
+		int arrayDimension = 0;
+		if (targetMethod.getReturnType().isArray()) {
+			arrayDimension = 1;
+		}
+		
+		if (name != null) {
+			VariableDeclarationVisitor visitor = new VariableDeclarationVisitor(name);
+			visitor.visit(cloned, null);
+			vde = visitor.getVariable();
+		}
+		
+		if (vde != null) {
+			Expression init = vde.getVars().get(0).getInit();
+			if (init instanceof ArrayCreationExpr) {
+				// we should check what is inside the array
+				ArrayCellDeclarationVisitor acdv = new ArrayCellDeclarationVisitor(name, Integer.toString(0)); // FIXME: does it really work?
+				acdv.visit(cloned, null);
+				Expression e = acdv.getValue();
+				if (e instanceof NameExpr) {
+					String internalName = ASTUtils.getName(e);
+					if (internalName != null) {
+						VariableDeclarationVisitor visitor = new VariableDeclarationVisitor(internalName);
+						visitor.visit(cloned, null);
+						VariableDeclarationExpr internalVde = visitor.getVariable();
+						Expression internalInit = internalVde.getVars().get(0).getInit();
+						if (internalInit instanceof FieldAccessExpr) {
+							FieldAccessExpr fae = (FieldAccessExpr) internalInit;
+							if (fae.getField().startsWith("ELEMENT_")) {
+								// it is an input
+								List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+								VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+								vd.setInit(new NameExpr(param.get(0).getId().getName()));
+								vars.add(vd);
+								VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+								cloned.getStmts().add(new ExpressionStmt(actualResult));
+							}
+						}
+					}
+				}
+			}
+			else if (init instanceof MethodCallExpr) {
+				// the actual_result is the return value
+				vde.setType(ASTHelper.createReferenceType(resultType, arrayDimension));
+				vde.getVars().get(0).getId().setName("actual_result");
+			}
+		}
+	}
+	
+	/*
+	 * PHASE 4: dead code elimination: remove everything not necessary
+	 */
+	private void deadCodeElimination(BlockStmt cloned) {
+		for (int i = 0; i < cloned.getStmts().size(); i++) {
+			Statement stmt = cloned.getStmts().get(i);
+			if (stmt instanceof ExpressionStmt) {
+				ExpressionStmt estmt = (ExpressionStmt) stmt;
+				if (estmt.getExpression() instanceof MethodCallExpr) {
+					MethodCallExpr mce = (MethodCallExpr) estmt.getExpression();
+					if (mce.getName().equals("set_results")) {
+						System.out.println("REMOVE " + cloned.getStmts().get(i));
+						cloned.getStmts().remove(i);
+						i--;
+					}
+				}
+				else if (estmt.getExpression() instanceof VariableDeclarationExpr) {
+					VariableDeclarationExpr vde = (VariableDeclarationExpr) estmt.getExpression();
+					VariableDeclarator vd = vde.getVars().get(0);
+					if (vd.getId().getName().equals("actual_result")) {
+						continue;
+					}
+					else if (vd.getInit() instanceof FieldAccessExpr) {
+						// if synthesis input, remove it
+						FieldAccessExpr fae = (FieldAccessExpr) vd.getInit();
+						if (fae.getField().startsWith("ELEMENT_")) {
+							System.out.println("REMOVE " + cloned.getStmts().get(i));
+							cloned.getStmts().remove(i);
+							i--;
+						}
+					}
+					else if (vd.getInit() instanceof MethodCallExpr) {
+						// heuristic
+						continue;
+					}
+					else {
+						// check use
+						String varName = vd.getId().getName();
+						System.out.println(varName);
+						VariableUses vu = new VariableUses(varName);
+						vu.visit(cloned, null);
+						if (!vu.isUsed()) {
+							System.out.println("DEAD CODE");
+							removeDeadAssignments(cloned, i, varName);
+							cloned.getStmts().remove(i);
+							i--;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void removeDeadAssignments(BlockStmt cloned, int i, String varName) {
+		for (int j = i; j < cloned.getStmts().size(); j++) {
+			Statement s = cloned.getStmts().get(j);
+			if (s instanceof ExpressionStmt) {
+				ExpressionStmt es = (ExpressionStmt) s;
+				if (es.getExpression() instanceof AssignExpr) {
+					AssignExpr ae = (AssignExpr) es.getExpression();
+					if (ae.getTarget() instanceof NameExpr) {
+						NameExpr neae = (NameExpr) ae.getTarget();
+						if (neae.getName().equals(varName)) {
+							cloned.getStmts().remove(j);
+							j--;
+						}
+					}					
+					else if (ae.getTarget() instanceof ArrayAccessExpr) {
+						ArrayAccessExpr aae = (ArrayAccessExpr) ae.getTarget();
+						if (aae.getName() instanceof NameExpr) {
+							NameExpr neae = (NameExpr) aae.getName();
+							if (neae.getName().equals(varName)) {
+								cloned.getStmts().remove(j);
+								j--;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	@Override
 	protected MethodDeclaration getSetResultsMethod(Method targetMethod) {
 		return null;

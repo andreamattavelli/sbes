@@ -31,7 +31,7 @@ public class SecondStageStubGeneratorTest {
 		List<Comment> comments = new ArrayList<Comment>();
 
 		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/Stack-UseCase/bin");
-		Options.I().setMethodSignature("stack.util.Stack.push[Object]");
+		Options.I().setMethodSignature("stack.util.Stack.push(Object)");
 
 		stub = new Stub(new CompilationUnit(new PackageDeclaration(new NameExpr("asda")), imports, decls, comments), "Stack_Stub");
 	}
@@ -50,6 +50,7 @@ public class SecondStageStubGeneratorTest {
 		SecondStageStubGenerator sssg = new SecondStageStubGenerator(stub, candidateES);
 		Stub second = sssg.generateStub();
 		System.out.println(second.getAst().toString());
+		System.out.println("===========================================================");
 	}
 
 	@Test
@@ -66,6 +67,7 @@ public class SecondStageStubGeneratorTest {
 		SecondStageStubGenerator sssg = new SecondStageStubGenerator(stub, candidateES);
 		Stub second = sssg.generateStub();
 		System.out.println(second.getAst().toString());
+		System.out.println("===========================================================");
 	}
 
 	@Test
@@ -82,6 +84,7 @@ public class SecondStageStubGeneratorTest {
 		SecondStageStubGenerator sssg = new SecondStageStubGenerator(stub, candidateES);
 		Stub second = sssg.generateStub();
 		System.out.println(second.getAst().toString());
+		System.out.println("===========================================================");
 	}
 	
 	@Test
@@ -99,6 +102,29 @@ public class SecondStageStubGeneratorTest {
 		SecondStageStubGenerator sssg = new SecondStageStubGenerator(stub, candidateES);
 		Stub second = sssg.generateStub();
 		System.out.println(second.getAst().toString());
+		System.out.println("===========================================================");
+	}
+	
+	@Test
+	public void test5() throws ParseException {
+		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/sbes/gs-core-1.2.jar");
+		Options.I().setMethodSignature("org.graphstream.graph.implementations.AbstractEdge.getNode0()");
+		
+		List<TypeDeclaration> decls = new ArrayList<TypeDeclaration>(); 
+		List<Comment> comments = new ArrayList<Comment>();
+		
+		stub = new Stub(new CompilationUnit(new PackageDeclaration(new NameExpr("asda")), imports, decls, comments), "AbstractEdge_Stub");
+		
+		BlockStmt body = JavaParser.parseBlock("{AbstractEdge_Stub abstractEdge_Stub0 = new AbstractEdge_Stub();"+
+				"Node[] nodeArray0 = abstractEdge_Stub0.getSourceNode();"+
+				"abstractEdge_Stub0.set_results(nodeArray0);"+
+				"abstractEdge_Stub0.method_under_test();}");
+
+		CarvingResult candidateES = new CarvingResult(body, imports);
+		SecondStageStubGenerator sssg = new SecondStageStubGenerator(stub, candidateES);
+		Stub second = sssg.generateStub();
+		System.out.println(second.getAst().toString());
+		System.out.println("===========================================================");
 	}
 
 }

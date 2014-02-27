@@ -11,9 +11,11 @@ import japa.parser.ast.expr.ArrayCreationExpr;
 import japa.parser.ast.expr.AssignExpr;
 import japa.parser.ast.expr.AssignExpr.Operator;
 import japa.parser.ast.expr.BinaryExpr;
+import japa.parser.ast.expr.CastExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.FieldAccessExpr;
 import japa.parser.ast.expr.MethodCallExpr;
+import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.StringLiteralExpr;
 import japa.parser.ast.expr.UnaryExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
@@ -142,5 +144,26 @@ public class ASTUtils {
 		List<Expression> args = new ArrayList<Expression>();
 		args.add(new StringLiteralExpr(message));
 		return new MethodCallExpr(new FieldAccessExpr(ASTHelper.createNameExpr("System"), "out"), "println", args);
+	}
+	
+	public static String getName(Expression exp) {
+		if (exp instanceof NameExpr) {
+			return getName((NameExpr) exp);
+		}
+		else if (exp instanceof CastExpr) {
+			CastExpr ce = (CastExpr) exp;
+			if (ce.getExpr() instanceof NameExpr) {
+				return getName((NameExpr) ce.getExpr());
+			}
+		}
+		else if (exp instanceof ArrayAccessExpr) {
+			ArrayAccessExpr aae = (ArrayAccessExpr) exp;
+			return getName(aae.getName());
+		}
+		return null;
+	}
+	
+	private static String getName(NameExpr ne) {
+		return ne.getName();
 	}
 }

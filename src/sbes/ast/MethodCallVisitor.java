@@ -8,6 +8,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<Void> {
 	private final String methodName;
 	private final int parameters;
 	private boolean found;
+	private MethodCallExpr methodCall;
 	
 	public MethodCallVisitor(final String methodName, final int parameters) {
 		this.methodName = methodName;
@@ -21,6 +22,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<Void> {
 			int args = n.getArgs() == null ? 0 : n.getArgs().size();
 			if (args == parameters) {
 				found = true;
+				methodCall = n;
 			}
 		}
 		else {
@@ -30,6 +32,10 @@ public class MethodCallVisitor extends VoidVisitorAdapter<Void> {
 	
 	public boolean isFound() {
 		return found;
+	}
+	
+	public MethodCallExpr getMethodCall() {
+		return methodCall;
 	}
 	
 }
