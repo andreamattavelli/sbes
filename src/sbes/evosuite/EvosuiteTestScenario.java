@@ -50,8 +50,8 @@ public class EvosuiteTestScenario extends Evosuite {
 		try {
 			InternalClassloader ic = new InternalClassloader(Options.I().getClassesPath());
 			c = Class.forName(classname, false, ic.getClassLoader());
-			String method = methodname.split("\\[")[0];
-			String args[] = methodname.split("\\[")[1].replaceAll("\\]", "").split(",");
+			String method = methodname.split("\\(")[0];
+			String args[] = methodname.split("\\(")[1].replaceAll("\\)", "").split(",");
 			if (args.length == 1) {
 				args = args[0].equals("") ? new String[0] : args;
 			}

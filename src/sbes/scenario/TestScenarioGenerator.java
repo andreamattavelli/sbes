@@ -68,6 +68,7 @@ public class TestScenarioGenerator {
 			logger.info("Generated " + scenarios.size() + " initial test scenarios - Done");
 		} catch (WorkerException e) {
 			logger.fatal("Stopping test scenario generation: " + e.getMessage());
+			logger.error("Stack trace: ", e);
 			throw new SBESException("Unable to generate initial test scenarios");
 		}
 	}
