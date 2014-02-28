@@ -5,10 +5,10 @@ import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
 
-public class VariableUses extends VoidVisitorAdapter<Void> {
+public class VariableUseVisitor extends VoidVisitorAdapter<Void> {
 	private String variableId;
 	private boolean alive;
-	public VariableUses(String variableId) {
+	public VariableUseVisitor(String variableId) {
 		this.variableId = variableId;
 		this.alive = false;
 	}

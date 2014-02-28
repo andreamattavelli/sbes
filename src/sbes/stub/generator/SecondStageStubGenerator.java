@@ -40,9 +40,10 @@ import java.util.List;
 import sbes.ast.ArrayCellDeclarationVisitor;
 import sbes.ast.EquivalentSequenceCallVisitor;
 import sbes.ast.MethodCallVisitor;
+import sbes.ast.StubArrayVariableRemoverVisitor;
 import sbes.ast.StubObjToCloneObjVisitor;
 import sbes.ast.VariableDeclarationVisitor;
-import sbes.ast.VariableUses;
+import sbes.ast.VariableUseVisitor;
 import sbes.logging.Logger;
 import sbes.stub.GenerationException;
 import sbes.stub.Stub;
@@ -294,6 +295,9 @@ public class SecondStageStubGenerator extends StubGenerator {
 		
 		StubObjToCloneObjVisitor visitor = new StubObjToCloneObjVisitor(stubObjectName);
 		visitor.visit(cloned, null);
+		
+		StubArrayVariableRemoverVisitor msv = new StubArrayVariableRemoverVisitor();
+		msv.visit(cloned, null);
 	}
 	
 	/*
@@ -306,40 +310,44 @@ public class SecondStageStubGenerator extends StubGenerator {
 		EquivalentSequenceCallVisitor escv = new EquivalentSequenceCallVisitor();
 		escv.visit(cloned, null);
 		for (MethodCallExpr methodCall : escv.getDependencies()) {
-			for (int i = 0; i < methodCall.getArgs().size(); i++) { 
-				Expression arg = methodCall.getArgs().get(i);
-				VariableDeclarationExpr vde = null;
-				
-				String name = null;
-				if (arg instanceof ArrayAccessExpr) {
-					ArrayAccessExpr aae = (ArrayAccessExpr) arg;
-					ArrayCellDeclarationVisitor acdv = new ArrayCellDeclarationVisitor(ASTUtils.getName(aae.getName()), aae.getIndex().toString());
-					acdv.visit(cloned, null);
-					name = ASTUtils.getName(acdv.getValue());
-				}
-				else {
-					name = ASTUtils.getName(arg);
-				}
-				
-				if (name != null) {
-					VariableDeclarationVisitor visitor = new VariableDeclarationVisitor(name);
-					visitor.visit(cloned, null);
-					vde = visitor.getVariable();
-				}
-				
-				if (vde != null) {
-					Expression init = vde.getVars().get(0).getInit();
-					if (init instanceof FieldAccessExpr) {
-						FieldAccessExpr fae = (FieldAccessExpr) init;
-						if (fae.getField().startsWith("ELEMENT_")) {
-							// it is an input
-							methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(0).getId().getName())); // FIXME: check inputs
-						}
+			analyzeParameters(cloned, param, methodCall);
+		}
+	}
+
+	private void analyzeParameters(BlockStmt cloned, List<Parameter> param, MethodCallExpr methodCall) {
+		for (int i = 0; i < methodCall.getArgs().size(); i++) { 
+			Expression arg = methodCall.getArgs().get(i);
+			VariableDeclarationExpr vde = null;
+			
+			String name = null;
+			if (arg instanceof ArrayAccessExpr) {
+				ArrayAccessExpr aae = (ArrayAccessExpr) arg;
+				ArrayCellDeclarationVisitor acdv = new ArrayCellDeclarationVisitor(ASTUtils.getName(aae.getName()), aae.getIndex().toString());
+				acdv.visit(cloned, null);
+				name = ASTUtils.getName(acdv.getValue());
+			}
+			else {
+				name = ASTUtils.getName(arg);
+			}
+			
+			if (name != null) {
+				VariableDeclarationVisitor visitor = new VariableDeclarationVisitor(name);
+				visitor.visit(cloned, null);
+				vde = visitor.getVariable();
+			}
+			
+			if (vde != null) {
+				Expression init = vde.getVars().get(0).getInit();
+				if (init instanceof FieldAccessExpr) {
+					FieldAccessExpr fae = (FieldAccessExpr) init;
+					if (fae.getField().startsWith("ELEMENT_")) {
+						// it is an input
+						methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(0).getId().getName())); // FIXME: check inputs
 					}
-					else if (init instanceof ArrayCreationExpr) {
-						// we should check what is inside the array
-						throw new UnsupportedOperationException("Creation of a second stage stub with array parameter non yet supported");
-					}
+				}
+				else if (init instanceof ArrayCreationExpr) {
+					// we should check what is inside the array
+					throw new UnsupportedOperationException("Creation of a second stage stub with array parameter non yet supported");
 				}
 			}
 		}
@@ -373,7 +381,7 @@ public class SecondStageStubGenerator extends StubGenerator {
 			Expression init = vde.getVars().get(0).getInit();
 			if (init instanceof ArrayCreationExpr) {
 				// we should check what is inside the array
-				ArrayCellDeclarationVisitor acdv = new ArrayCellDeclarationVisitor(name, Integer.toString(0)); // FIXME: does it really work?
+				ArrayCellDeclarationVisitor acdv = new ArrayCellDeclarationVisitor(name, Integer.toString(0));
 				acdv.visit(cloned, null);
 				Expression e = acdv.getValue();
 				if (e instanceof NameExpr) {
@@ -417,7 +425,6 @@ public class SecondStageStubGenerator extends StubGenerator {
 				if (estmt.getExpression() instanceof MethodCallExpr) {
 					MethodCallExpr mce = (MethodCallExpr) estmt.getExpression();
 					if (mce.getName().equals("set_results")) {
-						System.out.println("REMOVE " + cloned.getStmts().get(i));
 						cloned.getStmts().remove(i);
 						i--;
 					}
@@ -432,7 +439,6 @@ public class SecondStageStubGenerator extends StubGenerator {
 						// if synthesis input, remove it
 						FieldAccessExpr fae = (FieldAccessExpr) vd.getInit();
 						if (fae.getField().startsWith("ELEMENT_")) {
-							System.out.println("REMOVE " + cloned.getStmts().get(i));
 							cloned.getStmts().remove(i);
 							i--;
 						}
@@ -444,11 +450,9 @@ public class SecondStageStubGenerator extends StubGenerator {
 					else {
 						// check use
 						String varName = vd.getId().getName();
-						System.out.println(varName);
-						VariableUses vu = new VariableUses(varName);
+						VariableUseVisitor vu = new VariableUseVisitor(varName);
 						vu.visit(cloned, null);
 						if (!vu.isUsed()) {
-							System.out.println("DEAD CODE");
 							removeDeadAssignments(cloned, i, varName);
 							cloned.getStmts().remove(i);
 							i--;
