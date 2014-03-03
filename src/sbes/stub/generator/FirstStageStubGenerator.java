@@ -125,7 +125,6 @@ public class FirstStageStubGenerator extends StubGenerator {
 				}
 			}
 		}
-		System.out.println(statements);
 		body.setStmts(statements);
 		constructor.setBlock(body);
 		constructors.add(constructor);
