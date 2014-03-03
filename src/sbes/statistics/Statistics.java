@@ -101,18 +101,18 @@ public class Statistics {
 
 			bw.newLine();
 
-			long process = (processEndTime - processStartTime) / 1000;
+			long process = (processEndTime - processStartTime);
 			bw.write(Long.toString(process));
-			long scenario = (scenarioEndTime - scenarioStartTime) / 1000;
+			long scenario = (scenarioEndTime - scenarioStartTime);
 			bw.write("," + Long.toString(scenario));
 			for (int i = 0; i < syntheses.size(); i++) {
-				bw.write("," + Long.toString(syntheses.get(i) / 1000));
+				bw.write("," + Long.toString(syntheses.get(i)));
 			}
 			for (int i = 0; i < counterexamples.size(); i++) {
-				bw.write("," + Long.toString(counterexamples.get(i) / 1000));
+				bw.write("," + Long.toString(counterexamples.get(i)));
 			}
 			for (int i = 0; i < iterations.size(); i++) {
-				bw.write("," + Long.toString(iterations.get(i) / 1000));
+				bw.write("," + Long.toString(iterations.get(i)));
 			}
 		} catch (IOException e) {
 			logger.error("Unable to write CSV file", e);
