@@ -407,6 +407,15 @@ public class SecondStageStubGenerator extends StubGenerator {
 								cloned.getStmts().add(new ExpressionStmt(actualResult));
 							}
 						}
+						else if (internalInit instanceof ObjectCreationExpr) {
+							ObjectCreationExpr oce = (ObjectCreationExpr) internalInit;
+							List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+							VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+							vd.setInit(oce);
+							vars.add(vd);
+							VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+							cloned.getStmts().add(new ExpressionStmt(actualResult));
+						}
 					}
 				}
 			}
@@ -422,7 +431,7 @@ public class SecondStageStubGenerator extends StubGenerator {
 	 * PHASE 4: dead code elimination: remove everything not necessary
 	 */
 	private void deadCodeElimination(BlockStmt cloned) {
-		for (int i = 0; i < cloned.getStmts().size(); i++) {
+		for (int i = cloned.getStmts().size() - 1; i >= 0; i--) {
 			Statement stmt = cloned.getStmts().get(i);
 			if (stmt instanceof ExpressionStmt) {
 				ExpressionStmt estmt = (ExpressionStmt) stmt;
@@ -430,7 +439,7 @@ public class SecondStageStubGenerator extends StubGenerator {
 					MethodCallExpr mce = (MethodCallExpr) estmt.getExpression();
 					if (mce.getName().equals("set_results")) {
 						cloned.getStmts().remove(i);
-						i--;
+						i = i == cloned.getStmts().size() ? i : i++;
 					}
 				}
 				else if (estmt.getExpression() instanceof VariableDeclarationExpr) {
@@ -444,7 +453,7 @@ public class SecondStageStubGenerator extends StubGenerator {
 						FieldAccessExpr fae = (FieldAccessExpr) vd.getInit();
 						if (fae.getField().startsWith("ELEMENT_")) {
 							cloned.getStmts().remove(i);
-							i--;
+							i = i == cloned.getStmts().size() ? i : i++;
 						}
 					}
 					else if (vd.getInit() instanceof MethodCallExpr) {
@@ -459,7 +468,7 @@ public class SecondStageStubGenerator extends StubGenerator {
 						if (!vu.isUsed()) {
 							removeDeadAssignments(cloned, i, varName);
 							cloned.getStmts().remove(i);
-							i--;
+							i = i == cloned.getStmts().size() ? i : i++;
 						}
 					}
 				}

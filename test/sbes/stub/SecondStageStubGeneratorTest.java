@@ -126,5 +126,23 @@ public class SecondStageStubGeneratorTest {
 		System.out.println(second.getAst().toString());
 		System.out.println("===========================================================");
 	}
+	
+	@Test
+	public void test6() throws ParseException {
+		BlockStmt body = JavaParser.parseBlock("{Stack_Stub stack_Stub0 = new Stack_Stub();"+ 
+				"Integer integer0 = new Integer(0);"+ 
+				"LinkedList<Integer> linkedList0 = new LinkedList<Integer>();"+ 
+				"boolean[] booleanArray0 = stack_Stub0.retainAll(linkedList0);"+ 
+				"Integer[] integerArray0 = new Integer[9];"+ 
+				"integerArray0[0] = integer0;"+ 
+				"stack_Stub0.set_results(integerArray0);"+ 
+				"stack_Stub0.method_under_test();}");
+
+		CarvingResult candidateES = new CarvingResult(body, imports);
+		SecondStageStubGenerator sssg = new SecondStageStubGenerator(stub, candidateES);
+		Stub second = sssg.generateStub();
+		System.out.println(second.getAst().toString());
+		System.out.println("===========================================================");
+	}
 
 }

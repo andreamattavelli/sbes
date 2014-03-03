@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import sbes.ast.ActualStateVisitor;
 import sbes.ast.ExpectedResultVisitor;
 import sbes.ast.ExpectedStateVisitor;
 import sbes.ast.ExtractValuesFromTargetMethodVisitor;
@@ -72,9 +73,12 @@ public class TestScenarioGeneralizer {
 		// PHASE 2: find and substitute expected state
 		ExpectedStateVisitor esv = new ExpectedStateVisitor(index, objName);
 		esv.visit(cloned, getConcreteClass(className, concreteClass));
-		actualStatements.add(esv.getActualState());
 		ObjToExpectedStateVisitor oesv = new ObjToExpectedStateVisitor(objName, FirstStageStubGenerator.EXPECTED_STATE, Integer.toString(index));
 		oesv.visit(cloned, null);
+		// create actual state
+		ActualStateVisitor asv = new ActualStateVisitor(FirstStageStubGenerator.EXPECTED_STATE, Integer.toString(index), methodName);
+		asv.visit(cloned, null);
+		actualStatements.addAll(asv.getActualStates());
 		
 		// PHASE 4: extract candidate call parameters to fields (with all dependencies)
 		List<FieldDeclaration> inputs = extractParametersToInputs(cloned, methodName);

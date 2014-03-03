@@ -136,4 +136,26 @@ public class FirstStageStubGeneratorTest {
 		assertEquals(GenericTestScenario.class, ts.getClass());
 	}
 	
+	@Test
+	public void test6() throws ParseException {
+		List<ImportDeclaration> imports = new ArrayList<ImportDeclaration>();
+		
+		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/Stack-UseCase/bin");
+		Options.I().setMethodSignature("stack.util.Stack.pop()");
+		
+		BlockStmt body = JavaParser.parseBlock("{Stack<Integer> stack0 = new Stack<Integer>();"+
+												"Integer integer0 = new Integer(1185);"+
+												"boolean boolean0 = stack0.add(integer0);"+
+												"Integer integer1 = stack0.pop();}");
+		CarvingResult cr = new CarvingResult(body, imports);
+		
+		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer(0);
+		TestScenario ts = tsg.generalizeTestToScenario(cr);
+		
+		System.out.println(ts.getScenario().toString());
+		System.out.println(ts.getInputs());
+		
+		assertEquals(GenericTestScenario.class, ts.getClass());
+	}
+	
 }
