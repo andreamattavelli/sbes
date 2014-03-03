@@ -3,6 +3,7 @@ package sbes;
 import java.io.File;
 import java.util.List;
 
+import sbes.ast.CounterexampleVisitor;
 import sbes.evosuite.Evosuite;
 import sbes.evosuite.EvosuiteFirstStage;
 import sbes.evosuite.EvosuiteSecondStage;
@@ -89,6 +90,7 @@ public class SBESManager {
 			}
 			else {
 				// if solution is found: add test scenario to stub
+				cleanCounterexample(counterexample);
 				TestScenario ts = TestScenarioGenerator.getInstance().carvedTestToScenario(counterexample);
 				initialScenarios.add(ts);
 				StubGenerator counterexampleGenerator = new FirstStageStubGenerator(initialScenarios);
@@ -103,7 +105,7 @@ public class SBESManager {
 		
 		statistics.writeCSV();
 	}
-	
+
 	private CarvingResult synthesizeEquivalentSequence(Stub stub, ExecutionManager manager, DirectoryUtils directory) {
 		logger.info("Synthesizing equivalent sequence candidate");
 		statistics.synthesisStarted();
@@ -220,6 +222,12 @@ public class SBESManager {
 		statistics.counterexampleFinished();
 		logger.info("Generating counterexample - done");
 		return toReturn;
+	}
+	
+	private void cleanCounterexample(CarvingResult counterexample) {
+		String classname = ClassUtils.getSimpleClassname(Options.I().getMethodSignature());
+		CounterexampleVisitor cv = new CounterexampleVisitor();
+		cv.visit(counterexample.getBody(), classname);
 	}
 	
 }
