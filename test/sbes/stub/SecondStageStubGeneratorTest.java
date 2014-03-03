@@ -17,8 +17,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import sbes.option.Options;
+import sbes.result.CarvingResult;
 import sbes.stub.generator.SecondStageStubGenerator;
-import sbes.testcase.CarvingResult;
 
 public class SecondStageStubGeneratorTest {
 	

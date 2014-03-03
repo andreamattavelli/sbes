@@ -11,8 +11,9 @@ import java.util.List;
 import org.junit.Test;
 
 import sbes.option.Options;
+import sbes.result.CarvingResult;
+import sbes.result.TestScenario;
 import sbes.stub.generator.FirstStageGenericStubGenerator;
-import sbes.testcase.CarvingResult;
 
 public class TestScenarioGeneratorTest {
 

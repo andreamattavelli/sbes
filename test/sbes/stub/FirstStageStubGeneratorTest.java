@@ -1,6 +1,6 @@
 package sbes.stub;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import japa.parser.JavaParser;
 import japa.parser.ParseException;
 import japa.parser.ast.ImportDeclaration;
@@ -14,10 +14,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import sbes.option.Options;
+import sbes.result.CarvingResult;
+import sbes.result.TestScenario;
 import sbes.scenario.GenericTestScenario;
-import sbes.scenario.TestScenario;
 import sbes.scenario.TestScenarioGeneralizer;
-import sbes.testcase.CarvingResult;
 
 public class FirstStageStubGeneratorTest {
 
@@ -114,6 +114,26 @@ public class FirstStageStubGeneratorTest {
 		
 		System.out.println(ts.getScenario().toString());
 		System.out.println(ts.getInputs());
+	}
+	
+	@Test
+	public void test5() throws ParseException {
+		List<ImportDeclaration> imports = new ArrayList<ImportDeclaration>();
+		
+		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/Stack-UseCase/bin");
+		Options.I().setMethodSignature("stack.util.Stack.push(Object)");
+		
+		BlockStmt body = JavaParser.parseBlock("{Stack<Integer> stack0 = new Stack<Integer>();"+
+												"Integer integer0 = stack0.push((Integer) 0);}");
+		CarvingResult cr = new CarvingResult(body, imports);
+		
+		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer(0);
+		TestScenario ts = tsg.generalizeTestToScenario(cr);
+		
+		System.out.println(ts.getScenario().toString());
+		System.out.println(ts.getInputs());
+		
+		assertEquals(GenericTestScenario.class, ts.getClass());
 	}
 	
 }
