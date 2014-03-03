@@ -4,7 +4,8 @@ import java.util.List;
 
 import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.stmt.BlockStmt;
-import sbes.testcase.CarvingResult;
+import sbes.result.CarvingResult;
+import sbes.result.TestScenario;
 
 public class GenericTestScenario extends TestScenario {
 

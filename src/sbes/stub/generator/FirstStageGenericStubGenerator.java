@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.Map;
 
 import sbes.logging.Logger;
+import sbes.result.TestScenario;
 import sbes.scenario.GenericTestScenario;
-import sbes.scenario.TestScenario;
 import sbes.stub.GenerationException;
 import sbes.util.ASTUtils;
 import sbes.util.MethodUtils;

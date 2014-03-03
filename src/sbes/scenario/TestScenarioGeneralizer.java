@@ -12,7 +12,6 @@ import japa.parser.ast.stmt.BlockStmt;
 import japa.parser.ast.stmt.ExpressionStmt;
 import japa.parser.ast.stmt.Statement;
 import japa.parser.ast.visitor.CloneVisitor;
-import japa.parser.ast.visitor.VoidVisitorAdapter;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -23,13 +22,17 @@ import java.util.Map;
 
 import sbes.ast.ExpectedResultVisitor;
 import sbes.ast.ExpectedStateVisitor;
+import sbes.ast.ExtractValuesFromTargetMethodVisitor;
+import sbes.ast.ExtractVariablesFromTargetMethodVisitor;
 import sbes.ast.GenericToConcreteClassVisitor;
 import sbes.ast.ObjToExpectedStateVisitor;
 import sbes.ast.ObjToObjVisitor;
+import sbes.ast.SubstituteNameVisitor;
 import sbes.logging.Logger;
 import sbes.option.Options;
+import sbes.result.CarvingResult;
+import sbes.result.TestScenario;
 import sbes.stub.generator.FirstStageStubGenerator;
-import sbes.testcase.CarvingResult;
 import sbes.util.ClassUtils;
 
 public class TestScenarioGeneralizer {
@@ -88,13 +91,18 @@ public class TestScenarioGeneralizer {
 	private List<FieldDeclaration> extractParametersToInputs(BlockStmt cloned, String methodName) {
 		List<String> varsToExtract = new ArrayList<String>();
 		List<VariableDeclarationExpr> varsToField = new ArrayList<VariableDeclarationExpr>();
+		List<FieldDeclaration> fields = new ArrayList<FieldDeclaration>();
 		
 		// extract dependencies from target method
-		ExtractParameterFromTargetMethodVisitor epv = new ExtractParameterFromTargetMethodVisitor();
+		ExtractValuesFromTargetMethodVisitor evmv = new ExtractValuesFromTargetMethodVisitor();
+		evmv.visit(cloned, methodName);
+		fields.addAll(evmv.getFields());
+		
+		ExtractVariablesFromTargetMethodVisitor epv = new ExtractVariablesFromTargetMethodVisitor();
 		epv.visit(cloned, methodName);
 		varsToExtract.addAll(epv.getDependencies());
 		
-		// recursively extract all dependencies
+		// recursively extract all variable dependencies
 		while (!varsToExtract.isEmpty()) {
 			String variableId = varsToExtract.remove(0);
 			for (int i = 0; i < cloned.getStmts().size(); i++) {
@@ -115,20 +123,19 @@ public class TestScenarioGeneralizer {
 		}
 		
 		Collections.reverse(varsToField);
-		
+
 		Map<String, String> varMap = new HashMap<String, String>();
-		List<FieldDeclaration> fields = new ArrayList<FieldDeclaration>();
 		for (int i = 0; i < varsToField.size(); i++) {
 			// substitute name
 			VariableDeclarationExpr vde = varsToField.get(i);
-			String newName = "ELEMENT_" + i;
+			String newName = "ELEMENT_" + fields.size();
 			varMap.put(vde.getVars().get(0).getId().getName(), newName);
 			vde.getVars().get(0).getId().setName(newName);
-			
+
 			// substitute dependency names
 			SubstituteNameVisitor snv = new SubstituteNameVisitor();
 			snv.visit(vde, varMap);
-			
+
 			// create field
 			FieldDeclaration fd = new FieldDeclaration(Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, vde.getType(), vde.getVars());
 			fields.add(fd);
@@ -173,45 +180,6 @@ public class TestScenarioGeneralizer {
 			}
 		}
 		return dependencies;
-	}
-
-	class ExtractParameterFromTargetMethodVisitor extends VoidVisitorAdapter<String> {
-		private List<String> dependencies;
-		public ExtractParameterFromTargetMethodVisitor() {
-			dependencies = new ArrayList<String>();
-		}
-		public List<String> getDependencies() {
-			return dependencies;
-		}
-		@Override
-		public void visit(MethodCallExpr n, String methodName) {
-			if (n.getName().equals(methodName)) {
-				if (n.getArgs() != null) {
-					for (Expression arg : n.getArgs()) {
-						if (arg instanceof NameExpr) {
-							dependencies.add(((NameExpr)arg).getName());
-						}
-						else if (arg instanceof CastExpr) {
-							CastExpr ce = (CastExpr) arg;
-							if (ce.getExpr() instanceof NameExpr) {
-								dependencies.add(((NameExpr)ce.getExpr()).getName());
-							}
-						}
-					}
-				}
-			}
-			super.visit(n, methodName);
-		}
-	}
-	
-	class SubstituteNameVisitor extends VoidVisitorAdapter<Map<String, String>> {
-		@Override
-		public void visit(NameExpr n, Map<String, String> arg) {
-			if (arg.containsKey(n.getName())) {
-				n.setName(arg.get(n.getName()));
-			}
-			super.visit(n, arg);
-		}
 	}
 
 	private String getConcreteClass(String className, String concreteClass) {

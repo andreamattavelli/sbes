@@ -2,8 +2,8 @@ package sbes.stub.generator;
 
 import java.util.List;
 
+import sbes.result.TestScenario;
 import sbes.scenario.GenericTestScenario;
-import sbes.scenario.TestScenario;
 
 public class FirstStageGeneratorFactory {
 

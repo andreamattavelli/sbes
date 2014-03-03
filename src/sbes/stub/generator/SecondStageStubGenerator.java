@@ -45,9 +45,10 @@ import sbes.ast.StubObjToCloneObjVisitor;
 import sbes.ast.VariableDeclarationVisitor;
 import sbes.ast.VariableUseVisitor;
 import sbes.logging.Logger;
+import sbes.result.CarvingResult;
+import sbes.stub.CounterexampleStub;
 import sbes.stub.GenerationException;
 import sbes.stub.Stub;
-import sbes.testcase.CarvingResult;
 import sbes.util.ASTUtils;
 
 public class SecondStageStubGenerator extends StubGenerator {
@@ -55,6 +56,7 @@ public class SecondStageStubGenerator extends StubGenerator {
 	private static final Logger logger = new Logger(SecondStageStubGenerator.class);
 	
 	private CarvingResult candidateES;
+	private List<Statement> equivalence;
 	private Stub stub;
 	
 	public SecondStageStubGenerator(Stub stub, CarvingResult candidateES) {
@@ -65,9 +67,10 @@ public class SecondStageStubGenerator extends StubGenerator {
 	@Override
 	public Stub generateStub() {
 		logger.info("Generating stub for second phase");
-		Stub stub = super.generateStub(); 
+		Stub stub = super.generateStub();
+		CounterexampleStub counterexampleStub = new CounterexampleStub(stub.getAst(), stub.getStubName(), equivalence);
 		logger.info("Generating stub for second phase - done");
-		return stub;
+		return counterexampleStub;
 	}
 	
 	@Override
@@ -154,6 +157,7 @@ public class SecondStageStubGenerator extends StubGenerator {
 		if (stmts.isEmpty()) {
 			throw new GenerationException("Unable to carve candidate: no statements!");
 		}
+		equivalence = stmts;
 		stmt.getStmts().addAll(stmts);
 		
 		NameExpr distanceClass = ASTHelper.createNameExpr("Distance");

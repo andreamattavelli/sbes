@@ -11,9 +11,11 @@ import sbes.execution.ExecutionManager;
 import sbes.execution.ExecutionResult;
 import sbes.logging.Logger;
 import sbes.option.Options;
-import sbes.scenario.TestScenario;
+import sbes.result.CarvingResult;
+import sbes.result.TestScenario;
 import sbes.scenario.TestScenarioGenerator;
 import sbes.statistics.Statistics;
+import sbes.stub.CounterexampleStub;
 import sbes.stub.Stub;
 import sbes.stub.generator.FirstStageGeneratorFactory;
 import sbes.stub.generator.FirstStageStubGenerator;
@@ -21,7 +23,6 @@ import sbes.stub.generator.SecondStageStubGenerator;
 import sbes.stub.generator.StubGenerator;
 import sbes.testcase.Carver;
 import sbes.testcase.CarvingContext;
-import sbes.testcase.CarvingResult;
 import sbes.testcase.Compilation;
 import sbes.testcase.CompilationContext;
 import sbes.util.ClassUtils;
@@ -209,7 +210,10 @@ public class SBESManager {
 
 		CarvingResult toReturn = null;
 		if (candidates.isEmpty()) {
+			CounterexampleStub cStub = (CounterexampleStub) secondStub;
 			logger.info("No counterexample found!");
+			logger.info("Equivalence synthesized: " + System.lineSeparator() + cStub.getEquivalence().toString());
+			
 		}
 		else {
 			logger.info("Counterexample found");
