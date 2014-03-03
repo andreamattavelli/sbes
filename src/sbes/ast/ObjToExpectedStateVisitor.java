@@ -1,0 +1,33 @@
+package sbes.ast;
+
+import japa.parser.ASTHelper;
+import japa.parser.ast.expr.ArrayAccessExpr;
+import japa.parser.ast.expr.MethodCallExpr;
+import japa.parser.ast.expr.NameExpr;
+import japa.parser.ast.visitor.VoidVisitorAdapter;
+
+public class ObjToExpectedStateVisitor extends VoidVisitorAdapter<Void> {
+
+	private String objName;
+	private String expectedName;
+	private String index;
+	
+	public ObjToExpectedStateVisitor(String objName, String expectedName, String index) {
+		this.objName = objName;
+		this.expectedName = expectedName;
+		this.index = index;
+	}
+	
+	@Override
+	public void visit(NameExpr n, Void arg) {
+		if (n.getName().equals(objName)) {
+			if (n.getParentNode() instanceof MethodCallExpr) {
+				MethodCallExpr mce = (MethodCallExpr) n.getParentNode();
+				ArrayAccessExpr aae = new ArrayAccessExpr(ASTHelper.createNameExpr(expectedName), ASTHelper.createNameExpr(index));
+				mce.setScope(aae);
+			}
+		}
+		super.visit(n, arg);
+	}
+	
+}

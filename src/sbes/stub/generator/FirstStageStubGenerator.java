@@ -118,8 +118,14 @@ public class FirstStageStubGenerator extends StubGenerator {
 		List<Statement> statements = new ArrayList<Statement>();
 		BlockStmt body = new BlockStmt();
 		for (int i = 0; i < scenarios.size(); i++) {
-			statements.addAll(scenarios.get(i).getScenario().getStmts());
+			List<Statement> scenarioStmt = scenarios.get(i).getScenario().getStmts();
+			for (Statement statement : scenarioStmt) {
+				if (statement != null) {
+					statements.add(statement);
+				}
+			}
 		}
+		System.out.println(statements);
 		body.setStmts(statements);
 		constructor.setBlock(body);
 		constructors.add(constructor);
