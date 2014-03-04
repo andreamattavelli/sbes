@@ -1,5 +1,7 @@
 package sbes;
 
+import japa.parser.ast.ImportDeclaration;
+
 import java.io.File;
 import java.util.List;
 
@@ -51,7 +53,14 @@ public class SBESManager {
 		// ===================== INITIAL TEST SCENARIO GENERATION =====================
 		statistics.scenarioStarted();
 		TestScenarioGenerator scenarioGenerator = TestScenarioGenerator.getInstance();
-		scenarioGenerator.generateTestScenarios();
+		if (Options.I().getTestScenarioPath() == null) {			
+			scenarioGenerator.generateTestScenarios();
+		}
+		else {
+			// load test scenarios from path
+			scenarioGenerator.loadTestScenarios();
+			
+		}
 		List<TestScenario> initialScenarios = scenarioGenerator.getScenarios();
 		if (initialScenarios.isEmpty()) {
 			throw new SBESException("Unable to generate any initial test scenarios");
@@ -218,7 +227,7 @@ public class SBESManager {
 		else {
 			logger.info("Counterexample found");
 			if (candidates.size() > 1) {
-				logger.warn("More than one counterexample! Pruning to first one");
+				logger.warn("More than one counterexample synthesized");
 			}
 			toReturn = candidates.get(0);
 		}
@@ -232,6 +241,12 @@ public class SBESManager {
 		String classname = ClassUtils.getSimpleClassname(Options.I().getMethodSignature());
 		CounterexampleVisitor cv = new CounterexampleVisitor();
 		cv.visit(counterexample.getBody(), classname);
+		
+		for (ImportDeclaration importDecl : counterexample.getImports()) {
+			if (importDecl.getName().getName().endsWith(classname + "_Stub_2")) {
+				counterexample.getImports().remove(importDecl);
+			}
+		}
 	}
 	
 }

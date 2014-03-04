@@ -73,24 +73,43 @@ public class TestScenarioGenerator {
 			throw new SBESException("Unable to generate initial test scenarios");
 		}
 	}
+	
+	public void loadTestScenarios() {
+		logger.info("Loading initial test scenarios");
+		File scenarioFile = Options.I().getTestScenarioPath();
+		String scenarioPath = scenarioFile.getAbsolutePath();
+		String scenarioDir = scenarioPath.substring(0, scenarioPath.lastIndexOf(File.separatorChar));
+		String scenarioFilename = scenarioPath.substring(scenarioPath.lastIndexOf(File.separatorChar) + 1);
+		
+		CarvingContext context = new CarvingContext(scenarioDir, scenarioFilename);
+		Carver carver = new Carver(context, true);
+		List<CarvingResult> carvedTests = carver.carveBodyFromTests();
+		if (carvedTests.isEmpty()) {
+			throw new SBESException("Unable to generate any test scenarios, give up!");
+		}
+		
+		testToArrayScenario(carvedTests);
+
+		logger.info("Generated " + scenarios.size() + " initial test scenarios - Done");
+	}
+	
+	private  ExecutionResult generate() {
+		ExecutionManager manager = new ExecutionManager();
+		Evosuite evosuiteCommand = new EvosuiteTestScenario(ClassUtils.getCanonicalClassname(Options.I().getMethodSignature()), 
+				ClassUtils.getMethodname(Options.I().getMethodSignature()));
+		return manager.execute(evosuiteCommand);
+	}
 
 	private boolean isCompilable(ExecutionResult result) {
 		String signature = Options.I().getMethodSignature();
 		String packagename = IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
 		String testDirectory = IOUtils.concatPath(result.getOutputDir(), packagename);
 
-		String classPath =	Options.I().getClassesPath() + File.pathSeparatorChar + 
-				Options.I().getJunitPath() + File.pathSeparatorChar +
-				Options.I().getEvosuitePath();
+		String classPath = Options.I().getClassesPath()
+				+ File.pathSeparatorChar + Options.I().getJunitPath()
+				+ File.pathSeparatorChar + Options.I().getEvosuitePath();
 
 		return Compilation.compile(new CompilationContext(testDirectory, result.getFilename(), result.getOutputDir(), classPath));
-	}
-
-	private  ExecutionResult generate() {
-		ExecutionManager manager = new ExecutionManager();
-		Evosuite evosuiteCommand = new EvosuiteTestScenario(ClassUtils.getCanonicalClassname(Options.I().getMethodSignature()), 
-				ClassUtils.getMethodname(Options.I().getMethodSignature()));
-		return manager.execute(evosuiteCommand);
 	}
 
 	private List<CarvingResult> carveTestScenarios(ExecutionResult result) {

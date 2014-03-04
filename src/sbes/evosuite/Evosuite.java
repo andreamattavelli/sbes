@@ -15,16 +15,14 @@ public abstract class Evosuite {
 	
 	public static final String jarName = "evosuite.jar";
 	
-	protected final String classSignature;
-	protected final String methodSignature;
+	protected String classSignature;
+	protected String methodSignature;
 	protected String outputDir;
 	protected String command;
-	protected String filename;
 
 	public Evosuite(final String classSignature, final String methodSignature) {
 		this.classSignature = classSignature;
 		this.methodSignature = methodSignature;
-		this.filename = ClassUtils.getSimpleClassnameFromCanonical(classSignature) + "EvoSuiteTest.java";
 	}
 
 	public String[] getCommand() {
@@ -61,7 +59,7 @@ public abstract class Evosuite {
 	}
 
 	public String getTestFilename() {
-		return filename;
+		return ClassUtils.getSimpleClassnameFromCanonical(classSignature) + "EvoSuiteTest.java";
 	}
 	
 	@Override

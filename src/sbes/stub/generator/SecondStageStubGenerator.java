@@ -186,7 +186,7 @@ public class SecondStageStubGenerator extends StubGenerator {
 		return method_under_test;
 	}
 
-	private ExpressionStmt createClonerObj() {
+	protected ExpressionStmt createClonerObj() {
 		VariableDeclaratorId clonerId = new VariableDeclaratorId("c");
 		ClassOrInterfaceType clonerType = new ClassOrInterfaceType("Cloner");
 		Expression clonerInit = new ObjectCreationExpr(null, clonerType, null);
@@ -197,7 +197,7 @@ public class SecondStageStubGenerator extends StubGenerator {
 		return new ExpressionStmt(clonerVde);
 	}
 	
-	private ExpressionStmt createCloneObj(Method targetMethod) {
+	protected ExpressionStmt createCloneObj(Method targetMethod) {
 		List<Expression> methodParameters = new ArrayList<Expression>();
 		methodParameters.add(new ThisExpr());
 		Expression right = new MethodCallExpr(ASTHelper.createNameExpr("c"), "deepClone", methodParameters);
@@ -209,7 +209,7 @@ public class SecondStageStubGenerator extends StubGenerator {
 		return new ExpressionStmt(assignment);
 	}
 	
-	private Statement createExpectedResult(Method targetMethod, List<Parameter> parameters) {
+	protected Statement createExpectedResult(Method targetMethod, List<Parameter> parameters) {
 		List<Expression> methodParameters = new ArrayList<Expression>();
 		for (Parameter parameter : parameters) {
 			methodParameters.add(ASTHelper.createNameExpr(parameter.getId().getName()));
@@ -227,7 +227,7 @@ public class SecondStageStubGenerator extends StubGenerator {
 		return new ExpressionStmt(assignment);
 	}
 	
-	private List<Statement> createActualResult(Method targetMethod, CarvingResult candidateES2, List<Parameter> param) {
+	protected List<Statement> createActualResult(Method targetMethod, CarvingResult candidateES2, List<Parameter> param) {
 		List<Statement> stmts = new ArrayList<Statement>();
 		
 		BlockStmt carved = candidateES2.getBody();

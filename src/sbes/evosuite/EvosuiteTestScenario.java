@@ -12,9 +12,14 @@ import sbes.util.DirectoryUtils;
 
 public class EvosuiteTestScenario extends Evosuite {
 
+	private String bytecodeSignature;
+	private Method target;
+	
 	public EvosuiteTestScenario(String classSignature, String methodSignature) {
 		super(classSignature, methodSignature);
 		this.outputDir = DirectoryUtils.I().getTestScenarioDir();
+		this.bytecodeSignature = getBytecodeSignature(classSignature, methodSignature);
+		this.classSignature = target.getDeclaringClass().getCanonicalName();
 	}
 	
 	@Override
@@ -24,7 +29,7 @@ public class EvosuiteTestScenario extends Evosuite {
 
 	@Override
 	protected String getTargetMethodSignature() {
-		return getBytecodeSignature(classSignature, methodSignature);
+		return bytecodeSignature;
 	}
 	
 	@Override
@@ -55,7 +60,7 @@ public class EvosuiteTestScenario extends Evosuite {
 			if (args.length == 1) {
 				args = args[0].equals("") ? new String[0] : args;
 			}
-			for (Method m : c.getDeclaredMethods()) {
+			for (Method m : c.getMethods()) {
 				if (m.getName().equals(method) && m.getParameterTypes().length == args.length) {
 					int i;
 					for (i = 0; i < args.length; i++) {
@@ -65,6 +70,7 @@ public class EvosuiteTestScenario extends Evosuite {
 					}
 					if (i == args.length) {
 						toReturn = ClassUtils.getBytecodeSignature(m);
+						target = m;
 						break;
 					}
 				}
@@ -79,6 +85,11 @@ public class EvosuiteTestScenario extends Evosuite {
 		}
 		
 		return toReturn;
+	}
+	
+	@Override
+	public String getTestFilename() {
+		return target.getDeclaringClass().getSimpleName() + "EvoSuiteTest.java";
 	}
 	
 }

@@ -246,5 +246,9 @@ public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 		
 		return set_results;
 	}
+	
+	public String getConcreteClass() {
+		return concreteClass;
+	}
 
 }

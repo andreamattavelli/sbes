@@ -35,6 +35,7 @@ public class EvosuiteSecondStage extends Evosuite {
 	protected Collection<String> getAdditionalParameters() {
 		Collection<String> additional = new ArrayList<String>();
 		additional.add("-Dstage=2");
+		additional.add("-Dgeneric_primitives=true");
 		return additional;
 	}
 
