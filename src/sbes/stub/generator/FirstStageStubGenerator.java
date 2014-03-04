@@ -33,6 +33,7 @@ import japa.parser.ast.type.Type;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import sbes.logging.Logger;
@@ -40,6 +41,7 @@ import sbes.option.Options;
 import sbes.result.TestScenario;
 import sbes.stub.Stub;
 import sbes.util.ASTUtils;
+import sbes.util.AsmParameterNames;
 import sbes.util.MethodUtils;
 
 public class FirstStageStubGenerator extends StubGenerator {
@@ -135,10 +137,10 @@ public class FirstStageStubGenerator extends StubGenerator {
 	protected List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods) {
 		logger.debug("Adding original class method wrappers");
 		
+		boolean collectionReturn = false;
+		
 		List<BodyDeclaration> members = new ArrayList<BodyDeclaration>();
-		
 		methods = preventMethodBloat(targetMethod, methods);
-		
 		for (Method method : methods) {
 			if (MethodUtils.methodFilter(method)) {
 				continue;
@@ -147,19 +149,24 @@ public class FirstStageStubGenerator extends StubGenerator {
 				continue;
 			}
 			
+			if (method.getReturnType().isAssignableFrom(Collection.class)) {
+				collectionReturn = true;
+			}
+			
+			String paramsNames[] = AsmParameterNames.getParameterNames(method);
+			
 			Type returnType = ASTUtils.getReturnType(method);
 			Type returnStubType = ASTUtils.getReturnTypeAsArray(method);
 			MethodDeclaration md = new MethodDeclaration(method.getModifiers() & Modifier.TRANSIENT & Modifier.VOLATILE, returnStubType, method.getName());
 			
 			//parameters
 			List<Parameter> parameters = new ArrayList<Parameter>();
-			parameters.addAll(getParameterType(method.getParameterTypes()));
+			parameters.addAll(getParameterType(method.getParameterTypes(), paramsNames));
 			md.setParameters(parameters);
 			
 			//body
 			BlockStmt stmt = new BlockStmt();
 			List<Statement> stmts = new ArrayList<Statement>();
-			
 			VariableDeclarationExpr res = ASTHelper.createVariableDeclarationExpr(returnStubType, "res");
 			
 			// for loop
@@ -168,7 +175,7 @@ public class FirstStageStubGenerator extends StubGenerator {
 			List<Expression> update = ASTUtils.createForIncrement("i", japa.parser.ast.expr.UnaryExpr.Operator.posIncrement);
 			
 			// for loop body
-			List<Expression> methodParameters = ASTUtils.createParameters(parameters);
+			List<Expression> methodParameters = ASTUtils.createParameters(parameters, paramsNames);
 			Expression right = new MethodCallExpr(ASTUtils.createArrayAccess(ACTUAL_STATE, "i"), method.getName(), methodParameters);
 			
 			BlockStmt body = new BlockStmt();
@@ -213,6 +220,26 @@ public class FirstStageStubGenerator extends StubGenerator {
 		logger.debug("Adding original class method wrappers - done");
 		
 		return members;
+	}
+	
+	protected List<Parameter> getParameterType(Class<?>[] parameters, String paramNames[]) {
+		List<Parameter> toReturn = new ArrayList<Parameter>();
+		for (int i = 0; i < parameters.length; i++) {
+			Class<?> type = parameters[i];
+			VariableDeclaratorId id = new VariableDeclaratorId(paramNames[i]);
+			String typeClass = type.getCanonicalName();
+			typeClass = typeClass.indexOf(" ") >= 0 ? typeClass.split(" ")[1]: typeClass;
+			Parameter p;
+			if (AsmParameterNames.isSizeParam(paramNames[i])) {
+				p = new Parameter(ASTHelper.createReferenceType(typeClass, 1), id);
+			}
+			else {
+				p = new Parameter(ASTHelper.createReferenceType(typeClass, 0), id);
+			}
+			toReturn.add(p);
+		}
+		
+		return toReturn;
 	}
 
 	protected Method[] preventMethodBloat(Method targetMethod, Method[] methods) {

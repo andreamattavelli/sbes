@@ -242,9 +242,11 @@ public class SBESManager {
 		CounterexampleVisitor cv = new CounterexampleVisitor();
 		cv.visit(counterexample.getBody(), classname);
 		
-		for (ImportDeclaration importDecl : counterexample.getImports()) {
+		for (int i = 0; i < counterexample.getImports().size(); i++) {
+			ImportDeclaration importDecl = counterexample.getImports().get(i);
 			if (importDecl.getName().getName().endsWith(classname + "_Stub_2")) {
 				counterexample.getImports().remove(importDecl);
+				i--;
 			}
 		}
 	}

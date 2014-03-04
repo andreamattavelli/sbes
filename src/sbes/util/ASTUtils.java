@@ -122,6 +122,23 @@ public class ASTUtils {
 		return astParameters;
 	}
 	
+	public static List<Expression> createParameters(List<Parameter> parameters, String[] paramNames) {
+		List<Expression> astParameters = new ArrayList<Expression>();
+		if (!parameters.isEmpty()) {
+			for (int i = 0; i < parameters.size(); i++) {
+				Parameter p = parameters.get(i);
+				if (AsmParameterNames.isSizeParam(paramNames[i])) {
+					ArrayAccessExpr aae = new ArrayAccessExpr(ASTHelper.createNameExpr(paramNames[i]), new NameExpr("i"));
+					astParameters.add(aae);
+				}
+				else {
+					astParameters.add(ASTHelper.createNameExpr(p.getId().getName()));
+				}
+			}
+		}
+		return astParameters;
+	}
+	
 	public static List<Expression> createForInit(String varId, Type varType, Expression varInit, Operator operator) {
 		List<Expression> init = new ArrayList<Expression>();
 		List<VariableDeclarator> decls = new ArrayList<VariableDeclarator>();

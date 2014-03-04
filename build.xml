@@ -6,6 +6,7 @@
 	<path id="sbes.classpath">
 		<pathelement location="bin"/>
 		<pathelement location="lib/args4j-2.0.21.jar"/>
+		<pathelement location="lib/asm-4.2.jar"/>
 		<pathelement location="lib/javaparser-1.0.10.jar"/>
 	</path>
 	<target name="init">

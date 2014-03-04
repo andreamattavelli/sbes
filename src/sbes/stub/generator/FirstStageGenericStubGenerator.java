@@ -10,6 +10,7 @@ import japa.parser.ast.body.VariableDeclaratorId;
 import japa.parser.ast.expr.ArrayCreationExpr;
 import japa.parser.ast.expr.AssignExpr;
 import japa.parser.ast.expr.AssignExpr.Operator;
+import japa.parser.ast.expr.BinaryExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.IntegerLiteralExpr;
 import japa.parser.ast.expr.MethodCallExpr;
@@ -26,6 +27,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +37,7 @@ import sbes.result.TestScenario;
 import sbes.scenario.GenericTestScenario;
 import sbes.stub.GenerationException;
 import sbes.util.ASTUtils;
+import sbes.util.AsmParameterNames;
 import sbes.util.MethodUtils;
 
 public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
@@ -102,10 +105,11 @@ public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 	protected List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods) {
 		logger.debug("Adding original class method wrappers");
 		
+		boolean collectionReturn = false;
+		boolean integerReturn = false;
+		
 		List<BodyDeclaration> members = new ArrayList<BodyDeclaration>();
-		
 		methods = preventMethodBloat(targetMethod, methods);
-		
 		for (Method method : methods) {
 			if (MethodUtils.methodFilter(method)) {
 				continue;
@@ -114,7 +118,15 @@ public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 				continue;
 			}
 			
-			logger.debug(method.toGenericString());
+			if (method.getReturnType().isAssignableFrom(Collection.class)) {
+				collectionReturn = true;
+			}
+			else if (method.getReturnType().isAssignableFrom(int.class) ||
+					method.getReturnType().isAssignableFrom(Integer.class)) {
+				integerReturn = true;
+			}
+			
+			String paramsNames[] = AsmParameterNames.getParameterNames(method);
 			
 			Type returnType = ASTUtils.getReturnConcreteType(generics, concreteClass, method);
 			Type returnStubType = ASTUtils.getReturnConcreteTypeAsArray(generics, concreteClass, method);
@@ -122,7 +134,7 @@ public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 			
 			//parameters
 			List<Parameter> parameters = new ArrayList<Parameter>();
-			parameters.addAll(getParameterType(method.getParameterTypes(), method.getGenericParameterTypes()));
+			parameters.addAll(getParameterType(method.getParameterTypes(), method.getGenericParameterTypes(), paramsNames));
 			md.setParameters(parameters);
 			
 			//body
@@ -137,7 +149,7 @@ public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 			List<Expression> update = ASTUtils.createForIncrement("i", japa.parser.ast.expr.UnaryExpr.Operator.posIncrement);
 			
 			// for loop body
-			List<Expression> methodParameters = ASTUtils.createParameters(parameters);
+			List<Expression> methodParameters = ASTUtils.createParameters(parameters, paramsNames);
 			Expression right = new MethodCallExpr(ASTUtils.createArrayAccess(ACTUAL_STATE, "i"), method.getName(), methodParameters);
 			
 			BlockStmt body = new BlockStmt();
@@ -178,16 +190,62 @@ public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 			members.add(md);
 		}
 		
+		if (integerReturn) {
+			Type returnStubType = ASTHelper.createReferenceType("Integer", 1);
+			MethodDeclaration md = new MethodDeclaration(Modifier.PUBLIC, returnStubType, "subtract");
+			List<Parameter> parameters = new ArrayList<Parameter>();
+			parameters.add(new Parameter(returnStubType, new VariableDeclaratorId("p")));
+			md.setParameters(parameters);
+			
+			//body
+			BlockStmt stmt = new BlockStmt();
+			List<Statement> stmts = new ArrayList<Statement>();
+			
+			VariableDeclarationExpr res = ASTHelper.createVariableDeclarationExpr(returnStubType, "res");
+			
+			// for loop
+			List<Expression> init = ASTUtils.createForInit("i", ASTHelper.INT_TYPE, new IntegerLiteralExpr("0"), Operator.assign);
+			Expression compare = ASTUtils.createForCondition("i", NUM_SCENARIOS, japa.parser.ast.expr.BinaryExpr.Operator.less);
+			List<Expression> update = ASTUtils.createForIncrement("i", japa.parser.ast.expr.UnaryExpr.Operator.posIncrement);
+
+			// for loop body
+			Expression right = new BinaryExpr(ASTUtils.createArrayAccess("p", "i"), new IntegerLiteralExpr("1"), japa.parser.ast.expr.BinaryExpr.Operator.minus);
+
+			BlockStmt body = new BlockStmt();
+			List<Expression> arraysDimension = ASTUtils.getArraysDimension();
+			ArrayCreationExpr ace = new ArrayCreationExpr(ASTHelper.createReferenceType("Integer", 0), arraysDimension, 0);
+			AssignExpr resAssign = new AssignExpr(res, ace, Operator.assign);
+			ExpressionStmt resStmt = new ExpressionStmt(resAssign);
+			stmts.add(resStmt);
+
+			Expression left = ASTUtils.createArrayAccess("res", "i");
+			AssignExpr callResult = new AssignExpr(left, right, Operator.assign);
+			ASTHelper.addStmt(body, callResult);
+			
+			ForStmt forStmt = new ForStmt(init, compare, update, body);
+			stmts.add(forStmt);
+			
+			if (!returnStubType.toString().equals("void")) {
+				ReturnStmt ret = new ReturnStmt(ASTHelper.createNameExpr("res"));
+				stmts.add(ret);
+			}
+
+			stmt.setStmts(stmts);
+			md.setBody(stmt);
+			
+			members.add(md);
+		}
+		
 		logger.debug("Generated " + members.size() + " class method wrappers");
 		logger.debug("Adding original class method wrappers - done");
 		
 		return members;
 	}
 	
-	protected List<Parameter> getParameterType(Class<?>[] parameterTypes, java.lang.reflect.Type[] genericParameterTypes) {
+	protected List<Parameter> getParameterType(Class<?>[] parameterTypes, java.lang.reflect.Type[] genericParameterTypes, String paramNames[]) {
 		List<Parameter> toReturn = new ArrayList<Parameter>();
 		for (int i = 0; i < parameterTypes.length; i++) {
-			VariableDeclaratorId id = new VariableDeclaratorId("p" + i);
+			VariableDeclaratorId id = new VariableDeclaratorId(paramNames[i]);
 			String typeClass;
 			boolean found = false;
 			if (genericParameterTypes.length > i) {
@@ -206,7 +264,13 @@ public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 				typeClass = parameterTypes[i].getCanonicalName();
 				typeClass = typeClass.indexOf(" ") >= 0 ? typeClass.split(" ")[1] : typeClass;
 			}
-			Parameter p = new Parameter(ASTHelper.createReferenceType(typeClass, 0), id);
+			Parameter p;
+			if (AsmParameterNames.isSizeParam(paramNames[i])) {
+				p = new Parameter(ASTHelper.createReferenceType(typeClass, 1), id);
+			}
+			else {
+				p = new Parameter(ASTHelper.createReferenceType(typeClass, 0), id);
+			}
 			toReturn.add(p);
 		}
 		return toReturn;
