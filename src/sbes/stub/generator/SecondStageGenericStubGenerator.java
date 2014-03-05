@@ -15,8 +15,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import sbes.option.Options;
 import sbes.result.CarvingResult;
 import sbes.stub.Stub;
+import sbes.util.ClassUtils;
 
 public class SecondStageGenericStubGenerator extends SecondStageStubGenerator {
 
@@ -34,7 +36,7 @@ public class SecondStageGenericStubGenerator extends SecondStageStubGenerator {
 		Expression right = new MethodCallExpr(ASTHelper.createNameExpr("c"), "deepClone", methodParameters);
 		List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
 		vars.add(new VariableDeclarator(new VariableDeclaratorId("clone")));
-		String className = targetMethod.getDeclaringClass().getSimpleName() + "<" + concreteClass + ">";
+		String className = ClassUtils.getSimpleClassname(Options.I().getMethodSignature()) + "<" + concreteClass + ">";
 		Expression left = new VariableDeclarationExpr(ASTHelper.createReferenceType(className, 0), vars);
 		AssignExpr assignment = new AssignExpr(left, right, Operator.assign);
 		return new ExpressionStmt(assignment);

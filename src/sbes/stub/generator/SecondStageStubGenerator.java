@@ -45,11 +45,13 @@ import sbes.ast.StubObjToCloneObjVisitor;
 import sbes.ast.VariableDeclarationVisitor;
 import sbes.ast.VariableUseVisitor;
 import sbes.logging.Logger;
+import sbes.option.Options;
 import sbes.result.CarvingResult;
 import sbes.stub.CounterexampleStub;
 import sbes.stub.GenerationException;
 import sbes.stub.Stub;
 import sbes.util.ASTUtils;
+import sbes.util.ClassUtils;
 
 public class SecondStageStubGenerator extends StubGenerator {
 
@@ -203,7 +205,7 @@ public class SecondStageStubGenerator extends StubGenerator {
 		Expression right = new MethodCallExpr(ASTHelper.createNameExpr("c"), "deepClone", methodParameters);
 		List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
 		vars.add(new VariableDeclarator(new VariableDeclaratorId("clone")));
-		String className = targetMethod.getDeclaringClass().getSimpleName();
+		String className = ClassUtils.getSimpleClassname(Options.I().getMethodSignature());
 		Expression left = new VariableDeclarationExpr(ASTHelper.createReferenceType(className, 0), vars);
 		AssignExpr assignment = new AssignExpr(left, right, Operator.assign);
 		return new ExpressionStmt(assignment);
