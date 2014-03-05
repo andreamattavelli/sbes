@@ -89,7 +89,7 @@ public class Carver {
 	
 	private boolean isSearchedClass(CompilationUnit cu) {
 		String stringCU = cu.toString();
-		String canonicalName = getClassToSearch();
+		String canonicalName = ClassUtils.getCanonicalClassname(Options.I().getMethodSignature());
 		String simpleName = ClassUtils.getSimpleClassnameFromCanonical(canonicalName);
 		if (stringCU.contains(canonicalName) || stringCU.contains(simpleName)) {
 			return true;
