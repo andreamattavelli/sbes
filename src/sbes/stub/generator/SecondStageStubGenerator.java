@@ -497,18 +497,24 @@ public class SecondStageStubGenerator extends StubGenerator {
 								i = i == cloned.getStmts().size() ? i : i++;
 								changed = true;
 							}
+							continue;
 						}
-						else {
-							// check use
-							String varName = vd.getId().getName();
-							VariableUseVisitor vu = new VariableUseVisitor(varName);
-							vu.visit(cloned, null);
-							if (!vu.isUsed()) {
-								removeDeadAssignments(cloned, i, varName);
-								cloned.getStmts().remove(i);
-								i = i == cloned.getStmts().size() ? i : i++;
-								changed = true;
+						else if (vd.getInit() instanceof MethodCallExpr) {
+							MethodCallExpr mce = (MethodCallExpr) vd.getInit();
+							if (ASTUtils.getName(mce.getScope()).equals("clone")) {
+								continue;
 							}
+						}
+
+						// check use
+						String varName = vd.getId().getName();
+						VariableUseVisitor vu = new VariableUseVisitor(varName);
+						vu.visit(cloned, null);
+						if (!vu.isUsed()) {
+							removeDeadAssignments(cloned, i, varName);
+							cloned.getStmts().remove(i);
+							i = i == cloned.getStmts().size() ? i : i++;
+							changed = true;
 						}
 					}
 				}

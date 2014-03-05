@@ -23,7 +23,7 @@ import sbes.stub.CounterexampleStub;
 import sbes.stub.Stub;
 import sbes.stub.generator.FirstStageGeneratorFactory;
 import sbes.stub.generator.FirstStageStubGenerator;
-import sbes.stub.generator.SecondStageStubGenerator;
+import sbes.stub.generator.SecondStageGeneratorFactory;
 import sbes.stub.generator.StubGenerator;
 import sbes.testcase.Carver;
 import sbes.testcase.CarvingContext;
@@ -70,7 +70,7 @@ public class SBESManager {
 		statistics.scenarioFinished();
 		
 		// ======================= FIRST PHASE STUB GENERATION ========================
-		StubGenerator firstPhaseGenerator = FirstStageGeneratorFactory.createGenerator(initialScenarios);
+		FirstStageStubGenerator firstPhaseGenerator = FirstStageGeneratorFactory.createGenerator(initialScenarios);
 		Stub initialStub = firstPhaseGenerator.generateStub();
 		directory.createFirstStubDir();
 		initialStub.dumpStub(directory.getFirstStubDir());
@@ -86,7 +86,7 @@ public class SBESManager {
 
 			// ===================== SECOND PHASE STUB GENERATION =====================
 			// generate second stub from carved test case
-			StubGenerator secondPhaseGenerator = new SecondStageStubGenerator(stub, candidateES);
+			StubGenerator secondPhaseGenerator = SecondStageGeneratorFactory.createGenerator(firstPhaseGenerator, stub, candidateES);
 			Stub secondStub = secondPhaseGenerator.generateStub();
 			directory.createSecondStubDir();
 			secondStub.dumpStub(directory.getSecondStubDir());
