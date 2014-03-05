@@ -15,12 +15,14 @@ import japa.parser.ast.expr.ArrayCreationExpr;
 import japa.parser.ast.expr.AssignExpr;
 import japa.parser.ast.expr.AssignExpr.Operator;
 import japa.parser.ast.expr.BinaryExpr;
+import japa.parser.ast.expr.CastExpr;
 import japa.parser.ast.expr.DoubleLiteralExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.FieldAccessExpr;
 import japa.parser.ast.expr.IntegerLiteralExpr;
 import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.NameExpr;
+import japa.parser.ast.expr.NullLiteralExpr;
 import japa.parser.ast.expr.ObjectCreationExpr;
 import japa.parser.ast.expr.ThisExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
@@ -425,6 +427,25 @@ public class SecondStageStubGenerator extends StubGenerator {
 							cloned.getStmts().add(new ExpressionStmt(actualResult));
 						}
 					}
+				}
+				else if (e instanceof CastExpr) {
+					Expression exp = ((CastExpr) e).getExpr();
+					if (exp instanceof IntegerLiteralExpr) {
+						List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+						VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+						vd.setInit(e);
+						vars.add(vd);
+						VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+						cloned.getStmts().add(new ExpressionStmt(actualResult));
+					}
+				}
+				else if (e instanceof NullLiteralExpr) {
+					List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+					VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+					vd.setInit(e);
+					vars.add(vd);
+					VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+					cloned.getStmts().add(new ExpressionStmt(actualResult));
 				}
 			}
 			else if (init instanceof MethodCallExpr) {
