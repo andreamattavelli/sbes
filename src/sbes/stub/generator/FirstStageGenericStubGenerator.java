@@ -245,7 +245,13 @@ public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 	protected List<Parameter> getParameterType(Class<?>[] parameterTypes, java.lang.reflect.Type[] genericParameterTypes, String paramNames[]) {
 		List<Parameter> toReturn = new ArrayList<Parameter>();
 		for (int i = 0; i < parameterTypes.length; i++) {
-			VariableDeclaratorId id = new VariableDeclaratorId(paramNames[i]);
+			VariableDeclaratorId id;
+			if (paramNames.length > i) {
+				id = new VariableDeclaratorId(paramNames[i]);
+			}
+			else {
+				id = new VariableDeclaratorId("p" + i);
+			}
 			String typeClass;
 			boolean found = false;
 			if (genericParameterTypes.length > i) {
