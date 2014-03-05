@@ -98,7 +98,7 @@ public class TestScenarioGeneralizer {
 		List<FieldDeclaration> fields = new ArrayList<FieldDeclaration>();
 		
 		// extract dependencies from target method
-		ExtractValuesFromTargetMethodVisitor evmv = new ExtractValuesFromTargetMethodVisitor();
+		ExtractValuesFromTargetMethodVisitor evmv = new ExtractValuesFromTargetMethodVisitor(index);
 		evmv.visit(cloned, methodName);
 		fields.addAll(evmv.getFields());
 		
@@ -132,7 +132,7 @@ public class TestScenarioGeneralizer {
 		for (int i = 0; i < varsToField.size(); i++) {
 			// substitute name
 			VariableDeclarationExpr vde = varsToField.get(i);
-			String newName = "ELEMENT_" + fields.size();
+			String newName = "ELEMENT_" + index + "_" + fields.size();
 			varMap.put(vde.getVars().get(0).getId().getName(), newName);
 			vde.getVars().get(0).getId().setName(newName);
 

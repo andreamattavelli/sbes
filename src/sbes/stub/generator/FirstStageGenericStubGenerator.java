@@ -118,7 +118,7 @@ public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 				continue;
 			}
 			
-			if (method.getReturnType().isAssignableFrom(Collection.class)) {
+			if (Collection.class.isAssignableFrom(method.getReturnType())) {
 				collectionReturn = true;
 			}
 			else if (method.getReturnType().isAssignableFrom(int.class) ||
