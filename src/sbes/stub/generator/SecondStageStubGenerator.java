@@ -426,6 +426,14 @@ public class SecondStageStubGenerator extends StubGenerator {
 							VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
 							cloned.getStmts().add(new ExpressionStmt(actualResult));
 						}
+						else if (internalInit instanceof MethodCallExpr) {
+							List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+							VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+							vd.setInit(internalInit);
+							vars.add(vd);
+							VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+							cloned.getStmts().add(new ExpressionStmt(actualResult));
+						}
 					}
 				}
 				else if (e instanceof CastExpr) {
@@ -460,49 +468,52 @@ public class SecondStageStubGenerator extends StubGenerator {
 	 * PHASE 4: dead code elimination: remove everything not necessary
 	 */
 	private void deadCodeElimination(BlockStmt cloned) {
-		for (int i = cloned.getStmts().size() - 1; i >= 0; i--) {
-			Statement stmt = cloned.getStmts().get(i);
-			if (stmt instanceof ExpressionStmt) {
-				ExpressionStmt estmt = (ExpressionStmt) stmt;
-				if (estmt.getExpression() instanceof MethodCallExpr) {
-					MethodCallExpr mce = (MethodCallExpr) estmt.getExpression();
-					if (mce.getName().equals("set_results")) {
-						cloned.getStmts().remove(i);
-						i = i == cloned.getStmts().size() ? i : i++;
-					}
-				}
-				else if (estmt.getExpression() instanceof VariableDeclarationExpr) {
-					VariableDeclarationExpr vde = (VariableDeclarationExpr) estmt.getExpression();
-					VariableDeclarator vd = vde.getVars().get(0);
-					if (vd.getId().getName().equals("actual_result")) {
-						continue;
-					}
-					else if (vd.getInit() instanceof FieldAccessExpr) {
-						// if synthesis input, remove it
-						FieldAccessExpr fae = (FieldAccessExpr) vd.getInit();
-						if (fae.getField().startsWith("ELEMENT_")) {
+		boolean changed = false;
+		do {
+			changed = false;
+			for (int i = cloned.getStmts().size() - 1; i >= 0; i--) {
+				Statement stmt = cloned.getStmts().get(i);
+				if (stmt instanceof ExpressionStmt) {
+					ExpressionStmt estmt = (ExpressionStmt) stmt;
+					if (estmt.getExpression() instanceof MethodCallExpr) {
+						MethodCallExpr mce = (MethodCallExpr) estmt.getExpression();
+						if (mce.getName().equals("set_results")) {
 							cloned.getStmts().remove(i);
 							i = i == cloned.getStmts().size() ? i : i++;
+							changed = true;
 						}
 					}
-					else if (vd.getInit() instanceof MethodCallExpr) {
-						// heuristic
-						continue;
-					}
-					else {
-						// check use
-						String varName = vd.getId().getName();
-						VariableUseVisitor vu = new VariableUseVisitor(varName);
-						vu.visit(cloned, null);
-						if (!vu.isUsed()) {
-							removeDeadAssignments(cloned, i, varName);
-							cloned.getStmts().remove(i);
-							i = i == cloned.getStmts().size() ? i : i++;
+					else if (estmt.getExpression() instanceof VariableDeclarationExpr) {
+						VariableDeclarationExpr vde = (VariableDeclarationExpr) estmt.getExpression();
+						VariableDeclarator vd = vde.getVars().get(0);
+						if (vd.getId().getName().equals("actual_result")) {
+							continue;
+						}
+						else if (vd.getInit() instanceof FieldAccessExpr) {
+							// if synthesis input, remove it
+							FieldAccessExpr fae = (FieldAccessExpr) vd.getInit();
+							if (fae.getField().startsWith("ELEMENT_")) {
+								cloned.getStmts().remove(i);
+								i = i == cloned.getStmts().size() ? i : i++;
+								changed = true;
+							}
+						}
+						else {
+							// check use
+							String varName = vd.getId().getName();
+							VariableUseVisitor vu = new VariableUseVisitor(varName);
+							vu.visit(cloned, null);
+							if (!vu.isUsed()) {
+								removeDeadAssignments(cloned, i, varName);
+								cloned.getStmts().remove(i);
+								i = i == cloned.getStmts().size() ? i : i++;
+								changed = true;
+							}
 						}
 					}
 				}
 			}
-		}
+		} while (changed);
 	}
 
 	private void removeDeadAssignments(BlockStmt cloned, int i, String varName) {
