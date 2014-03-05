@@ -84,6 +84,11 @@ public class SecondStageStubGenerator extends StubGenerator {
 		List<ImportDeclaration> imports = new ArrayList<>();
 		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("sbes.distance.Distance"), false, false));
 		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("sbes.cloning.Cloner"), false, false));
+		for (ImportDeclaration importDeclaration : candidateES.getImports()) {
+			if (!imports.contains(importDeclaration)) {
+				imports.add(importDeclaration);
+			}
+		}
 		return imports;
 	}
 	
