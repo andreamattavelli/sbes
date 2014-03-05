@@ -18,6 +18,7 @@ import japa.parser.ast.expr.BinaryExpr;
 import japa.parser.ast.expr.DoubleLiteralExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.FieldAccessExpr;
+import japa.parser.ast.expr.IntegerLiteralExpr;
 import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.ObjectCreationExpr;
@@ -38,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sbes.ast.ArrayCellDeclarationVisitor;
+import sbes.ast.ArrayDefVisitor;
 import sbes.ast.EquivalentSequenceCallVisitor;
 import sbes.ast.MethodCallVisitor;
 import sbes.ast.StubArrayVariableRemoverVisitor;
@@ -353,7 +355,11 @@ public class SecondStageStubGenerator extends StubGenerator {
 				}
 				else if (init instanceof ArrayCreationExpr) {
 					// we should check what is inside the array
-					throw new UnsupportedOperationException("Creation of a second stage stub with array parameter non yet supported");
+					ArrayDefVisitor vuv = new ArrayDefVisitor(name);
+					vuv.visit(cloned, methodCall.getName());
+					if (!vuv.isUsed()) {
+						methodCall.getArgs().set(i, new IntegerLiteralExpr("0")); //FIXME
+					}
 				}
 			}
 		}
