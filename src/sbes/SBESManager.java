@@ -103,9 +103,8 @@ public class SBESManager {
 			else {
 				// if solution is found: add test scenario to stub
 				cleanCounterexample(counterexample);
-				TestScenario ts = TestScenarioGenerator.getInstance().carvedTestToScenario(counterexample);
-				initialScenarios.add(ts);
-				StubGenerator counterexampleGenerator = new FirstStageStubGenerator(initialScenarios);
+				TestScenarioGenerator.getInstance().carvedTestToScenario(counterexample);
+				StubGenerator counterexampleGenerator = new FirstStageStubGenerator(TestScenarioGenerator.getInstance().getScenarios());
 				stub = counterexampleGenerator.generateStub();
 				directory.createFirstStubDir();
 				stub.dumpStub(directory.getFirstStubDir());
