@@ -49,8 +49,10 @@ public class ASTUtils {
 			arrayDimension = ReflectionUtils.getArrayDimensionCount(method.getReturnType());
 		}
 		
-		java.lang.reflect.Type genericReturn = method.getGenericReturnType();
-		if (ArrayUtils.contains(generics, genericReturn)) {
+		String[] genericString = ArrayUtils.toArrayString(generics);
+		
+		String genericReturn = method.getGenericReturnType().toString();
+		if (ArrayUtils.contains(genericString, genericReturn)) {
 			canonicalName = concreteClass;
 		}
 		else {

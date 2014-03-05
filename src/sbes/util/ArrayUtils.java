@@ -1,6 +1,7 @@
 package sbes.util;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.TypeVariable;
 
 
 public class ArrayUtils {
@@ -285,5 +286,13 @@ public class ArrayUtils {
         }
         return INDEX_NOT_FOUND;
     }
+
+	public static String[] toArrayString(TypeVariable<?>[] generics) {
+		String[] toReturn = new String[generics.length];
+		for (int i = 0; i < toReturn.length; i++) {
+			toReturn[i] = generics[i].getName();
+		}
+		return toReturn;
+	}
 
 }
