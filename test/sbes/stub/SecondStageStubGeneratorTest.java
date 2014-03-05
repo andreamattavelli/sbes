@@ -144,5 +144,41 @@ public class SecondStageStubGeneratorTest {
 		System.out.println(second.getAst().toString());
 		System.out.println("===========================================================");
 	}
+	
+	@Test
+	public void test7() throws ParseException {
+		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/Stack-UseCase/bin");
+		Options.I().setMethodSignature("stack.util.Stack.firstElement()");
+		
+		BlockStmt body = JavaParser.parseBlock("{Stack_Stub stack_Stub0 = new Stack_Stub();"+
+				"int[] intArray0 = new int[5];"+
+				"Integer[] integerArray0 = stack_Stub0.elementAt(intArray0);"+
+				"stack_Stub0.set_results(integerArray0);"+
+				"stack_Stub0.method_under_test();}");
+
+		CarvingResult candidateES = new CarvingResult(body, imports);
+		SecondStageStubGenerator sssg = new SecondStageStubGenerator(stub, candidateES);
+		Stub second = sssg.generateStub();
+		System.out.println(second.getAst().toString());
+		System.out.println("===========================================================");
+	}
+	
+	@Test
+	public void test8() throws ParseException {
+		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/Stack-UseCase/bin");
+		Options.I().setMethodSignature("stack.util.Stack.firstElement()");
+		
+		BlockStmt body = JavaParser.parseBlock("{Stack_Stub stack_Stub0 = new Stack_Stub();"+
+				"int[] intArray0 = new int[10];"+
+				"Integer[] integerArray0 = stack_Stub0.get(intArray0);"+
+				"stack_Stub0.set_results(integerArray0);"+
+				"stack_Stub0.method_under_test();}");
+
+		CarvingResult candidateES = new CarvingResult(body, imports);
+		SecondStageStubGenerator sssg = new SecondStageStubGenerator(stub, candidateES);
+		Stub second = sssg.generateStub();
+		System.out.println(second.getAst().toString());
+		System.out.println("===========================================================");
+	}
 
 }
