@@ -1,5 +1,6 @@
 package sbes.ast;
 
+import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.type.ClassOrInterfaceType;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
 
@@ -12,4 +13,5 @@ public class CounterexampleVisitor extends VoidVisitorAdapter<String> {
 		}
 		super.visit(arg0, arg1);
 	}
+	
 }

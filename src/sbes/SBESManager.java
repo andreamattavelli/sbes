@@ -1,6 +1,8 @@
 package sbes;
 
 import japa.parser.ast.ImportDeclaration;
+import japa.parser.ast.expr.MethodCallExpr;
+import japa.parser.ast.stmt.ExpressionStmt;
 
 import java.io.File;
 import java.util.List;
@@ -242,6 +244,17 @@ public class SBESManager {
 		CounterexampleVisitor cv = new CounterexampleVisitor();
 		cv.visit(counterexample.getBody(), classname);
 		
+		for (int i = 0; i < counterexample.getBody().getStmts().size(); i++) {
+			ExpressionStmt estmt = (ExpressionStmt) counterexample.getBody().getStmts().get(i);
+			if (estmt.getExpression() instanceof MethodCallExpr) {
+				MethodCallExpr mce = (MethodCallExpr) estmt.getExpression();
+				if (mce.getName().equals("method_under_test")) {
+					counterexample.getBody().getStmts().remove(i);
+					break;
+				}
+			}
+		}
+		
 		for (int i = 0; i < counterexample.getImports().size(); i++) {
 			ImportDeclaration importDecl = counterexample.getImports().get(i);
 			if (importDecl.getName().getName().endsWith(classname + "_Stub_2")) {
@@ -249,6 +262,7 @@ public class SBESManager {
 				i--;
 			}
 		}
+		
 	}
 	
 }
