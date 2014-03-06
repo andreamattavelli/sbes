@@ -7,8 +7,6 @@ import sbes.util.ReflectionUtils;
 
 public class PrimitiveDistance {
 
-	public static final double ARRAY_CELL_FACTOR = 2.0d;
-
 	public static double distance(Field f1, Object obj1, Field f2, Object obj2) {
 		double distance = 0.0d;
 		
@@ -178,7 +176,7 @@ public class PrimitiveDistance {
 		for (int i = 0; i < Math.min(a.length, b.length); i++) {
 			distance += intDistance(a[i], b[i]);
 		}
-		distance += Math.abs(a.length - b.length) * ARRAY_CELL_FACTOR;
+		distance += Math.abs(a.length - b.length) * Distance.ARRAY_CELL_FACTOR;
 		return distance;
 	}
 
@@ -191,7 +189,7 @@ public class PrimitiveDistance {
 		for (int i = 0; i < Math.min(a.length, b.length); i++) {
 			distance += shortDistance(a[i], b[i]);
 		}
-		distance += Math.abs(a.length - b.length) * ARRAY_CELL_FACTOR;
+		distance += Math.abs(a.length - b.length) * Distance.ARRAY_CELL_FACTOR;
 		return distance;
 	}
 
@@ -204,7 +202,7 @@ public class PrimitiveDistance {
 		for (int i = 0; i < Math.min(a.length, b.length); i++) {
 			distance += longDistance(a[i], b[i]);
 		}
-		distance += Math.abs(a.length - b.length) * ARRAY_CELL_FACTOR;
+		distance += Math.abs(a.length - b.length) * Distance.ARRAY_CELL_FACTOR;
 		return distance;
 	}
 
@@ -217,7 +215,7 @@ public class PrimitiveDistance {
 		for (int i = 0; i < Math.min(a.length, b.length); i++) {
 			distance += floatDistance(a[i], b[i]);
 		}
-		distance += Math.abs(a.length - b.length) * ARRAY_CELL_FACTOR;
+		distance += Math.abs(a.length - b.length) * Distance.ARRAY_CELL_FACTOR;
 		return distance;
 	}
 	
@@ -230,7 +228,7 @@ public class PrimitiveDistance {
 		for (int i = 0; i < Math.min(a.length, b.length); i++) {
 			distance += doubleDistance(a[i], b[i]);
 		}
-		distance += Math.abs(a.length - b.length) * ARRAY_CELL_FACTOR;
+		distance += Math.abs(a.length - b.length) * Distance.ARRAY_CELL_FACTOR;
 		return distance;
 	}
 	
@@ -243,7 +241,7 @@ public class PrimitiveDistance {
 		for (int i = 0; i < Math.min(a.length, b.length); i++) {
 			distance += byteDistance(a[i], b[i]);
 		}
-		distance += Math.abs(a.length - b.length) * ARRAY_CELL_FACTOR;
+		distance += Math.abs(a.length - b.length) * Distance.ARRAY_CELL_FACTOR;
 		return distance;
 	}
 	
@@ -268,7 +266,7 @@ public class PrimitiveDistance {
 		for (int i = 0; i < Math.min(a.length, b.length); i++) {
 			distance += booleanDistance(a[i], b[i]);
 		}
-		distance += Math.abs(a.length - b.length) * ARRAY_CELL_FACTOR;
+		distance += Math.abs(a.length - b.length) * Distance.ARRAY_CELL_FACTOR;
 		return distance;
 	}
 

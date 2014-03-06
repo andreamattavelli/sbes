@@ -15,7 +15,9 @@ public class Distance {
 
 	private static final Logger logger = new Logger(Distance.class);
 
-	private static final double DIFFERENT_CLASSES_WEIGHT = 1.0d;
+	private static final double DIFFERENT_CLASSES_WEIGHT = 3.0d;
+	public static final double ARRAY_CELL_FACTOR = 2.0d;
+	
 	private static final List<DistancePair> worklist = new LinkedList<DistancePair>();
 	private static final Map<Object, Integer> visited = new IdentityHashMap<Object, Integer>();
 	
@@ -121,6 +123,8 @@ public class Distance {
 						continue;
 					}
 					
+					System.out.println(f1.getName());
+					
 					ComparisonType type = getComparisonType(f1.getType(), f2.getType());
 					switch (type) {
 					case PRIMITIVE:
@@ -129,12 +133,21 @@ public class Distance {
 						// classes (e.g. Integer) are treated as object and 
 						// handled in the subsequent iteration as corner case
 						distance += PrimitiveDistance.distance(f1, obj1, f2, obj2);
+						if (distance < 0) {
+							System.out.println("error");
+						}
 						break;
 					case STRING:
 						distance += LevenshteinDistance.calculateDistance((String) f1.get(obj1), (String) f2.get(obj2));
+						if (distance < 0) {
+							System.out.println("error");
+						}
 						break;
 					case ARRAY:
 						distance += handleArray(f1, obj1, f2, obj2);
+						if (distance < 0) {
+							System.out.println("error");
+						}
 						break;
 					case OBJECT:
 						// null values and corner cases are managed at the 
@@ -147,6 +160,9 @@ public class Distance {
 						logger.error("Unknown comparison type: " + type);
 						break;
 					}
+					
+					System.out.println(distance);
+					
 				} catch (Exception e) {
 					logger.error("Error during distance calculation", e);
 				}
@@ -174,7 +190,7 @@ public class Distance {
 				for (int i = 0; i < length; i++) {
 					worklist.add(new DistancePair(castedF1[i], castedF2[i]));
 				}
-				distance += Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length * PrimitiveDistance.ARRAY_CELL_FACTOR;
+				distance += (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length) * Distance.ARRAY_CELL_FACTOR;
 			}
 			catch (IllegalArgumentException e) {
 				logger.error("Error during cast", e);
@@ -191,7 +207,7 @@ public class Distance {
 				for (int i = 0; i < length; i++) {
 					distance += LevenshteinDistance.calculateDistance(castedF1[i], castedF2[i]);
 				}
-				distance += Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length * PrimitiveDistance.ARRAY_CELL_FACTOR;
+				distance += (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length) * Distance.ARRAY_CELL_FACTOR;
 			}
 			catch (IllegalArgumentException e) {
 				logger.error("Error during cast", e);
@@ -202,7 +218,7 @@ public class Distance {
 			for (int i = 0; i < length; i++) {
 				distance += handleArray(Array.get(obj1, i), Array.get(obj2, i));
 			}
-			distance += Math.max(Array.getLength(obj1), Array.getLength(obj2)) - length * PrimitiveDistance.ARRAY_CELL_FACTOR;
+			distance += (Math.max(Array.getLength(obj1), Array.getLength(obj2)) - length) * Distance.ARRAY_CELL_FACTOR;
 			break;
 		default:
 			logger.error("Unknown comparison type: " + arrayType);
@@ -225,7 +241,7 @@ public class Distance {
 				for (int i = 0; i < length; i++) {
 					worklist.add(new DistancePair(castedF1[i], castedF2[i]));
 				}
-				distance += (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length) * PrimitiveDistance.ARRAY_CELL_FACTOR;
+				distance += (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length) * Distance.ARRAY_CELL_FACTOR;
 			}
 			catch (IllegalArgumentException | IllegalAccessException e) {
 				logger.error("Error during cast", e);
@@ -242,7 +258,7 @@ public class Distance {
 				for (int i = 0; i < length; i++) {
 					distance += LevenshteinDistance.calculateDistance(castedF1[i], castedF2[i]);
 				}
-				distance += (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length) * PrimitiveDistance.ARRAY_CELL_FACTOR;
+				distance += (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length) * Distance.ARRAY_CELL_FACTOR;
 			}
 			catch (IllegalArgumentException | IllegalAccessException e) {
 				logger.error("Error during cast", e);
