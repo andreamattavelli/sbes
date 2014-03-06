@@ -123,8 +123,6 @@ public class Distance {
 						continue;
 					}
 					
-					System.out.println(f1.getName());
-					
 					ComparisonType type = getComparisonType(f1.getType(), f2.getType());
 					switch (type) {
 					case PRIMITIVE:
@@ -133,21 +131,12 @@ public class Distance {
 						// classes (e.g. Integer) are treated as object and 
 						// handled in the subsequent iteration as corner case
 						distance += PrimitiveDistance.distance(f1, obj1, f2, obj2);
-						if (distance < 0) {
-							System.out.println("error");
-						}
 						break;
 					case STRING:
 						distance += LevenshteinDistance.calculateDistance((String) f1.get(obj1), (String) f2.get(obj2));
-						if (distance < 0) {
-							System.out.println("error");
-						}
 						break;
 					case ARRAY:
 						distance += handleArray(f1, obj1, f2, obj2);
-						if (distance < 0) {
-							System.out.println("error");
-						}
 						break;
 					case OBJECT:
 						// null values and corner cases are managed at the 
@@ -160,9 +149,6 @@ public class Distance {
 						logger.error("Unknown comparison type: " + type);
 						break;
 					}
-					
-					System.out.println(distance);
-					
 				} catch (Exception e) {
 					logger.error("Error during distance calculation", e);
 				}
