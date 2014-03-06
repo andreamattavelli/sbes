@@ -226,16 +226,19 @@ public class SecondStageStubGenerator extends StubGenerator {
 			methodParameters.add(ASTHelper.createNameExpr(parameter.getId().getName()));
 		}
 		Expression right = new MethodCallExpr(new ThisExpr(), targetMethod.getName(), methodParameters);
-		List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
-		vars.add(new VariableDeclarator(new VariableDeclaratorId("expected_result")));
-		String className = targetMethod.getReturnType().getCanonicalName();
-		int arrayDimension = 0;
-		if (targetMethod.getReturnType().isArray()) {
-			arrayDimension = 1;
+		if (!targetMethod.getReturnType().equals(void.class)) {
+			List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+			vars.add(new VariableDeclarator(new VariableDeclaratorId("expected_result")));
+			String className = targetMethod.getReturnType().getCanonicalName();
+			int arrayDimension = 0;
+			if (targetMethod.getReturnType().isArray()) {
+				arrayDimension = 1;
+			}
+			Expression left = new VariableDeclarationExpr(ASTHelper.createReferenceType(className, arrayDimension), vars);
+			AssignExpr assignment = new AssignExpr(left, right, Operator.assign);
+			return new ExpressionStmt(assignment);
 		}
-		Expression left = new VariableDeclarationExpr(ASTHelper.createReferenceType(className, arrayDimension), vars);
-		AssignExpr assignment = new AssignExpr(left, right, Operator.assign);
-		return new ExpressionStmt(assignment);
+		return new ExpressionStmt(right);
 	}
 	
 	protected List<Statement> createActualResult(Method targetMethod, CarvingResult candidateES2, List<Parameter> param) {
