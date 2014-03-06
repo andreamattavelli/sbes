@@ -17,9 +17,11 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 public class ExpectedResultVisitor extends VoidVisitorAdapter<String> {
 	private int index;
 	private String expectedState;
+	private boolean found;
 
 	public ExpectedResultVisitor(int index) {
 		this.index = index;
+		this.found = false;
 	}
 	
 	public String getExpectedState() {
@@ -42,8 +44,17 @@ public class ExpectedResultVisitor extends VoidVisitorAdapter<String> {
 		super.visit(n, methodName);
 	}
 	
+	@Override
+	public void visit(MethodCallExpr arg0, String methodName) {
+		if (!found) {
+			handleMethodCall(null, methodName, arg0);
+		}
+		super.visit(arg0, methodName);
+	}
+	
 	private void handleMethodCall(VariableDeclarationExpr n, String methodName, MethodCallExpr mce) {
 		if (mce.getName().equals(methodName)) {
+			found = true;
 			// found class constructor, switch to EXPECTED_STATES
 			Expression target = new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageStubGenerator.EXPECTED_RESULT),
 													ASTHelper.createNameExpr(Integer.toString(index)));
@@ -53,10 +64,12 @@ public class ExpectedResultVisitor extends VoidVisitorAdapter<String> {
 				mce.setScope(new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageStubGenerator.EXPECTED_STATE),
 											ASTHelper.createNameExpr(Integer.toString(index))));
 			}
-
-			AssignExpr ae = new AssignExpr(target, mce, Operator.assign);
-			ExpressionStmt estmt = (ExpressionStmt) n.getParentNode();
-			estmt.setExpression(ae);
+			
+			if (n != null) {
+				AssignExpr ae = new AssignExpr(target, mce, Operator.assign);
+				ExpressionStmt estmt = (ExpressionStmt) n.getParentNode();
+				estmt.setExpression(ae);
+			}
 		}
 	}
 }

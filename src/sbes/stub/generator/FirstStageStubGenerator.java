@@ -99,10 +99,12 @@ public class FirstStageStubGenerator extends StubGenerator {
 		declarations.add(num_scenarios_bd);
 		
 		// stub helper arrays
+		if (!targetMethod.getReturnType().equals(void.class)) {
+			declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnType(targetMethod).toString(), EXPECTED_RESULT));
+			declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnType(targetMethod).toString(), ACTUAL_RESULT));
+		}
 		declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), EXPECTED_STATE));
-		declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnType(targetMethod).toString(), EXPECTED_RESULT));
 		declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), ACTUAL_STATE));
-		declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnType(targetMethod).toString(), ACTUAL_RESULT));
 		
 		for (TestScenario scenario : scenarios) {
 			declarations.addAll(scenario.getInputs());
@@ -320,20 +322,32 @@ public class FirstStageStubGenerator extends StubGenerator {
 			BinaryExpr stateCondition = new BinaryExpr(state, zeroDouble, japa.parser.ast.expr.BinaryExpr.Operator.equals);
 			
 			// Distance.distance(expected_results[0], actual_results[0]) == 0.0d
-			List<Expression> distanceResultArgs = new ArrayList<Expression>();
-			distanceResultArgs.add(ASTUtils.createArrayAccess(EXPECTED_RESULT, Integer.toString(i)));
-			distanceResultArgs.add(ASTUtils.createArrayAccess(ACTUAL_RESULT, Integer.toString(i)));
-			Expression result = new MethodCallExpr(distanceClass, distanceMethod, distanceResultArgs);
-			BinaryExpr resultCondition = new BinaryExpr(result, zeroDouble, japa.parser.ast.expr.BinaryExpr.Operator.equals);
-			
-			// concatenate conditions
-			BinaryExpr newCondition = new BinaryExpr(resultCondition, stateCondition, japa.parser.ast.expr.BinaryExpr.Operator.and);
-			if (condition != null) {
-				condition = new BinaryExpr(condition, newCondition, japa.parser.ast.expr.BinaryExpr.Operator.and);
+			if (!targetMethod.getReturnType().equals(void.class)) {
+				List<Expression> distanceResultArgs = new ArrayList<Expression>();
+				distanceResultArgs.add(ASTUtils.createArrayAccess(EXPECTED_RESULT, Integer.toString(i)));
+				distanceResultArgs.add(ASTUtils.createArrayAccess(ACTUAL_RESULT, Integer.toString(i)));
+				Expression result = new MethodCallExpr(distanceClass, distanceMethod, distanceResultArgs);
+				BinaryExpr resultCondition = new BinaryExpr(result, zeroDouble, japa.parser.ast.expr.BinaryExpr.Operator.equals);
+				// concatenate conditions
+				BinaryExpr newCondition = new BinaryExpr(resultCondition, stateCondition, japa.parser.ast.expr.BinaryExpr.Operator.and);
+				if (condition != null) {
+					condition = new BinaryExpr(condition, newCondition, japa.parser.ast.expr.BinaryExpr.Operator.and);
+				}
+				else {
+					condition = newCondition;
+				}
 			}
 			else {
-				condition = newCondition;
+				// concatenate conditions
+				if (condition != null) {
+					condition = new BinaryExpr(condition, stateCondition, japa.parser.ast.expr.BinaryExpr.Operator.and);
+				}
+				else {
+					condition = stateCondition;
+				}
 			}
+			
+			
 		}
 		
 		IfStmt ifStmt = new IfStmt(condition, new ExpressionStmt(ASTUtils.createSystemOut("Executed")), null);

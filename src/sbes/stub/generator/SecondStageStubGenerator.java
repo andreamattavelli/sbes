@@ -252,7 +252,9 @@ public class SecondStageStubGenerator extends StubGenerator {
 		//PHASE 2: identify equivalent sequence parameters
 		identifyEquivalentSequenceParameters(cloned, param);
 		//PHASE 3: identify actual_result
-		identifyActualResult(cloned, targetMethod, param);
+		if (!targetMethod.getReturnType().equals(void.class)) {
+			identifyActualResult(cloned, targetMethod, param);
+		}
 		//PHASE 4: remove dead code
 		deadCodeElimination(cloned);
 		
