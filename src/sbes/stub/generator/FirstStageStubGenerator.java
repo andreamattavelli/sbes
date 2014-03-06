@@ -163,7 +163,7 @@ public class FirstStageStubGenerator extends StubGenerator {
 			
 			//parameters
 			List<Parameter> parameters = new ArrayList<Parameter>();
-			parameters.addAll(getParameterType(method.getParameterTypes(), paramsNames));
+			parameters.addAll(getParameterType(method.getParameterTypes(), paramsNames, method.isVarArgs()));
 			md.setParameters(parameters);
 			
 			//body
@@ -224,19 +224,25 @@ public class FirstStageStubGenerator extends StubGenerator {
 		return members;
 	}
 	
-	protected List<Parameter> getParameterType(Class<?>[] parameters, String paramNames[]) {
+	protected List<Parameter> getParameterType(Class<?>[] parameters, String paramNames[], boolean isVarArgs) {
 		List<Parameter> toReturn = new ArrayList<Parameter>();
 		for (int i = 0; i < parameters.length; i++) {
 			Class<?> type = parameters[i];
 			VariableDeclaratorId id = new VariableDeclaratorId(paramNames[i]);
 			String typeClass = type.getCanonicalName();
 			typeClass = typeClass.indexOf(" ") >= 0 ? typeClass.split(" ")[1]: typeClass;
+			if (i == parameters.length - 1 && isVarArgs) {
+				typeClass = typeClass.replace("[]", "");
+			}
 			Parameter p;
 			if (AsmParameterNames.isSizeParam(paramNames[i])) {
 				p = new Parameter(ASTHelper.createReferenceType(typeClass, 1), id);
 			}
 			else {
 				p = new Parameter(ASTHelper.createReferenceType(typeClass, 0), id);
+			}
+			if (i == parameters.length - 1 && isVarArgs) {
+				p.setVarArgs(isVarArgs);
 			}
 			toReturn.add(p);
 		}
