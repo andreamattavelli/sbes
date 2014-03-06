@@ -182,13 +182,20 @@ public class SecondStageStubGenerator extends StubGenerator {
 		Expression state = new MethodCallExpr(distanceClass, distanceMethod, distanceStateArgs);
 		BinaryExpr stateCondition = new BinaryExpr(state, zeroDouble, japa.parser.ast.expr.BinaryExpr.Operator.greater);
 		
-		List<Expression> distanceResultArgs = new ArrayList<Expression>();
-		distanceResultArgs.add(ASTHelper.createNameExpr("expected_result"));
-		distanceResultArgs.add(ASTHelper.createNameExpr("actual_result"));
-		Expression result = new MethodCallExpr(distanceClass, distanceMethod, distanceResultArgs);
-		BinaryExpr resultCondition = new BinaryExpr(result, zeroDouble, japa.parser.ast.expr.BinaryExpr.Operator.greater);
+		BinaryExpr ifCondition;
+		if (!targetMethod.getReturnType().equals(void.class)) {
+			List<Expression> distanceResultArgs = new ArrayList<Expression>();
+			distanceResultArgs.add(ASTHelper.createNameExpr("expected_result"));
+			distanceResultArgs.add(ASTHelper.createNameExpr("actual_result"));
+			Expression result = new MethodCallExpr(distanceClass, distanceMethod, distanceResultArgs);
+			BinaryExpr resultCondition = new BinaryExpr(result, zeroDouble, japa.parser.ast.expr.BinaryExpr.Operator.greater);
+
+			ifCondition = new BinaryExpr(resultCondition, stateCondition, japa.parser.ast.expr.BinaryExpr.Operator.or);
+		}
+		else {
+			ifCondition = stateCondition;
+		}
 		
-		BinaryExpr ifCondition = new BinaryExpr(resultCondition, stateCondition, japa.parser.ast.expr.BinaryExpr.Operator.or);
 		IfStmt ifStmt = new IfStmt(ifCondition, new ExpressionStmt(ASTUtils.createSystemOut("Executed")), null);
 		ASTHelper.addStmt(stmt, ifStmt);
 		
