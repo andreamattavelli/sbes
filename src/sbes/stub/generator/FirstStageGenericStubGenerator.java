@@ -91,8 +91,8 @@ public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 			declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnType(targetMethod).toString(), EXPECTED_RESULT));
 			declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnType(targetMethod).toString(), ACTUAL_RESULT));
 		}
-		declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), EXPECTED_STATE));
-		declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), ACTUAL_STATE));
+		declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), concreteClass, EXPECTED_STATE));
+		declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), concreteClass, ACTUAL_STATE));
 		
 		for (TestScenario scenario : scenarios) {
 			declarations.addAll(scenario.getInputs());
