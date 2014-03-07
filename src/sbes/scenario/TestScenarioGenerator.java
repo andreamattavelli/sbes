@@ -141,6 +141,13 @@ public class TestScenarioGenerator {
 		scenarios.add(scenario);
 		return scenario;
 	}
+	
+	public TestScenario carvedCounterexampleToScenario(CarvingResult carvedCounterexample) {
+		CounterexampleGeneralizer generalizer = new CounterexampleGeneralizer(scenarios.size());
+		TestScenario scenario = generalizer.generalizeCounterexampleToScenario(carvedCounterexample);
+		scenarios.add(scenario);
+		return scenario;
+	}
 
 	public List<TestScenario> getScenarios() {
 		return scenarios;
