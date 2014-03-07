@@ -34,6 +34,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.List;
 
 import sbes.logging.Logger;
@@ -259,7 +260,7 @@ public class FirstStageStubGenerator extends StubGenerator {
 						method.getName().equals("toArray") ||
 						method.getName().contains("iterator") ||
 						method.getName().contains("Iterator") ||
-						method.getReturnType().isEnum()) {
+						Enumeration.class.isAssignableFrom(method.getReturnType())) {
 					logger.debug(" * Removed method " + method);
 					continue;
 				}
