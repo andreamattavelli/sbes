@@ -329,4 +329,27 @@ public class SecondStageStubGeneratorTest {
 		System.out.println("===========================================================");
 	}
 
+	@Test
+	public void test16() throws ParseException {
+		Options.I().setMethodSignature("stack.util.Stack.remove(int)");
+		
+		List<TypeDeclaration> decls = new ArrayList<TypeDeclaration>(); 
+		List<Comment> comments = new ArrayList<Comment>();
+		
+		stub = new Stub(new CompilationUnit(new PackageDeclaration(new NameExpr("asda")), imports, decls, comments), "Stack_Stub");
+		
+		BlockStmt body = JavaParser.parseBlock("{Stack_Stub stack_Stub0 = new Stack_Stub();"+
+				"Integer[] integerArray0 = stack_Stub0.pop();"+
+				"Integer[] integerArray1 = stack_Stub0.pop();"+
+				"stack_Stub0.addElement((Integer) 2);"+
+				"stack_Stub0.set_results(integerArray1);"+
+				"stack_Stub0.method_under_test();}");
+
+		CarvingResult candidateES = new CarvingResult(body, imports);
+		SecondStageGenericStubGenerator sssg = new SecondStageGenericStubGenerator(stub, candidateES, "Integer");
+		Stub second = sssg.generateStub();
+		System.out.println(second.getAst().toString());
+		System.out.println("===========================================================");
+	}
+
 }
