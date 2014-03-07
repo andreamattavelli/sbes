@@ -579,8 +579,15 @@ public class SecondStageStubGenerator extends StubGenerator {
 						else if (vd.getInit() instanceof MethodCallExpr) {
 							MethodCallExpr mce = (MethodCallExpr) vd.getInit();
 							if (ASTUtils.getName(mce.getScope()).equals("clone")) {
-								continue;
+								String varName = vd.getId().getName();
+								VariableUseVisitor vu = new VariableUseVisitor(varName);
+								vu.visit(cloned, null);
+								if (!vu.isUsed()) {
+									ExpressionStmt exprStmt = (ExpressionStmt) vde.getParentNode();
+									exprStmt.setExpression(mce);
+								}
 							}
+							continue;
 						}
 
 						// check use
@@ -601,26 +608,23 @@ public class SecondStageStubGenerator extends StubGenerator {
 
 	private void removeDeadAssignments(BlockStmt cloned, int i, String varName) {
 		for (int j = i; j < cloned.getStmts().size(); j++) {
-			Statement s = cloned.getStmts().get(j);
-			if (s instanceof ExpressionStmt) {
-				ExpressionStmt es = (ExpressionStmt) s;
-				if (es.getExpression() instanceof AssignExpr) {
-					AssignExpr ae = (AssignExpr) es.getExpression();
-					if (ae.getTarget() instanceof NameExpr) {
-						NameExpr neae = (NameExpr) ae.getTarget();
+			ExpressionStmt es = (ExpressionStmt) cloned.getStmts().get(j);
+			if (es.getExpression() instanceof AssignExpr) {
+				AssignExpr ae = (AssignExpr) es.getExpression();
+				if (ae.getTarget() instanceof NameExpr) {
+					NameExpr neae = (NameExpr) ae.getTarget();
+					if (neae.getName().equals(varName)) {
+						cloned.getStmts().remove(j);
+						j--;
+					}
+				}
+				else if (ae.getTarget() instanceof ArrayAccessExpr) {
+					ArrayAccessExpr aae = (ArrayAccessExpr) ae.getTarget();
+					if (aae.getName() instanceof NameExpr) {
+						NameExpr neae = (NameExpr) aae.getName();
 						if (neae.getName().equals(varName)) {
 							cloned.getStmts().remove(j);
 							j--;
-						}
-					}					
-					else if (ae.getTarget() instanceof ArrayAccessExpr) {
-						ArrayAccessExpr aae = (ArrayAccessExpr) ae.getTarget();
-						if (aae.getName() instanceof NameExpr) {
-							NameExpr neae = (NameExpr) aae.getName();
-							if (neae.getName().equals(varName)) {
-								cloned.getStmts().remove(j);
-								j--;
-							}
 						}
 					}
 				}
