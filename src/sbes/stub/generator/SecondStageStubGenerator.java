@@ -32,6 +32,7 @@ import japa.parser.ast.stmt.ExpressionStmt;
 import japa.parser.ast.stmt.IfStmt;
 import japa.parser.ast.stmt.Statement;
 import japa.parser.ast.type.ClassOrInterfaceType;
+import japa.parser.ast.type.ReferenceType;
 import japa.parser.ast.visitor.CloneVisitor;
 
 import java.lang.reflect.Constructor;
@@ -42,6 +43,7 @@ import java.util.List;
 
 import sbes.ast.ArrayCellDeclarationVisitor;
 import sbes.ast.ArrayDefVisitor;
+import sbes.ast.CloneObjVisitor;
 import sbes.ast.EquivalentSequenceCallVisitor;
 import sbes.ast.MethodCallVisitor;
 import sbes.ast.StubArrayVariableRemoverVisitor;
@@ -265,7 +267,9 @@ public class SecondStageStubGenerator extends StubGenerator {
 		if (!targetMethod.getReturnType().equals(void.class)) {
 			identifyActualResult(cloned, targetMethod, param);
 		}
-		//PHASE 4: remove dead code
+		//PHASE 4: check clone.METHOD arguments, if array prune it
+		pruneArrayParameters(cloned, targetMethod);
+		//PHASE 5: remove dead code
 		deadCodeElimination(cloned);
 		
 		stmts.addAll(cloned.getStmts());
@@ -482,7 +486,63 @@ public class SecondStageStubGenerator extends StubGenerator {
 	}
 	
 	/*
-	 * PHASE 4: dead code elimination: remove everything not necessary
+	 * PHASE 4: remove spurious parameters from method calls due to array-based stub
+	 */
+	private void pruneArrayParameters(BlockStmt cloned, Method targetMethod) {
+		// get all calls on clone obj, therefore a stub obj
+		CloneObjVisitor cov = new CloneObjVisitor();
+		cov.visit(cloned, null);
+		List<MethodCallExpr> methods = cov.getMethods();
+		for (MethodCallExpr methodCallExpr : methods) {
+			// if it has no parameters, we are not interested in it
+			if (methodCallExpr.getName().equals("set_results")) {
+				continue;
+			}
+			if (methodCallExpr.getArgs() == null) {
+				continue;
+			}
+			// otherwise, we have to check if it takes in input an array
+			// if so, we have to get the first value used
+			for (int i = 0; i < methodCallExpr.getArgs().size(); i++) {
+				Expression arg = methodCallExpr.getArgs().get(i);
+				if (arg instanceof NameExpr) {
+					VariableDeclarationVisitor vdv = new VariableDeclarationVisitor(((NameExpr) arg).getName());
+					vdv.visit(cloned, null);
+					VariableDeclarationExpr vde = vdv.getVariable();
+					if (vde == null) {
+						continue;
+					}
+					else {
+						if (vde.getType() instanceof ReferenceType) {
+							ReferenceType rt = (ReferenceType) vde.getType();
+							if (rt.getArrayCount() > 0) {
+								Class<?> c = targetMethod.getDeclaringClass();
+								Method[] ms = c.getMethods();
+								for (Method method : ms) {
+									if (method.getName().equals(methodCallExpr.getName()) && 
+											method.getParameterTypes().length == methodCallExpr.getArgs().size()) {
+										// it should be the correct method
+										if (!method.getParameterTypes()[i].isArray()) {
+											String variableId = vde.getVars().get(0).getId().getName();
+											ArrayCellDeclarationVisitor acdv = new ArrayCellDeclarationVisitor(variableId, "0");
+											acdv.visit(cloned, null);
+											Expression value = acdv.getValue();
+											if (value != null) {
+												methodCallExpr.getArgs().set(i, value);
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	/*
+	 * PHASE 5: dead code elimination: remove everything not necessary
 	 */
 	private void deadCodeElimination(BlockStmt cloned) {
 		boolean changed = false;

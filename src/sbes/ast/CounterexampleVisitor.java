@@ -1,6 +1,5 @@
 package sbes.ast;
 
-import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.type.ClassOrInterfaceType;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
 
