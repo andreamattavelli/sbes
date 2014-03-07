@@ -100,12 +100,7 @@ public class SBESManager {
 			}
 			else {
 				// if solution is found: add test scenario to stub
-				cleanCounterexample(counterexample);
-				TestScenarioGenerator.getInstance().carvedCounterexampleToScenario(counterexample);
-				StubGenerator counterexampleGenerator = new FirstStageStubGenerator(TestScenarioGenerator.getInstance().getScenarios());
-				stub = counterexampleGenerator.generateStub();
-				directory.createFirstStubDir();
-				stub.dumpStub(directory.getFirstStubDir());
+				stub = generateTestScenarioFromCounterexample(directory, counterexample);
 			}
 			statistics.iterationFinished();
 		}
@@ -234,6 +229,16 @@ public class SBESManager {
 		statistics.counterexampleFinished();
 		logger.info("Generating counterexample - done");
 		return toReturn;
+	}
+	
+	private Stub generateTestScenarioFromCounterexample(DirectoryUtils directory, CarvingResult counterexample) {
+		cleanCounterexample(counterexample);
+		TestScenarioGenerator.getInstance().carvedCounterexampleToScenario(counterexample);
+		StubGenerator counterexampleGenerator = FirstStageGeneratorFactory.createGenerator(TestScenarioGenerator.getInstance().getScenarios());
+		Stub stub = counterexampleGenerator.generateStub();
+		directory.createFirstStubDir();
+		stub.dumpStub(directory.getFirstStubDir());
+		return stub;
 	}
 	
 	private void cleanCounterexample(CarvingResult counterexample) {
