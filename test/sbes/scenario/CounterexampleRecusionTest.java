@@ -3,9 +3,7 @@ package sbes.scenario;
 import japa.parser.JavaParser;
 import japa.parser.ParseException;
 import japa.parser.ast.ImportDeclaration;
-import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.stmt.BlockStmt;
-import japa.parser.ast.stmt.ExpressionStmt;
 
 import java.util.ArrayList;
 
@@ -21,6 +19,9 @@ public class CounterexampleRecusionTest {
 
 	@Test
 	public void test1() throws ParseException {
+		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/Stack-UseCase/bin");
+		Options.I().setMethodSignature("stack.util.Stack.peek()");
+		
 		BlockStmt block = JavaParser.parseBlock("{Stack_Stub_2 stack_Stub_2_0 = new Stack_Stub_2();"+
 				"Object object0 = new Object();"+
 				"Object[] objectArray0 = new Object[8];"+
@@ -32,30 +33,35 @@ public class CounterexampleRecusionTest {
 				"boolean boolean2 = stack_Stub_2_0.add((Object) integer0);"+
 				"stack_Stub_2_0.method_under_test();}");
 		
-		Options.I().setMethodSignature("stack.util.java.Stack.peek()");
+		CarvingResult counterexample = new CarvingResult(block, new ArrayList<ImportDeclaration>());
+		
+		cleanCounterexample(counterexample);
+		TestScenario ts = TestScenarioGenerator.getInstance().carvedCounterexampleToScenario(counterexample);
+		System.out.println(ts.getScenario());
+		System.out.println(ts.getInputs());
+	}
+	
+	@Test
+	public void test2() throws ParseException {
+		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/Stack-UseCase/bin");
+		Options.I().setMethodSignature("stack.util.Stack.elementAt(int)");
+		
+		BlockStmt block = JavaParser.parseBlock("{Stack_Stub_2<Integer> stack_Stub_2_0 = new Stack_Stub_2<Integer>();"+
+													"boolean boolean0 = stack_Stub_2_0.add((Integer) (-1893));"+
+													"stack_Stub_2_0.method_under_test(0);}");
 		
 		CarvingResult counterexample = new CarvingResult(block, new ArrayList<ImportDeclaration>());
 		
 		cleanCounterexample(counterexample);
-		TestScenario ts = TestScenarioGenerator.getInstance().carvedTestToScenario(counterexample);
-		System.out.println(ts);
+		TestScenario ts = TestScenarioGenerator.getInstance().carvedCounterexampleToScenario(counterexample);
+		System.out.println(ts.getScenario());
+		System.out.println(ts.getInputs());
 	}
 	
 	private void cleanCounterexample(CarvingResult counterexample) {
 		String classname = ClassUtils.getSimpleClassname(Options.I().getMethodSignature());
 		CounterexampleVisitor cv = new CounterexampleVisitor();
 		cv.visit(counterexample.getBody(), classname);
-		
-		for (int i = 0; i < counterexample.getBody().getStmts().size(); i++) {
-			ExpressionStmt estmt = (ExpressionStmt) counterexample.getBody().getStmts().get(i);
-			if (estmt.getExpression() instanceof MethodCallExpr) {
-				MethodCallExpr mce = (MethodCallExpr) estmt.getExpression();
-				if (mce.getName().equals("method_under_test")) {
-					counterexample.getBody().getStmts().remove(i);
-					break;
-				}
-			}
-		}
 		
 		for (int i = 0; i < counterexample.getImports().size(); i++) {
 			ImportDeclaration importDecl = counterexample.getImports().get(i);
