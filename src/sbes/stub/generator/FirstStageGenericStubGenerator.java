@@ -132,7 +132,7 @@ public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 			
 			Type returnType = ASTUtils.getReturnConcreteType(generics, concreteClass, method);
 			Type returnStubType = ASTUtils.getReturnConcreteTypeAsArray(generics, concreteClass, method);
-			MethodDeclaration md = new MethodDeclaration(method.getModifiers() & Modifier.TRANSIENT & Modifier.VOLATILE, returnStubType, method.getName());
+			MethodDeclaration md = new MethodDeclaration(method.getModifiers() & Modifier.TRANSIENT & Modifier.VOLATILE | Modifier.PUBLIC, returnStubType, method.getName());
 			
 			//parameters
 			List<Parameter> parameters = new ArrayList<Parameter>();
