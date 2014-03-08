@@ -63,9 +63,9 @@ public class SecondStageStubGenerator extends StubGenerator {
 
 	private static final Logger logger = new Logger(SecondStageStubGenerator.class);
 	
-	private CarvingResult candidateES;
-	private List<Statement> equivalence;
-	private Stub stub;
+	protected CarvingResult candidateES;
+	protected List<Statement> equivalence;
+	protected Stub stub;
 	
 	public SecondStageStubGenerator(Stub stub, CarvingResult candidateES) {
 		this.stub = stub;
