@@ -15,8 +15,9 @@ public class Distance {
 
 	private static final Logger logger = new Logger(Distance.class);
 
-	private static final double DIFFERENT_CLASSES_WEIGHT = 10.0d;
+	public static final double DIFFERENT_CLASSES_WEIGHT = 20.0d;
 	public static final double ARRAY_CELL_FACTOR = 5.0d;
+	public static final double NULL_WEIGHT = 10.0d;
 	
 	private static final List<DistancePair> worklist = new LinkedList<DistancePair>();
 	private static final Map<Object, Integer> visited = new IdentityHashMap<Object, Integer>();

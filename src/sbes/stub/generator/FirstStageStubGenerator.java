@@ -260,6 +260,9 @@ public class FirstStageStubGenerator extends StubGenerator {
 						method.getName().equals("toArray") ||
 						method.getName().contains("iterator") ||
 						method.getName().contains("Iterator") ||
+						method.getName().contains("capacity") ||
+						method.getName().contains("copyInto") ||
+						method.getName().contains("trimToSize") ||
 						Enumeration.class.isAssignableFrom(method.getReturnType())) {
 					logger.debug(" * Removed method " + method);
 					continue;

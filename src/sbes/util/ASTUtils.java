@@ -131,7 +131,8 @@ public class ASTUtils {
 				Parameter p = parameters.get(i);
 				if (AsmParameterNames.isSizeParam(paramNames[i])) {
 					ArrayAccessExpr aae = new ArrayAccessExpr(ASTHelper.createNameExpr(paramNames[i]), new NameExpr("i"));
-					astParameters.add(aae);
+					MethodCallExpr mce = new MethodCallExpr(aae, "intValue");
+					astParameters.add(mce);
 				}
 				else {
 					astParameters.add(ASTHelper.createNameExpr(p.getId().getName()));
