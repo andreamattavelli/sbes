@@ -34,9 +34,15 @@ public class ASTUtils {
 
 	public static Type getReturnType(Method method) {
 		if (method.getReturnType().isArray()) {
+			if (method.getReturnType().getCanonicalName().equals("int")) {
+				return ASTHelper.createReferenceType("Integer", ReflectionUtils.getArrayDimensionCount(method.getReturnType()));
+			}
 			return ASTHelper.createReferenceType(method.getReturnType().getComponentType().getCanonicalName(), ReflectionUtils.getArrayDimensionCount(method.getReturnType()));
 		}
-		else { 
+		else {
+			if (method.getReturnType().getCanonicalName().equals("int")) {
+				return ASTHelper.createReferenceType("Integer", 0);
+			}
 			return ASTHelper.createReferenceType(method.getReturnType().getCanonicalName(), 0);
 		}
 	}
@@ -69,6 +75,9 @@ public class ASTUtils {
 			return ASTHelper.createReferenceType(returnType.getCanonicalName(), 0);
 		}
 		else {
+			if (returnType.getCanonicalName().equals("int")) {
+				return ASTHelper.createReferenceType("Integer", 1);
+			}
 			return ASTHelper.createReferenceType(returnType.getCanonicalName(), 1);
 		}
 	}
