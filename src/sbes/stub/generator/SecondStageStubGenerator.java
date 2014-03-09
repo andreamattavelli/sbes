@@ -564,6 +564,7 @@ public class SecondStageStubGenerator extends StubGenerator {
 							be.setLeft(new MethodCallExpr(mce.getScope(), "size"));
 							be.setRight(new IntegerLiteralExpr("1"));
 							be.setOperator(japa.parser.ast.expr.BinaryExpr.Operator.minus);
+							estmt.setExpression(be);
 						}
 					}
 					else if (estmt.getExpression() instanceof VariableDeclarationExpr) {
