@@ -559,18 +559,21 @@ public class SecondStageStubGenerator extends StubGenerator {
 							i = i == cloned.getStmts().size() ? i : i++;
 							changed = true;
 						}
-						else if (mce.getName().equals("realSize") || mce.getName().equals("collectionSize")) {
-							BinaryExpr be = new BinaryExpr();
-							be.setLeft(new MethodCallExpr(mce.getScope(), "size"));
-							be.setRight(new IntegerLiteralExpr("1"));
-							be.setOperator(japa.parser.ast.expr.BinaryExpr.Operator.minus);
-							estmt.setExpression(be);
-						}
 					}
 					else if (estmt.getExpression() instanceof VariableDeclarationExpr) {
 						VariableDeclarationExpr vde = (VariableDeclarationExpr) estmt.getExpression();
 						VariableDeclarator vd = vde.getVars().get(0);
 						if (vd.getId().getName().equals("actual_result")) {
+							if (vde.getVars().get(0).getInit() instanceof MethodCallExpr) {
+								MethodCallExpr mce = (MethodCallExpr) vde.getVars().get(0).getInit();
+								if (mce.getName().equals("realSize") || mce.getName().equals("collectionSize")) {
+									BinaryExpr be = new BinaryExpr();
+									be.setLeft(new MethodCallExpr(mce.getScope(), "size"));
+									be.setRight(new IntegerLiteralExpr("1"));
+									be.setOperator(japa.parser.ast.expr.BinaryExpr.Operator.minus);
+									vde.getVars().get(0).setInit(be);
+								}
+							}
 							continue;
 						}
 						else if (vd.getInit() instanceof FieldAccessExpr) {
