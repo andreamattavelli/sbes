@@ -193,7 +193,7 @@ public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 		if (isSizePresent) {
 			addRealSize(members);
 		}
-		else if (collectionReturn) {
+		if (collectionReturn) {
 			addCollectionSize(members);
 		}
 		

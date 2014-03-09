@@ -227,7 +227,7 @@ public class FirstStageStubGenerator extends StubGenerator {
 		if (isSizePresent) {
 			addRealSize(members);
 		}
-		else if (collectionReturn) {
+		if (collectionReturn) {
 			addCollectionSize(members);
 		}
 		
