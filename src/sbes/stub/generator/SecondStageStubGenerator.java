@@ -559,7 +559,7 @@ public class SecondStageStubGenerator extends StubGenerator {
 							i = i == cloned.getStmts().size() ? i : i++;
 							changed = true;
 						}
-						else if (mce.getName().equals("realSize")) {
+						else if (mce.getName().equals("realSize") || mce.getName().equals("collectionSize")) {
 							BinaryExpr be = new BinaryExpr();
 							be.setLeft(new MethodCallExpr(mce.getScope(), "size"));
 							be.setRight(new IntegerLiteralExpr("1"));
