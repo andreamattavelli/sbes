@@ -11,6 +11,7 @@ import japa.parser.ast.body.Parameter;
 import japa.parser.ast.body.TypeDeclaration;
 import japa.parser.ast.body.VariableDeclarator;
 import japa.parser.ast.body.VariableDeclaratorId;
+import japa.parser.ast.expr.ArrayAccessExpr;
 import japa.parser.ast.expr.ArrayCreationExpr;
 import japa.parser.ast.expr.AssignExpr;
 import japa.parser.ast.expr.AssignExpr.Operator;
@@ -141,6 +142,7 @@ public class FirstStageStubGenerator extends StubGenerator {
 		logger.debug("Adding original class method wrappers");
 		
 		boolean collectionReturn = false;
+		boolean isSizePresent = false;
 		
 		List<BodyDeclaration> members = new ArrayList<BodyDeclaration>();
 		methods = preventMethodBloat(targetMethod, methods);
@@ -152,8 +154,11 @@ public class FirstStageStubGenerator extends StubGenerator {
 				continue;
 			}
 			
-			if (method.getReturnType().isAssignableFrom(Collection.class)) {
+			if (Collection.class.isAssignableFrom(method.getReturnType())) {
 				collectionReturn = true;
+			}
+			else if (method.getName().equals("size")) {
+				isSizePresent = true;
 			}
 			
 			String paramsNames[] = AsmParameterNames.getParameterNames(method);
@@ -219,12 +224,110 @@ public class FirstStageStubGenerator extends StubGenerator {
 			members.add(md);
 		}
 		
+		if (isSizePresent) {
+			addRealSize(members);
+		}
+		else if (collectionReturn) {
+			addCollectionSize(members);
+		}
+		
 		logger.debug("Generated " + members.size() + " class method wrappers");
 		logger.debug("Adding original class method wrappers - done");
 		
 		return members;
 	}
 	
+	protected void addRealSize(List<BodyDeclaration> members) {
+		Type returnStubType = ASTHelper.createReferenceType("Integer", 1);
+		MethodDeclaration md = new MethodDeclaration(Modifier.PUBLIC, returnStubType, "realSize");
+		
+		//body
+		BlockStmt stmt = new BlockStmt();
+		List<Statement> stmts = new ArrayList<Statement>();
+		
+		VariableDeclarationExpr res = ASTHelper.createVariableDeclarationExpr(returnStubType, "res");
+		
+		// for loop
+		List<Expression> init = ASTUtils.createForInit("i", ASTHelper.INT_TYPE, new IntegerLiteralExpr("0"), Operator.assign);
+		Expression compare = ASTUtils.createForCondition("i", NUM_SCENARIOS, japa.parser.ast.expr.BinaryExpr.Operator.less);
+		List<Expression> update = ASTUtils.createForIncrement("i", japa.parser.ast.expr.UnaryExpr.Operator.posIncrement);
+
+		MethodCallExpr mce = new MethodCallExpr(ASTUtils.createArrayAccess("actual_states", "i"), "size");
+		
+		// for loop body
+		Expression right = new BinaryExpr(mce, new IntegerLiteralExpr("1"), japa.parser.ast.expr.BinaryExpr.Operator.minus);
+
+		BlockStmt body = new BlockStmt();
+		List<Expression> arraysDimension = ASTUtils.getArraysDimension();
+		ArrayCreationExpr ace = new ArrayCreationExpr(ASTHelper.createReferenceType("Integer", 0), arraysDimension, 0);
+		AssignExpr resAssign = new AssignExpr(res, ace, Operator.assign);
+		ExpressionStmt resStmt = new ExpressionStmt(resAssign);
+		stmts.add(resStmt);
+
+		Expression left = ASTUtils.createArrayAccess("res", "i");
+		AssignExpr callResult = new AssignExpr(left, right, Operator.assign);
+		ASTHelper.addStmt(body, callResult);
+		
+		ForStmt forStmt = new ForStmt(init, compare, update, body);
+		stmts.add(forStmt);
+		
+		if (!returnStubType.toString().equals("void")) {
+			ReturnStmt ret = new ReturnStmt(ASTHelper.createNameExpr("res"));
+			stmts.add(ret);
+		}
+
+		stmt.setStmts(stmts);
+		md.setBody(stmt);
+		
+		members.add(md);
+	}
+	
+	protected void addCollectionSize(List<BodyDeclaration> members) {
+		Type returnStubType = ASTHelper.createReferenceType("Integer", 1);
+		MethodDeclaration md = new MethodDeclaration(Modifier.PUBLIC, returnStubType, "collectionSize");
+		List<Parameter> parameters = new ArrayList<Parameter>();
+		parameters.add(new Parameter(ASTHelper.createReferenceType("java.util.Collection", 1), new VariableDeclaratorId("p0")));
+		md.setParameters(parameters);
+		
+		//body
+		BlockStmt stmt = new BlockStmt();
+		List<Statement> stmts = new ArrayList<Statement>();
+		
+		VariableDeclarationExpr res = ASTHelper.createVariableDeclarationExpr(returnStubType, "res");
+		
+		// for loop
+		List<Expression> init = ASTUtils.createForInit("i", ASTHelper.INT_TYPE, new IntegerLiteralExpr("0"), Operator.assign);
+		Expression compare = ASTUtils.createForCondition("i", NUM_SCENARIOS, japa.parser.ast.expr.BinaryExpr.Operator.less);
+		List<Expression> update = ASTUtils.createForIncrement("i", japa.parser.ast.expr.UnaryExpr.Operator.posIncrement);
+
+		// for loop body
+		Expression right = new MethodCallExpr(new ArrayAccessExpr(new NameExpr("p0"), new NameExpr("i")), "size");
+
+		BlockStmt body = new BlockStmt();
+		List<Expression> arraysDimension = ASTUtils.getArraysDimension();
+		ArrayCreationExpr ace = new ArrayCreationExpr(ASTHelper.createReferenceType("Integer", 0), arraysDimension, 0);
+		AssignExpr resAssign = new AssignExpr(res, ace, Operator.assign);
+		ExpressionStmt resStmt = new ExpressionStmt(resAssign);
+		stmts.add(resStmt);
+
+		Expression left = ASTUtils.createArrayAccess("res", "i");
+		AssignExpr callResult = new AssignExpr(left, right, Operator.assign);
+		ASTHelper.addStmt(body, callResult);
+		
+		ForStmt forStmt = new ForStmt(init, compare, update, body);
+		stmts.add(forStmt);
+		
+		if (!returnStubType.toString().equals("void")) {
+			ReturnStmt ret = new ReturnStmt(ASTHelper.createNameExpr("res"));
+			stmts.add(ret);
+		}
+
+		stmt.setStmts(stmts);
+		md.setBody(stmt);
+		
+		members.add(md);
+	}
+
 	protected List<Parameter> getParameterType(Class<?>[] parameters, String paramNames[], boolean isVarArgs) {
 		List<Parameter> toReturn = new ArrayList<Parameter>();
 		for (int i = 0; i < parameters.length; i++) {
