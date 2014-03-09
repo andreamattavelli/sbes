@@ -16,6 +16,7 @@ import japa.parser.ast.expr.AssignExpr;
 import japa.parser.ast.expr.AssignExpr.Operator;
 import japa.parser.ast.expr.BinaryExpr;
 import japa.parser.ast.expr.CastExpr;
+import japa.parser.ast.expr.ConditionalExpr;
 import japa.parser.ast.expr.DoubleLiteralExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.FieldAccessExpr;
@@ -567,11 +568,35 @@ public class SecondStageStubGenerator extends StubGenerator {
 							if (vde.getVars().get(0).getInit() instanceof MethodCallExpr) {
 								MethodCallExpr mce = (MethodCallExpr) vde.getVars().get(0).getInit();
 								if (mce.getName().equals("realSize") || mce.getName().equals("collectionSize")) {
-									BinaryExpr be = new BinaryExpr();
-									be.setLeft(new MethodCallExpr(mce.getScope(), "size"));
-									be.setRight(new IntegerLiteralExpr("1"));
-									be.setOperator(japa.parser.ast.expr.BinaryExpr.Operator.minus);
-									vde.getVars().get(0).setInit(be);
+									ConditionalExpr ce = new ConditionalExpr();
+									
+									BinaryExpr condition = new BinaryExpr();
+									if (mce.getName().equals("realSize")) {
+										condition.setLeft(new MethodCallExpr(mce.getScope(), "size"));
+									}
+									if (mce.getName().equals("collectionSize")) {
+										String name = ASTUtils.getName(mce.getArgs().get(0));
+										condition.setLeft(new MethodCallExpr(new NameExpr(name), "size"));
+									}
+									condition.setRight(new IntegerLiteralExpr("0"));
+									condition.setOperator(japa.parser.ast.expr.BinaryExpr.Operator.greater);
+									ce.setCondition(condition);
+									
+									BinaryExpr subtraction = new BinaryExpr();
+									if (mce.getName().equals("realSize")) {
+										subtraction.setLeft(new MethodCallExpr(mce.getScope(), "size"));
+									}
+									if (mce.getName().equals("collectionSize")) {
+										String name = ASTUtils.getName(mce.getArgs().get(0));
+										subtraction.setLeft(new MethodCallExpr(new NameExpr(name), "size"));
+									}
+									subtraction.setRight(new IntegerLiteralExpr("1"));
+									subtraction.setOperator(japa.parser.ast.expr.BinaryExpr.Operator.minus);
+									ce.setThenExpr(subtraction);
+									
+									ce.setElseExpr(new IntegerLiteralExpr("0"));
+									
+									vde.getVars().get(0).setInit(ce);
 								}
 							}
 							continue;
