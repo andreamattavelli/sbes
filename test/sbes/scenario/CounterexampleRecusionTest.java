@@ -13,6 +13,9 @@ import sbes.ast.CounterexampleVisitor;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
 import sbes.result.TestScenario;
+import sbes.stub.Stub;
+import sbes.stub.generator.FirstStageStubGenerator;
+import sbes.stub.generator.StubGenerator;
 import sbes.util.ClassUtils;
 
 public class CounterexampleRecusionTest {
@@ -57,6 +60,31 @@ public class CounterexampleRecusionTest {
 		System.out.println(ts.getScenario());
 		System.out.println(ts.getInputs());
 	}
+	
+	@Test
+	public void test3() throws ParseException {
+		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/Stack-UseCase/bin");
+		Options.I().setMethodSignature("stack.util.Stack.elementAt(int)");
+		
+		BlockStmt block = JavaParser.parseBlock("{Stack_Stub_2<Integer> stack_Stub_2_0 = new Stack_Stub_2<Integer>();"+ 
+				"stack_Stub_2_0.trimToSize();"+ 
+				"boolean boolean0 = stack_Stub_2_0.add((Integer) 55);"+ 
+				"stack_Stub_2_0.method_under_test(0);}");
+		
+		CarvingResult counterexample = new CarvingResult(block, new ArrayList<ImportDeclaration>());
+		
+		cleanCounterexample(counterexample);
+		TestScenario ts = TestScenarioGenerator.getInstance().carvedCounterexampleToScenario(counterexample);
+		
+		StubGenerator counterexampleGenerator = new FirstStageStubGenerator(TestScenarioGenerator.getInstance().getScenarios());
+		Stub stub = counterexampleGenerator.generateStub();
+		System.out.println(stub.getAst().toString());
+		
+		System.out.println(ts.getScenario());
+		System.out.println(ts.getInputs());
+	}
+	
+	
 	
 	private void cleanCounterexample(CarvingResult counterexample) {
 		String classname = ClassUtils.getSimpleClassname(Options.I().getMethodSignature());

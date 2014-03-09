@@ -48,7 +48,7 @@ public class SecondStageStubGeneratorTest {
 				"stack_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageStubGenerator sssg = new SecondStageStubGenerator(stub, candidateES);
+		SecondStageStubGenerator sssg = new SecondStageGenericStubGenerator(stub, candidateES, "Integer");
 		Stub second = sssg.generateStub();
 		System.out.println(second.getAst().toString());
 		System.out.println("===========================================================");
@@ -65,7 +65,7 @@ public class SecondStageStubGeneratorTest {
 				"stack_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageStubGenerator sssg = new SecondStageStubGenerator(stub, candidateES);
+		SecondStageStubGenerator sssg = new SecondStageGenericStubGenerator(stub, candidateES, "Integer");
 		Stub second = sssg.generateStub();
 		System.out.println(second.getAst().toString());
 		System.out.println("===========================================================");
@@ -82,7 +82,7 @@ public class SecondStageStubGeneratorTest {
 				"stack_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageStubGenerator sssg = new SecondStageStubGenerator(stub, candidateES);
+		SecondStageStubGenerator sssg = new SecondStageGenericStubGenerator(stub, candidateES, "Integer");
 		Stub second = sssg.generateStub();
 		System.out.println(second.getAst().toString());
 		System.out.println("===========================================================");
@@ -100,7 +100,7 @@ public class SecondStageStubGeneratorTest {
 				"stack_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageStubGenerator sssg = new SecondStageStubGenerator(stub, candidateES);
+		SecondStageStubGenerator sssg = new SecondStageGenericStubGenerator(stub, candidateES, "Integer");
 		Stub second = sssg.generateStub();
 		System.out.println(second.getAst().toString());
 		System.out.println("===========================================================");
@@ -140,7 +140,7 @@ public class SecondStageStubGeneratorTest {
 				"stack_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageStubGenerator sssg = new SecondStageStubGenerator(stub, candidateES);
+		SecondStageStubGenerator sssg = new SecondStageGenericStubGenerator(stub, candidateES, "Integer");
 		Stub second = sssg.generateStub();
 		System.out.println(second.getAst().toString());
 		System.out.println("===========================================================");
@@ -158,7 +158,7 @@ public class SecondStageStubGeneratorTest {
 				"stack_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageStubGenerator sssg = new SecondStageStubGenerator(stub, candidateES);
+		SecondStageStubGenerator sssg = new SecondStageGenericStubGenerator(stub, candidateES, "Integer");
 		Stub second = sssg.generateStub();
 		System.out.println(second.getAst().toString());
 		System.out.println("===========================================================");
@@ -276,7 +276,7 @@ public class SecondStageStubGeneratorTest {
 				"abstractEdge_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGenericStubGenerator sssg = new SecondStageGenericStubGenerator(stub, candidateES, "Integer");
+		SecondStageStubGenerator sssg = new SecondStageStubGenerator(stub, candidateES);
 		Stub second = sssg.generateStub();
 		System.out.println(second.getAst().toString());
 		System.out.println("===========================================================");
@@ -344,25 +344,6 @@ public class SecondStageStubGeneratorTest {
 				"stack_Stub0.addElement((Integer) 2);"+
 				"stack_Stub0.set_results(integerArray1);"+
 				"stack_Stub0.method_under_test();}");
-
-		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGenericStubGenerator sssg = new SecondStageGenericStubGenerator(stub, candidateES, "Integer");
-		Stub second = sssg.generateStub();
-		System.out.println(second.getAst().toString());
-		System.out.println("===========================================================");
-	}
-
-	@Test
-	public void test17() throws ParseException {
-		Options.I().setMethodSignature("stack.util.Stack.remove(int)");
-		
-		List<TypeDeclaration> decls = new ArrayList<TypeDeclaration>(); 
-		List<Comment> comments = new ArrayList<Comment>();
-		
-		stub = new Stub(new CompilationUnit(new PackageDeclaration(new NameExpr("asda")), imports, decls, comments), "Stack_Stub");
-		
-		BlockStmt body = JavaParser.parseBlock("Stack_Stub_2 ss2 = new Stack_Stub_2();"+
-				"ss2.method_under_test();");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		SecondStageGenericStubGenerator sssg = new SecondStageGenericStubGenerator(stub, candidateES, "Integer");
