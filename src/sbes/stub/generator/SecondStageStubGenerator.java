@@ -559,6 +559,12 @@ public class SecondStageStubGenerator extends StubGenerator {
 							i = i == cloned.getStmts().size() ? i : i++;
 							changed = true;
 						}
+						else if (mce.getName().equals("realSize")) {
+							BinaryExpr be = new BinaryExpr();
+							be.setLeft(new MethodCallExpr(mce.getScope(), "size"));
+							be.setRight(new IntegerLiteralExpr("1"));
+							be.setOperator(japa.parser.ast.expr.BinaryExpr.Operator.minus);
+						}
 					}
 					else if (estmt.getExpression() instanceof VariableDeclarationExpr) {
 						VariableDeclarationExpr vde = (VariableDeclarationExpr) estmt.getExpression();
