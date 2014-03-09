@@ -88,8 +88,8 @@ public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 		
 		// stub helper arrays
 		if (!targetMethod.getReturnType().equals(void.class)) {
-			declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnType(targetMethod).toString(), EXPECTED_RESULT));
-			declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnType(targetMethod).toString(), ACTUAL_RESULT));
+			declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnConcreteType(generics, concreteClass, targetMethod).toString(), EXPECTED_RESULT));
+			declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnConcreteType(generics, concreteClass, targetMethod).toString(), ACTUAL_RESULT));
 		}
 		declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), concreteClass, EXPECTED_STATE));
 		declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), concreteClass, ACTUAL_STATE));
