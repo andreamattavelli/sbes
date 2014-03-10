@@ -178,13 +178,13 @@ public class FirstStageStubGenerator extends StubGenerator {
 			VariableDeclarationExpr res = ASTHelper.createVariableDeclarationExpr(returnStubType, "res");
 			
 			// for loop
-			List<Expression> init = ASTUtils.createForInit("i", ASTHelper.INT_TYPE, new IntegerLiteralExpr("0"), Operator.assign);
-			Expression compare = ASTUtils.createForCondition("i", NUM_SCENARIOS, japa.parser.ast.expr.BinaryExpr.Operator.less);
-			List<Expression> update = ASTUtils.createForIncrement("i", japa.parser.ast.expr.UnaryExpr.Operator.posIncrement);
+			List<Expression> init = ASTUtils.createForInit("i_", ASTHelper.INT_TYPE, new IntegerLiteralExpr("0"), Operator.assign);
+			Expression compare = ASTUtils.createForCondition("i_", NUM_SCENARIOS, japa.parser.ast.expr.BinaryExpr.Operator.less);
+			List<Expression> update = ASTUtils.createForIncrement("i_", japa.parser.ast.expr.UnaryExpr.Operator.posIncrement);
 			
 			// for loop body
 			List<Expression> methodParameters = ASTUtils.createParameters(parameters, paramsNames);
-			Expression right = new MethodCallExpr(ASTUtils.createArrayAccess(ACTUAL_STATE, "i"), method.getName(), methodParameters);
+			Expression right = new MethodCallExpr(ASTUtils.createArrayAccess(ACTUAL_STATE, "i_"), method.getName(), methodParameters);
 			
 			BlockStmt body = new BlockStmt();
 			if (returnStubType.toString().equals("void")) {
@@ -205,7 +205,7 @@ public class FirstStageStubGenerator extends StubGenerator {
 				ExpressionStmt resStmt = new ExpressionStmt(resAssign);
 				stmts.add(resStmt);
 				
-				Expression left = ASTUtils.createArrayAccess("res", "i");
+				Expression left = ASTUtils.createArrayAccess("res", "i_");
 				AssignExpr callResult = new AssignExpr(left, right, Operator.assign);
 				ASTHelper.addStmt(body, callResult);
 			}
