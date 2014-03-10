@@ -332,7 +332,13 @@ public class FirstStageStubGenerator extends StubGenerator {
 		List<Parameter> toReturn = new ArrayList<Parameter>();
 		for (int i = 0; i < parameters.length; i++) {
 			Class<?> type = parameters[i];
-			VariableDeclaratorId id = new VariableDeclaratorId(paramNames[i]);
+			VariableDeclaratorId id;
+			if (paramNames.length > i) {
+				id = new VariableDeclaratorId(paramNames[i]);
+			}
+			else {
+				id = new VariableDeclaratorId("p" + i);
+			}
 			String typeClass = type.getCanonicalName();
 			typeClass = typeClass.indexOf(" ") >= 0 ? typeClass.split(" ")[1]: typeClass;
 			if (i == parameters.length - 1 && isVarArgs) {
