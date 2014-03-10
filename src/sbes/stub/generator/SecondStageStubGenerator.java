@@ -564,41 +564,42 @@ public class SecondStageStubGenerator extends StubGenerator {
 					else if (estmt.getExpression() instanceof VariableDeclarationExpr) {
 						VariableDeclarationExpr vde = (VariableDeclarationExpr) estmt.getExpression();
 						VariableDeclarator vd = vde.getVars().get(0);
-						if (vd.getId().getName().equals("actual_result")) {
-							if (vde.getVars().get(0).getInit() instanceof MethodCallExpr) {
-								MethodCallExpr mce = (MethodCallExpr) vde.getVars().get(0).getInit();
-								if (mce.getName().equals("realSize") || mce.getName().equals("collectionSize")) {
-									ConditionalExpr ce = new ConditionalExpr();
-									
-									BinaryExpr condition = new BinaryExpr();
-									if (mce.getName().equals("realSize")) {
-										condition.setLeft(new MethodCallExpr(mce.getScope(), "size"));
-									}
-									if (mce.getName().equals("collectionSize")) {
-										String name = ASTUtils.getName(mce.getArgs().get(0));
-										condition.setLeft(new MethodCallExpr(new NameExpr(name), "size"));
-									}
-									condition.setRight(new IntegerLiteralExpr("0"));
-									condition.setOperator(japa.parser.ast.expr.BinaryExpr.Operator.greater);
-									ce.setCondition(condition);
-									
-									BinaryExpr subtraction = new BinaryExpr();
-									if (mce.getName().equals("realSize")) {
-										subtraction.setLeft(new MethodCallExpr(mce.getScope(), "size"));
-									}
-									if (mce.getName().equals("collectionSize")) {
-										String name = ASTUtils.getName(mce.getArgs().get(0));
-										subtraction.setLeft(new MethodCallExpr(new NameExpr(name), "size"));
-									}
-									subtraction.setRight(new IntegerLiteralExpr("1"));
-									subtraction.setOperator(japa.parser.ast.expr.BinaryExpr.Operator.minus);
-									ce.setThenExpr(subtraction);
-									
-									ce.setElseExpr(new IntegerLiteralExpr("0"));
-									
-									vde.getVars().get(0).setInit(ce);
+						if (vde.getVars().get(0).getInit() instanceof MethodCallExpr) {
+							MethodCallExpr mce = (MethodCallExpr) vde.getVars().get(0).getInit();
+							if (mce.getName().equals("realSize") || mce.getName().equals("collectionSize")) {
+								ConditionalExpr ce = new ConditionalExpr();
+								
+								BinaryExpr condition = new BinaryExpr();
+								if (mce.getName().equals("realSize")) {
+									condition.setLeft(new MethodCallExpr(mce.getScope(), "size"));
 								}
+								if (mce.getName().equals("collectionSize")) {
+									String name = ASTUtils.getName(mce.getArgs().get(0));
+									condition.setLeft(new MethodCallExpr(new NameExpr(name), "size"));
+								}
+								condition.setRight(new IntegerLiteralExpr("0"));
+								condition.setOperator(japa.parser.ast.expr.BinaryExpr.Operator.greater);
+								ce.setCondition(condition);
+								
+								BinaryExpr subtraction = new BinaryExpr();
+								if (mce.getName().equals("realSize")) {
+									subtraction.setLeft(new MethodCallExpr(mce.getScope(), "size"));
+								}
+								if (mce.getName().equals("collectionSize")) {
+									String name = ASTUtils.getName(mce.getArgs().get(0));
+									subtraction.setLeft(new MethodCallExpr(new NameExpr(name), "size"));
+								}
+								subtraction.setRight(new IntegerLiteralExpr("1"));
+								subtraction.setOperator(japa.parser.ast.expr.BinaryExpr.Operator.minus);
+								ce.setThenExpr(subtraction);
+								
+								ce.setElseExpr(new IntegerLiteralExpr("0"));
+								
+								vde.getVars().get(0).setInit(ce);
 							}
+						}
+						
+						if (vd.getId().getName().equals("actual_result")) {
 							continue;
 						}
 						else if (vd.getInit() instanceof FieldAccessExpr) {
