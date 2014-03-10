@@ -41,8 +41,9 @@ public class CounterexampleExpectedResultVisitor extends VoidVisitorAdapter<Void
 			Expression target = new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageStubGenerator.EXPECTED_RESULT),
 													ASTHelper.createNameExpr(Integer.toString(index)));
 			
+			expectedState = ASTUtils.getName(mce.getScope());
+			
 			if (!targetMethod.getReturnType().equals(void.class)) {
-				expectedState = ASTUtils.getName(mce.getScope());
 				mce.setScope(new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageStubGenerator.EXPECTED_STATE),
 											ASTHelper.createNameExpr(Integer.toString(index))));
 				ExpressionStmt estmt = (ExpressionStmt) mce.getParentNode();
