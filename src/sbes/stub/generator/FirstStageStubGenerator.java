@@ -345,7 +345,7 @@ public class FirstStageStubGenerator extends StubGenerator {
 				typeClass = typeClass.replace("[]", "");
 			}
 			Parameter p;
-			if (AsmParameterNames.isSizeParam(paramNames[i])) {
+			if (paramNames.length > i  && AsmParameterNames.isSizeParam(paramNames[i])) {
 				p = new Parameter(ASTHelper.createReferenceType(typeClass, 1), id);
 			}
 			else {
