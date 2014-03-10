@@ -30,6 +30,7 @@ import sbes.result.CarvingResult;
 import sbes.stub.GenerationException;
 import sbes.stub.Stub;
 import sbes.util.ASTUtils;
+import sbes.util.ReflectionUtils;
 
 public class SecondStageGenericStubGenerator extends SecondStageStubGenerator {
 	
@@ -63,8 +64,9 @@ public class SecondStageGenericStubGenerator extends SecondStageStubGenerator {
 		logger.debug("Adding method_under_test method");
 		MethodDeclaration method_under_test = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "method_under_test");
 		
-		Type[] parameters = targetMethod.getGenericParameterTypes();
-		List<Parameter> param = getGenericParameterType(parameters);
+		Type[] genericParams = targetMethod.getGenericParameterTypes();
+		Class<?>[] concreteParams = targetMethod.getParameterTypes();
+		List<Parameter> param = getGenericParameterType(genericParams, concreteParams);
 		method_under_test.setParameters(param);
 		
 		BlockStmt stmt = new BlockStmt();
@@ -119,20 +121,21 @@ public class SecondStageGenericStubGenerator extends SecondStageStubGenerator {
 		return method_under_test;
 	}
 
-	private List<Parameter> getGenericParameterType(Type[] parameters) {
+	private List<Parameter> getGenericParameterType(Type[] genericParams, Class<?>[] concreteParams) {
 		List<Parameter> toReturn = new ArrayList<Parameter>();
-		for (int i = 0; i < parameters.length; i++) {
-			Type type = parameters[i];
+		for (int i = 0; i < genericParams.length; i++) {
+			Type type = genericParams[i];
 			VariableDeclaratorId id = new VariableDeclaratorId("p" + i);
 			String typeClass;
 			if (type instanceof TypeVariable<?>) {
 				typeClass = concreteClass;
-			} else {
-				typeClass = type.getClass().getCanonicalName();
+			} 
+			else {
+				typeClass = concreteParams[i].getCanonicalName();
 			}
-			typeClass = typeClass.indexOf(" ") >= 0 ? typeClass.split(" ")[1]: typeClass;
-			//FIXME: check cardinality array
-			Parameter p = new Parameter(ASTHelper.createReferenceType(typeClass, 0), id);
+			typeClass = typeClass.indexOf(" ") >= 0 ? typeClass.split(" ")[1] : typeClass;
+			int dimensions = ReflectionUtils.getArrayDimensionCount(concreteParams[i]);
+			Parameter p = new Parameter(ASTHelper.createReferenceType(typeClass, dimensions), id);
 			toReturn.add(p);
 		}
 
