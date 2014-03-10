@@ -44,6 +44,7 @@ import java.util.List;
 
 import sbes.ast.ArrayCellDeclarationVisitor;
 import sbes.ast.ArrayDefVisitor;
+import sbes.ast.ChangeObjNameVisitor;
 import sbes.ast.CloneObjVisitor;
 import sbes.ast.EquivalentSequenceCallVisitor;
 import sbes.ast.MethodCallVisitor;
@@ -414,6 +415,7 @@ public class SecondStageStubGenerator extends StubGenerator {
 		}
 		
 		if (vde != null) {
+			String varName = vde.getVars().get(0).getId().getName();
 			Expression init = vde.getVars().get(0).getInit();
 			if (init instanceof ArrayCreationExpr) {
 				// we should check what is inside the array
@@ -483,6 +485,8 @@ public class SecondStageStubGenerator extends StubGenerator {
 				vde.setType(ASTHelper.createReferenceType(resultType, arrayDimension));
 				vde.getVars().get(0).getId().setName("actual_result");
 			}
+			ChangeObjNameVisitor conv = new ChangeObjNameVisitor(varName, "actual_result");
+			conv.visit(cloned, null);
 		}
 	}
 	

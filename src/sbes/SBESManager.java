@@ -59,7 +59,6 @@ public class SBESManager {
 		else {
 			// load test scenarios from path
 			scenarioGenerator.loadTestScenarios();
-			
 		}
 		List<TestScenario> initialScenarios = scenarioGenerator.getScenarios();
 		if (initialScenarios.isEmpty()) {
