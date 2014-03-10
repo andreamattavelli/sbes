@@ -346,6 +346,7 @@ public class FirstStageStubGenerator extends StubGenerator {
 			}
 			Parameter p;
 			if (paramNames.length > i  && AsmParameterNames.isSizeParam(paramNames[i])) {
+				typeClass = "Integer";
 				p = new Parameter(ASTHelper.createReferenceType(typeClass, 1), id);
 			}
 			else {
@@ -370,6 +371,7 @@ public class FirstStageStubGenerator extends StubGenerator {
 						method.getName().contains("iterator") ||
 						method.getName().contains("Iterator") ||
 						method.getName().contains("capacity") ||
+						method.getName().contains("Capacity") ||
 						method.getName().contains("copyInto") ||
 						method.getName().contains("trimToSize") ||
 						Enumeration.class.isAssignableFrom(method.getReturnType())) {

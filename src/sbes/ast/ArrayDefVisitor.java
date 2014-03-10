@@ -1,7 +1,9 @@
 package sbes.ast;
 
 import sbes.util.ASTUtils;
+import japa.parser.ast.expr.ArrayAccessExpr;
 import japa.parser.ast.expr.AssignExpr;
+import japa.parser.ast.expr.CastExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.NameExpr;
@@ -20,9 +22,10 @@ public class ArrayDefVisitor extends VoidVisitorAdapter<String> {
 	}
 	@Override
 	public void visit(AssignExpr n, String arg) {
-		if (n.getValue() instanceof NameExpr) {
-			NameExpr ne = (NameExpr) n.getValue();
-			if (ne.getName().equals(variableId)) {
+		if (n.getValue() instanceof NameExpr ||
+				n.getValue() instanceof CastExpr) {
+			ArrayAccessExpr aae = (ArrayAccessExpr) n.getTarget();
+			if (ASTUtils.getName(aae.getName()).equals(variableId)) {
 				alive = true;
 			}
 		}

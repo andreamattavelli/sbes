@@ -375,7 +375,7 @@ public class SecondStageStubGenerator extends StubGenerator {
 					FieldAccessExpr fae = (FieldAccessExpr) init;
 					if (fae.getField().startsWith("ELEMENT_")) {
 						// it is an input
-						methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(0).getId().getName())); // FIXME: check inputs
+						methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(0).getId().getName()));
 					}
 				}
 				else if (init instanceof ArrayCreationExpr) {
@@ -383,7 +383,27 @@ public class SecondStageStubGenerator extends StubGenerator {
 					ArrayDefVisitor vuv = new ArrayDefVisitor(name);
 					vuv.visit(cloned, methodCall.getName());
 					if (!vuv.isUsed()) {
-						methodCall.getArgs().set(i, new IntegerLiteralExpr("0")); //FIXME
+						methodCall.getArgs().set(i, new IntegerLiteralExpr("0")); // we assume it is and integer
+					}
+					else {
+						ArrayCellDeclarationVisitor acdv = new ArrayCellDeclarationVisitor(name, "0");
+						acdv.visit(cloned, null);
+						Expression value = acdv.getValue();
+						if (value instanceof NameExpr) {
+							VariableDeclarationVisitor vdv = new VariableDeclarationVisitor(((NameExpr) value).getName());
+							vdv.visit(cloned, null);
+							VariableDeclarationExpr actual_vde = vdv.getVariable();
+							if (actual_vde != null) {
+								Expression actual_init = actual_vde.getVars().get(0).getInit();
+								if (actual_init instanceof FieldAccessExpr) {
+									FieldAccessExpr actual_fae = (FieldAccessExpr) actual_init;
+									if (actual_fae.getField().startsWith("ELEMENT_")) {
+										// it is an input
+										methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(0).getId().getName()));
+									}
+								}
+							}
+						}
 					}
 				}
 			}
@@ -640,6 +660,11 @@ public class SecondStageStubGenerator extends StubGenerator {
 							i = i == cloned.getStmts().size() ? i : i++;
 							changed = true;
 						}
+					}
+					else if (estmt.getExpression() instanceof AssignExpr) {
+						cloned.getStmts().remove(i);
+						i = i == cloned.getStmts().size() ? i : i++;
+						changed = true;
 					}
 				}
 			}

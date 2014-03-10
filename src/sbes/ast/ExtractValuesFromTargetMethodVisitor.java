@@ -11,8 +11,6 @@ import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.ObjectCreationExpr;
 import japa.parser.ast.expr.StringLiteralExpr;
 import japa.parser.ast.type.ClassOrInterfaceType;
-import japa.parser.ast.type.PrimitiveType;
-import japa.parser.ast.type.PrimitiveType.Primitive;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
 
 import java.lang.reflect.Modifier;
@@ -48,20 +46,20 @@ public class ExtractValuesFromTargetMethodVisitor extends VoidVisitorAdapter<Str
 	private void handleArgument(MethodCallExpr n, Expression arg, int i) {
 		if (arg instanceof IntegerLiteralExpr) {
 			n.getArgs().set(i, new NameExpr("ELEMENT_" + index + "_" + fields.size()));
-			PrimitiveType pt = new PrimitiveType(Primitive.Int);
+			ClassOrInterfaceType integer = new ClassOrInterfaceType("Integer");
 			Expression int_init = arg;
 			VariableDeclarator variable_int = new VariableDeclarator(new VariableDeclaratorId("ELEMENT_" + index + "_" + fields.size()), int_init);
-			FieldDeclaration fd_int = new FieldDeclaration(Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, pt, variable_int);
+			FieldDeclaration fd_int = new FieldDeclaration(Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, integer, variable_int);
 			fields.add(fd_int);
 			
 		} else if (arg instanceof StringLiteralExpr) {
 			n.getArgs().set(i, new NameExpr("ELEMENT_" + index + "_" + fields.size()));
-			ClassOrInterfaceType integer = new ClassOrInterfaceType("String");
+			ClassOrInterfaceType string = new ClassOrInterfaceType("String");
 			List<Expression> args = new ArrayList<Expression>();
 			args.add(arg);
-			Expression init = new ObjectCreationExpr(null, integer, args);
+			Expression init = new ObjectCreationExpr(null, string, args);
 			VariableDeclarator variable = new VariableDeclarator(new VariableDeclaratorId("ELEMENT_" + index + "_" + fields.size()), init);
-			FieldDeclaration fd = new FieldDeclaration(Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, integer, variable);
+			FieldDeclaration fd = new FieldDeclaration(Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, string, variable);
 			fields.add(fd);
 		} else if (arg instanceof CastExpr) {
 			CastExpr ce = (CastExpr) arg;
