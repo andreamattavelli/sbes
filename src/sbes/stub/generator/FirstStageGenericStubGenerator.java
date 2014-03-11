@@ -233,7 +233,6 @@ public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 			}
 			Parameter p;
 			if (AsmParameterNames.isSizeParam(paramNames[i])) {
-				typeClass = "Integer";
 				p = new Parameter(ASTHelper.createReferenceType(typeClass, 1), id);
 			}
 			else {
