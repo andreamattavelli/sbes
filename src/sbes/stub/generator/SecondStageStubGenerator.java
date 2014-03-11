@@ -600,29 +600,17 @@ public class SecondStageStubGenerator extends StubGenerator {
 						VariableDeclarator vd = vde.getVars().get(0);
 						if (vde.getVars().get(0).getInit() instanceof MethodCallExpr) {
 							MethodCallExpr mce = (MethodCallExpr) vde.getVars().get(0).getInit();
-							if (mce.getName().equals("realSize") || mce.getName().equals("collectionSize")) {
+							if (mce.getName().equals("realSize")) {
 								ConditionalExpr ce = new ConditionalExpr();
 								
 								BinaryExpr condition = new BinaryExpr();
-								if (mce.getName().equals("realSize")) {
-									condition.setLeft(new MethodCallExpr(mce.getScope(), "size"));
-								}
-								if (mce.getName().equals("collectionSize")) {
-									String name = ASTUtils.getName(mce.getArgs().get(0));
-									condition.setLeft(new MethodCallExpr(new NameExpr(name), "size"));
-								}
+								condition.setLeft(new MethodCallExpr(mce.getScope(), "size"));
 								condition.setRight(new IntegerLiteralExpr("0"));
 								condition.setOperator(japa.parser.ast.expr.BinaryExpr.Operator.greater);
 								ce.setCondition(condition);
 								
 								BinaryExpr subtraction = new BinaryExpr();
-								if (mce.getName().equals("realSize")) {
-									subtraction.setLeft(new MethodCallExpr(mce.getScope(), "size"));
-								}
-								if (mce.getName().equals("collectionSize")) {
-									String name = ASTUtils.getName(mce.getArgs().get(0));
-									subtraction.setLeft(new MethodCallExpr(new NameExpr(name), "size"));
-								}
+								subtraction.setLeft(new MethodCallExpr(mce.getScope(), "size"));
 								subtraction.setRight(new IntegerLiteralExpr("1"));
 								subtraction.setOperator(japa.parser.ast.expr.BinaryExpr.Operator.minus);
 								ce.setThenExpr(subtraction);
@@ -630,6 +618,10 @@ public class SecondStageStubGenerator extends StubGenerator {
 								ce.setElseExpr(new IntegerLiteralExpr("0"));
 								
 								vde.getVars().get(0).setInit(ce);
+							}
+							else if (mce.getName().equals("collectionSize")) {
+								String name = ASTUtils.getName(mce.getArgs().get(0));
+								vde.getVars().get(0).setInit(new MethodCallExpr(new NameExpr(name), "size"));
 							}
 						}
 						
