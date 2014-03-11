@@ -377,7 +377,8 @@ public class SecondStageStubGenerator extends StubGenerator {
 					FieldAccessExpr fae = (FieldAccessExpr) init;
 					if (fae.getField().startsWith("ELEMENT_")) {
 						// it is an input
-						methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(0).getId().getName()));
+						String index = fae.getField().substring(fae.getField().lastIndexOf('_') + 1);
+						methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(Integer.valueOf(index)).getId().getName()));
 					}
 				}
 				else if (init instanceof ArrayCreationExpr) {
@@ -402,7 +403,8 @@ public class SecondStageStubGenerator extends StubGenerator {
 									FieldAccessExpr actual_fae = (FieldAccessExpr) actual_init;
 									if (actual_fae.getField().startsWith("ELEMENT_")) {
 										// it is an input
-										methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(0).getId().getName()));
+										String index = actual_fae.getField().substring(actual_fae.getField().lastIndexOf('_') + 1);
+										methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(Integer.valueOf(index)).getId().getName()));
 									}
 								}
 								else if (actual_init instanceof ObjectCreationExpr) {
