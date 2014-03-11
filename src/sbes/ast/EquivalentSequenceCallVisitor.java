@@ -1,6 +1,5 @@
 package sbes.ast;
 
-import japa.parser.ast.expr.AssignExpr;
 import japa.parser.ast.expr.FieldAccessExpr;
 import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.NameExpr;
