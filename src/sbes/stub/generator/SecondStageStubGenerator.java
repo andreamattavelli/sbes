@@ -347,6 +347,17 @@ public class SecondStageStubGenerator extends StubGenerator {
 		for (MethodCallExpr methodCall : escv.getDependencies()) {
 			analyzeParameters(cloned, param, methodCall);
 		}
+		for (VariableDeclarationExpr vde : escv.getAssignments()) {
+			Expression init = vde.getVars().get(0).getInit();
+			if (init instanceof FieldAccessExpr) {
+				FieldAccessExpr fae = (FieldAccessExpr) init;
+				if (fae.getField().startsWith("ELEMENT_")) {
+					// it is an input
+					String index = fae.getField().substring(fae.getField().lastIndexOf('_') + 1);
+					vde.getVars().get(0).setInit(ASTHelper.createNameExpr(param.get(Integer.valueOf(index)).getId().getName()));
+				}
+			}
+		}
 	}
 
 	private void analyzeParameters(BlockStmt cloned, List<Parameter> param, MethodCallExpr methodCall) {
