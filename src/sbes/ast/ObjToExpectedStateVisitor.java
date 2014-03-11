@@ -2,6 +2,7 @@ package sbes.ast;
 
 import japa.parser.ASTHelper;
 import japa.parser.ast.expr.ArrayAccessExpr;
+import japa.parser.ast.expr.FieldAccessExpr;
 import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
@@ -25,6 +26,11 @@ public class ObjToExpectedStateVisitor extends VoidVisitorAdapter<Void> {
 				MethodCallExpr mce = (MethodCallExpr) n.getParentNode();
 				ArrayAccessExpr aae = new ArrayAccessExpr(ASTHelper.createNameExpr(expectedName), ASTHelper.createNameExpr(index));
 				mce.setScope(aae);
+			}
+			else if (n.getParentNode() instanceof FieldAccessExpr) {
+				FieldAccessExpr fae = (FieldAccessExpr) n.getParentNode();
+				ArrayAccessExpr aae = new ArrayAccessExpr(ASTHelper.createNameExpr(expectedName), ASTHelper.createNameExpr(index));
+				fae.setScope(aae);
 			}
 		}
 		super.visit(n, arg);
