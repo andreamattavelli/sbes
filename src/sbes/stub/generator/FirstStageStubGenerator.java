@@ -183,7 +183,7 @@ public class FirstStageStubGenerator extends StubGenerator {
 			List<Expression> update = ASTUtils.createForIncrement("i_", japa.parser.ast.expr.UnaryExpr.Operator.posIncrement);
 			
 			// for loop body
-			List<Expression> methodParameters = ASTUtils.createParameters(parameters, paramsNames);
+			List<Expression> methodParameters = ASTUtils.createParameters(parameters, paramsNames, scenarios.size() > 1);
 			Expression right = new MethodCallExpr(ASTUtils.createArrayAccess(ACTUAL_STATE, "i_"), method.getName(), methodParameters);
 			
 			BlockStmt body = new BlockStmt();
@@ -345,7 +345,7 @@ public class FirstStageStubGenerator extends StubGenerator {
 				typeClass = typeClass.replace("[]", "");
 			}
 			Parameter p;
-			if (paramNames.length > i  && AsmParameterNames.isSizeParam(paramNames[i])) {
+			if (scenarios.size() > 1 && paramNames.length > i  && AsmParameterNames.isSizeParam(paramNames[i])) {
 				p = new Parameter(ASTHelper.createReferenceType(typeClass, 1), id);
 			}
 			else {
