@@ -651,6 +651,26 @@ public class SecondStageStubGenerator extends StubGenerator {
 									exprStmt.setExpression(mce);
 								}
 							}
+							if (mce.getArgs() != null) {
+								for (int j = 0; j < mce.getArgs().size(); j++) {
+									Expression arg = mce.getArgs().get(j);
+									if (arg instanceof CastExpr) {
+										CastExpr ce = (CastExpr) arg;
+										if (ce.getExpr() instanceof ArrayAccessExpr) {
+											ArrayAccessExpr aae = (ArrayAccessExpr) ce.getExpr();
+											String variableName = ASTUtils.getName(aae.getName());
+											String index = ((IntegerLiteralExpr)aae.getIndex()).getValue();
+											ArrayCellDeclarationVisitor acdv = new ArrayCellDeclarationVisitor(variableName, index);
+											acdv.visit(cloned, null);
+											Expression value = acdv.getValue();
+											if (value == null) {
+												// no def
+												mce.getArgs().set(j, new IntegerLiteralExpr("0"));
+											}
+										}
+									}
+								}
+							}
 							continue;
 						}
 
