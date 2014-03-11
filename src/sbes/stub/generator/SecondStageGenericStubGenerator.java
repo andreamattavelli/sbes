@@ -47,14 +47,13 @@ public class SecondStageGenericStubGenerator extends SecondStageStubGenerator {
 	@Override
 	protected TypeDeclaration getClassDeclaration(String className) {
 		stubName = className + STUB_EXTENSION + "_2";
-		String genericDecl = "<E extends " + concreteClass + ">";
 		
 		// extends base class
-		ClassOrInterfaceType extendClassDecl = new ClassOrInterfaceType(className + "<E>");
+		ClassOrInterfaceType extendClassDecl = new ClassOrInterfaceType(className + "<" + concreteClass + ">");
 		List<ClassOrInterfaceType> extendClasses = new ArrayList<ClassOrInterfaceType>();
 		extendClasses.add(extendClassDecl);
 		
-		ClassOrInterfaceDeclaration classDecl = new ClassOrInterfaceDeclaration(Modifier.PUBLIC, false, stubName + genericDecl);
+		ClassOrInterfaceDeclaration classDecl = new ClassOrInterfaceDeclaration(Modifier.PUBLIC, false, stubName);
 		classDecl.setExtends(extendClasses);
 		
 		return classDecl;
