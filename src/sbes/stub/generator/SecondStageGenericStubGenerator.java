@@ -2,6 +2,7 @@ package sbes.stub.generator;
 
 import japa.parser.ASTHelper;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
+import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.Parameter;
 import japa.parser.ast.body.TypeDeclaration;
@@ -38,8 +39,8 @@ public class SecondStageGenericStubGenerator extends SecondStageStubGenerator {
 
 	private String concreteClass;
 	
-	public SecondStageGenericStubGenerator(Stub stub, CarvingResult candidateES, String concreteClass) {
-		super(stub, candidateES);
+	public SecondStageGenericStubGenerator(Stub stub, CarvingResult candidateES, List<FieldDeclaration> fields, String concreteClass) {
+		super(stub, candidateES, fields);
 		this.concreteClass = concreteClass;
 	}
 	

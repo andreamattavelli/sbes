@@ -5,6 +5,7 @@ import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.body.BodyDeclaration;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.ConstructorDeclaration;
+import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.Parameter;
 import japa.parser.ast.body.TypeDeclaration;
@@ -67,9 +68,10 @@ public class SecondStageStubGenerator extends StubGenerator {
 	
 	protected CarvingResult candidateES;
 	protected List<Statement> equivalence;
+	protected List<FieldDeclaration> fields;
 	protected Stub stub;
 	
-	public SecondStageStubGenerator(Stub stub, CarvingResult candidateES) {
+	public SecondStageStubGenerator(Stub stub, CarvingResult candidateES, List<FieldDeclaration> fields) {
 		this.stub = stub;
 		this.candidateES = candidateES;
 	}
@@ -389,8 +391,9 @@ public class SecondStageStubGenerator extends StubGenerator {
 						ArrayCellDeclarationVisitor acdv = new ArrayCellDeclarationVisitor(name, "0");
 						acdv.visit(cloned, null);
 						Expression value = acdv.getValue();
-						if (value instanceof NameExpr) {
-							VariableDeclarationVisitor vdv = new VariableDeclarationVisitor(((NameExpr) value).getName());
+						if (value instanceof NameExpr || value instanceof CastExpr) {
+							String actual_name = ASTUtils.getName(value);
+							VariableDeclarationVisitor vdv = new VariableDeclarationVisitor(actual_name);
 							vdv.visit(cloned, null);
 							VariableDeclarationExpr actual_vde = vdv.getVariable();
 							if (actual_vde != null) {
@@ -401,6 +404,13 @@ public class SecondStageStubGenerator extends StubGenerator {
 										// it is an input
 										methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(0).getId().getName()));
 									}
+								}
+								else if (actual_init instanceof ObjectCreationExpr) {
+//									ObjectCreationExpr oce = (ObjectCreationExpr) actual_init;
+//									if (oce.getArgs() != null) {
+//										Expression oce_arg = oce.getArgs().get(0);
+//										if (oce_arg)
+//									}
 								}
 							}
 						}

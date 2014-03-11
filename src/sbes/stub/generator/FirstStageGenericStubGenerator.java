@@ -252,10 +252,13 @@ public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 			logger.debug("Original method's return value is void, stopping");
 			return null;
 		}
+		else if (returnType.toString().equals("java.lang.Object")) {
+			returnType = ASTHelper.createReferenceType(concreteClass, 0);
+		}
 		
 		MethodDeclaration set_results = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "set_results");
 		List<Parameter> parameters = new ArrayList<Parameter>();
-		parameters.add(new Parameter(ASTHelper.createReferenceType(concreteClass, 1), new VariableDeclaratorId("res")));
+		parameters.add(new Parameter(ASTHelper.createReferenceType(returnType.toString(), 1), new VariableDeclaratorId("res")));
 		set_results.setParameters(parameters);
 		
 		List<Expression> init = ASTUtils.createForInit("i", ASTHelper.INT_TYPE, new IntegerLiteralExpr("0"), Operator.assign);
