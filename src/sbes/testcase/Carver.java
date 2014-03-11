@@ -8,14 +8,11 @@ import japa.parser.ast.body.MethodDeclaration;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import sbes.SBESException;
 import sbes.ast.MethodCallVisitor;
 import sbes.ast.MethodVisitor;
-import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
@@ -108,48 +105,6 @@ public class Carver {
 			}
 		}
 		return cleanImports;
-	}
-	
-	private String getClassToSearch() {
-		String classname = ClassUtils.getCanonicalClassname(Options.I().getMethodSignature());
-		String methodname = ClassUtils.getMethodname(Options.I().getMethodSignature());
-		
-		Method target = null;
-		
-		Class<?> c;
-		try {
-			InternalClassloader ic = new InternalClassloader(Options.I().getClassesPath());
-			c = Class.forName(classname, false, ic.getClassLoader());
-			String method = methodname.split("\\(")[0];
-			String args[] = methodname.split("\\(")[1].replaceAll("\\)", "").split(",");
-			if (args.length == 1) {
-				args = args[0].equals("") ? new String[0] : args;
-			}
-			for (Method m : c.getMethods()) {
-				if (m.getName().equals(method) && m.getParameterTypes().length == args.length) {
-					int i;
-					for (i = 0; i < args.length; i++) {
-						if (!m.getParameterTypes()[i].getCanonicalName().contains(args[i])) {
-							break;
-						}
-					}
-					if (i == args.length) {
-						target = m;
-						break;
-					}
-				}
-			}
-		} catch (ClassNotFoundException e) {
-			logger.error("Unable to find class", e);
-			throw new SBESException("Unable to find class");
-		}
-		
-		if (target == null) {
-			throw new SBESException("Unable to find method");
-		}
-		else {
-			return target.getDeclaringClass().getCanonicalName();
-		}
 	}
 	
 }

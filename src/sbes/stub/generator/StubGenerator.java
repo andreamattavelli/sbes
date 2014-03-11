@@ -54,7 +54,7 @@ public abstract class StubGenerator {
 		// get method signature
 		String methodSignature = ClassUtils.getMethodname(Options.I().getMethodSignature());
 		// get target method from the list of class' methods
-		Method targetMethod = findTargetMethod(methods, methodSignature);
+		Method targetMethod = ClassUtils.findTargetMethod(methods, methodSignature);
 		
 		logger.debug("Found " + methods.length + " methods for class " + c.getCanonicalName());
 		logger.debug("Generating stub for target method " + targetMethod.toGenericString());
@@ -104,33 +104,6 @@ public abstract class StubGenerator {
 	
 	
 	// ---------- HELPER METHODS ----------
-	private Method findTargetMethod(Method[] methods, String methodName) {
-		Method targetMethod = null;
-		String method = methodName.split("\\(")[0];
-		String args[] = methodName.split("\\(")[1].replaceAll("\\)", "").split(",");
-		if (args.length == 1) {
-			args = args[0].equals("") ? new String[0] : args;
-		}
-		for (Method m : methods) {
-			if (m.getName().equals(method) && m.getParameterTypes().length == args.length) {
-				int i;
-				for (i = 0; i < args.length; i++) {
-					if (!m.getParameterTypes()[i].getCanonicalName().contains(args[i])) {
-						break;
-					}
-				}
-				if (i == args.length) {
-					targetMethod = m;
-					break;
-				}
-			}
-		}
-		if (targetMethod == null) {
-			throw new GenerationException("Target method not found"); // failed to find method, give up
-		}
-		return targetMethod;
-	}
-	
 	protected List<Parameter> getParameterType(Class<?>[] parameters) {
 		List<Parameter> toReturn = new ArrayList<Parameter>();
 		for (int i = 0; i < parameters.length; i++) {

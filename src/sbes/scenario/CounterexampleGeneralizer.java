@@ -52,12 +52,10 @@ private static final Logger logger = new Logger(TestScenarioGeneralizer.class);
 	public TestScenario generalizeCounterexampleToScenario(CarvingResult carvedTest) {
 		logger.debug("Generalizing carved body");
 		
-		InternalClassloader ic = new InternalClassloader(Options.I().getClassesPath());
-		ClassLoader classloader = ic.getClassLoader();
-		
 		Class<?> c;
 		try {
-			c = Class.forName(ClassUtils.getCanonicalClassname(Options.I().getMethodSignature()), false, classloader);
+			InternalClassloader ic = new InternalClassloader(Options.I().getClassesPath());
+			c = Class.forName(ClassUtils.getCanonicalClassname(Options.I().getMethodSignature()), false, ic.getClassLoader());
 		} catch (ClassNotFoundException e) {
 			// infeasible, we already checked the classpath
 			throw new GenerationException("Target class not found");
@@ -68,7 +66,7 @@ private static final Logger logger = new Logger(TestScenarioGeneralizer.class);
 		// get method signature
 		String methodSignature = ClassUtils.getMethodname(Options.I().getMethodSignature());
 		// get target method from the list of class' methods
-		Method targetMethod = findTargetMethod(methods, methodSignature);
+		Method targetMethod = ClassUtils.findTargetMethod(methods, methodSignature);
 
 		CloneVisitor cloner = new CloneVisitor();
 		BlockStmt cloned = (BlockStmt) cloner.visit(carvedTest.getBody(), null);
@@ -102,7 +100,7 @@ private static final Logger logger = new Logger(TestScenarioGeneralizer.class);
 		actualStatements.addAll(asv.getActualStates());
 		
 		// PHASE 4: extract candidate call parameters to fields (with all dependencies)
-		List<FieldDeclaration> inputs = extractParametersToInputs(cloned, methodName);
+		List<FieldDeclaration> inputs = extractParametersToInputs(cloned, methodName, targetMethod);
 		
 		cloned.getStmts().addAll(actualStatements);
 		
@@ -113,13 +111,13 @@ private static final Logger logger = new Logger(TestScenarioGeneralizer.class);
 		}
 	}
 	
-	private List<FieldDeclaration> extractParametersToInputs(BlockStmt cloned, String methodName) {
+	private List<FieldDeclaration> extractParametersToInputs(BlockStmt cloned, String methodName, Method targetMethod) {
 		List<String> varsToExtract = new ArrayList<String>();
 		List<VariableDeclarationExpr> varsToField = new ArrayList<VariableDeclarationExpr>();
 		List<FieldDeclaration> fields = new ArrayList<FieldDeclaration>();
 		
 		// extract dependencies from target method
-		ExtractValuesFromTargetMethodVisitor evmv = new ExtractValuesFromTargetMethodVisitor(index);
+		ExtractValuesFromTargetMethodVisitor evmv = new ExtractValuesFromTargetMethodVisitor(index, targetMethod);
 		evmv.visit(cloned, methodName);
 		fields.addAll(evmv.getFields());
 		
@@ -214,33 +212,6 @@ private static final Logger logger = new Logger(TestScenarioGeneralizer.class);
 		else {
 			return className;
 		}
-	}
-	
-	private Method findTargetMethod(Method[] methods, String methodName) {
-		Method targetMethod = null;
-		String method = methodName.split("\\(")[0];
-		String args[] = methodName.split("\\(")[1].replaceAll("\\)", "").split(",");
-		if (args.length == 1) {
-			args = args[0].equals("") ? new String[0] : args;
-		}
-		for (Method m : methods) {
-			if (m.getName().equals(method) && m.getParameterTypes().length == args.length) {
-				int i;
-				for (i = 0; i < args.length; i++) {
-					if (!m.getParameterTypes()[i].getCanonicalName().contains(args[i])) {
-						break;
-					}
-				}
-				if (i == args.length) {
-					targetMethod = m;
-					break;
-				}
-			}
-		}
-		if (targetMethod == null) {
-			throw new GenerationException("Target method not found"); // failed to find method, give up
-		}
-		return targetMethod;
 	}
 	
 }

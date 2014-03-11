@@ -11,18 +11,24 @@ import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.ObjectCreationExpr;
 import japa.parser.ast.expr.StringLiteralExpr;
 import japa.parser.ast.type.ClassOrInterfaceType;
+import japa.parser.ast.type.PrimitiveType;
+import japa.parser.ast.type.PrimitiveType.Primitive;
+import japa.parser.ast.type.Type;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ExtractValuesFromTargetMethodVisitor extends VoidVisitorAdapter<String> {
 	private int index;
+	private Method targetMethod;
 	private List<FieldDeclaration> fields;
 
-	public ExtractValuesFromTargetMethodVisitor(int index) {
+	public ExtractValuesFromTargetMethodVisitor(int index, Method targetMethod) {
 		this.index = index;
+		this.targetMethod = targetMethod;
 		fields = new ArrayList<FieldDeclaration>();
 	}
 
@@ -45,8 +51,16 @@ public class ExtractValuesFromTargetMethodVisitor extends VoidVisitorAdapter<Str
 
 	private void handleArgument(MethodCallExpr n, Expression arg, int i) {
 		if (arg instanceof IntegerLiteralExpr) {
+			Class<?> parameterType = targetMethod.getParameterTypes()[i];
 			n.getArgs().set(i, new NameExpr("ELEMENT_" + index + "_" + fields.size()));
-			ClassOrInterfaceType integer = new ClassOrInterfaceType("Integer");
+			
+			Type integer;
+			if (parameterType.getCanonicalName().contains("Object")) {
+				integer = new ClassOrInterfaceType("Integer");
+			}
+			else {
+				integer = new PrimitiveType(Primitive.Int);
+			}
 			Expression int_init = arg;
 			VariableDeclarator variable_int = new VariableDeclarator(new VariableDeclaratorId("ELEMENT_" + index + "_" + fields.size()), int_init);
 			FieldDeclaration fd_int = new FieldDeclaration(Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, integer, variable_int);

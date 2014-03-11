@@ -4,6 +4,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import sbes.stub.GenerationException;
+
 public class ClassUtils {
 
 	public static Method[] getClassMethods(Class<?> c) {
@@ -41,6 +43,33 @@ public class ClassUtils {
 
 	public static String getMethodname(final String signature) {
 		return signature.substring(signature.lastIndexOf('.') + 1);
+	}
+	
+	public static Method findTargetMethod(Method[] methods, String methodName) {
+		Method targetMethod = null;
+		String method = methodName.split("\\(")[0];
+		String args[] = methodName.split("\\(")[1].replaceAll("\\)", "").split(",");
+		if (args.length == 1) {
+			args = args[0].equals("") ? new String[0] : args;
+		}
+		for (Method m : methods) {
+			if (m.getName().equals(method) && m.getParameterTypes().length == args.length) {
+				int i;
+				for (i = 0; i < args.length; i++) {
+					if (!m.getParameterTypes()[i].getCanonicalName().contains(args[i])) {
+						break;
+					}
+				}
+				if (i == args.length) {
+					targetMethod = m;
+					break;
+				}
+			}
+		}
+		if (targetMethod == null) {
+			throw new GenerationException("Target method not found"); // failed to find method, give up
+		}
+		return targetMethod;
 	}
 	
 	public static String getBytecodeSignature(final Method m) {

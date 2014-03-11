@@ -13,6 +13,7 @@ import japa.parser.ast.stmt.ExpressionStmt;
 import japa.parser.ast.stmt.Statement;
 import japa.parser.ast.visitor.CloneVisitor;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,10 +30,12 @@ import sbes.ast.GenericToConcreteClassVisitor;
 import sbes.ast.ObjToExpectedStateVisitor;
 import sbes.ast.ObjToObjVisitor;
 import sbes.ast.SubstituteNameVisitor;
+import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
 import sbes.result.TestScenario;
+import sbes.stub.GenerationException;
 import sbes.stub.generator.FirstStageStubGenerator;
 import sbes.util.ClassUtils;
 
@@ -55,6 +58,22 @@ public class TestScenarioGeneralizer {
 
 		String className = ClassUtils.getSimpleClassname(Options.I().getMethodSignature());
 		String methodName = ClassUtils.getMethodname(Options.I().getMethodSignature().split("\\(")[0]);
+		
+		Class<?> c;
+		try {
+			InternalClassloader ic = new InternalClassloader(Options.I().getClassesPath());
+			c = Class.forName(ClassUtils.getCanonicalClassname(Options.I().getMethodSignature()), false, ic.getClassLoader());
+		} catch (ClassNotFoundException e) {
+			// infeasible, we already checked the classpath
+			throw new GenerationException("Target class not found");
+		}
+		
+		// get class' methods
+		Method[] methods = ClassUtils.getClassMethods(c);
+		// get method signature
+		String methodSignature = ClassUtils.getMethodname(Options.I().getMethodSignature());
+		// get target method from the list of class' methods
+		Method targetMethod = ClassUtils.findTargetMethod(methods, methodSignature);
 
 		// PHASE 0: transform variable names to avoid collisions among different scenarios
 		ObjToObjVisitor oov = new ObjToObjVisitor(index);
@@ -81,7 +100,7 @@ public class TestScenarioGeneralizer {
 		actualStatements.addAll(asv.getActualStates());
 		
 		// PHASE 4: extract candidate call parameters to fields (with all dependencies)
-		List<FieldDeclaration> inputs = extractParametersToInputs(cloned, methodName);
+		List<FieldDeclaration> inputs = extractParametersToInputs(cloned, methodName, targetMethod);
 		
 		cloned.getStmts().addAll(actualStatements);
 		
@@ -92,13 +111,13 @@ public class TestScenarioGeneralizer {
 		}
 	}
 	
-	private List<FieldDeclaration> extractParametersToInputs(BlockStmt cloned, String methodName) {
+	private List<FieldDeclaration> extractParametersToInputs(BlockStmt cloned, String methodName, Method targetMethod) {
 		List<String> varsToExtract = new ArrayList<String>();
 		List<VariableDeclarationExpr> varsToField = new ArrayList<VariableDeclarationExpr>();
 		List<FieldDeclaration> fields = new ArrayList<FieldDeclaration>();
 		
 		// extract dependencies from target method
-		ExtractValuesFromTargetMethodVisitor evmv = new ExtractValuesFromTargetMethodVisitor(index);
+		ExtractValuesFromTargetMethodVisitor evmv = new ExtractValuesFromTargetMethodVisitor(index, targetMethod);
 		evmv.visit(cloned, methodName);
 		fields.addAll(evmv.getFields());
 		
