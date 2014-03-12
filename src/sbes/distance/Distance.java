@@ -235,7 +235,93 @@ public class Distance {
 			}
 			break;
 		case PRIMITIVE:
-			distance += PrimitiveDistance.distance(f1, obj1, f2, obj2);
+			try {
+				Class<?> f1Type = f1.getType().getComponentType() == null ? f1.getType() : f1.getType().getComponentType();
+				if (f1Type.equals(int.class)) {
+					int[] castedF1 = int[].class.cast(f1.get(obj1));
+					int[] castedF2 = int[].class.cast(f2.get(obj2));
+					
+					int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
+					for (int i = 0; i < length; i++) {
+						worklist.add(new DistancePair(castedF1[i], castedF2[i]));
+					}
+					distance += (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length) * Distance.ARRAY_CELL_FACTOR;
+				}
+				else if (f1Type.equals(char.class)) {
+					char[] castedF1 = char[].class.cast(f1.get(obj1));
+					char[] castedF2 = char[].class.cast(f2.get(obj2));
+					
+					int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
+					for (int i = 0; i < length; i++) {
+						worklist.add(new DistancePair(castedF1[i], castedF2[i]));
+					}
+					distance += (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length) * Distance.ARRAY_CELL_FACTOR;
+				}
+				else if (f1Type.equals(short.class)) {
+					short[] castedF1 = short[].class.cast(f1.get(obj1));
+					short[] castedF2 = short[].class.cast(f2.get(obj2));
+					
+					int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
+					for (int i = 0; i < length; i++) {
+						worklist.add(new DistancePair(castedF1[i], castedF2[i]));
+					}
+					distance += (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length) * Distance.ARRAY_CELL_FACTOR;
+				}
+				else if (f1Type.equals(long.class)) {
+					long[] castedF1 = long[].class.cast(f1.get(obj1));
+					long[] castedF2 = long[].class.cast(f2.get(obj2));
+					
+					int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
+					for (int i = 0; i < length; i++) {
+						worklist.add(new DistancePair(castedF1[i], castedF2[i]));
+					}
+					distance += (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length) * Distance.ARRAY_CELL_FACTOR;
+				}
+				else if (f1Type.equals(float.class)) {
+					float[] castedF1 = float[].class.cast(f1.get(obj1));
+					float[] castedF2 = float[].class.cast(f2.get(obj2));
+					
+					int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
+					for (int i = 0; i < length; i++) {
+						worklist.add(new DistancePair(castedF1[i], castedF2[i]));
+					}
+					distance += (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length) * Distance.ARRAY_CELL_FACTOR;
+				}
+				else if (f1Type.equals(double.class)) {
+					double[] castedF1 = double[].class.cast(f1.get(obj1));
+					double[] castedF2 = double[].class.cast(f2.get(obj2));
+					
+					int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
+					for (int i = 0; i < length; i++) {
+						worklist.add(new DistancePair(castedF1[i], castedF2[i]));
+					}
+					distance += (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length) * Distance.ARRAY_CELL_FACTOR;
+				}
+				else if (f1Type.equals(boolean.class)) {
+					boolean[] castedF1 = boolean[].class.cast(f1.get(obj1));
+					boolean[] castedF2 = boolean[].class.cast(f2.get(obj2));
+					
+					int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
+					for (int i = 0; i < length; i++) {
+						worklist.add(new DistancePair(castedF1[i], castedF2[i]));
+					}
+					distance += (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length) * Distance.ARRAY_CELL_FACTOR;
+				}
+				else if (f1Type.equals(byte.class)) {
+					byte[] castedF1 = byte[].class.cast(f1.get(obj1));
+					byte[] castedF2 = byte[].class.cast(f2.get(obj2));
+					
+					int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
+					for (int i = 0; i < length; i++) {
+						worklist.add(new DistancePair(castedF1[i], castedF2[i]));
+					}
+					distance += (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length) * Distance.ARRAY_CELL_FACTOR;
+				}		
+			}
+			catch (IllegalArgumentException | IllegalAccessException e) {
+				logger.error("Error during cast", e);
+			}
+			//distance += PrimitiveDistance.distance(f1, obj1, f2, obj2);
 			break;
 		case STRING:
 			try {
