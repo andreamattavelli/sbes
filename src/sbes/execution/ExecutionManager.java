@@ -48,10 +48,10 @@ public class ExecutionManager {
 	private long calculateTimeout(Evosuite evosuite) {
 		int searchBudget = evosuite.getSearchBudget();
 		if (searchBudget <= 60) {
-			return searchBudget * 2;
+			return searchBudget * 3;
 		}
 		else if (searchBudget <= 120){
-			return (long)(searchBudget * 1.5);			
+			return (long)(searchBudget * 2);			
 		}
 		else {
 			return searchBudget + 60;

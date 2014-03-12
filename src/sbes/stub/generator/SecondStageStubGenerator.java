@@ -543,6 +543,50 @@ public class SecondStageStubGenerator extends StubGenerator {
 				vde.setType(ASTHelper.createReferenceType(resultType, arrayDimension));
 				vde.getVars().get(0).getId().setName("actual_result");
 			}
+			else if (init instanceof NameExpr) {
+				NameExpr valueName = (NameExpr) init;
+				for (Parameter parameter : param) {
+					if(parameter.getId().getName().equals(valueName.getName())) {
+						// it is an input
+						List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+						VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+						vd.setInit(new NameExpr(param.get(0).getId().getName()));
+						vars.add(vd);
+						VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+						cloned.getStmts().add(new ExpressionStmt(actualResult));
+						break;
+					}
+				}
+			}
+			else if (init instanceof FieldAccessExpr) {
+				FieldAccessExpr fae = (FieldAccessExpr) init;
+				if (fae.getField().startsWith("ELEMENT_")) {
+					// it is an input
+					List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+					VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+					vd.setInit(new NameExpr(param.get(0).getId().getName()));
+					vars.add(vd);
+					VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+					cloned.getStmts().add(new ExpressionStmt(actualResult));
+				}
+				else {
+					List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+					VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+					vd.setInit(fae);
+					vars.add(vd);
+					VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+					cloned.getStmts().add(new ExpressionStmt(actualResult));
+				}
+			}
+			else if (init instanceof ObjectCreationExpr) {
+				ObjectCreationExpr oce = (ObjectCreationExpr) init;
+				List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+				VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+				vd.setInit(oce);
+				vars.add(vd);
+				VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+				cloned.getStmts().add(new ExpressionStmt(actualResult));
+			}
 			ChangeObjNameVisitor conv = new ChangeObjNameVisitor(varName, "actual_result");
 			conv.visit(cloned, null);
 		}
@@ -665,6 +709,12 @@ public class SecondStageStubGenerator extends StubGenerator {
 								changed = true;
 							}
 							continue;
+						}
+						else if (vd.getInit() instanceof CastExpr) {
+							CastExpr ce = (CastExpr) vd.getInit();
+							if (ce.getExpr() instanceof MethodCallExpr) {
+								continue;	
+							}
 						}
 						else if (vd.getInit() instanceof MethodCallExpr) {
 							MethodCallExpr mce = (MethodCallExpr) vd.getInit();

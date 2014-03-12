@@ -13,6 +13,7 @@ import japa.parser.ast.expr.AssignExpr.Operator;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.IntegerLiteralExpr;
 import japa.parser.ast.expr.MethodCallExpr;
+import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.stmt.BlockStmt;
 import japa.parser.ast.stmt.ExpressionStmt;
@@ -135,7 +136,13 @@ public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 			
 			Type returnType = ASTUtils.getReturnConcreteType(generics, concreteClass, method);
 			Type returnStubType = ASTUtils.getReturnConcreteTypeAsArray(generics, concreteClass, method);
-			MethodDeclaration md = new MethodDeclaration(method.getModifiers() & Modifier.TRANSIENT & Modifier.VOLATILE | Modifier.PUBLIC, returnStubType, method.getName());
+			MethodDeclaration md;
+			if (scenarios.size() > 1) {
+				md = new MethodDeclaration(method.getModifiers() & Modifier.TRANSIENT & Modifier.VOLATILE | Modifier.PUBLIC, returnStubType, method.getName());
+			}
+			else {
+				md = new MethodDeclaration(method.getModifiers() & Modifier.TRANSIENT & Modifier.VOLATILE | Modifier.PUBLIC, returnType, method.getName());
+			}
 			
 			//parameters
 			List<Parameter> parameters = new ArrayList<Parameter>();
@@ -155,14 +162,20 @@ public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 			
 			// for loop body
 			List<Expression> methodParameters = ASTUtils.createParameters(parameters, paramsNames, scenarios.size() > 1);
-			Expression right = new MethodCallExpr(ASTUtils.createArrayAccess(ACTUAL_STATE, "i_"), method.getName(), methodParameters);
+			Expression right;
+			if (scenarios.size() > 1) {
+				right = new MethodCallExpr(ASTUtils.createArrayAccess(ACTUAL_STATE, "i_"), method.getName(), methodParameters);
+			}
+			else {
+				right = new MethodCallExpr(ASTUtils.createArrayAccess(ACTUAL_STATE, "0"), method.getName(), methodParameters);
+			}
 			
 			BlockStmt body = new BlockStmt();
 			if (returnStubType.toString().equals("void")) {
 				// return type void - no need for return array
 				ASTHelper.addStmt(body, right);
 			}
-			else {
+			else if (scenarios.size() > 1) {
 				// return type non void - need to build a return array
 				List<Expression> arraysDimension = ASTUtils.getArraysDimension();
 				ArrayCreationExpr ace = new ArrayCreationExpr(returnType, arraysDimension, 0);
@@ -181,16 +194,35 @@ public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 				ASTHelper.addStmt(body, callResult);
 			}
 			
-			ForStmt forStmt = new ForStmt(init, compare, update, body);
-			stmts.add(forStmt);
+			if (scenarios.size() > 1) {
+				ForStmt forStmt = new ForStmt(init, compare, update, body);
+				stmts.add(forStmt);
+			}
 			
 			if (!returnStubType.toString().equals("void")) {
-				ReturnStmt ret = new ReturnStmt(ASTHelper.createNameExpr("res"));
-				stmts.add(ret);
+				if (scenarios.size() > 1) {
+					ReturnStmt ret = new ReturnStmt(ASTHelper.createNameExpr("res"));
+					stmts.add(ret);
+				}
+				else {
+					ReturnStmt ret = new ReturnStmt(right);
+					stmts.add(ret);
+				}
+			}
+			else {
+				if (scenarios.size() == 1) {
+					md.setBody(body);
+				}
+				else {
+					stmt.setStmts(stmts);
+					md.setBody(stmt);
+				}
 			}
 
-			stmt.setStmts(stmts);
-			md.setBody(stmt);
+			if (!returnStubType.toString().equals("void")) {
+				stmt.setStmts(stmts);
+				md.setBody(stmt);
+			}
 			
 			members.add(md);
 		}
@@ -262,7 +294,13 @@ public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 		
 		MethodDeclaration set_results = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "set_results");
 		List<Parameter> parameters = new ArrayList<Parameter>();
-		parameters.add(new Parameter(ASTHelper.createReferenceType(returnType.toString(), 1), new VariableDeclaratorId("res")));
+		if (scenarios.size() > 1) {
+			parameters.add(new Parameter(ASTHelper.createReferenceType(returnType.toString(), 1), new VariableDeclaratorId("res")));
+		}
+		else {
+			parameters.add(new Parameter(ASTHelper.createReferenceType(returnType.toString(), 0), new VariableDeclaratorId("res")));
+		}
+		
 		set_results.setParameters(parameters);
 		
 		List<Expression> init = ASTUtils.createForInit("i", ASTHelper.INT_TYPE, new IntegerLiteralExpr("0"), Operator.assign);
@@ -270,16 +308,32 @@ public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 		List<Expression> update = ASTUtils.createForIncrement("i", japa.parser.ast.expr.UnaryExpr.Operator.posIncrement);
 		
 		BlockStmt forBody = new BlockStmt();
-		Expression left = ASTUtils.createArrayAccess(ACTUAL_RESULT, "i");
-		Expression right = ASTUtils.createArrayAccess("res", "i");
+		Expression left;
+		if (scenarios.size() > 1) {
+			left = ASTUtils.createArrayAccess(ACTUAL_RESULT, "i");
+		}
+		else {
+			left = ASTUtils.createArrayAccess(ACTUAL_RESULT, "0");
+		}
+		Expression right;
+		if (scenarios.size() > 1) {
+			right = ASTUtils.createArrayAccess("res", "i");
+		}
+		else {
+			right = new NameExpr("res");
+		}
 		AssignExpr assignment = new AssignExpr(left, right, Operator.assign);
 		ASTHelper.addStmt(forBody, assignment);
 		
-		ForStmt forStmt = new ForStmt(init, compare, update, forBody);
-		
-		BlockStmt methodBody = new BlockStmt();
-		ASTHelper.addStmt(methodBody, forStmt);
-		set_results.setBody(methodBody);
+		if (scenarios.size() > 1) {
+			ForStmt forStmt = new ForStmt(init, compare, update, forBody);
+			BlockStmt methodBody = new BlockStmt();
+			ASTHelper.addStmt(methodBody, forStmt);
+			set_results.setBody(methodBody);
+		}
+		else {
+			set_results.setBody(forBody);
+		}
 		
 		logger.debug("Adding set_results method - done");
 		
