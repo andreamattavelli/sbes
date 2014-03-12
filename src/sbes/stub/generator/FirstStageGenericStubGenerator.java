@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import sbes.logging.Logger;
+import sbes.result.EquivalenceRepository;
 import sbes.result.TestScenario;
 import sbes.scenario.GenericTestScenario;
 import sbes.stub.GenerationException;
@@ -116,6 +117,10 @@ public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
 				continue;
 			}
 			else if (method.equals(targetMethod)) {
+				continue;
+			}
+			else if (EquivalenceRepository.getInstance().isExcluded(method)) {
+				logger.debug("Excluded from stub: " + method.toString());
 				continue;
 			}
 			

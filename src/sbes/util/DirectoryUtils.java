@@ -17,14 +17,17 @@ public class DirectoryUtils {
 	private static String stubDir = "stubs";
 	private static String firstStubDir = "first-stage";
 	private static String secondStubDir = "second-stage";
+	private static String equivalencePrefix = "equivalence_";
 	private static String iterationPrefix = "iteration_";
 	
+	private int equivalence;
 	private int firstStubs;
 	private int secondStubs;
 
 	private DirectoryUtils() {
 		String method = Options.I().getMethodSignature();
 		experimentDir = method;
+		equivalence = 0;
 		firstStubs = 0;
 		secondStubs = 0;
 	}
@@ -48,14 +51,36 @@ public class DirectoryUtils {
 			if (!base.exists()) {
 				base.mkdirs();
 			}
+		}
+		catch (SecurityException e) {
+			logger.error("Unable to create experiment directories due: ", e);
+		}
+
+		logger.debug("Creating experiment directories - done");
+	}
+	
+	public void createEquivalenceDirs() {
+		logger.debug("Creating experiment directories");
+		
+		equivalence++;
+		firstStubs = 0;
+		secondStubs = 0;
+		try {
+			// base dir
+			String toReturn;
+			toReturn = IOUtils.concatPath(baseDirectory, experimentDir, equivalencePrefix + Integer.toString(equivalence));
+			File base = new File(toReturn);
+			if (!base.exists()) {
+				base.mkdirs();
+			}
 			// stub dir
-			toReturn = IOUtils.concatPath(baseDirectory, experimentDir, stubDir);
+			toReturn = IOUtils.concatPath(baseDirectory, experimentDir, equivalencePrefix + Integer.toString(equivalence), stubDir);
 			File stub = new File(toReturn);
 			if (!stub.exists()) {
 				stub.mkdirs();
 			}
 			// synthesis dir
-			toReturn = IOUtils.concatPath(baseDirectory, experimentDir, synthesisDir);
+			toReturn = IOUtils.concatPath(baseDirectory, experimentDir, equivalencePrefix + Integer.toString(equivalence), synthesisDir);
 			File synthesis = new File(toReturn);
 			if (!synthesis.exists()) {
 				synthesis.mkdirs();
@@ -81,19 +106,19 @@ public class DirectoryUtils {
 	}
 
 	public String getFirstStubEvosuiteDir() {
-		return IOUtils.concatPath(baseDirectory, experimentDir, synthesisDir, firstStubDir, iterationPrefix + Integer.toString(firstStubs));
+		return IOUtils.concatPath(baseDirectory, experimentDir, equivalencePrefix + Integer.toString(equivalence), synthesisDir, firstStubDir, iterationPrefix + Integer.toString(firstStubs));
 	}
 
 	public String getSecondStubEvosuiteDir() {
-		return IOUtils.concatPath(baseDirectory, experimentDir, synthesisDir, secondStubDir, iterationPrefix + Integer.toString(secondStubs));
+		return IOUtils.concatPath(baseDirectory, experimentDir, equivalencePrefix + Integer.toString(equivalence), synthesisDir, secondStubDir, iterationPrefix + Integer.toString(secondStubs));
 	}
 	
 	public String getFirstStubDir() {
-		return IOUtils.concatPath(baseDirectory, experimentDir, stubDir, firstStubDir, iterationPrefix + Integer.toString(firstStubs));
+		return IOUtils.concatPath(baseDirectory, experimentDir, equivalencePrefix + Integer.toString(equivalence), stubDir, firstStubDir, iterationPrefix + Integer.toString(firstStubs));
 	}
 
 	public String getSecondStubDir() {
-		return IOUtils.concatPath(baseDirectory, experimentDir, stubDir, secondStubDir, iterationPrefix + Integer.toString(secondStubs));
+		return IOUtils.concatPath(baseDirectory, experimentDir, equivalencePrefix + Integer.toString(equivalence), stubDir, secondStubDir, iterationPrefix + Integer.toString(secondStubs));
 	}
 
 	public void createFirstStubDir() {
@@ -102,12 +127,12 @@ public class DirectoryUtils {
 		
 		try {
 			String toReturn;
-			toReturn = IOUtils.concatPath(baseDirectory, experimentDir, stubDir, firstStubDir, iterationPrefix + Integer.toString(firstStubs));
+			toReturn = IOUtils.concatPath(baseDirectory, experimentDir, equivalencePrefix + Integer.toString(equivalence), stubDir, firstStubDir, iterationPrefix + Integer.toString(firstStubs));
 			File stub = new File(toReturn);
 			if (!stub.exists()) {
 				stub.mkdirs();
 			}
-			toReturn = IOUtils.concatPath(baseDirectory, experimentDir, synthesisDir, firstStubDir, iterationPrefix + Integer.toString(firstStubs));
+			toReturn = IOUtils.concatPath(baseDirectory, experimentDir, equivalencePrefix + Integer.toString(equivalence), synthesisDir, firstStubDir, iterationPrefix + Integer.toString(firstStubs));
 			File synthesis = new File(toReturn);
 			if (!synthesis.exists()) {
 				synthesis.mkdirs();
@@ -126,12 +151,12 @@ public class DirectoryUtils {
 		
 		try {
 			String toReturn;
-			toReturn = IOUtils.concatPath(baseDirectory, experimentDir, stubDir, secondStubDir, iterationPrefix + Integer.toString(secondStubs));
+			toReturn = IOUtils.concatPath(baseDirectory, experimentDir, equivalencePrefix + Integer.toString(equivalence), stubDir, secondStubDir, iterationPrefix + Integer.toString(secondStubs));
 			File stub = new File(toReturn);
 			if (!stub.exists()) {
 				stub.mkdirs();
 			}
-			toReturn = IOUtils.concatPath(baseDirectory, experimentDir, synthesisDir, secondStubDir, iterationPrefix + Integer.toString(secondStubs));
+			toReturn = IOUtils.concatPath(baseDirectory, experimentDir, equivalencePrefix + Integer.toString(equivalence), synthesisDir, secondStubDir, iterationPrefix + Integer.toString(secondStubs));
 			File synthesis = new File(toReturn);
 			if (!synthesis.exists()) {
 				synthesis.mkdirs();

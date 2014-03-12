@@ -90,6 +90,10 @@ public class Options {
 	public int getSearchBudget() {
 		return synthesisBudget;
 	}
+	
+	public int getCounterexampleBudget() {
+		return counterexampleBudget;
+	}
 
 	public String getJunitPath() {
 		return junitPath;

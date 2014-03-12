@@ -14,6 +14,7 @@ import sbes.execution.ExecutionResult;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
+import sbes.result.EquivalenceRepository;
 import sbes.result.TestScenario;
 import sbes.scenario.TestScenarioGenerator;
 import sbes.statistics.Statistics;
@@ -66,42 +67,53 @@ public class SBESManager {
 		}
 		statistics.scenarioFinished();
 		
-		// ======================= FIRST PHASE STUB GENERATION ========================
-		FirstStageStubGenerator firstPhaseGenerator = FirstStageGeneratorFactory.createGenerator(initialScenarios);
-		Stub initialStub = firstPhaseGenerator.generateStub();
-		directory.createFirstStubDir();
-		initialStub.dumpStub(directory.getFirstStubDir());
+		while (true) {
+			try {
+				directory.createEquivalenceDirs();
+				// ======================= FIRST PHASE STUB GENERATION ========================
+				FirstStageStubGenerator firstPhaseGenerator = FirstStageGeneratorFactory.createGenerator(initialScenarios);
+				Stub initialStub = firstPhaseGenerator.generateStub();
+				directory.createFirstStubDir();
+				initialStub.dumpStub(directory.getFirstStubDir());
 
-		Stub stub = initialStub;
-		ExecutionManager manager = new ExecutionManager();
+				Stub stub = initialStub;
+				ExecutionManager manager = new ExecutionManager();
 
-		boolean terminated = false;
-		while (!terminated) {
-			statistics.iterationStarted();
-			// ======================== FIRST PHASE SYNTHESIS =========================
-			CarvingResult candidateES = synthesizeEquivalentSequence(stub, manager, directory);
+				boolean terminated = false;
+				while (!terminated) {
+					statistics.iterationStarted();
+					// ======================== FIRST PHASE SYNTHESIS =========================
+					CarvingResult candidateES = synthesizeEquivalentSequence(stub, manager, directory);
 
-			// ===================== SECOND PHASE STUB GENERATION =====================
-			// generate second stub from carved test case
-			StubGenerator secondPhaseGenerator = SecondStageGeneratorFactory.createGenerator(firstPhaseGenerator, stub, candidateES);
-			Stub secondStub = secondPhaseGenerator.generateStub();
-			directory.createSecondStubDir();
-			secondStub.dumpStub(directory.getSecondStubDir());
+					// ===================== SECOND PHASE STUB GENERATION =====================
+					// generate second stub from carved test case
+					StubGenerator secondPhaseGenerator = SecondStageGeneratorFactory.createGenerator(firstPhaseGenerator, stub, candidateES);
+					Stub secondStub = secondPhaseGenerator.generateStub();
+					directory.createSecondStubDir();
+					secondStub.dumpStub(directory.getSecondStubDir());
 
-			// ================== SECOND PHASE COUNTEREXAMPLE SEARCH ==================
-			// compile second stub
-			CarvingResult counterexample = generateCounterexample(secondStub, manager, directory);
+					// ================== SECOND PHASE COUNTEREXAMPLE SEARCH ==================
+					// compile second stub
+					CarvingResult counterexample = generateCounterexample(secondStub, manager, directory);
 
-			// determine exit condition: solutionFound || time expired
-			if (counterexample == null) {
-				// if solution is found: found equivalent sequence, terminate!
-				terminated = true;
+					// determine exit condition: solutionFound || time expired
+					if (counterexample == null) {
+						// if solution is found: found equivalent sequence, terminate!
+						terminated = true;
+					}
+					else {
+						// if solution is found: add test scenario to stub
+						stub = generateTestScenarioFromCounterexample(directory, counterexample);
+					}
+					statistics.iterationFinished();
+				}
+
+			} catch (SBESException e) {
+				logger.error(e.getMessage());
+				logger.info("Stopping equivalent sequence generation");
+				EquivalenceRepository.getInstance().printEquivalences();
+				break;
 			}
-			else {
-				// if solution is found: add test scenario to stub
-				stub = generateTestScenarioFromCounterexample(directory, counterexample);
-			}
-			statistics.iterationFinished();
 		}
 		
 		statistics.processFinished();
@@ -215,6 +227,7 @@ public class SBESManager {
 			CounterexampleStub cStub = (CounterexampleStub) secondStub;
 			logger.info("No counterexample found!");
 			logger.info("Equivalence synthesized: " + System.lineSeparator() + cStub.getEquivalence().toString());
+			EquivalenceRepository.getInstance().addEquivalence(cStub.getEquivalence());
 			
 		}
 		else {

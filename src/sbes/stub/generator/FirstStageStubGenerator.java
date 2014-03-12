@@ -40,6 +40,7 @@ import java.util.List;
 
 import sbes.logging.Logger;
 import sbes.option.Options;
+import sbes.result.EquivalenceRepository;
 import sbes.result.TestScenario;
 import sbes.stub.Stub;
 import sbes.util.ASTUtils;
@@ -151,6 +152,10 @@ public class FirstStageStubGenerator extends StubGenerator {
 				continue;
 			}
 			else if (method.equals(targetMethod)) {
+				continue;
+			}
+			else if (EquivalenceRepository.getInstance().isExcluded(method)) {
+				logger.debug("Excluded from stub: " + method.toString());
 				continue;
 			}
 			
