@@ -143,6 +143,7 @@ public class SBESManager {
 		
 		boolean compilationSucceeded = Compilation.compile(compilationContext);
 		if (!compilationSucceeded) {
+			logger.fatal("Unable to compile first-stage stub " + stub.getStubName());
 			throw new SBESException("Unable to compile first-stage stub " + stub.getStubName());
 		}
 		
@@ -204,6 +205,7 @@ public class SBESManager {
 		
 		boolean compilationSucceeded = Compilation.compile(compilationContext);
 		if (!compilationSucceeded) {
+			logger.fatal("Unable to compile second-stage stub " + secondStub.getStubName());
 			throw new SBESException("Unable to compile second-stage stub " + secondStub.getStubName());
 		}
 		
