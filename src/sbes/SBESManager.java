@@ -5,6 +5,7 @@ import japa.parser.ast.ImportDeclaration;
 import java.io.File;
 import java.util.List;
 
+import sbes.ast.CloneObjVisitor;
 import sbes.ast.CounterexampleVisitor;
 import sbes.evosuite.Evosuite;
 import sbes.evosuite.EvosuiteFirstStage;
@@ -228,9 +229,15 @@ public class SBESManager {
 		if (candidates.isEmpty()) {
 			CounterexampleStub cStub = (CounterexampleStub) secondStub;
 			logger.info("No counterexample found!");
-			logger.info("Equivalence synthesized: " + System.lineSeparator() + cStub.getEquivalence().toString());
-			EquivalenceRepository.getInstance().addEquivalence(cStub.getEquivalence());
-			
+			CloneObjVisitor cov = new CloneObjVisitor();
+			cov.visit(cStub.getEquivalence().getBody(), null);
+			if (cov.getMethods().isEmpty()) {
+				logger.debug("Spurious result, iterating");
+			}
+			else {
+				logger.info("Equivalence synthesized: " + System.lineSeparator() + cStub.getEquivalence().toString());
+				EquivalenceRepository.getInstance().addEquivalence(cStub.getEquivalence());
+			}
 		}
 		else {
 			logger.info("Counterexample found");
