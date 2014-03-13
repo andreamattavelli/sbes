@@ -136,7 +136,7 @@ public class EquivalenceRepository {
 			}
 		}
 		else {
-			logger.info("Unable to find any equivalent sequence");
+			logger.fatal("Unable to find any equivalent sequence");
 		}
 	}
 	
