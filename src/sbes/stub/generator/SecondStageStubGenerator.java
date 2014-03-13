@@ -575,7 +575,7 @@ public class SecondStageStubGenerator extends StubGenerator {
 			else if (init instanceof CastExpr) {
 				List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
 				VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
-				vd.setInit(init);
+				vd.setInit(((CastExpr) init).getExpr());
 				vars.add(vd);
 				VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
 				cloned.getStmts().add(new ExpressionStmt(actualResult));
