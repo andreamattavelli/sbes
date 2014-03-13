@@ -34,6 +34,8 @@ import japa.parser.ast.stmt.ExpressionStmt;
 import japa.parser.ast.stmt.IfStmt;
 import japa.parser.ast.stmt.Statement;
 import japa.parser.ast.type.ClassOrInterfaceType;
+import japa.parser.ast.type.PrimitiveType;
+import japa.parser.ast.type.PrimitiveType.Primitive;
 import japa.parser.ast.type.ReferenceType;
 import japa.parser.ast.visitor.CloneVisitor;
 
@@ -701,10 +703,12 @@ public class SecondStageStubGenerator extends StubGenerator {
 								ce.setElseExpr(new IntegerLiteralExpr("0"));
 								
 								vde.getVars().get(0).setInit(ce);
+								vde.setType(new PrimitiveType(Primitive.Int));
 							}
 							else if (mce.getName().equals("collectionSize")) {
 								String name = ASTUtils.getName(mce.getArgs().get(0));
 								vde.getVars().get(0).setInit(new MethodCallExpr(new NameExpr(name), "size"));
+								vde.setType(new PrimitiveType(Primitive.Int));
 							}
 						}
 						
