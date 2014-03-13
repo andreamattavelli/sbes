@@ -442,13 +442,24 @@ public class SecondStageStubGenerator extends StubGenerator {
 		mcv.visit(cloned, null);
 		MethodCallExpr mce = mcv.getMethodCall();
 		
-		Expression arg = mce.getArgs().get(0);
+		Expression arg = mce.getArgs().get(0);		
 		VariableDeclarationExpr vde = null;
 		String name = ASTUtils.getName(arg);
 		String resultType = targetMethod.getReturnType().getCanonicalName();
 		int arrayDimension = 0;
 		if (targetMethod.getReturnType().isArray()) {
 			arrayDimension = 1;
+		}
+		
+		if (arg instanceof FieldAccessExpr) {
+			FieldAccessExpr fae = (FieldAccessExpr) arg;
+			List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+			VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+			vd.setInit(fae);
+			vars.add(vd);
+			VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+			cloned.getStmts().add(new ExpressionStmt(actualResult));
+			return;
 		}
 		
 		if (name != null) {
