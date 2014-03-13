@@ -6,13 +6,17 @@ import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.Parameter;
 import japa.parser.ast.body.TypeDeclaration;
+import japa.parser.ast.body.VariableDeclarator;
 import japa.parser.ast.body.VariableDeclaratorId;
+import japa.parser.ast.expr.AssignExpr;
 import japa.parser.ast.expr.BinaryExpr;
 import japa.parser.ast.expr.DoubleLiteralExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.ThisExpr;
+import japa.parser.ast.expr.VariableDeclarationExpr;
+import japa.parser.ast.expr.AssignExpr.Operator;
 import japa.parser.ast.stmt.BlockStmt;
 import japa.parser.ast.stmt.ExpressionStmt;
 import japa.parser.ast.stmt.IfStmt;
@@ -27,10 +31,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sbes.logging.Logger;
+import sbes.option.Options;
 import sbes.result.CarvingResult;
 import sbes.stub.GenerationException;
 import sbes.stub.Stub;
 import sbes.util.ASTUtils;
+import sbes.util.ClassUtils;
 import sbes.util.ReflectionUtils;
 
 public class SecondStageGenericStubGenerator extends SecondStageStubGenerator {
@@ -119,6 +125,18 @@ public class SecondStageGenericStubGenerator extends SecondStageStubGenerator {
 		method_under_test.setBody(stmt);
 		
 		return method_under_test;
+	}
+	
+	protected ExpressionStmt createCloneObj(Method targetMethod) {
+		List<Expression> methodParameters = new ArrayList<Expression>();
+		methodParameters.add(new ThisExpr());
+		Expression right = new MethodCallExpr(ASTHelper.createNameExpr("c"), "deepClone", methodParameters);
+		List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+		vars.add(new VariableDeclarator(new VariableDeclaratorId("clone")));
+		String className = ClassUtils.getSimpleClassname(Options.I().getMethodSignature());
+		Expression left = new VariableDeclarationExpr(ASTHelper.createReferenceType(className + "<" + concreteClass + ">", 0), vars);
+		AssignExpr assignment = new AssignExpr(left, right, Operator.assign);
+		return new ExpressionStmt(assignment);
 	}
 
 	private List<Parameter> getGenericParameterType(Type[] genericParams, Class<?>[] concreteParams) {
