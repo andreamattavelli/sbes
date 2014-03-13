@@ -599,6 +599,7 @@ public class SecondStageStubGenerator extends StubGenerator {
 				vars.add(vd);
 				VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
 				cloned.getStmts().add(new ExpressionStmt(actualResult));
+				return;
 			}
 			ChangeObjNameVisitor conv = new ChangeObjNameVisitor(varName, "actual_result");
 			conv.visit(cloned, null);
