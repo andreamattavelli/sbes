@@ -131,12 +131,14 @@ public class EquivalenceRepository {
 	public void printEquivalences() {
 		if (equivalences.size() > 0) {
 			logger.info("Equivalent sequences synthesized:");
+			int i = 1;
 			for (EquivalentSequence eqSeq : equivalences) {
-				logger.info(System.lineSeparator() + eqSeq.toString());
+				System.out.println("EqSeq" + i++);
+				System.out.println(eqSeq.toString());
 			}
 		}
 		else {
-			logger.fatal("Unable to find any equivalent sequence");
+			logger.fatal("Unable to synthesize any equivalent sequence");
 		}
 	}
 	
