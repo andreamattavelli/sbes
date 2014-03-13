@@ -30,6 +30,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
 
+import sbes.SBESException;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
@@ -89,7 +90,7 @@ public class SecondStageGenericStubGenerator extends SecondStageStubGenerator {
 		// RESULT_CLASS actual_result = clone.CARVED_METHOD(S)
 		List<Statement> stmts = createActualResult(targetMethod, candidateES, param);
 		if (stmts.isEmpty()) {
-			throw new GenerationException("Unable to carve candidate: no statements!");
+			throw new SBESException("Unable to carve candidate: no statements!");
 		}
 		equivalence = stmts;
 		stmt.getStmts().addAll(stmts);

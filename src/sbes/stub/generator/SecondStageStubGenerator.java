@@ -45,6 +45,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import sbes.SBESException;
 import sbes.ast.ArrayCellDeclarationVisitor;
 import sbes.ast.ArrayDefVisitor;
 import sbes.ast.ChangeObjNameVisitor;
@@ -174,7 +175,7 @@ public class SecondStageStubGenerator extends StubGenerator {
 		// RESULT_CLASS actual_result = clone.CARVED_METHOD(S)
 		List<Statement> stmts = createActualResult(targetMethod, candidateES, param);
 		if (stmts.isEmpty()) {
-			throw new GenerationException("Unable to carve candidate: no statements!");
+			throw new SBESException("Unable to carve candidate: no statements!");
 		}
 		equivalence = stmts;
 		stmt.getStmts().addAll(stmts);
