@@ -177,6 +177,10 @@ public class ASTUtils {
 				return getName((NameExpr) ce.getExpr());
 			}
 		}
+		else if (exp instanceof FieldAccessExpr) {
+			FieldAccessExpr fae = (FieldAccessExpr) exp;
+			return getName(fae.getScope());
+		}
 		else if (exp instanceof ArrayAccessExpr) {
 			ArrayAccessExpr aae = (ArrayAccessExpr) exp;
 			return getName(aae.getName());
