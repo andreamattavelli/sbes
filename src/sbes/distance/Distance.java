@@ -21,6 +21,8 @@ public class Distance {
 	
 	private static final List<DistancePair> worklist = new LinkedList<DistancePair>();
 	private static final Map<Object, Integer> visited = new IdentityHashMap<Object, Integer>();
+
+	public static final double NAN_WEIGHT = 20.0d;
 	
 	private Distance() {}
 	

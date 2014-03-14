@@ -207,6 +207,18 @@ public class PrimitiveDistance {
 	}
 
 	public static double floatDistance(float a, float b) {
+		if (Float.isNaN(a) && Float.isNaN(b)) { 
+			return 0;
+		}
+		if (Float.isNaN(a) || Float.isNaN(b)) { 
+			return Distance.NAN_WEIGHT;
+		}
+		if (Float.isInfinite(a) && Float.isInfinite(b)) { 
+			return 0;
+		}
+		if (Float.isInfinite(a) || Float.isInfinite(b)) { 
+			return Distance.NAN_WEIGHT;
+		}
 		return Math.abs(a - b);
 	}
 
@@ -220,6 +232,18 @@ public class PrimitiveDistance {
 	}
 	
 	public static double doubleDistance(double a, double b) {
+		if (Double.isNaN(a) && Double.isNaN(b)) { 
+			return 0;
+		}
+		if (Double.isNaN(a) || Double.isNaN(b)) { 
+			return Distance.NAN_WEIGHT;
+		}
+		if (Double.isInfinite(a) && Double.isInfinite(b)) { 
+			return 0;
+		}
+		if (Double.isInfinite(a) || Double.isInfinite(b)) { 
+			return Distance.NAN_WEIGHT;
+		}
 		return Math.abs(a - b);
 	}
 	
