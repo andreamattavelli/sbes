@@ -16,6 +16,7 @@ import japa.parser.ast.expr.ArrayCreationExpr;
 import japa.parser.ast.expr.AssignExpr;
 import japa.parser.ast.expr.AssignExpr.Operator;
 import japa.parser.ast.expr.BinaryExpr;
+import japa.parser.ast.expr.BooleanLiteralExpr;
 import japa.parser.ast.expr.CastExpr;
 import japa.parser.ast.expr.ConditionalExpr;
 import japa.parser.ast.expr.DoubleLiteralExpr;
@@ -576,6 +577,14 @@ public class SecondStageStubGenerator extends StubGenerator {
 				List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
 				VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
 				vd.setInit(((CastExpr) init).getExpr());
+				vars.add(vd);
+				VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+				cloned.getStmts().add(new ExpressionStmt(actualResult));
+			}
+			else if (init instanceof BooleanLiteralExpr) {
+				List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+				VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+				vd.setInit(init);
 				vars.add(vd);
 				VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
 				cloned.getStmts().add(new ExpressionStmt(actualResult));
