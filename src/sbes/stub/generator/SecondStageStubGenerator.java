@@ -589,6 +589,14 @@ public class SecondStageStubGenerator extends StubGenerator {
 				VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
 				cloned.getStmts().add(new ExpressionStmt(actualResult));
 			}
+			else if (init instanceof IntegerLiteralExpr) {
+				List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+				VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+				vd.setInit(init);
+				vars.add(vd);
+				VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+				cloned.getStmts().add(new ExpressionStmt(actualResult));
+			}
 			else if (init instanceof FieldAccessExpr) {
 				FieldAccessExpr fae = (FieldAccessExpr) init;
 				if (fae.getField().startsWith("ELEMENT_")) {
