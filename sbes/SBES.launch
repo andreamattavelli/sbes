@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/sbes/src/sbes/SBES.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="sbes.SBES"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--classes=/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/GraphStream-UseCase/lib/gs-core-1.2.jar --method=org.graphstream.graph.implementations.AbstractEdge.getNode0[] --search_budget=60 --junit=/Applications/eclipse-3.7.2/plugins/org.junit_4.8.2.v4_8_2_v20110321-1705/junit.jar --evosuite=./evosuite.jar"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="sbes"/>
+</launchConfiguration>
