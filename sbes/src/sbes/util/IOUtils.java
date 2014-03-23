@@ -1,6 +1,7 @@
 package sbes.util;
 
 import java.io.File;
+import java.util.regex.Matcher;
 
 public class IOUtils {
 
@@ -17,7 +18,7 @@ public class IOUtils {
 	}
 	
 	public static String fromCanonicalToPath(final String packageName) {
-		return packageName.replaceAll("\\.", File.separator);
+		return packageName.replaceAll("\\.", Matcher.quoteReplacement(File.separator));
 	}
 
 	public static String lastDir(final String path) {
