@@ -16,11 +16,13 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 
 public class ExpectedResultVisitor extends VoidVisitorAdapter<String> {
 	private int index;
+	private int parameters;
 	private String expectedState;
 	private boolean found;
 
-	public ExpectedResultVisitor(int index) {
+	public ExpectedResultVisitor(int index, int parameters) {
 		this.index = index;
+		this.parameters = parameters;
 		this.found = false;
 	}
 	
@@ -53,7 +55,7 @@ public class ExpectedResultVisitor extends VoidVisitorAdapter<String> {
 	}
 	
 	private void handleMethodCall(VariableDeclarationExpr n, String methodName, MethodCallExpr mce) {
-		if (mce.getName().equals(methodName)) {
+		if (mce.getName().equals(methodName) && mce.getArgs().size() == parameters) {
 			found = true;
 			// found class constructor, switch to EXPECTED_STATES
 			Expression target = new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageStubGenerator.EXPECTED_RESULT),

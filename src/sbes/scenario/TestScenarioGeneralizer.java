@@ -85,7 +85,7 @@ public class TestScenarioGeneralizer {
 		String concreteClass = gccv.getConcreteClass();
 		
 		// PHASE 2: find and substitute expected result
-		ExpectedResultVisitor erv = new ExpectedResultVisitor(index);
+		ExpectedResultVisitor erv = new ExpectedResultVisitor(index, targetMethod.getParameterTypes().length);
 		erv.visit(cloned, methodName);
 		String objName = erv.getExpectedState();
 		
