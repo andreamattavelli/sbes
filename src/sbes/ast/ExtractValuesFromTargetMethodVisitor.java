@@ -38,7 +38,7 @@ public class ExtractValuesFromTargetMethodVisitor extends VoidVisitorAdapter<Str
 
 	@Override
 	public void visit(MethodCallExpr n, String methodName) {
-		if (n.getName().equals(methodName)) {
+		if (n.getName().equals(methodName) && n.getArgs().size() == targetMethod.getParameterTypes().length) {
 			if (n.getArgs() != null) {
 				for (int i = 0; i < n.getArgs().size(); i++) {
 					Expression arg = n.getArgs().get(i);
