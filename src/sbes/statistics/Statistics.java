@@ -4,8 +4,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import sbes.logging.Logger;
 import sbes.util.DirectoryUtils;
@@ -45,43 +47,46 @@ public class Statistics {
 	}
 	
 	public void processStarted() {
-		this.processStartTime = System.currentTimeMillis();
+		this.processStartTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
 	}
 	public void processFinished() {
-		this.processEndTime = System.currentTimeMillis();
+		this.processEndTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
 	}
 
 	public void iterationStarted() {
-		this.iterationStartTime = System.currentTimeMillis();
+		this.iterationStartTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
 	}
 	public void iterationFinished() {
-		this.iterationEndTime = System.currentTimeMillis();
+		this.iterationEndTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
 		long time = iterationEndTime - iterationStartTime;
+		time = TimeUnit.SECONDS.convert(time, TimeUnit.NANOSECONDS);
 		addIteration(time, iterations);
 	}
 	
 	public void scenarioStarted() {
-		this.scenarioStartTime = System.currentTimeMillis();
+		this.scenarioStartTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
 	}
 	public void scenarioFinished() {
-		this.scenarioEndTime = System.currentTimeMillis();
+		this.scenarioEndTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
 	}
 
 	public void synthesisStarted() {
-		this.synthesisStartTime = System.currentTimeMillis();
+		this.synthesisStartTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
 	}
 	public void synthesisFinished() {
-		this.synthesisEndTime = System.currentTimeMillis();
+		this.synthesisEndTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
 		long time = synthesisEndTime - synthesisStartTime;
+		time = TimeUnit.SECONDS.convert(time, TimeUnit.NANOSECONDS);
 		addIteration(time, syntheses);
 	}
 	
 	public void counterexampleStarted() {
-		this.counterexampleStartTime = System.currentTimeMillis();
+		this.counterexampleStartTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
 	}
 	public void counterexampleFinished() {
-		this.counterexampleEndTime = System.currentTimeMillis();
+		this.counterexampleEndTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
 		long time = counterexampleEndTime - counterexampleStartTime;
+		time = TimeUnit.SECONDS.convert(time, TimeUnit.NANOSECONDS);
 		addIteration(time, counterexamples);
 	}
 
@@ -100,10 +105,12 @@ public class Statistics {
 			}
 
 			bw.newLine();
-
+			
 			long process = (processEndTime - processStartTime);
+			process = TimeUnit.SECONDS.convert(process, TimeUnit.NANOSECONDS);
 			bw.write(Long.toString(process));
 			long scenario = (scenarioEndTime - scenarioStartTime);
+			scenario = TimeUnit.SECONDS.convert(scenario, TimeUnit.NANOSECONDS);
 			bw.write("," + Long.toString(scenario));
 			for (int i = 0; i < syntheses.size(); i++) {
 				bw.write("," + Long.toString(syntheses.get(i)));
