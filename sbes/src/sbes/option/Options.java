@@ -61,11 +61,15 @@ public class Options {
 	@Option(name = "-counterexample_budget",
 			usage = "Search budget for counterexample synthesis. Default: 180s")
 	private int counterexampleBudget = 180;
+	
+	@Option(name = "-stopping_condition",
+			usage = "Stopping condition to apply to the main search: MAXITERATIONS, MAXTIME, NOSYNTHESIS. Default: NOSYNTHESIS")
+	private StoppingCondition stoppingCondition = StoppingCondition.NOSYNTHESIS;
 
-	//	@Option(name = "--max_time",
-	//			usage = "Maximum time limit for synthesis (test scenario generation excluded)")
-	//	private int maxTime = 180;
-
+	@Option(name = "-stopping_condition_value",
+			usage = "Value to be applied to the chosen stopping condition.")
+	private int stoppingConditionValue = 0;
+	
 	@Option(name = "-log_level",
 			usage = "Logging level to be used: FATAL, ERROR, WARN, INFO, DEBUG",
 			handler = LevelHandler.class)
@@ -121,6 +125,14 @@ public class Options {
 
 	public void setLogLevel(Level logLevel) {
 		this.logLevel = logLevel;
+	}
+	
+	public StoppingCondition getStoppingCondition() {
+		return stoppingCondition;
+	}
+	
+	public int getStoppingConditionValue() {
+		return stoppingConditionValue;
 	}
 
 }
