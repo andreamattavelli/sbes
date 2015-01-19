@@ -59,7 +59,7 @@ public abstract class Evosuite {
 	}
 
 	public String getTestFilename() {
-		return ClassUtils.getSimpleClassnameFromCanonical(classSignature) + "EvoSuiteTest.java";
+		return ClassUtils.getSimpleClassnameFromCanonical(classSignature) + "_ESTest.java";
 	}
 	
 	@Override
