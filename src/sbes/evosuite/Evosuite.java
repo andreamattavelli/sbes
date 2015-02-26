@@ -14,6 +14,7 @@ public abstract class Evosuite {
 	protected static final Logger logger = new Logger(Evosuite.class);
 	
 	public static final String jarName = "evosuite.jar";
+	protected static final String evosuiteTestnameExtension = "EvoSuiteTest.java";
 	
 	protected String classSignature;
 	protected String methodSignature;
@@ -59,7 +60,7 @@ public abstract class Evosuite {
 	}
 
 	public String getTestFilename() {
-		return ClassUtils.getSimpleClassnameFromCanonical(classSignature) + "_ESTest.java";
+		return ClassUtils.getSimpleClassnameFromCanonical(classSignature) + evosuiteTestnameExtension;
 	}
 	
 	@Override
