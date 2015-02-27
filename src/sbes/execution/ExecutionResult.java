@@ -4,7 +4,6 @@ public class ExecutionResult {
 
 	private final String outputDir;
 	private String filename;
-
 	private String[] command;
 	private String stdout;
 	private String stderr;
