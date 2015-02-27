@@ -15,6 +15,7 @@ import sbes.stub.generator.StubGenerator;
 public class InternalClassloader {
 
 	private static final Logger logger = new Logger(InternalClassloader.class);
+	
 	private final ClassLoader classLoader;
 
 	public InternalClassloader(String classpath) {

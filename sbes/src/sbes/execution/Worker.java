@@ -14,7 +14,6 @@ public class Worker implements Callable<ExecutionResult> {
 	private static final Logger logger = new Logger(Worker.class);
 
 	private final Evosuite evosuite;
-
 	private int exitStatus;
 	private ByteArrayOutputStream errStream = null;
 	private ByteArrayOutputStream outStream = null;
