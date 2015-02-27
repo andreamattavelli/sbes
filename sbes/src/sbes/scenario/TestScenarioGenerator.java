@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sbes.SBESException;
-import sbes.evosuite.Evosuite;
-import sbes.evosuite.EvosuiteTestScenario;
 import sbes.execution.ExecutionManager;
 import sbes.execution.ExecutionResult;
 import sbes.execution.WorkerException;
+import sbes.execution.evosuite.Evosuite;
+import sbes.execution.evosuite.EvosuiteTestScenario;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
@@ -94,16 +94,15 @@ public class TestScenarioGenerator {
 	}
 	
 	private  ExecutionResult generate() {
-		ExecutionManager manager = new ExecutionManager();
 		Evosuite evosuiteCommand = new EvosuiteTestScenario(ClassUtils.getCanonicalClassname(Options.I().getMethodSignature()), 
-				ClassUtils.getMethodname(Options.I().getMethodSignature()));
-		return manager.execute(evosuiteCommand);
+															ClassUtils.getMethodname(Options.I().getMethodSignature()));
+		return ExecutionManager.execute(evosuiteCommand);
 	}
 
 	private boolean isCompilable(ExecutionResult result) {
 		String signature = Options.I().getMethodSignature();
 		String packagename = IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
-		String testDirectory = IOUtils.concatPath(result.getOutputDir(), packagename);
+		String testDirectory = IOUtils.concatFilePath(result.getOutputDir(), packagename);
 
 		String classPath = Options.I().getClassesPath()
 				+ File.pathSeparatorChar + Options.I().getJunitPath()
@@ -115,7 +114,7 @@ public class TestScenarioGenerator {
 	private List<CarvingResult> carveTestScenarios(ExecutionResult result) {
 		String signature = Options.I().getMethodSignature();
 		String packagename = IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
-		String testDirectory = IOUtils.concatPath(result.getOutputDir(), packagename);
+		String testDirectory = IOUtils.concatFilePath(result.getOutputDir(), packagename);
 
 		CarvingContext context = new CarvingContext(testDirectory, result.getFilename());
 

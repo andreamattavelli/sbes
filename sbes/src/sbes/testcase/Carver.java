@@ -49,7 +49,7 @@ public class Carver {
 		try {
 			String testClassname = context.getTestFilename();
 			logger.debug("Loading generated test: " + testClassname);
-			String testPath = IOUtils.concatPath(context.getTestDirectory(), testClassname);
+			String testPath = IOUtils.concatFilePath(context.getTestDirectory(), testClassname);
 			CompilationUnit cu = JavaParser.parse(new File(testPath));
 			
 			MethodVisitor visitor = new MethodVisitor();

@@ -40,7 +40,7 @@ public class Stub {
 	}
 	
 	public void dumpStub(String directory) {
-		String dir = IOUtils.concatPath(directory, IOUtils.fromCanonicalToPath(packageName));
+		String dir = IOUtils.concatFilePath(directory, IOUtils.fromCanonicalToPath(packageName));
 		try {
 			File file = new File(dir);
 			if (!file.exists()) {
@@ -51,7 +51,7 @@ public class Stub {
 			logger.error("Unable to dump stub due to: " + e.getMessage());
 		}
 		
-		String filename = IOUtils.concatPath(directory, IOUtils.fromCanonicalToPath(packageName), stubName + ".java");
+		String filename = IOUtils.concatFilePath(directory, IOUtils.fromCanonicalToPath(packageName), stubName + ".java");
 		try (BufferedWriter out = new BufferedWriter(new FileWriter(filename))) {
 			out.write(ast.toString());
 		} catch(Throwable e) {

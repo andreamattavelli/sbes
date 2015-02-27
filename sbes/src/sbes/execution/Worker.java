@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
-import sbes.evosuite.Evosuite;
+import sbes.execution.evosuite.Evosuite;
 import sbes.logging.Logger;
 import sbes.util.DirectoryUtils;
 

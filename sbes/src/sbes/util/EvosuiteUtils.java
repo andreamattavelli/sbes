@@ -10,7 +10,7 @@ public class EvosuiteUtils {
 	public static boolean succeeded(ExecutionResult result) {
 		String signature = Options.I().getMethodSignature();
 		String packagename = IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
-		String testDirectory = IOUtils.concatPath(result.getOutputDir(), packagename);
+		String testDirectory = IOUtils.concatFilePath(result.getOutputDir(), packagename);
 		
 		String file = testDirectory + File.separatorChar + result.getFilename();
 		if (!new File(file).exists()) {

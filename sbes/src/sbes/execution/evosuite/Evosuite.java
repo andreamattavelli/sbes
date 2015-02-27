@@ -1,4 +1,4 @@
-package sbes.evosuite;
+package sbes.execution.evosuite;
 
 import java.io.File;
 import java.util.ArrayList;

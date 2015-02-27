@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 
 public class IOUtils {
 
-	public static String concatPath(final String ... args) {
+	public static String concatFilePath(final String ... args) {
 		StringBuilder builder = new StringBuilder();
 		for (String arg : args) {
 			builder.append(arg);
@@ -13,7 +13,17 @@ public class IOUtils {
 				builder.append(File.separator);
 			}
 		}
+		return builder.toString();
+	}
 	
+	public static String concatClassPath(final String ... args) {
+		StringBuilder builder = new StringBuilder();
+		for (String arg : args) {
+			builder.append(arg);
+			if (!arg.endsWith(File.pathSeparator)) {
+				builder.append(File.pathSeparator);
+			}
+		}
 		return builder.toString();
 	}
 	
