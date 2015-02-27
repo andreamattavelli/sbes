@@ -91,7 +91,7 @@ public class SBESManager {
 				 *   we are able to synthesize a valid candidate, or we reach a time/iteration stopping condition
 				 */
 				boolean terminateIterations = false;
-				while (!terminateIterations || !stoppingCondition.isReached()) {
+				while (!terminateIterations && !stoppingCondition.isReached()) {
 					statistics.iterationStarted();
 					// FIRST PHASE: SYNTHESIS OF CANDIDATE
 					CarvingResult candidateES = synthesizeCandidateEquivalence(stub, directory);
