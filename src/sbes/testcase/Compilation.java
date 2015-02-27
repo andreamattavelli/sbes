@@ -22,7 +22,7 @@ public class Compilation {
 	public static boolean compile(CompilationContext context) {
 		logger.debug("Compiling file: " + context.getTestFilename());
 		
-		String testPath = IOUtils.concatPath(context.getTestDirectory(), context.getTestFilename());
+		String testPath = IOUtils.concatFilePath(context.getTestDirectory(), context.getTestFilename());
 		
 		boolean succeed = true;
 		try {

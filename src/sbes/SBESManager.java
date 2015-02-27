@@ -2,16 +2,15 @@ package sbes;
 
 import japa.parser.ast.ImportDeclaration;
 
-import java.io.File;
 import java.util.List;
 
 import sbes.ast.CloneObjVisitor;
 import sbes.ast.CounterexampleVisitor;
-import sbes.evosuite.Evosuite;
-import sbes.evosuite.EvosuiteFirstStage;
-import sbes.evosuite.EvosuiteSecondStage;
 import sbes.execution.ExecutionManager;
 import sbes.execution.ExecutionResult;
+import sbes.execution.evosuite.Evosuite;
+import sbes.execution.evosuite.EvosuiteFirstStage;
+import sbes.execution.evosuite.EvosuiteSecondStage;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
@@ -46,7 +45,7 @@ public class SBESManager {
 		this.statistics = new Statistics();
 	}
 	
-	public void generateES() throws SBESException {
+	public void generateEquivalences() throws SBESException {
 		statistics.processStarted();
 		
 		// INIT 
@@ -76,12 +75,14 @@ public class SBESManager {
 			 */
 			while (!stoppingCondition.isReached()) {
 				directory.createEquivalenceDirs();
+				directory.createFirstStubDir();
+				
 				// FIRST PHASE STUB GENERATION
 				FirstStageStubGenerator firstPhaseGenerator = FirstStageGeneratorFactory.createGenerator(initialScenarios);
 				Stub initialStub = firstPhaseGenerator.generateStub();
-				directory.createFirstStubDir();
 				initialStub.dumpStub(directory.getFirstStubDir());
 
+				// independent variable to be updated with the latest stub to be used
 				Stub stub = initialStub;
 
 				/*
@@ -89,8 +90,8 @@ public class SBESManager {
 				 * we loop until we either find an equivalence sequence (no counterexamples),
 				 *   we are able to synthesize a valid candidate, or we reach a time/iteration stopping condition
 				 */
-				boolean terminated = false;
-				while (!terminated || !stoppingCondition.isReached()) {
+				boolean terminateIterations = false;
+				while (!terminateIterations || !stoppingCondition.isReached()) {
 					statistics.iterationStarted();
 					// FIRST PHASE: SYNTHESIS OF CANDIDATE
 					CarvingResult candidateES = synthesizeCandidateEquivalence(stub, directory);
@@ -98,7 +99,7 @@ public class SBESManager {
 
 					if (candidateES == null) {
 						// not able to carve any candidate, stop iteration
-						terminated = true;
+						terminateIterations = true;
 					}
 					else {
 						// found a candidate, validate
@@ -116,7 +117,7 @@ public class SBESManager {
 						// determine exit condition: counterexample found || timeout
 						if (counterexample == null) {
 							// timeout: found equivalent sequence, stop iteration
-							terminated = true;
+							terminateIterations = true;
 						}
 						else {
 							// counterexample found: generate the corresponding test scenario and add it to the stub
@@ -143,13 +144,11 @@ public class SBESManager {
 		
 		String signature 	= Options.I().getMethodSignature();
 		String packagename 	= IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
-		String testDirectory= IOUtils.concatPath(directory.getFirstStubDir(), packagename);
+		String testDirectory= IOUtils.concatFilePath(directory.getFirstStubDir(), packagename);
 		
-		String classPath =	Options.I().getClassesPath() + File.pathSeparatorChar + 
-							Options.I().getJunitPath() 	 + File.pathSeparatorChar +
-							Options.I().getEvosuitePath()+ File.pathSeparatorChar +
-							directory.getFirstStubDir()  + File.pathSeparatorChar +
-							this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		String classPath = IOUtils.concatClassPath(Options.I().getClassesPath(), 
+				Options.I().getJunitPath(), Options.I().getEvosuitePath(), directory.getFirstStubDir(),
+				this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
 		
 		// compile stub
 		CompilationContext compilationContext = new CompilationContext(	testDirectory, 
@@ -183,7 +182,7 @@ public class SBESManager {
 		}
 		
 		// carve result
-		CarvingContext carvingContext = new CarvingContext(IOUtils.concatPath(result.getOutputDir(), packagename), result.getFilename());
+		CarvingContext carvingContext = new CarvingContext(IOUtils.concatFilePath(result.getOutputDir(), packagename), result.getFilename());
 		Carver carver = new Carver(carvingContext, false);
 		List<CarvingResult> candidates = carver.carveBodyFromTests();
 		
@@ -207,13 +206,11 @@ public class SBESManager {
 		
 		String signature = Options.I().getMethodSignature();
 		String packagename = IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
-		String testDirectory = IOUtils.concatPath(directory.getSecondStubDir(), packagename);
+		String testDirectory = IOUtils.concatFilePath(directory.getSecondStubDir(), packagename);
 		
-		String classPath =	Options.I().getClassesPath() + File.pathSeparatorChar + 
-							Options.I().getJunitPath() + File.pathSeparatorChar +
-							Options.I().getEvosuitePath() + File.pathSeparatorChar +
-							directory.getSecondStubDir() + File.pathSeparatorChar +
-							this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		String classPath = IOUtils.concatClassPath(Options.I().getClassesPath(), 
+				Options.I().getJunitPath(),	Options.I().getEvosuitePath(), directory.getSecondStubDir(),
+				this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
 		
 		// compile stub
 		CompilationContext compilationContext = new CompilationContext(	testDirectory, 
@@ -238,7 +235,7 @@ public class SBESManager {
 		logger.debug(result.getStderr());
 		
 		// carve result
-		CarvingContext carvingContext = new CarvingContext(IOUtils.concatPath(result.getOutputDir(), packagename), result.getFilename());
+		CarvingContext carvingContext = new CarvingContext(IOUtils.concatFilePath(result.getOutputDir(), packagename), result.getFilename());
 		Carver carver = new Carver(carvingContext, false);
 		List<CarvingResult> candidates = carver.carveBodyFromTests();
 
@@ -291,7 +288,6 @@ public class SBESManager {
 				i--;
 			}
 		}
-		
 	}
 	
 }

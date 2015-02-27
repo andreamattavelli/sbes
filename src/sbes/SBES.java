@@ -32,7 +32,7 @@ public class SBES {
 
 		try {
 			SBESManager generator = new SBESManager();
-			generator.generateES();
+			generator.generateEquivalences();
 			logger.info("SBES ended successfully");
 		} catch (SBESException | GenerationException | WorkerException e) {
 			logger.fatal("Execution aborted due: " + e.getMessage());
