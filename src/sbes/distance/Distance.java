@@ -15,15 +15,14 @@ public class Distance {
 
 	private static final Logger logger = new Logger(Distance.class);
 
-	public static final double DIFFERENT_CLASSES_WEIGHT = 20.0d;
+	public static final double DIFFERENT_CLASSES_WEIGHT = 1000.0d;
 	public static final double ARRAY_CELL_FACTOR = 5.0d;
-	public static final double NULL_WEIGHT = 10.0d;
+	public static final double NULL_WEIGHT = 1000000.0d;
+	public static final double NAN_WEIGHT = 2000.0d;
 	
 	private static final List<DistancePair> worklist = new LinkedList<DistancePair>();
 	private static final Map<Object, Integer> visited = new IdentityHashMap<Object, Integer>();
 
-	public static final double NAN_WEIGHT = 20.0d;
-	
 	private Distance() {}
 	
 	public static double distance(Object o1, Object o2) {
@@ -43,7 +42,11 @@ public class Distance {
 		if (!c1.getClass().equals(c2.getClass())) {
 			// Do we want to penalize it? A penalty could affect the ability of
 			// the technique to synthesize equivalent sequences..or not?
-			;
+			return ReflectionUtils.classDistance(c1.getClass(), c2.getClass()) * DIFFERENT_CLASSES_WEIGHT;
+		}
+		if (c1.isArray() ^ c2.isArray()) {
+			System.out.println("one of the two is an array");
+			return ARRAY_CELL_FACTOR * 10;
 		}
 		
 		worklist.clear();

@@ -1,6 +1,5 @@
 package sbes.distance;
 
-
 /*
  * The difference between this impl. and the standard one is that, rather
  * than creating and retaining a matrix of size threadName.length()+1 by
