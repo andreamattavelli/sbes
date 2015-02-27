@@ -16,6 +16,7 @@ import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
 import sbes.result.EquivalenceRepository;
+import sbes.result.StoppingCondition;
 import sbes.result.TestScenario;
 import sbes.scenario.TestScenarioGenerator;
 import sbes.statistics.Statistics;
@@ -48,92 +49,106 @@ public class SBESManager {
 	public void generateES() throws SBESException {
 		statistics.processStarted();
 		
-		// =================================== INIT =================================== 
+		// INIT 
 		DirectoryUtils directory = DirectoryUtils.I();
 		ClasspathUtils.checkClasspath();
 
-		// ===================== INITIAL TEST SCENARIO GENERATION =====================
+		// INITIAL TEST SCENARIO LOADING
 		statistics.scenarioStarted();
 		TestScenarioGenerator scenarioGenerator = TestScenarioGenerator.getInstance();
-		if (Options.I().getTestScenarioPath() == null) {			
-			scenarioGenerator.generateTestScenarios();
-		}
-		else {
-			// load test scenarios from path
-			scenarioGenerator.loadTestScenarios();
-		}
+		// load test scenarios from path
+		scenarioGenerator.loadTestScenarios();
 		List<TestScenario> initialScenarios = scenarioGenerator.getScenarios();
 		if (initialScenarios.isEmpty()) {
-			throw new SBESException("Unable to generate any initial test scenarios");
+			throw new SBESException("Unable to load any initial test scenarios");
 		}
 		statistics.scenarioFinished();
 		
-		while (true) {
-			try {
+		StoppingCondition stoppingCondition = new StoppingCondition();
+		stoppingCondition.init();
+		try {
+			/*
+			 * -- main loop --
+			 * we loop until we reach a desired stopping condition:
+			 *   - time
+			 *   - iterations
+			 *   - unable to synthesize a candidate 
+			 */
+			while (!stoppingCondition.isReached()) {
 				directory.createEquivalenceDirs();
-				// ======================= FIRST PHASE STUB GENERATION ========================
+				// FIRST PHASE STUB GENERATION
 				FirstStageStubGenerator firstPhaseGenerator = FirstStageGeneratorFactory.createGenerator(initialScenarios);
 				Stub initialStub = firstPhaseGenerator.generateStub();
 				directory.createFirstStubDir();
 				initialStub.dumpStub(directory.getFirstStubDir());
 
 				Stub stub = initialStub;
-				ExecutionManager manager = new ExecutionManager();
 
+				/*
+				 * -- iteration loop --
+				 * we loop until we either find an equivalence sequence (no counterexamples),
+				 *   we are able to synthesize a valid candidate, or we reach a time/iteration stopping condition
+				 */
 				boolean terminated = false;
-				while (!terminated) {
+				while (!terminated || !stoppingCondition.isReached()) {
 					statistics.iterationStarted();
-					// ======================== FIRST PHASE SYNTHESIS =========================
-					CarvingResult candidateES = synthesizeEquivalentSequence(stub, manager, directory);
+					// FIRST PHASE: SYNTHESIS OF CANDIDATE
+					CarvingResult candidateES = synthesizeCandidateEquivalence(stub, directory);
+					stoppingCondition.update(candidateES);
 
-					// ===================== SECOND PHASE STUB GENERATION =====================
-					// generate second stub from carved test case
-					StubGenerator secondPhaseGenerator = SecondStageGeneratorFactory.createGenerator(firstPhaseGenerator, stub, candidateES);
-					Stub secondStub = secondPhaseGenerator.generateStub();
-					directory.createSecondStubDir();
-					secondStub.dumpStub(directory.getSecondStubDir());
-
-					// ================== SECOND PHASE COUNTEREXAMPLE SEARCH ==================
-					// compile second stub
-					CarvingResult counterexample = generateCounterexample(secondStub, manager, directory);
-
-					// determine exit condition: solutionFound || time expired
-					if (counterexample == null) {
-						// if solution is found: found equivalent sequence, terminate!
+					if (candidateES == null) {
+						// not able to carve any candidate, stop iteration
 						terminated = true;
 					}
 					else {
-						// if solution is found: add test scenario to stub
-						stub = generateTestScenarioFromCounterexample(directory, counterexample);
+						// found a candidate, validate
+						// SECOND PHASE: COUNTEREXAMPLE SEARCH
+						
+						// generate second stub from carved test case
+						StubGenerator secondPhaseGenerator = SecondStageGeneratorFactory.createGenerator(firstPhaseGenerator, stub, candidateES);
+						Stub secondStub = secondPhaseGenerator.generateStub();
+						directory.createSecondStubDir();
+						secondStub.dumpStub(directory.getSecondStubDir());
+
+						// search for a counterexample
+						CarvingResult counterexample = generateCounterexample(secondStub,directory);
+
+						// determine exit condition: counterexample found || timeout
+						if (counterexample == null) {
+							// timeout: found equivalent sequence, stop iteration
+							terminated = true;
+						}
+						else {
+							// counterexample found: generate the corresponding test scenario and add it to the stub
+							stub = generateTestScenarioFromCounterexample(directory, counterexample);
+						}
 					}
 					statistics.iterationFinished();
-				}
-
-			} catch (SBESException e) {
-				logger.error(e.getMessage());
-				logger.info("Stopping equivalent sequence generation");
-				EquivalenceRepository.getInstance().printEquivalences();
-				break;
-			}
+				} // end iteration
+				
+			} // end search
+		} catch (SBESException e) {
+			logger.error(e.getMessage());
+			logger.info("Stopping equivalent sequence generation");
+			EquivalenceRepository.getInstance().printEquivalences();
 		}
 		
 		statistics.processFinished();
-		
 		statistics.writeCSV();
 	}
 
-	private CarvingResult synthesizeEquivalentSequence(Stub stub, ExecutionManager manager, DirectoryUtils directory) {
+	private CarvingResult synthesizeCandidateEquivalence(Stub stub, DirectoryUtils directory) {
 		logger.info("Synthesizing equivalent sequence candidate");
 		statistics.synthesisStarted();
 		
-		String signature = Options.I().getMethodSignature();
-		String packagename = IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
-		String testDirectory = IOUtils.concatPath(directory.getFirstStubDir(), packagename);
+		String signature 	= Options.I().getMethodSignature();
+		String packagename 	= IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
+		String testDirectory= IOUtils.concatPath(directory.getFirstStubDir(), packagename);
 		
 		String classPath =	Options.I().getClassesPath() + File.pathSeparatorChar + 
-							Options.I().getJunitPath() + File.pathSeparatorChar +
-							Options.I().getEvosuitePath() + File.pathSeparatorChar +
-							directory.getFirstStubDir() + File.pathSeparatorChar +
+							Options.I().getJunitPath() 	 + File.pathSeparatorChar +
+							Options.I().getEvosuitePath()+ File.pathSeparatorChar +
+							directory.getFirstStubDir()  + File.pathSeparatorChar +
 							this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 		
 		// compile stub
@@ -150,10 +165,10 @@ public class SBESManager {
 		
 		// run evosuite
 		String stubSignature = ClassUtils.getPackage(Options.I().getMethodSignature()) + '.' + stub.getStubName();
-		Evosuite evosuite = new EvosuiteFirstStage(stubSignature, 
-															ClassUtils.getMethodname(Options.I().getMethodSignature()), 
-															classPath);
-		ExecutionResult result = manager.execute(evosuite);
+		Evosuite evosuite = new EvosuiteFirstStage(	stubSignature, 
+													ClassUtils.getMethodname(Options.I().getMethodSignature()), 
+													classPath);
+		ExecutionResult result = ExecutionManager.execute(evosuite);
 		
 		logger.debug(result.getStdout());
 		logger.debug(result.getStderr());
@@ -172,19 +187,21 @@ public class SBESManager {
 		Carver carver = new Carver(carvingContext, false);
 		List<CarvingResult> candidates = carver.carveBodyFromTests();
 		
-		if (candidates.isEmpty()) {
-			throw new SBESException("Unable to carve any candidate");
-		}
-		else if (candidates.size() > 1) {
+		if (candidates.size() > 1) {
 			logger.warn("More than one candidate! Pruning to first one");
 		}
 		
 		statistics.synthesisFinished();
 		logger.info("Synthesizing equivalent sequence candidate - done");
+		
+		if (candidates.isEmpty()) {
+			logger.warn("Unable to carve any candidate");
+			return null;
+		}
 		return candidates.get(0);
 	}
 
-	private CarvingResult generateCounterexample(Stub secondStub, ExecutionManager manager, DirectoryUtils directory) {
+	private CarvingResult generateCounterexample(Stub secondStub, DirectoryUtils directory) {
 		logger.info("Generating counterexample");
 		statistics.counterexampleStarted();
 		
@@ -213,9 +230,9 @@ public class SBESManager {
 		// run evosuite
 		String stubSignature = ClassUtils.getPackage(Options.I().getMethodSignature()) + '.' + secondStub.getStubName();
 		Evosuite evosuite = new EvosuiteSecondStage(stubSignature, 
-															ClassUtils.getMethodname(Options.I().getMethodSignature()), 
-															classPath);
-		ExecutionResult result = manager.execute(evosuite);
+													ClassUtils.getMethodname(Options.I().getMethodSignature()), 
+													classPath);
+		ExecutionResult result = ExecutionManager.execute(evosuite);
 		
 		logger.debug(result.getStdout());
 		logger.debug(result.getStderr());

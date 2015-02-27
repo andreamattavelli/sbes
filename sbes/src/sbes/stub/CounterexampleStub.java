@@ -1,10 +1,11 @@
 package sbes.stub;
 
+import japa.parser.ast.CompilationUnit;
+import japa.parser.ast.stmt.Statement;
+
 import java.util.List;
 
 import sbes.result.EquivalentSequence;
-import japa.parser.ast.CompilationUnit;
-import japa.parser.ast.stmt.Statement;
 
 public class CounterexampleStub extends Stub {
 

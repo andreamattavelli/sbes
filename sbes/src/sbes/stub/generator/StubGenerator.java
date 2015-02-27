@@ -82,10 +82,12 @@ public abstract class StubGenerator {
 		
 		// artificial methods
 		BodyDeclaration setResult = getSetResultsMethod(targetMethod); 
+		// set_results
 		if (setResult != null) {
 			// only phase 1
 			members.add(setResult);
 		}
+		// method_under_test
 		members.add(getMethodUnderTest(targetMethod));
 		
 		stubClass.setMembers(members);

@@ -1,9 +1,10 @@
 package sbes.scenario;
 
-import java.util.List;
-
 import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.stmt.BlockStmt;
+
+import java.util.List;
+
 import sbes.result.CarvingResult;
 import sbes.result.TestScenario;
 

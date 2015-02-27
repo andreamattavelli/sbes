@@ -2,15 +2,22 @@ package sbes.util;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import sbes.stub.GenerationException;
 
 public class ClassUtils {
 
+	private static final Map<Class<?>, Method[]> cache = new HashMap<Class<?>, Method[]>();
+	
 	public static Method[] getClassMethods(Class<?> c) {
-		List<Method> toReturn =  new ArrayList<Method>();
+		if (cache.containsKey(c)) {
+			return cache.get(c);
+		}
 		
+		List<Method> toReturn =  new ArrayList<Method>();
 		for (Method method : c.getMethods()) {
 			if (!method.getDeclaringClass().equals(Class.class) &&
 				!method.getDeclaringClass().equals(Object.class) &&
@@ -19,8 +26,9 @@ public class ClassUtils {
 				toReturn.add(method);
 			}
 		}
+		cache.put(c, toReturn.toArray(new Method[0]));
 		
-		return toReturn.toArray(new Method[0]);
+		return cache.get(c);
 	}
 	
 	public static String getCanonicalClassname(final String signature) {

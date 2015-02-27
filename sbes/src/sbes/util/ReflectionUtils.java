@@ -23,7 +23,7 @@ public class ReflectionUtils {
 		primitives.add(Byte.class);
 	}
 	
-	public static boolean isPrimitive(Object o) {
+	public static boolean isPrimitive(final Object o) {
 		if (o == null || o.getClass() == null) {
 			return false;
 		}
@@ -35,7 +35,7 @@ public class ReflectionUtils {
 		return false;
 	}
 	
-	public static boolean isString(Object o) {
+	public static boolean isString(final Object o) {
 		if (o == null || o.getClass() == null) {
 			return false;
 		}
@@ -45,21 +45,21 @@ public class ReflectionUtils {
 		return false;
 	}
 	
-	public static boolean isConstant(Field f) {
+	public static boolean isConstant(final Field f) {
 		if (Modifier.isFinal(f.getModifiers()) && Modifier.isStatic(f.getModifiers())) {
 			return true;
 		}
 		return false;
 	}
 	
-	public static boolean isTransient(Field f) {
+	public static boolean isTransient(final Field f) {
 		if (Modifier.isTransient(f.getModifiers())) {
 			return true;
 		}
 		return false;
 	}
 	
-	public static List<Field> getInheritedPrivateFields(Class<?> type) {
+	public static List<Field> getInheritedPrivateFields(final Class<?> type) {
 		List<Field> result = new ArrayList<Field>();
 
 		Class<?> i = type;
@@ -75,14 +75,14 @@ public class ReflectionUtils {
 		return result;
 	}
 
-	public static boolean isArray(Object obj) {
+	public static boolean isArray(final Object obj) {
 		if (obj == null || obj.getClass() == null) {
 			return false;
 		}
 		return obj.getClass().isArray();
 	}
 	
-	public static int getArrayDimensionCount(Class<?> array) {
+	public static int getArrayDimensionCount(final Class<?> array) {
 		int count = 0;
 		Class<?> arrayClass = array;
 		while (arrayClass.isArray()) {
@@ -90,6 +90,36 @@ public class ReflectionUtils {
 			arrayClass = arrayClass.getComponentType();
 		}
 		return count;
+	}
+	
+	/**
+	 * Returns the number of inheritance hops between two classes.
+	 * 
+	 * @param child
+	 *            the child class, may be null
+	 * @param parent
+	 *            the parent class, may be null
+	 * @return the number of generations between the child and parent; 0 if the
+	 *         same class; -1 if the classes are not related as child and parent
+	 *         (includes where either class is null)
+	 */
+	public static int classDistance(final Class<?> child, final Class<?> parent) {
+		if (child == null || parent == null) {
+			return -1;
+		}
+
+		if (child.equals(parent)) {
+			return 0;
+		}
+
+		final Class<?> cParent = child.getSuperclass();
+		int d = parent.equals(cParent) ? 1 : 0;
+
+		if (d == 1) {
+			return d;
+		}
+		d += classDistance(cParent, parent);
+		return d > 0 ? d + 1 : -1;
 	}
 
 }

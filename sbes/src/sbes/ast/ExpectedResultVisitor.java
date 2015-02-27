@@ -1,18 +1,18 @@
 package sbes.ast;
 
-import sbes.stub.generator.FirstStageStubGenerator;
-import sbes.util.ASTUtils;
 import japa.parser.ASTHelper;
 import japa.parser.ast.body.VariableDeclarator;
 import japa.parser.ast.expr.ArrayAccessExpr;
 import japa.parser.ast.expr.AssignExpr;
+import japa.parser.ast.expr.AssignExpr.Operator;
 import japa.parser.ast.expr.CastExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
-import japa.parser.ast.expr.AssignExpr.Operator;
 import japa.parser.ast.stmt.ExpressionStmt;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
+import sbes.stub.generator.FirstStageStubGenerator;
+import sbes.util.ASTUtils;
 
 public class ExpectedResultVisitor extends VoidVisitorAdapter<String> {
 	private int index;
@@ -55,7 +55,7 @@ public class ExpectedResultVisitor extends VoidVisitorAdapter<String> {
 	}
 	
 	private void handleMethodCall(VariableDeclarationExpr n, String methodName, MethodCallExpr mce) {
-		if (mce.getName().equals(methodName) && mce.getArgs().size() == parameters) {
+		if (mce.getName().equals(methodName) && (parameters == 0 || mce.getArgs().size() == parameters)) {
 			found = true;
 			// found class constructor, switch to EXPECTED_STATES
 			Expression target = new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageStubGenerator.EXPECTED_RESULT),

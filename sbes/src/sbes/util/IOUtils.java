@@ -22,7 +22,7 @@ public class IOUtils {
 	}
 
 	public static String lastDir(final String path) {
-		String[] dirs = path.split(File.separator);
+		String[] dirs = path.split(File.separatorChar=='\\' ? "\\\\" : File.separator);
 		return dirs[dirs.length - 1];
 	}
 

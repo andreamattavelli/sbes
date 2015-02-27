@@ -1,12 +1,12 @@
 package sbes.ast;
 
-import sbes.util.ASTUtils;
 import japa.parser.ast.expr.AssignExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.ObjectCreationExpr;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
+import sbes.util.ASTUtils;
 
 public class VariableUseVisitor extends VoidVisitorAdapter<Void> {
 	private String variableId;
