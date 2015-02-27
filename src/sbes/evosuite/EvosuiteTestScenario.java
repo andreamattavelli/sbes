@@ -89,7 +89,7 @@ public class EvosuiteTestScenario extends Evosuite {
 	
 	@Override
 	public String getTestFilename() {
-		return target.getDeclaringClass().getSimpleName() + "EvoSuiteTest.java";
+		return target.getDeclaringClass().getSimpleName() + evosuiteTestnameExtension;
 	}
 	
 }

@@ -45,6 +45,8 @@ public abstract class Evosuite {
 		evo.add("-Dtest_dir=" + outputDir);
 		evo.add("-Dassertions=false");
 		evo.add("-Dhtml=false");
+		evo.add("-Dvirtual_fs=false"); 
+		evo.add("-Dobject_reuse_probability=1");
 		evo.addAll(getAdditionalParameters());
 		this.command = evo.toString();
 		return evo.toArray(new String[0]);
@@ -52,7 +54,7 @@ public abstract class Evosuite {
 	
 	protected abstract String getClassPath();
 	protected abstract String getTargetMethodSignature();
-	public abstract int getSearchBudget();
+	public    abstract int getSearchBudget();
 	protected abstract Collection<String> getAdditionalParameters();
 	
 	public String getTestDirectory() {

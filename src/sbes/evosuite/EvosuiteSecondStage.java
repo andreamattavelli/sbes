@@ -48,9 +48,7 @@ public class EvosuiteSecondStage extends Evosuite {
 		String toReturn = null;
 		Class<?> c;
 		try {
-			InternalClassloader ic = new InternalClassloader(Options.I().getClassesPath()
-																+ File.pathSeparatorChar
-																+ DirectoryUtils.I().getSecondStubDir());
+			InternalClassloader ic = new InternalClassloader(Options.I().getClassesPath() + File.pathSeparatorChar + DirectoryUtils.I().getSecondStubDir());
 			c = Class.forName(classSignature, false, ic.getClassLoader());
 			String method = "method_under_test";
 			for (Method m : c.getMethods()) {
