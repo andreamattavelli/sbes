@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import sbes.logging.Logger;
+import sbes.option.Options;
+import sbes.option.TimeMeasure;
 import sbes.util.DirectoryUtils;
 
 public class Statistics {
@@ -47,46 +49,111 @@ public class Statistics {
 	}
 	
 	public void processStarted() {
-		this.processStartTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
+		if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
+			this.processStartTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
+		}
+		else {
+			this.processStartTime = System.currentTimeMillis();
+		}
 	}
 	public void processFinished() {
-		this.processEndTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
+		if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
+			this.processEndTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
+		}
+		else {
+			this.processEndTime = System.currentTimeMillis();
+		}
 	}
 
 	public void iterationStarted() {
-		this.iterationStartTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
+		if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
+			this.iterationStartTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
+		}
+		else {
+			this.iterationStartTime = System.currentTimeMillis();
+		}
 	}
 	public void iterationFinished() {
-		this.iterationEndTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
+		if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
+			this.iterationEndTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
+		}
+		else {
+			this.iterationEndTime = System.currentTimeMillis();
+		}
 		long time = iterationEndTime - iterationStartTime;
-		time = TimeUnit.SECONDS.convert(time, TimeUnit.NANOSECONDS);
+		if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
+			time = TimeUnit.SECONDS.convert(time, TimeUnit.NANOSECONDS);
+		}
+		else {
+			time = TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS);
+		}
 		addIteration(time, iterations);
 	}
 	
 	public void scenarioStarted() {
-		this.scenarioStartTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
+		if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
+			this.scenarioStartTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
+		}
+		else {
+			this.scenarioStartTime = System.currentTimeMillis();
+		}
 	}
 	public void scenarioFinished() {
-		this.scenarioEndTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
+		if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
+			this.scenarioEndTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
+		}
+		else {
+			this.scenarioEndTime = System.currentTimeMillis();
+		}
 	}
 
 	public void synthesisStarted() {
-		this.synthesisStartTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
+		if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
+			this.synthesisStartTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
+		}
+		else {
+			this.synthesisStartTime = System.currentTimeMillis();
+		}
 	}
 	public void synthesisFinished() {
-		this.synthesisEndTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
+		if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
+			this.synthesisEndTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
+		}
+		else {
+			this.synthesisEndTime = System.currentTimeMillis();
+		}
 		long time = synthesisEndTime - synthesisStartTime;
-		time = TimeUnit.SECONDS.convert(time, TimeUnit.NANOSECONDS);
+		if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
+			time = TimeUnit.SECONDS.convert(time, TimeUnit.NANOSECONDS);
+		}
+		else {
+			time = TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS);
+		}
 		addIteration(time, syntheses);
 	}
 	
 	public void counterexampleStarted() {
-		this.counterexampleStartTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
+		if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
+			this.counterexampleStartTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
+		}
+		else {
+			this.counterexampleStartTime = System.currentTimeMillis();
+		}
 	}
 	public void counterexampleFinished() {
-		this.counterexampleEndTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
+		if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
+			this.counterexampleEndTime = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
+		}
+		else {
+			this.counterexampleEndTime = System.currentTimeMillis();
+		}
 		long time = counterexampleEndTime - counterexampleStartTime;
-		time = TimeUnit.SECONDS.convert(time, TimeUnit.NANOSECONDS);
+		if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
+			time = TimeUnit.SECONDS.convert(time, TimeUnit.NANOSECONDS);
+		}
+		else {
+			time = TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS);
+		}
 		addIteration(time, counterexamples);
 	}
 
@@ -107,10 +174,20 @@ public class Statistics {
 			bw.newLine();
 			
 			long process = (processEndTime - processStartTime);
-			process = TimeUnit.SECONDS.convert(process, TimeUnit.NANOSECONDS);
+			if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
+				process = TimeUnit.SECONDS.convert(process, TimeUnit.NANOSECONDS);
+			}
+			else {
+				process = TimeUnit.SECONDS.convert(process, TimeUnit.MILLISECONDS);
+			}
 			bw.write(Long.toString(process));
 			long scenario = (scenarioEndTime - scenarioStartTime);
-			scenario = TimeUnit.SECONDS.convert(scenario, TimeUnit.NANOSECONDS);
+			if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
+				scenario = TimeUnit.SECONDS.convert(scenario, TimeUnit.NANOSECONDS);
+			}
+			else {
+				scenario = TimeUnit.SECONDS.convert(scenario, TimeUnit.MILLISECONDS);
+			}
 			bw.write("," + Long.toString(scenario));
 			for (int i = 0; i < syntheses.size(); i++) {
 				bw.write("," + Long.toString(syntheses.get(i)));

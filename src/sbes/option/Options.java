@@ -47,7 +47,8 @@ public class Options {
 	private int methodBloatFactor = 20;
 
 	@Option(name = "-test_scenario",
-			usage = "Path to Java source file containing initial test scenarios")
+			usage = "Path to Java source file containing initial test scenarios",
+			required = true)
 	private File scenarioTestPath = null;
 
 	@Option(name = "-scenario_budget",
@@ -63,8 +64,10 @@ public class Options {
 	private int counterexampleBudget = 180;
 	
 	@Option(name = "-stopping_condition",
-			usage = "Stopping condition to apply to the main search: MAXITERATIONS, MAXTIME, NOSYNTHESIS. Default: NOSYNTHESIS")
-	private StoppingCondition stoppingCondition = StoppingCondition.NOSYNTHESIS;
+			usage = "Stopping condition to apply to the main search: MAXITERATIONS, " +
+					"MAXITERATIONSWITHNOSYNTHESIS, MAXTIME, NOSYNTHESIS. Default: NOSYNTHESIS",
+			required = true)
+	private StoppingConditionType stoppingCondition = StoppingConditionType.NOSYNTHESIS;
 
 	@Option(name = "-stopping_condition_value",
 			usage = "Value to be applied to the chosen stopping condition.")
@@ -75,6 +78,12 @@ public class Options {
 			handler = LevelHandler.class)
 	private Level logLevel;
 
+	@Option(name = "-time_measure",
+			usage = "How to measure the elapsed time: CPUTIME, GLOBALTIME",
+			handler = LevelHandler.class)
+	private TimeMeasure timeMeasure;
+	
+	
 	public String getClassesPath() {
 		return classesPath;
 	}
@@ -127,12 +136,16 @@ public class Options {
 		this.logLevel = logLevel;
 	}
 	
-	public StoppingCondition getStoppingCondition() {
+	public StoppingConditionType getStoppingCondition() {
 		return stoppingCondition;
 	}
 	
 	public int getStoppingConditionValue() {
 		return stoppingConditionValue;
+	}
+	
+	public TimeMeasure getTimeMeasure() {
+		return timeMeasure;
 	}
 
 }

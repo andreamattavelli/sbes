@@ -16,7 +16,7 @@ import sbes.stub.GenerationException;
 public class SBES {
 
 	private static final Logger logger = new Logger(SBES.class);
-	
+
 	public static void main(String args[]) {
 		logger.info("SBES started");
 		final Options arguments = Options.I();
@@ -25,6 +25,7 @@ public class SBES {
 		try {
 			parser.parseArgument(processArgs(args));
 		} catch (CmdLineException e) {
+			System.err.println("Error: " + e.getMessage());
 			printUsage(parser);
 			System.exit(-1);
 		}
@@ -32,10 +33,8 @@ public class SBES {
 		try {
 			SBESManager generator = new SBESManager();
 			generator.generateES();
-
 			logger.info("SBES ended successfully");
-		}
-		catch (SBESException | GenerationException | WorkerException e) {
+		} catch (SBESException | GenerationException | WorkerException e) {
 			logger.fatal("Execution aborted due: " + e.getMessage());
 		}
 	}
@@ -44,7 +43,7 @@ public class SBES {
 		System.err.println("java Main <options>");
 		System.err.println("<options> are:");
 		// print the list of available options
-		parser.setUsageWidth(120);
+		parser.setUsageWidth(140);
 		parser.printUsage(System.err);
 	}
 
@@ -71,4 +70,5 @@ public class SBES {
 
 		return processedArgs.toArray(new String[0]);
 	}
+	
 }

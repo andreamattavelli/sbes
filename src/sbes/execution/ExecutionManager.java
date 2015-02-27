@@ -13,7 +13,7 @@ public class ExecutionManager {
 
 	private static final Logger logger = new Logger(ExecutionManager.class);
 
-	public ExecutionResult execute(Evosuite evosuite) {
+	public static ExecutionResult execute(Evosuite evosuite) {
 		ExecutorService executor = Executors.newFixedThreadPool(1);
 		Worker worker = new Worker(evosuite);
 		
@@ -45,7 +45,7 @@ public class ExecutionManager {
 		return toReturn;
 	}
 
-	private long calculateTimeout(Evosuite evosuite) {
+	private static long calculateTimeout(Evosuite evosuite) {
 		int searchBudget = evosuite.getSearchBudget();
 		if (searchBudget <= 60) {
 			return searchBudget * 3;

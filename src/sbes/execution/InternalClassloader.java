@@ -47,7 +47,6 @@ public class InternalClassloader {
 				}
 				classLoader = new URLClassLoader(urls.toArray(new URL[0]), StubGenerator.class.getClassLoader());
 			}
-
 		} catch (MalformedURLException | SecurityException e) {
 			logger.error("Unable to load ClassLoader", e);
 			throw new GenerationException(e);
