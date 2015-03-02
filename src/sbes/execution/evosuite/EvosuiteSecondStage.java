@@ -23,7 +23,7 @@ public class EvosuiteSecondStage extends Evosuite {
 	
 	@Override
 	protected String getClassPath() {
-		return Options.I().getClassesPath() + File.pathSeparatorChar + "." + File.pathSeparatorChar + additionalClasspath;
+		return Options.I().getClassesPath() + File.pathSeparatorChar + additionalClasspath;
 	}
 	
 	@Override
