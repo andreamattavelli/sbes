@@ -12,7 +12,7 @@ import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.stmt.ExpressionStmt;
 import japa.parser.ast.visitor.CloneVisitor;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
-import sbes.stub.generator.FirstStageStubGenerator;
+import sbes.stub.generator.first.FirstStageStubGenerator;
 
 public class ExpectedStateVisitor extends VoidVisitorAdapter<String> {
 	private int index;

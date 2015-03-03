@@ -12,6 +12,7 @@ import sbes.execution.WorkerException;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.stub.GenerationException;
+import sun.misc.Signal;
 
 public class SBES {
 
@@ -31,6 +32,9 @@ public class SBES {
 		}
 
 		try {
+			SBESShutdownInterceptor shutdown = new SBESShutdownInterceptor();
+			Signal.handle(new Signal("INT"), shutdown);
+			
 			SBESManager generator = new SBESManager();
 			generator.generateEquivalences();
 			logger.info("SBES ended successfully");

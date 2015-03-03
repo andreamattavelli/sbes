@@ -1,4 +1,4 @@
-package sbes.stub.generator;
+package sbes.stub.generator.first;
 
 import java.util.List;
 

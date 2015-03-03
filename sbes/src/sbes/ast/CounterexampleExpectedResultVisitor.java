@@ -11,7 +11,7 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 
 import java.lang.reflect.Method;
 
-import sbes.stub.generator.FirstStageStubGenerator;
+import sbes.stub.generator.first.FirstStageStubGenerator;
 import sbes.util.ASTUtils;
 
 public class CounterexampleExpectedResultVisitor extends VoidVisitorAdapter<Void> {

@@ -1,4 +1,4 @@
-package sbes.stub.generator;
+package sbes.stub.generator.second;
 
 import japa.parser.ASTHelper;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
@@ -34,6 +34,7 @@ import sbes.SBESException;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
+import sbes.result.TestScenario;
 import sbes.stub.Stub;
 import sbes.util.ASTUtils;
 import sbes.util.ClassUtils;
@@ -45,8 +46,8 @@ public class SecondStageGenericStubGenerator extends SecondStageStubGenerator {
 
 	private String concreteClass;
 	
-	public SecondStageGenericStubGenerator(Stub stub, CarvingResult candidateES, List<FieldDeclaration> fields, String concreteClass) {
-		super(stub, candidateES, fields);
+	public SecondStageGenericStubGenerator(final List<TestScenario> scenarios, Stub stub, CarvingResult candidateES, List<FieldDeclaration> fields, String concreteClass) {
+		super(scenarios, stub, candidateES, fields);
 		this.concreteClass = concreteClass;
 	}
 	

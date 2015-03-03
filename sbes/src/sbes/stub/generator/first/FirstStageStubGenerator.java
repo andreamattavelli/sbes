@@ -1,4 +1,4 @@
-package sbes.stub.generator;
+package sbes.stub.generator.first;
 
 import japa.parser.ASTHelper;
 import japa.parser.ast.ImportDeclaration;
@@ -43,6 +43,7 @@ import sbes.option.Options;
 import sbes.result.EquivalenceRepository;
 import sbes.result.TestScenario;
 import sbes.stub.Stub;
+import sbes.stub.generator.StubGenerator;
 import sbes.util.ASTUtils;
 import sbes.util.AsmParameterNames;
 import sbes.util.MethodUtils;
@@ -56,11 +57,9 @@ public class FirstStageStubGenerator extends StubGenerator {
 	public static final String EXPECTED_RESULT = "expected_results";
 	public static final String ACTUAL_STATE = "actual_states";
 	public static final String ACTUAL_RESULT = "actual_results";
-
-	protected List<TestScenario> scenarios;
 	
-	public FirstStageStubGenerator(List<TestScenario> scenarios) {
-		this.scenarios = scenarios;
+	public FirstStageStubGenerator(final List<TestScenario> scenarios) {
+		super(scenarios);
 	}
 	
 	@Override

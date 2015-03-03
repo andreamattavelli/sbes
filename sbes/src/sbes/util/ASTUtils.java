@@ -28,7 +28,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
 
-import sbes.stub.generator.FirstStageStubGenerator;
+import sbes.stub.generator.first.FirstStageStubGenerator;
 
 public class ASTUtils {
 

@@ -1,4 +1,4 @@
-package sbes.stub.generator;
+package sbes.stub.generator.first;
 
 import japa.parser.ASTHelper;
 import japa.parser.ast.body.BodyDeclaration;

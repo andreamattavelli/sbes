@@ -11,7 +11,7 @@ import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.stmt.ExpressionStmt;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
-import sbes.stub.generator.FirstStageStubGenerator;
+import sbes.stub.generator.first.FirstStageStubGenerator;
 import sbes.util.ASTUtils;
 
 public class ExpectedResultVisitor extends VoidVisitorAdapter<String> {

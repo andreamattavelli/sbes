@@ -1,6 +1,7 @@
 package sbes.result;
 
 import java.lang.management.ManagementFactory;
+import java.util.concurrent.TimeUnit;
 
 import sbes.option.Options;
 import sbes.option.StoppingConditionType;
@@ -8,16 +9,28 @@ import sbes.option.TimeMeasure;
 
 public class StoppingCondition {
 
-	private StoppingConditionType stoppingCondition;
-	private int stoppingConditionValue;
+	private final StoppingConditionType stoppingCondition;
+	private long stoppingConditionValue;
 	private long elapsedStoppingCondition;
 	
 	public StoppingCondition() {
 		this.stoppingCondition = Options.I().getStoppingCondition();
-		this.stoppingConditionValue = Options.I().getStoppingConditionValue();
+		setStoppingConditionValue();
 		this.elapsedStoppingCondition = 0L;
 	}
 	
+	private void setStoppingConditionValue() {
+		this.stoppingConditionValue = Options.I().getStoppingConditionValue();
+		if (stoppingCondition == StoppingConditionType.MAXTIME) {
+			if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
+				this.stoppingConditionValue = TimeUnit.NANOSECONDS.convert(this.stoppingConditionValue, TimeUnit.SECONDS);
+			}
+			else {
+				this.stoppingConditionValue = TimeUnit.MILLISECONDS.convert(this.stoppingConditionValue, TimeUnit.SECONDS);
+			}
+		}
+	}
+
 	public void init() {
 		switch(stoppingCondition) {
 		case MAXTIME:
@@ -57,7 +70,7 @@ public class StoppingCondition {
 	
 	public boolean isReached() {
 		if (stoppingCondition == StoppingConditionType.MAXTIME) {
-			long remaining = stoppingConditionValue - (ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime() - elapsedStoppingCondition);
+			long remaining;
 			if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
 				remaining = stoppingConditionValue - (ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime() - elapsedStoppingCondition);
 			}
@@ -65,6 +78,7 @@ public class StoppingCondition {
 				remaining = stoppingConditionValue - (System.currentTimeMillis() - elapsedStoppingCondition);
 			}
 			if (remaining < 0) {
+				System.out.println("no time left");
 				return true;
 			}
 		}
