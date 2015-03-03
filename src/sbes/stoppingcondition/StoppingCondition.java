@@ -55,20 +55,28 @@ public class StoppingCondition {
 	}
 	
 	public void update(CarvingResult result) {
-		if (stoppingCondition == StoppingConditionType.NOSYNTHESIS) {
+		switch(stoppingCondition) {
+		case NOSYNTHESIS:
 			if (result == null) {
 				elapsedStoppingCondition = Long.MIN_VALUE;
 			}
-		}
-		else if (stoppingCondition == StoppingConditionType.MAXITERATIONSWITHNOSYNTHESIS) {
+			break;
+		case MAXITERATIONSWITHNOSYNTHESIS:
 			if (result == null) {
 				elapsedStoppingCondition++;
 			}
+			else {
+				elapsedStoppingCondition = 0l;
+			}
+			break;
+		default:
+			break;
 		}
 	}
 	
 	public boolean isInternallyReached() {
-		if (stoppingCondition == StoppingConditionType.MAXTIME) {
+		switch(stoppingCondition) {
+		case MAXTIME:
 			long remaining;
 			if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
 				remaining = stoppingConditionValue - (ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime() - elapsedStoppingCondition);
@@ -79,27 +87,31 @@ public class StoppingCondition {
 			if (remaining < 0) {
 				return true;
 			}
-		}
-		else if (stoppingCondition == StoppingConditionType.MAXITERATIONS) {
+			break;
+		case MAXITERATIONS:
 			if (elapsedStoppingCondition > stoppingConditionValue) {
 				return true;
 			}
-		}
-		else if (stoppingCondition == StoppingConditionType.MAXITERATIONSWITHNOSYNTHESIS) {
+			break;
+		case MAXITERATIONSWITHNOSYNTHESIS:
 			if (elapsedStoppingCondition > stoppingConditionValue) {
 				return true;
 			}
-		}
-		else if (stoppingCondition == StoppingConditionType.NOSYNTHESIS) {
+			break;
+		case NOSYNTHESIS:
 			if (elapsedStoppingCondition < 0) {
 				return true;
 			}
+			break;
+		default:
+			break;
 		}
 		return false;
 	}
 	
 	public boolean isReached() {
-		if (stoppingCondition == StoppingConditionType.MAXTIME) {
+		switch(stoppingCondition) {
+		case MAXTIME:
 			long remaining;
 			if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
 				remaining = stoppingConditionValue - (ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime() - elapsedStoppingCondition);
@@ -110,21 +122,24 @@ public class StoppingCondition {
 			if (remaining < 0) {
 				return true;
 			}
-		}
-		else if (stoppingCondition == StoppingConditionType.MAXITERATIONS) {
+			break;
+		case MAXITERATIONS:
 			if (++elapsedStoppingCondition > stoppingConditionValue) {
 				return true;
 			}
-		}
-		else if (stoppingCondition == StoppingConditionType.MAXITERATIONSWITHNOSYNTHESIS) {
-			if (elapsedStoppingCondition > stoppingConditionValue) {
+			break;
+		case MAXITERATIONSWITHNOSYNTHESIS:
+			if (elapsedStoppingCondition == stoppingConditionValue) {
 				return true;
 			}
-		}
-		else if (stoppingCondition == StoppingConditionType.NOSYNTHESIS) {
+			break;
+		case NOSYNTHESIS:
 			if (elapsedStoppingCondition < 0) {
 				return true;
 			}
+			break;
+		default:
+			break;
 		}
 		return false;
 	}
