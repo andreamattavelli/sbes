@@ -30,7 +30,7 @@ public class EvosuiteFirstStage extends Evosuite {
 	@Override
 	protected Collection<String> getAdditionalParameters() {
 		Collection<String> additional = new ArrayList<String>();
-		additional.add("-Dstage=1");
+		additional.add("-Dsbes_phase=1");
 		return additional;
 	}
 	

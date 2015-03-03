@@ -185,8 +185,10 @@ public class SBESManager {
 			return null;
 		}
 		
-//		logger.debug(result.getStdout());
-//		logger.debug(result.getStderr());
+		if (Options.I().isVerbose()) {
+			logger.info(result.getStdout());
+			logger.info(result.getStderr());
+		}
 		
 		// analyze synthesis process
 		if (!EvosuiteUtils.generatedCandidate(result.getStdout())) {
@@ -213,6 +215,9 @@ public class SBESManager {
 		if (candidates.isEmpty()) {
 			logger.warn("Unable to carve any candidate");
 			return null;
+		}
+		else {
+			logger.info("Successfully synthesized a valid candidate");
 		}
 		return candidates.get(0);
 	}
@@ -254,8 +259,10 @@ public class SBESManager {
 			return null;
 		}
 		
-//		logger.debug(result.getStdout());
-//		logger.debug(result.getStderr());
+		if (Options.I().isVerbose()) {
+			logger.info("EvoSuite Stdout:" + '\n' + result.getStdout());
+			logger.info("EvoSuite Stderr:" + '\n' + result.getStderr());
+		}
 		
 		// carve result
 		CarvingContext carvingContext = new CarvingContext(IOUtils.concatFilePath(result.getOutputDir(), packagename), result.getFilename());
