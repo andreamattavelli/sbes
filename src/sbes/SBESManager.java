@@ -52,7 +52,7 @@ public class SBESManager {
 		DirectoryUtils directory = DirectoryUtils.I();
 		ClasspathUtils.checkClasspath();
 
-		// INITIAL TEST SCENARIO LOADING
+		// TEST SCENARIO LOADING
 		statistics.scenarioStarted();
 		
 		TestScenarioGenerator scenarioGenerator = TestScenarioGenerator.getInstance();
@@ -79,6 +79,9 @@ public class SBESManager {
 				directory.createEquivalenceDirs();
 				directory.createFirstStubDir();
 				
+				logger.info("=========================================================================== " + 
+							"Starting synthesis attempt #" + directory.getEquivalences());
+				
 				// FIRST PHASE STUB GENERATION
 				FirstStageStubGenerator firstPhaseGenerator = FirstStageGeneratorFactory.createGenerator(initialScenarios);
 				Stub initialStub = firstPhaseGenerator.generateStub();
@@ -93,7 +96,7 @@ public class SBESManager {
 				 *   we are able to synthesize a valid candidate, or we reach a time/iteration stopping condition
 				 */
 				boolean terminateIterations = false;
-				while (!terminateIterations && !stoppingCondition.isReached() && !SBESShutdownInterceptor.isInterrupted()) {
+				while (!terminateIterations && !stoppingCondition.isInternallyReached() && !SBESShutdownInterceptor.isInterrupted()) {
 					statistics.iterationStarted();
 					
 					// FIRST PHASE: SYNTHESIS OF CANDIDATE
@@ -131,12 +134,15 @@ public class SBESManager {
 					statistics.iterationFinished();
 				} // end iteration
 				
+				logger.info("=========================================================================== " + 
+							"Finished synthesis attempt #" + directory.getEquivalences());
 			} // end search
 		} catch (SBESException e) {
 			logger.error(e.getMessage());
-			logger.info("Stopping equivalent sequence generation");
-			EquivalenceRepository.getInstance().printEquivalences();
 		}
+		
+		logger.info("Stopping equivalent sequence generation");
+		EquivalenceRepository.getInstance().printEquivalences();
 		
 		statistics.processFinished();
 		statistics.writeCSV();
@@ -150,9 +156,11 @@ public class SBESManager {
 		String packagename 	= IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
 		String testDirectory= IOUtils.concatFilePath(directory.getFirstStubDir(), packagename);
 		
-		String classPath = IOUtils.concatClassPath(Options.I().getClassesPath(), 
-				Options.I().getJunitPath(), Options.I().getEvosuitePath(), directory.getFirstStubDir(),
-				this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
+		String classPath 	= IOUtils.concatClassPath(	Options.I().getClassesPath(), 
+														Options.I().getJunitPath(), 
+														Options.I().getEvosuitePath(), 
+														directory.getFirstStubDir(),
+														this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
 		
 		// compile stub
 		CompilationContext compilationContext = new CompilationContext(	testDirectory, 
@@ -177,8 +185,8 @@ public class SBESManager {
 			return null;
 		}
 		
-		logger.debug(result.getStdout());
-		logger.debug(result.getStderr());
+//		logger.debug(result.getStdout());
+//		logger.debug(result.getStderr());
 		
 		// analyze synthesis process
 		if (!EvosuiteUtils.generatedCandidate(result.getStdout())) {
@@ -246,8 +254,8 @@ public class SBESManager {
 			return null;
 		}
 		
-		logger.debug(result.getStdout());
-		logger.debug(result.getStderr());
+//		logger.debug(result.getStdout());
+//		logger.debug(result.getStderr());
 		
 		// carve result
 		CarvingContext carvingContext = new CarvingContext(IOUtils.concatFilePath(result.getOutputDir(), packagename), result.getFilename());

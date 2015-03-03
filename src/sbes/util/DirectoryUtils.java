@@ -59,6 +59,10 @@ public class DirectoryUtils {
 		logger.debug("Creating experiment directories - done");
 	}
 	
+	public int getEquivalences() {
+		return equivalence;
+	}
+	
 	public void createEquivalenceDirs() {
 		logger.debug("Creating experiment directories");
 		
