@@ -22,7 +22,7 @@ public class SecondStageGeneratorFactory {
 		}
 		if (firstGenerator instanceof FirstStageGeneratorStubWithGenerics) {
 			FirstStageGeneratorStubWithGenerics fs = (FirstStageGeneratorStubWithGenerics) firstGenerator;
-			return new SecondStageGeneratorGenericStub(firstGenerator.getScenarios(), stub, candidateES, fields, fs.getConcreteClass());
+			return new SecondStageGeneratorStubWithGenerics(firstGenerator.getScenarios(), stub, candidateES, fields, fs.getConcreteClass());
 		}
 		else {
 			return new SecondStageGeneratorStub(firstGenerator.getScenarios(), stub, candidateES, fields);

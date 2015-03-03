@@ -40,13 +40,13 @@ import sbes.util.ASTUtils;
 import sbes.util.ClassUtils;
 import sbes.util.ReflectionUtils;
 
-public class SecondStageGeneratorGenericStub extends SecondStageGeneratorStub {
+public class SecondStageGeneratorStubWithGenerics extends SecondStageGeneratorStub {
 	
-	private static final Logger logger = new Logger(SecondStageGeneratorGenericStub.class);
+	private static final Logger logger = new Logger(SecondStageGeneratorStubWithGenerics.class);
 
 	private String concreteClass;
 	
-	public SecondStageGeneratorGenericStub(final List<TestScenario> scenarios, Stub stub, CarvingResult candidateES, List<FieldDeclaration> fields, String concreteClass) {
+	public SecondStageGeneratorStubWithGenerics(final List<TestScenario> scenarios, Stub stub, CarvingResult candidateES, List<FieldDeclaration> fields, String concreteClass) {
 		super(scenarios, stub, candidateES, fields);
 		this.concreteClass = concreteClass;
 	}
