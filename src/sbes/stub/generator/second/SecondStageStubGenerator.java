@@ -1,4 +1,4 @@
-package sbes.stub.generator;
+package sbes.stub.generator.second;
 
 import japa.parser.ASTHelper;
 import japa.parser.ast.ImportDeclaration;
@@ -61,9 +61,11 @@ import sbes.ast.VariableUseVisitor;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
+import sbes.result.TestScenario;
 import sbes.stub.CounterexampleStub;
 import sbes.stub.GenerationException;
 import sbes.stub.Stub;
+import sbes.stub.generator.StubGenerator;
 import sbes.util.ASTUtils;
 import sbes.util.ClassUtils;
 
@@ -76,7 +78,8 @@ public class SecondStageStubGenerator extends StubGenerator {
 	protected List<FieldDeclaration> fields;
 	protected Stub stub;
 	
-	public SecondStageStubGenerator(Stub stub, CarvingResult candidateES, List<FieldDeclaration> fields) {
+	public SecondStageStubGenerator(final List<TestScenario> scenarios, Stub stub, CarvingResult candidateES, List<FieldDeclaration> fields) {
+		super(scenarios);
 		this.stub = stub;
 		this.candidateES = candidateES;
 	}

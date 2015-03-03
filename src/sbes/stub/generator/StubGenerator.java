@@ -18,6 +18,7 @@ import java.util.List;
 import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
 import sbes.option.Options;
+import sbes.result.TestScenario;
 import sbes.stub.GenerationException;
 import sbes.stub.Stub;
 import sbes.util.ClassUtils;
@@ -31,10 +32,12 @@ public abstract class StubGenerator {
 	private final ClassLoader classloader;
 	protected TypeVariable<?>[] generics;
 	protected String stubName;
+	protected final List<TestScenario> scenarios;
 	
-	public StubGenerator() {
+	public StubGenerator(final List<TestScenario> scenarios) {
 		InternalClassloader ic = new InternalClassloader(Options.I().getClassesPath());
 		this.classloader = ic.getClassLoader();
+		this.scenarios = scenarios;
 	}
 	
 	public Stub generateStub() {
@@ -106,6 +109,10 @@ public abstract class StubGenerator {
 	
 	
 	// ---------- HELPER METHODS ----------
+	public List<TestScenario> getScenarios() {
+		return scenarios;
+	}
+	
 	protected List<Parameter> getParameterType(Class<?>[] parameters) {
 		List<Parameter> toReturn = new ArrayList<Parameter>();
 		for (int i = 0; i < parameters.length; i++) {

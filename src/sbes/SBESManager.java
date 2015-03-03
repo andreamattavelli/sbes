@@ -21,10 +21,10 @@ import sbes.scenario.TestScenarioGenerator;
 import sbes.statistics.Statistics;
 import sbes.stub.CounterexampleStub;
 import sbes.stub.Stub;
-import sbes.stub.generator.FirstStageGeneratorFactory;
-import sbes.stub.generator.FirstStageStubGenerator;
-import sbes.stub.generator.SecondStageGeneratorFactory;
 import sbes.stub.generator.StubGenerator;
+import sbes.stub.generator.first.FirstStageGeneratorFactory;
+import sbes.stub.generator.first.FirstStageStubGenerator;
+import sbes.stub.generator.second.SecondStageGeneratorFactory;
 import sbes.testcase.Carver;
 import sbes.testcase.CarvingContext;
 import sbes.testcase.Compilation;
@@ -54,6 +54,7 @@ public class SBESManager {
 
 		// INITIAL TEST SCENARIO LOADING
 		statistics.scenarioStarted();
+		
 		TestScenarioGenerator scenarioGenerator = TestScenarioGenerator.getInstance();
 		// load test scenarios from path
 		scenarioGenerator.loadTestScenarios();
@@ -61,6 +62,7 @@ public class SBESManager {
 		if (initialScenarios.isEmpty()) {
 			throw new SBESException("Unable to load any initial test scenarios");
 		}
+		
 		statistics.scenarioFinished();
 		
 		StoppingCondition stoppingCondition = new StoppingCondition();
@@ -73,7 +75,7 @@ public class SBESManager {
 			 *   - iterations
 			 *   - unable to synthesize a candidate 
 			 */
-			while (!stoppingCondition.isReached()) {
+			while (!stoppingCondition.isReached() && !SBESShutdownInterceptor.isInterrupted()) {
 				directory.createEquivalenceDirs();
 				directory.createFirstStubDir();
 				
@@ -91,8 +93,9 @@ public class SBESManager {
 				 *   we are able to synthesize a valid candidate, or we reach a time/iteration stopping condition
 				 */
 				boolean terminateIterations = false;
-				while (!terminateIterations && !stoppingCondition.isReached()) {
+				while (!terminateIterations && !stoppingCondition.isReached() && !SBESShutdownInterceptor.isInterrupted()) {
 					statistics.iterationStarted();
+					
 					// FIRST PHASE: SYNTHESIS OF CANDIDATE
 					CarvingResult candidateES = synthesizeCandidateEquivalence(stub, directory);
 					stoppingCondition.update(candidateES);
@@ -112,7 +115,7 @@ public class SBESManager {
 						secondStub.dumpStub(directory.getSecondStubDir());
 
 						// search for a counterexample
-						CarvingResult counterexample = generateCounterexample(secondStub,directory);
+						CarvingResult counterexample = generateCounterexample(secondStub, directory);
 
 						// determine exit condition: counterexample found || timeout
 						if (counterexample == null) {
@@ -124,6 +127,7 @@ public class SBESManager {
 							stub = generateTestScenarioFromCounterexample(directory, counterexample);
 						}
 					}
+					
 					statistics.iterationFinished();
 				} // end iteration
 				
@@ -169,6 +173,10 @@ public class SBESManager {
 													classPath);
 		ExecutionResult result = ExecutionManager.execute(evosuite);
 		
+		if (SBESShutdownInterceptor.isInterrupted()) {
+			return null;
+		}
+		
 		logger.debug(result.getStdout());
 		logger.debug(result.getStderr());
 		
@@ -178,7 +186,8 @@ public class SBESManager {
 				logger.error(result.getStdout());
 				logger.error(result.getStderr());
 			}
-			throw new SBESException("Unable to synthesize a valid candidate");
+			logger.warn("Unable to synthesize a valid candidate");
+			return null;
 		}
 		
 		// carve result
@@ -204,13 +213,15 @@ public class SBESManager {
 		logger.info("Generating counterexample");
 		statistics.counterexampleStarted();
 		
-		String signature = Options.I().getMethodSignature();
-		String packagename = IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
-		String testDirectory = IOUtils.concatFilePath(directory.getSecondStubDir(), packagename);
+		String signature =		Options.I().getMethodSignature();
+		String packagename =	IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
+		String testDirectory =	IOUtils.concatFilePath(directory.getSecondStubDir(), packagename);
 		
-		String classPath = IOUtils.concatClassPath(Options.I().getClassesPath(), 
-				Options.I().getJunitPath(),	Options.I().getEvosuitePath(), directory.getSecondStubDir(),
-				this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
+		String classPath = IOUtils.concatClassPath(	Options.I().getClassesPath(), 
+													Options.I().getJunitPath(),	
+													Options.I().getEvosuitePath(), 
+													directory.getSecondStubDir(),
+													this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
 		
 		// compile stub
 		CompilationContext compilationContext = new CompilationContext(	testDirectory, 
@@ -230,6 +241,10 @@ public class SBESManager {
 													ClassUtils.getMethodname(Options.I().getMethodSignature()), 
 													classPath);
 		ExecutionResult result = ExecutionManager.execute(evosuite);
+		
+		if (SBESShutdownInterceptor.isInterrupted()) {
+			return null;
+		}
 		
 		logger.debug(result.getStdout());
 		logger.debug(result.getStderr());
@@ -254,7 +269,7 @@ public class SBESManager {
 			}
 		}
 		else {
-			logger.info("Counterexample found");
+			logger.info("Counterexample found, refining search space!");
 			if (candidates.size() > 1) {
 				logger.warn("More than one counterexample synthesized");
 			}

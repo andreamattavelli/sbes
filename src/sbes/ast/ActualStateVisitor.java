@@ -13,7 +13,7 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import sbes.stub.generator.FirstStageStubGenerator;
+import sbes.stub.generator.first.FirstStageStubGenerator;
 import sbes.util.ASTUtils;
 
 public class ActualStateVisitor extends VoidVisitorAdapter<Void> {

@@ -81,7 +81,7 @@ public class Options {
 	@Option(name = "-time_measure",
 			usage = "How to measure the elapsed time: CPUTIME, GLOBALTIME",
 			handler = LevelHandler.class)
-	private TimeMeasure timeMeasure;
+	private TimeMeasure timeMeasure = TimeMeasure.GLOBALTIME;
 	
 	
 	public String getClassesPath() {

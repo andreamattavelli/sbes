@@ -36,7 +36,7 @@ import sbes.option.Options;
 import sbes.result.CarvingResult;
 import sbes.result.TestScenario;
 import sbes.stub.GenerationException;
-import sbes.stub.generator.FirstStageStubGenerator;
+import sbes.stub.generator.first.FirstStageStubGenerator;
 import sbes.util.ClassUtils;
 
 public class TestScenarioGeneralizer {
