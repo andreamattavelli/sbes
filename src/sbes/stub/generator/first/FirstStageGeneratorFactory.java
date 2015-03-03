@@ -9,7 +9,7 @@ public class FirstStageGeneratorFactory {
 
 	private FirstStageGeneratorFactory() {}
 	
-	public static FirstStageStubGenerator createGenerator(List<TestScenario> scenarios) {
+	public static FirstStageGeneratorStub createGenerator(List<TestScenario> scenarios) {
 		boolean generics = false;
 		for (TestScenario testScenario : scenarios) {
 			if (testScenario instanceof GenericTestScenario) {
@@ -18,10 +18,10 @@ public class FirstStageGeneratorFactory {
 			}
 		}
 		if (generics) {
-			return new FirstStageGenericStubGenerator(scenarios);
+			return new FirstStageGeneratorStubWithGenerics(scenarios);
 		}
 		else {
-			return new FirstStageStubGenerator(scenarios);
+			return new FirstStageGeneratorStub(scenarios);
 		}
 	}
 	

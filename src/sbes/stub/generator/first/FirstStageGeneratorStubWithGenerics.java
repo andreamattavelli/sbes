@@ -41,13 +41,13 @@ import sbes.util.ASTUtils;
 import sbes.util.AsmParameterNames;
 import sbes.util.MethodUtils;
 
-public class FirstStageGenericStubGenerator extends FirstStageStubGenerator {
+public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub {
 
-	private static final Logger logger = new Logger(FirstStageGenericStubGenerator.class);
+	private static final Logger logger = new Logger(FirstStageGeneratorStubWithGenerics.class);
 	
 	private String concreteClass;
 	
-	public FirstStageGenericStubGenerator(List<TestScenario> scenarios) {
+	public FirstStageGeneratorStubWithGenerics(List<TestScenario> scenarios) {
 		super(scenarios);
 		checkConcreteClasses();
 	}
