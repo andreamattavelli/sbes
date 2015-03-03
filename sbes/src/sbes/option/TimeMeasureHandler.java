@@ -8,6 +8,7 @@ import org.kohsuke.args4j.spi.Setter;
 
 import sbes.logging.Level;
 import sbes.logging.Logger;
+import sbes.stoppingcondition.TimeMeasure;
 
 public class TimeMeasureHandler extends OneArgumentOptionHandler<TimeMeasure> {
 

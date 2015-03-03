@@ -1,11 +1,10 @@
-package sbes.result;
+package sbes.stoppingcondition;
 
 import java.lang.management.ManagementFactory;
 import java.util.concurrent.TimeUnit;
 
 import sbes.option.Options;
-import sbes.option.StoppingConditionType;
-import sbes.option.TimeMeasure;
+import sbes.result.CarvingResult;
 
 public class StoppingCondition {
 

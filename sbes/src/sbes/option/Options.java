@@ -5,6 +5,8 @@ import java.io.File;
 import org.kohsuke.args4j.Option;
 
 import sbes.logging.Level;
+import sbes.stoppingcondition.StoppingConditionType;
+import sbes.stoppingcondition.TimeMeasure;
 
 public class Options {
 
