@@ -48,9 +48,9 @@ import sbes.util.ASTUtils;
 import sbes.util.AsmParameterNames;
 import sbes.util.MethodUtils;
 
-public class FirstStageStubGenerator extends StubGenerator {
+public class FirstStageGeneratorStub extends StubGenerator {
 
-	private static final Logger logger = new Logger(FirstStageStubGenerator.class);
+	private static final Logger logger = new Logger(FirstStageGeneratorStub.class);
 	
 	public static final String NUM_SCENARIOS = "NUM_SCENARIOS";
 	public static final String EXPECTED_STATE = "expected_states";
@@ -58,7 +58,7 @@ public class FirstStageStubGenerator extends StubGenerator {
 	public static final String ACTUAL_STATE = "actual_states";
 	public static final String ACTUAL_RESULT = "actual_results";
 	
-	public FirstStageStubGenerator(final List<TestScenario> scenarios) {
+	public FirstStageGeneratorStub(final List<TestScenario> scenarios) {
 		super(scenarios);
 	}
 	
