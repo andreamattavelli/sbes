@@ -1,4 +1,4 @@
-package sbes.option;
+package sbes.stoppingcondition;
 
 public enum TimeMeasure {
 

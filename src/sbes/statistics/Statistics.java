@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import sbes.logging.Logger;
 import sbes.option.Options;
-import sbes.option.TimeMeasure;
+import sbes.stoppingcondition.TimeMeasure;
 import sbes.util.DirectoryUtils;
 
 public class Statistics {
