@@ -16,12 +16,6 @@ public class StoppingCondition {
 		this.elapsedStoppingCondition = 0L;
 	}
 	
-	/*
-	 * If we want a time-limit stopping condition, we need to convert the given
-	 * time budget to the specific duration.
-	 * For CPUTIME, we need to use nanoseconds, while for GLOBALTIME we need to
-	 * use MILLISECONDS.
-	 */
 	private void setStoppingConditionValue() {
 		this.stoppingConditionValue = Options.I().getStoppingConditionValue();
 		if (stoppingCondition == StoppingConditionType.MAXTIME) {
