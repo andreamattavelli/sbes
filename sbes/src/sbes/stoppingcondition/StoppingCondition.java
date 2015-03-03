@@ -1,10 +1,8 @@
 package sbes.stoppingcondition;
 
-import java.lang.management.ManagementFactory;
-import java.util.concurrent.TimeUnit;
-
 import sbes.option.Options;
 import sbes.result.CarvingResult;
+import sbes.util.TimeUtils;
 
 public class StoppingCondition {
 
@@ -18,27 +16,23 @@ public class StoppingCondition {
 		this.elapsedStoppingCondition = 0L;
 	}
 	
+	/*
+	 * If we want a time-limit stopping condition, we need to convert the given
+	 * time budget to the specific duration.
+	 * For CPUTIME, we need to use nanoseconds, while for GLOBALTIME we need to
+	 * use MILLISECONDS.
+	 */
 	private void setStoppingConditionValue() {
 		this.stoppingConditionValue = Options.I().getStoppingConditionValue();
 		if (stoppingCondition == StoppingConditionType.MAXTIME) {
-			if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
-				this.stoppingConditionValue = TimeUnit.NANOSECONDS.convert(this.stoppingConditionValue, TimeUnit.SECONDS);
-			}
-			else {
-				this.stoppingConditionValue = TimeUnit.MILLISECONDS.convert(this.stoppingConditionValue, TimeUnit.SECONDS);
-			}
+			this.stoppingConditionValue = TimeUtils.getNormalizedTime(this.stoppingConditionValue);
 		}
 	}
 
 	public void init() {
 		switch(stoppingCondition) {
 		case MAXTIME:
-			if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
-				elapsedStoppingCondition = ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
-			}
-			else {
-				elapsedStoppingCondition = System.currentTimeMillis();
-			}
+			elapsedStoppingCondition = TimeUtils.getCurrentTime();
 			break;
 		case MAXITERATIONS:
 			elapsedStoppingCondition = 0L;
@@ -54,7 +48,7 @@ public class StoppingCondition {
 		}
 	}
 	
-	public void update(CarvingResult result) {
+	public void update(final CarvingResult result) {
 		switch(stoppingCondition) {
 		case NOSYNTHESIS:
 			if (result == null) {
@@ -77,13 +71,7 @@ public class StoppingCondition {
 	public boolean isInternallyReached() {
 		switch(stoppingCondition) {
 		case MAXTIME:
-			long remaining;
-			if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
-				remaining = stoppingConditionValue - (ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime() - elapsedStoppingCondition);
-			}
-			else {
-				remaining = stoppingConditionValue - (System.currentTimeMillis() - elapsedStoppingCondition);
-			}
+			long remaining = stoppingConditionValue - (TimeUtils.getCurrentTime() - elapsedStoppingCondition);
 			if (remaining < 0) {
 				return true;
 			}
@@ -112,13 +100,7 @@ public class StoppingCondition {
 	public boolean isReached() {
 		switch(stoppingCondition) {
 		case MAXTIME:
-			long remaining;
-			if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
-				remaining = stoppingConditionValue - (ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime() - elapsedStoppingCondition);
-			}
-			else {
-				remaining = stoppingConditionValue - (System.currentTimeMillis() - elapsedStoppingCondition);
-			}
+			long remaining = stoppingConditionValue - (TimeUtils.getCurrentTime() - elapsedStoppingCondition);
 			if (remaining < 0) {
 				return true;
 			}
