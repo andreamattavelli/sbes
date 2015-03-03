@@ -17,6 +17,12 @@ public class TimeUtils {
 		}
 	}
 	
+	/*
+	 * If we want a time-limit stopping condition, we need to convert the given
+	 * time budget to the specific duration.
+	 * For CPUTIME, we need to use nanoseconds, while for GLOBALTIME we need to
+	 * use MILLISECONDS.
+	 */
 	public static long getNormalizedTime(long time) {
 		if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
 			return TimeUnit.NANOSECONDS.convert(time, TimeUnit.SECONDS);
