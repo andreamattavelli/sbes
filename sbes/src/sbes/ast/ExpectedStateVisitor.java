@@ -12,7 +12,7 @@ import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.stmt.ExpressionStmt;
 import japa.parser.ast.visitor.CloneVisitor;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
-import sbes.stub.generator.first.FirstStageStubGenerator;
+import sbes.stub.generator.first.FirstStageGeneratorStub;
 
 public class ExpectedStateVisitor extends VoidVisitorAdapter<String> {
 	private int index;
@@ -39,7 +39,7 @@ public class ExpectedStateVisitor extends VoidVisitorAdapter<String> {
 					actualState = createActualState(n);
 
 					// found class constructor, switch to EXPECTED_STATES
-					Expression target = new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageStubGenerator.EXPECTED_STATE), 
+					Expression target = new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageGeneratorStub.EXPECTED_STATE), 
 							ASTHelper.createNameExpr(Integer.toString(index)));
 					AssignExpr ae = new AssignExpr(target, vd.getInit(), Operator.assign);
 					ExpressionStmt estmt = (ExpressionStmt) n.getParentNode();
@@ -50,7 +50,7 @@ public class ExpectedStateVisitor extends VoidVisitorAdapter<String> {
 					actualState = createActualState(n);
 					
 					// found class constructor, switch to EXPECTED_STATES
-					Expression target = new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageStubGenerator.EXPECTED_STATE), 
+					Expression target = new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageGeneratorStub.EXPECTED_STATE), 
 							ASTHelper.createNameExpr(Integer.toString(index)));
 					AssignExpr ae = new AssignExpr(target, vd.getInit(), Operator.assign);
 					ExpressionStmt estmt = (ExpressionStmt) n.getParentNode();
@@ -66,7 +66,7 @@ public class ExpectedStateVisitor extends VoidVisitorAdapter<String> {
 		CloneVisitor cv = new CloneVisitor();
 		VariableDeclarationExpr actual = (VariableDeclarationExpr) cv.visit(arg0, null);
 		
-		Expression target = new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageStubGenerator.ACTUAL_STATE), 
+		Expression target = new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageGeneratorStub.ACTUAL_STATE), 
 												ASTHelper.createNameExpr(Integer.toString(index)));
 		AssignExpr ae = new AssignExpr(target, actual.getVars().get(0).getInit(), Operator.assign);
 		ExpressionStmt estmt = new ExpressionStmt(ae);

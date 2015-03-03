@@ -11,7 +11,7 @@ import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.stmt.ExpressionStmt;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
-import sbes.stub.generator.first.FirstStageStubGenerator;
+import sbes.stub.generator.first.FirstStageGeneratorStub;
 import sbes.util.ASTUtils;
 
 public class ExpectedResultVisitor extends VoidVisitorAdapter<String> {
@@ -58,12 +58,12 @@ public class ExpectedResultVisitor extends VoidVisitorAdapter<String> {
 		if (mce.getName().equals(methodName) && (parameters == 0 || mce.getArgs().size() == parameters)) {
 			found = true;
 			// found class constructor, switch to EXPECTED_STATES
-			Expression target = new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageStubGenerator.EXPECTED_RESULT),
+			Expression target = new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageGeneratorStub.EXPECTED_RESULT),
 													ASTHelper.createNameExpr(Integer.toString(index)));
 			
 			if (mce.getScope() != null) {
 				expectedState = ASTUtils.getName(mce.getScope());
-				mce.setScope(new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageStubGenerator.EXPECTED_STATE),
+				mce.setScope(new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageGeneratorStub.EXPECTED_STATE),
 											ASTHelper.createNameExpr(Integer.toString(index))));
 			}
 			

@@ -23,7 +23,7 @@ import sbes.stub.CounterexampleStub;
 import sbes.stub.Stub;
 import sbes.stub.generator.StubGenerator;
 import sbes.stub.generator.first.FirstStageGeneratorFactory;
-import sbes.stub.generator.first.FirstStageStubGenerator;
+import sbes.stub.generator.first.FirstStageGeneratorStub;
 import sbes.stub.generator.second.SecondStageGeneratorFactory;
 import sbes.testcase.Carver;
 import sbes.testcase.CarvingContext;
@@ -83,7 +83,7 @@ public class SBESManager {
 							"Starting synthesis attempt #" + directory.getEquivalences());
 				
 				// FIRST PHASE STUB GENERATION
-				FirstStageStubGenerator firstPhaseGenerator = FirstStageGeneratorFactory.createGenerator(initialScenarios);
+				FirstStageGeneratorStub firstPhaseGenerator = FirstStageGeneratorFactory.createGenerator(initialScenarios);
 				Stub initialStub = firstPhaseGenerator.generateStub();
 				initialStub.dumpStub(directory.getFirstStubDir());
 

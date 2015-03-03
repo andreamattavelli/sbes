@@ -13,7 +13,7 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import sbes.stub.generator.first.FirstStageStubGenerator;
+import sbes.stub.generator.first.FirstStageGeneratorStub;
 import sbes.util.ASTUtils;
 
 public class ActualStateVisitor extends VoidVisitorAdapter<Void> {
@@ -52,14 +52,14 @@ public class ActualStateVisitor extends VoidVisitorAdapter<Void> {
 			AssignExpr actual = new AssignExpr();
 			actual.setValue(ae.getValue());
 			actual.setOperator(Operator.assign);
-			actual.setTarget(new ArrayAccessExpr(new NameExpr(FirstStageStubGenerator.ACTUAL_STATE), new NameExpr(index)));
+			actual.setTarget(new ArrayAccessExpr(new NameExpr(FirstStageGeneratorStub.ACTUAL_STATE), new NameExpr(index)));
 			actualStates.add(new ExpressionStmt(actual));
 		}
 		else if (n instanceof MethodCallExpr) {
 			MethodCallExpr mce = (MethodCallExpr) n;
 			if (!mce.getName().equals(methodName)) {
 				MethodCallExpr actual = new MethodCallExpr();
-				actual.setScope(new ArrayAccessExpr(new NameExpr(FirstStageStubGenerator.ACTUAL_STATE), new NameExpr(index)));
+				actual.setScope(new ArrayAccessExpr(new NameExpr(FirstStageGeneratorStub.ACTUAL_STATE), new NameExpr(index)));
 				actual.setName(mce.getName());
 				actual.setArgs(mce.getArgs());
 				actualStates.add(new ExpressionStmt(actual));

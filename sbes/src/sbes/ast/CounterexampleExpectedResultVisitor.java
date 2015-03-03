@@ -11,7 +11,7 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 
 import java.lang.reflect.Method;
 
-import sbes.stub.generator.first.FirstStageStubGenerator;
+import sbes.stub.generator.first.FirstStageGeneratorStub;
 import sbes.util.ASTUtils;
 
 public class CounterexampleExpectedResultVisitor extends VoidVisitorAdapter<Void> {
@@ -38,13 +38,13 @@ public class CounterexampleExpectedResultVisitor extends VoidVisitorAdapter<Void
 		if (mce.getName().equals("method_under_test")) {
 			// found class constructor, switch to EXPECTED_STATES
 			mce.setName(targetMethod.getName());
-			Expression target = new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageStubGenerator.EXPECTED_RESULT),
+			Expression target = new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageGeneratorStub.EXPECTED_RESULT),
 													ASTHelper.createNameExpr(Integer.toString(index)));
 			
 			expectedState = ASTUtils.getName(mce.getScope());
 			
 			if (!targetMethod.getReturnType().equals(void.class)) {
-				mce.setScope(new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageStubGenerator.EXPECTED_STATE),
+				mce.setScope(new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageGeneratorStub.EXPECTED_STATE),
 											ASTHelper.createNameExpr(Integer.toString(index))));
 				ExpressionStmt estmt = (ExpressionStmt) mce.getParentNode();
 				AssignExpr ae = new AssignExpr(target, mce, Operator.assign);
