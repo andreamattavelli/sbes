@@ -79,6 +79,10 @@ public class Options {
 			usage = "Logging level to be used: FATAL, ERROR, WARN, INFO, DEBUG",
 			handler = LevelHandler.class)
 	private Level logLevel;
+	
+	@Option(name = "-verbose",
+			usage = "Verbose output for EvoSuite execution. Default: false")
+	private boolean verbose = false;
 
 	@Option(name = "-time_measure",
 			usage = "How to measure the elapsed time: CPUTIME, GLOBALTIME",
@@ -148,6 +152,10 @@ public class Options {
 	
 	public TimeMeasure getTimeMeasure() {
 		return timeMeasure;
+	}
+
+	public boolean isVerbose() {
+		return verbose;
 	}
 
 }
