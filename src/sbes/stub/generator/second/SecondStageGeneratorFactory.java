@@ -8,24 +8,24 @@ import java.util.List;
 import sbes.result.CarvingResult;
 import sbes.result.TestScenario;
 import sbes.stub.Stub;
-import sbes.stub.generator.first.FirstStageGenericStubGenerator;
-import sbes.stub.generator.first.FirstStageStubGenerator;
+import sbes.stub.generator.first.FirstStageGeneratorStubWithGenerics;
+import sbes.stub.generator.first.FirstStageGeneratorStub;
 
 public class SecondStageGeneratorFactory {
 
 	private SecondStageGeneratorFactory() {}
 	
-	public static SecondStageStubGenerator createGenerator(FirstStageStubGenerator firstGenerator, Stub stub, CarvingResult candidateES) {
+	public static SecondStageGeneratorStub createGenerator(FirstStageGeneratorStub firstGenerator, Stub stub, CarvingResult candidateES) {
 		List<FieldDeclaration> fields = new ArrayList<>();
 		for (TestScenario scenario : firstGenerator.getScenarios()) {
 			fields.addAll(scenario.getInputs());
 		}
-		if (firstGenerator instanceof FirstStageGenericStubGenerator) {
-			FirstStageGenericStubGenerator fs = (FirstStageGenericStubGenerator) firstGenerator;
-			return new SecondStageGenericStubGenerator(firstGenerator.getScenarios(), stub, candidateES, fields, fs.getConcreteClass());
+		if (firstGenerator instanceof FirstStageGeneratorStubWithGenerics) {
+			FirstStageGeneratorStubWithGenerics fs = (FirstStageGeneratorStubWithGenerics) firstGenerator;
+			return new SecondStageGeneratorGenericStub(firstGenerator.getScenarios(), stub, candidateES, fields, fs.getConcreteClass());
 		}
 		else {
-			return new SecondStageStubGenerator(firstGenerator.getScenarios(), stub, candidateES, fields);
+			return new SecondStageGeneratorStub(firstGenerator.getScenarios(), stub, candidateES, fields);
 		}
 	}
 	

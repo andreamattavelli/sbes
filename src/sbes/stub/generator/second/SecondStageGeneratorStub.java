@@ -69,16 +69,16 @@ import sbes.stub.generator.StubGenerator;
 import sbes.util.ASTUtils;
 import sbes.util.ClassUtils;
 
-public class SecondStageStubGenerator extends StubGenerator {
+public class SecondStageGeneratorStub extends StubGenerator {
 
-	private static final Logger logger = new Logger(SecondStageStubGenerator.class);
+	private static final Logger logger = new Logger(SecondStageGeneratorStub.class);
 	
 	protected CarvingResult candidateES;
 	protected List<Statement> equivalence;
 	protected List<FieldDeclaration> fields;
 	protected Stub stub;
 	
-	public SecondStageStubGenerator(final List<TestScenario> scenarios, Stub stub, CarvingResult candidateES, List<FieldDeclaration> fields) {
+	public SecondStageGeneratorStub(final List<TestScenario> scenarios, Stub stub, CarvingResult candidateES, List<FieldDeclaration> fields) {
 		super(scenarios);
 		this.stub = stub;
 		this.candidateES = candidateES;
