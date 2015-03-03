@@ -28,7 +28,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
 
-import sbes.stub.generator.first.FirstStageStubGenerator;
+import sbes.stub.generator.first.FirstStageGeneratorStub;
 
 public class ASTUtils {
 
@@ -89,7 +89,7 @@ public class ASTUtils {
 	
 	public static List<Expression> getArraysDimension() {
 		List<Expression> arraysDimension = new ArrayList<Expression>();
-		arraysDimension.add(ASTHelper.createNameExpr(FirstStageStubGenerator.NUM_SCENARIOS));
+		arraysDimension.add(ASTHelper.createNameExpr(FirstStageGeneratorStub.NUM_SCENARIOS));
 		return arraysDimension;
 	}
 	

@@ -36,7 +36,7 @@ import sbes.option.Options;
 import sbes.result.CarvingResult;
 import sbes.result.TestScenario;
 import sbes.stub.GenerationException;
-import sbes.stub.generator.first.FirstStageStubGenerator;
+import sbes.stub.generator.first.FirstStageGeneratorStub;
 import sbes.util.ClassUtils;
 
 public class CounterexampleGeneralizer {
@@ -92,10 +92,10 @@ private static final Logger logger = new Logger(TestScenarioGeneralizer.class);
 		// PHASE 2: find and substitute expected state
 		ExpectedStateVisitor esv = new ExpectedStateVisitor(index, objName);
 		esv.visit(cloned, getConcreteClass(className, concreteClass));
-		ObjToExpectedStateVisitor oesv = new ObjToExpectedStateVisitor(objName, FirstStageStubGenerator.EXPECTED_STATE, Integer.toString(index));
+		ObjToExpectedStateVisitor oesv = new ObjToExpectedStateVisitor(objName, FirstStageGeneratorStub.EXPECTED_STATE, Integer.toString(index));
 		oesv.visit(cloned, null);
 		// create actual state
-		ActualStateVisitor asv = new ActualStateVisitor(FirstStageStubGenerator.EXPECTED_STATE, Integer.toString(index), methodName);
+		ActualStateVisitor asv = new ActualStateVisitor(FirstStageGeneratorStub.EXPECTED_STATE, Integer.toString(index), methodName);
 		asv.visit(cloned, null);
 		actualStatements.addAll(asv.getActualStates());
 		
