@@ -67,6 +67,37 @@ public class StoppingCondition {
 		}
 	}
 	
+	public boolean isInternallyReached() {
+		if (stoppingCondition == StoppingConditionType.MAXTIME) {
+			long remaining;
+			if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
+				remaining = stoppingConditionValue - (ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime() - elapsedStoppingCondition);
+			}
+			else {
+				remaining = stoppingConditionValue - (System.currentTimeMillis() - elapsedStoppingCondition);
+			}
+			if (remaining < 0) {
+				return true;
+			}
+		}
+		else if (stoppingCondition == StoppingConditionType.MAXITERATIONS) {
+			if (elapsedStoppingCondition > stoppingConditionValue) {
+				return true;
+			}
+		}
+		else if (stoppingCondition == StoppingConditionType.MAXITERATIONSWITHNOSYNTHESIS) {
+			if (elapsedStoppingCondition > stoppingConditionValue) {
+				return true;
+			}
+		}
+		else if (stoppingCondition == StoppingConditionType.NOSYNTHESIS) {
+			if (elapsedStoppingCondition < 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public boolean isReached() {
 		if (stoppingCondition == StoppingConditionType.MAXTIME) {
 			long remaining;
@@ -77,17 +108,16 @@ public class StoppingCondition {
 				remaining = stoppingConditionValue - (System.currentTimeMillis() - elapsedStoppingCondition);
 			}
 			if (remaining < 0) {
-				System.out.println("no time left");
 				return true;
 			}
 		}
 		else if (stoppingCondition == StoppingConditionType.MAXITERATIONS) {
-			if (elapsedStoppingCondition++ == stoppingConditionValue) {
+			if (++elapsedStoppingCondition > stoppingConditionValue) {
 				return true;
 			}
 		}
 		else if (stoppingCondition == StoppingConditionType.MAXITERATIONSWITHNOSYNTHESIS) {
-			if (elapsedStoppingCondition == stoppingConditionValue) {
+			if (elapsedStoppingCondition > stoppingConditionValue) {
 				return true;
 			}
 		}
