@@ -11,23 +11,23 @@ import sbes.result.CarvingResult;
 import sbes.testcase.Carver;
 import sbes.testcase.CarvingContext;
 
-public class TestScenarioGenerator {
+public class TestScenarioLoader {
 
-	private static final Logger logger = new Logger(TestScenarioGenerator.class);
+	private static final Logger logger = new Logger(TestScenarioLoader.class);
 
-	private static TestScenarioGenerator instance;
+	private static TestScenarioLoader instance;
 
 	private List<TestScenario> scenarios;
 	private List<TestScenario> counterexamples;
 
-	private TestScenarioGenerator() {
+	private TestScenarioLoader() {
 		scenarios = new ArrayList<TestScenario>();
 		counterexamples = new ArrayList<TestScenario>();
 	}
 
-	public static TestScenarioGenerator getInstance() {
+	public static TestScenarioLoader getInstance() {
 		if (instance == null) {
-			instance = new TestScenarioGenerator();
+			instance = new TestScenarioLoader();
 		}
 		return instance;
 	}
