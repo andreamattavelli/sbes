@@ -15,11 +15,11 @@ import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
 
+import sbes.exceptions.GenerationException;
 import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.result.TestScenario;
-import sbes.stub.GenerationException;
 import sbes.stub.Stub;
 import sbes.util.ClassUtils;
 

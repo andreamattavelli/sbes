@@ -1,4 +1,4 @@
-package sbes.stub;
+package sbes.exceptions;
 
 public class GenerationException extends RuntimeException {
 

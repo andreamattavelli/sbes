@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import sbes.exceptions.WorkerException;
 import sbes.execution.evosuite.Evosuite;
 import sbes.execution.evosuite.EvosuiteFirstStage;
 import sbes.logging.Logger;

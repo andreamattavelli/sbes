@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import sbes.exceptions.GenerationException;
 import sbes.logging.Logger;
-import sbes.stub.GenerationException;
 import sbes.stub.generator.StubGenerator;
 
 public class InternalClassloader {

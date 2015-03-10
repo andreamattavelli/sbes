@@ -25,6 +25,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
+import sbes.exceptions.CloningException;
+
 /**
  * Cloner: deep clone objects.
  * 

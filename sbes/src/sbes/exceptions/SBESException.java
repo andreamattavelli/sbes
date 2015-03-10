@@ -1,4 +1,4 @@
-package sbes;
+package sbes.exceptions;
 
 public class SBESException extends RuntimeException {
 
