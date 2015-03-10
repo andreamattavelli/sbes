@@ -7,7 +7,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import sbes.execution.evosuite.Evosuite;
+import sbes.execution.evosuite.EvosuiteFirstStage;
 import sbes.logging.Logger;
+import sbes.option.Options;
 
 public class ExecutionManager {
 
@@ -46,7 +48,7 @@ public class ExecutionManager {
 	}
 
 	private static long calculateTimeout(Evosuite evosuite) {
-		int searchBudget = evosuite.getSearchBudget();
+		int searchBudget = evosuite instanceof EvosuiteFirstStage ? Options.I().getSearchBudget() : Options.I().getCounterexampleBudget();
 		if (searchBudget <= 60) {
 			return searchBudget * 3;
 		}

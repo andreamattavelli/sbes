@@ -66,8 +66,8 @@ public class Options {
 	private int counterexampleBudget = 180;
 	
 	@Option(name = "-stopping_condition",
-			usage = "Stopping condition to apply to the main search: MAXITERATIONS, " +
-					"MAXITERATIONSWITHNOSYNTHESIS, MAXTIME, NOSYNTHESIS. Default: NOSYNTHESIS",
+			usage = "Stopping condition to apply to the main search:" + 
+					"ITERATIONS, TIME, NOSYNTHESIS, MAXWITHOUTSYNTHESIS. Default: NOSYNTHESIS",
 			required = true)
 	private StoppingConditionType stoppingCondition = StoppingConditionType.NOSYNTHESIS;
 
