@@ -18,12 +18,12 @@ import sbes.option.Options;
 import sbes.result.CarvingResult;
 import sbes.result.EquivalenceRepository;
 import sbes.scenario.TestScenario;
-import sbes.scenario.TestScenarioGenerator;
+import sbes.scenario.TestScenarioLoader;
 import sbes.statistics.Statistics;
 import sbes.stoppingcondition.StoppingCondition;
 import sbes.stub.CounterexampleStub;
 import sbes.stub.Stub;
-import sbes.stub.generator.StubGenerator;
+import sbes.stub.generator.AbstractStubGenerator;
 import sbes.stub.generator.first.FirstStageGeneratorFactory;
 import sbes.stub.generator.first.FirstStageGeneratorStub;
 import sbes.stub.generator.second.SecondStageGeneratorFactory;
@@ -57,7 +57,7 @@ public class SBESManager {
 		// TEST SCENARIO LOADING
 		statistics.scenarioStarted();
 		
-		TestScenarioGenerator scenarioGenerator = TestScenarioGenerator.getInstance();
+		TestScenarioLoader scenarioGenerator = TestScenarioLoader.getInstance();
 		// load test scenarios from path
 		scenarioGenerator.loadTestScenarios();
 		List<TestScenario> initialScenarios = scenarioGenerator.getScenarios();
@@ -115,7 +115,7 @@ public class SBESManager {
 						// SECOND PHASE: COUNTEREXAMPLE SEARCH
 						
 						// generate second stub from carved test case
-						StubGenerator secondPhaseGenerator = SecondStageGeneratorFactory.createGenerator(firstPhaseGenerator, stub, candidateES);
+						AbstractStubGenerator secondPhaseGenerator = SecondStageGeneratorFactory.createGenerator(firstPhaseGenerator, stub, candidateES);
 						Stub secondStub = secondPhaseGenerator.generateStub();
 						directory.createSecondStubDir();
 						secondStub.dumpStub(directory.getSecondStubDir());
@@ -301,8 +301,8 @@ public class SBESManager {
 	
 	private Stub generateTestScenarioFromCounterexample(DirectoryUtils directory, CarvingResult counterexample) {
 		cleanCounterexample(counterexample);
-		TestScenarioGenerator.getInstance().carvedCounterexampleToScenario(counterexample);
-		StubGenerator counterexampleGenerator = FirstStageGeneratorFactory.createGenerator(TestScenarioGenerator.getInstance().getScenarios());
+		TestScenarioLoader.getInstance().carvedCounterexampleToScenario(counterexample);
+		AbstractStubGenerator counterexampleGenerator = FirstStageGeneratorFactory.createGenerator(TestScenarioLoader.getInstance().getScenarios());
 		Stub stub = counterexampleGenerator.generateStub();
 		directory.createFirstStubDir();
 		stub.dumpStub(directory.getFirstStubDir());
