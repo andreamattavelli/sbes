@@ -20,6 +20,7 @@ import sbes.scenario.TestScenarioGenerator;
 import sbes.statistics.Statistics;
 import sbes.stoppingcondition.StoppingCondition;
 import sbes.stub.CounterexampleStub;
+import sbes.stub.GenerationException;
 import sbes.stub.Stub;
 import sbes.stub.generator.StubGenerator;
 import sbes.stub.generator.first.FirstStageGeneratorFactory;
@@ -76,6 +77,7 @@ public class SBESManager {
 			 *   - unable to synthesize a candidate 
 			 */
 			while (!stoppingCondition.isReached() && !SBESShutdownInterceptor.isInterrupted()) {
+				scenarioGenerator.reset();
 				directory.createEquivalenceDirs();
 				directory.createFirstStubDir();
 				
@@ -137,8 +139,8 @@ public class SBESManager {
 				logger.info("=========================================================================== " + 
 							"Finished synthesis attempt #" + directory.getEquivalences());
 			} // end search
-		} catch (SBESException e) {
-			logger.error(e.getMessage());
+		} catch (SBESException | GenerationException e) {
+			logger.fatal("Execution aborted due: " + e.getMessage());
 		}
 		
 		logger.info("Stopping equivalent sequence generation");
