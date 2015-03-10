@@ -8,10 +8,11 @@ import java.util.regex.Pattern;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
-import sbes.execution.WorkerException;
+import sbes.exceptions.GenerationException;
+import sbes.exceptions.SBESException;
+import sbes.exceptions.WorkerException;
 import sbes.logging.Logger;
 import sbes.option.Options;
-import sbes.stub.GenerationException;
 import sun.misc.Signal;
 
 public class SBES {

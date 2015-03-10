@@ -6,6 +6,8 @@ import java.util.List;
 
 import sbes.ast.CloneObjVisitor;
 import sbes.ast.CounterexampleVisitor;
+import sbes.exceptions.GenerationException;
+import sbes.exceptions.SBESException;
 import sbes.execution.ExecutionManager;
 import sbes.execution.ExecutionResult;
 import sbes.execution.evosuite.Evosuite;
@@ -20,7 +22,6 @@ import sbes.scenario.TestScenarioGenerator;
 import sbes.statistics.Statistics;
 import sbes.stoppingcondition.StoppingCondition;
 import sbes.stub.CounterexampleStub;
-import sbes.stub.GenerationException;
 import sbes.stub.Stub;
 import sbes.stub.generator.StubGenerator;
 import sbes.stub.generator.first.FirstStageGeneratorFactory;

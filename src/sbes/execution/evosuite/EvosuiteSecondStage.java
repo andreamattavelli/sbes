@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import sbes.SBESException;
+import sbes.exceptions.SBESException;
 import sbes.execution.InternalClassloader;
 import sbes.option.Options;
 import sbes.util.ClassUtils;

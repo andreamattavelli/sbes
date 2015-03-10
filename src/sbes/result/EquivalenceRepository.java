@@ -7,12 +7,12 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import sbes.SBESException;
 import sbes.ast.CloneObjVisitor;
+import sbes.exceptions.GenerationException;
+import sbes.exceptions.SBESException;
 import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
 import sbes.option.Options;
-import sbes.stub.GenerationException;
 import sbes.util.ClassUtils;
 
 public class EquivalenceRepository {

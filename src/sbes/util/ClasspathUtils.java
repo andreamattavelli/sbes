@@ -2,7 +2,7 @@ package sbes.util;
 
 import java.io.File;
 
-import sbes.SBESException;
+import sbes.exceptions.SBESException;
 import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
 import sbes.option.Options;

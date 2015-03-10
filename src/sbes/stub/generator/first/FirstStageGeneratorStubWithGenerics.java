@@ -32,11 +32,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import sbes.exceptions.GenerationException;
 import sbes.logging.Logger;
 import sbes.result.EquivalenceRepository;
 import sbes.result.TestScenario;
 import sbes.scenario.GenericTestScenario;
-import sbes.stub.GenerationException;
 import sbes.util.ASTUtils;
 import sbes.util.AsmParameterNames;
 import sbes.util.MethodUtils;

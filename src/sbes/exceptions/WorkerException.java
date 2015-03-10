@@ -1,4 +1,4 @@
-package sbes.execution;
+package sbes.exceptions;
 
 public class WorkerException extends RuntimeException {
 

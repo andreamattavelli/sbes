@@ -1,4 +1,4 @@
-package sbes.cloning;
+package sbes.exceptions;
 
 /**
  * thrown if cloning fails
