@@ -18,20 +18,25 @@ public class StoppingCondition {
 	
 	private void setStoppingConditionValue() {
 		this.stoppingConditionValue = Options.I().getStoppingConditionValue();
-		if (stoppingCondition == StoppingConditionType.MAXTIME) {
+		switch(stoppingCondition) {
+		case TIME:
 			this.stoppingConditionValue = TimeUtils.getNormalizedTime(this.stoppingConditionValue);
+		case NOSYNTHESIS:
+			this.stoppingConditionValue = 1L;
+		default:
+			break;
 		}
 	}
 
 	public void init() {
 		switch(stoppingCondition) {
-		case MAXTIME:
+		case TIME:
 			elapsedStoppingCondition = TimeUtils.getCurrentTime();
 			break;
-		case MAXITERATIONS:
+		case ITERATIONS:
 			elapsedStoppingCondition = 0L;
 			break;
-		case MAXITERATIONSWITHNOSYNTHESIS:
+		case MAXWITHOUTSYNTHESIS:
 			elapsedStoppingCondition = 0L;
 			break;
 		case NOSYNTHESIS:
@@ -45,11 +50,7 @@ public class StoppingCondition {
 	public void update(final CarvingResult result) {
 		switch(stoppingCondition) {
 		case NOSYNTHESIS:
-			if (result == null) {
-				elapsedStoppingCondition = Long.MIN_VALUE;
-			}
-			break;
-		case MAXITERATIONSWITHNOSYNTHESIS:
+		case MAXWITHOUTSYNTHESIS:
 			if (result == null) {
 				elapsedStoppingCondition++;
 			}
@@ -64,24 +65,20 @@ public class StoppingCondition {
 	
 	public boolean isInternallyReached() {
 		switch(stoppingCondition) {
-		case MAXTIME:
+		case TIME:
 			long remaining = stoppingConditionValue - (TimeUtils.getCurrentTime() - elapsedStoppingCondition);
 			if (remaining < 0) {
 				return true;
 			}
 			break;
-		case MAXITERATIONS:
-			if (elapsedStoppingCondition > stoppingConditionValue) {
-				return true;
-			}
-			break;
-		case MAXITERATIONSWITHNOSYNTHESIS:
+		case ITERATIONS:
 			if (elapsedStoppingCondition > stoppingConditionValue) {
 				return true;
 			}
 			break;
 		case NOSYNTHESIS:
-			if (elapsedStoppingCondition < 0) {
+		case MAXWITHOUTSYNTHESIS:
+			if (elapsedStoppingCondition > stoppingConditionValue) {
 				return true;
 			}
 			break;
@@ -93,24 +90,20 @@ public class StoppingCondition {
 	
 	public boolean isReached() {
 		switch(stoppingCondition) {
-		case MAXTIME:
+		case TIME:
 			long remaining = stoppingConditionValue - (TimeUtils.getCurrentTime() - elapsedStoppingCondition);
 			if (remaining < 0) {
 				return true;
 			}
 			break;
-		case MAXITERATIONS:
+		case ITERATIONS:
 			if (++elapsedStoppingCondition > stoppingConditionValue) {
 				return true;
 			}
 			break;
-		case MAXITERATIONSWITHNOSYNTHESIS:
-			if (elapsedStoppingCondition == stoppingConditionValue) {
-				return true;
-			}
-			break;
 		case NOSYNTHESIS:
-			if (elapsedStoppingCondition < 0) {
+		case MAXWITHOUTSYNTHESIS:
+			if (elapsedStoppingCondition == stoppingConditionValue) {
 				return true;
 			}
 			break;
