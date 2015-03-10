@@ -10,7 +10,7 @@ import java.util.List;
 
 import sbes.exceptions.GenerationException;
 import sbes.logging.Logger;
-import sbes.stub.generator.StubGenerator;
+import sbes.stub.generator.AbstractStubGenerator;
 
 public class InternalClassloader {
 
@@ -46,7 +46,7 @@ public class InternalClassloader {
 				for (File newPath : paths) {
 					urls.add(newPath.toURI().toURL());
 				}
-				classLoader = new URLClassLoader(urls.toArray(new URL[0]), StubGenerator.class.getClassLoader());
+				classLoader = new URLClassLoader(urls.toArray(new URL[0]), AbstractStubGenerator.class.getClassLoader());
 			}
 		} catch (MalformedURLException | SecurityException e) {
 			logger.error("Unable to load ClassLoader", e);
