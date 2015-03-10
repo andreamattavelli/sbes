@@ -35,7 +35,6 @@ import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
-import sbes.result.TestScenario;
 import sbes.stub.generator.first.FirstStageGeneratorStub;
 import sbes.util.ClassUtils;
 

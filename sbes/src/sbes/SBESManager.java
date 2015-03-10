@@ -17,7 +17,7 @@ import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
 import sbes.result.EquivalenceRepository;
-import sbes.result.TestScenario;
+import sbes.scenario.TestScenario;
 import sbes.scenario.TestScenarioGenerator;
 import sbes.statistics.Statistics;
 import sbes.stoppingcondition.StoppingCondition;

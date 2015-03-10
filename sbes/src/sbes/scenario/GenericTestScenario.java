@@ -6,7 +6,6 @@ import japa.parser.ast.stmt.BlockStmt;
 import java.util.List;
 
 import sbes.result.CarvingResult;
-import sbes.result.TestScenario;
 
 public class GenericTestScenario extends TestScenario {
 

@@ -1,9 +1,11 @@
-package sbes.result;
+package sbes.scenario;
 
 import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.stmt.BlockStmt;
 
 import java.util.List;
+
+import sbes.result.CarvingResult;
 
 public class TestScenario extends CarvingResult {
 	

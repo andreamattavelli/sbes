@@ -19,7 +19,7 @@ import sbes.exceptions.GenerationException;
 import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
 import sbes.option.Options;
-import sbes.result.TestScenario;
+import sbes.scenario.TestScenario;
 import sbes.stub.Stub;
 import sbes.util.ClassUtils;
 
