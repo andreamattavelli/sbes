@@ -115,18 +115,6 @@ public class EquivalenceRepository {
 		}
 		return false;
 	}
-	
-	public boolean isRealSizeExcluded() {
-		return false;
-	}
-	
-	public boolean isCollectionSizeExcluded() {
-		return false;
-	}
-	
-	public boolean hasEquivalence() {
-		return equivalences.size() > 0;
-	}
 
 	public void printEquivalences() {
 		if (equivalences.size() > 0) {
