@@ -65,11 +65,11 @@ import sbes.result.CarvingResult;
 import sbes.scenario.TestScenario;
 import sbes.stub.CounterexampleStub;
 import sbes.stub.Stub;
-import sbes.stub.generator.StubGenerator;
+import sbes.stub.generator.AbstractStubGenerator;
 import sbes.util.ASTUtils;
 import sbes.util.ClassUtils;
 
-public class SecondStageGeneratorStub extends StubGenerator {
+public class SecondStageGeneratorStub extends AbstractStubGenerator {
 
 	private static final Logger logger = new Logger(SecondStageGeneratorStub.class);
 	
