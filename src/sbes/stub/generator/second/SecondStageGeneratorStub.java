@@ -62,7 +62,7 @@ import sbes.exceptions.SBESException;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
-import sbes.result.TestScenario;
+import sbes.scenario.TestScenario;
 import sbes.stub.CounterexampleStub;
 import sbes.stub.Stub;
 import sbes.stub.generator.StubGenerator;

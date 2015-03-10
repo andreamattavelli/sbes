@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sbes.result.CarvingResult;
-import sbes.result.TestScenario;
+import sbes.scenario.TestScenario;
 import sbes.stub.Stub;
 import sbes.stub.generator.first.FirstStageGeneratorStubWithGenerics;
 import sbes.stub.generator.first.FirstStageGeneratorStub;

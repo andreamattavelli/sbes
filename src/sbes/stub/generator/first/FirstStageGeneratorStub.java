@@ -41,7 +41,7 @@ import java.util.List;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.result.EquivalenceRepository;
-import sbes.result.TestScenario;
+import sbes.scenario.TestScenario;
 import sbes.stub.Stub;
 import sbes.stub.generator.StubGenerator;
 import sbes.util.ASTUtils;
