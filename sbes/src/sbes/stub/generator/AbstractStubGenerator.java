@@ -23,9 +23,9 @@ import sbes.scenario.TestScenario;
 import sbes.stub.Stub;
 import sbes.util.ClassUtils;
 
-public abstract class StubGenerator {
+public abstract class AbstractStubGenerator {
 
-	private static final Logger logger = new Logger(StubGenerator.class);
+	private static final Logger logger = new Logger(AbstractStubGenerator.class);
 	
 	protected static final String STUB_EXTENSION = "_Stub"; 
 	
@@ -34,7 +34,7 @@ public abstract class StubGenerator {
 	protected String stubName;
 	protected final List<TestScenario> scenarios;
 	
-	public StubGenerator(final List<TestScenario> scenarios) {
+	public AbstractStubGenerator(final List<TestScenario> scenarios) {
 		InternalClassloader ic = new InternalClassloader(Options.I().getClassesPath());
 		this.classloader = ic.getClassLoader();
 		this.scenarios = scenarios;

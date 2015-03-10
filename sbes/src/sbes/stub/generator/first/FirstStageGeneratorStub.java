@@ -43,12 +43,12 @@ import sbes.option.Options;
 import sbes.result.EquivalenceRepository;
 import sbes.scenario.TestScenario;
 import sbes.stub.Stub;
-import sbes.stub.generator.StubGenerator;
+import sbes.stub.generator.AbstractStubGenerator;
 import sbes.util.ASTUtils;
 import sbes.util.AsmParameterNames;
 import sbes.util.MethodUtils;
 
-public class FirstStageGeneratorStub extends StubGenerator {
+public class FirstStageGeneratorStub extends AbstractStubGenerator {
 
 	private static final Logger logger = new Logger(FirstStageGeneratorStub.class);
 	
