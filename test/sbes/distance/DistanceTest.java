@@ -2,10 +2,19 @@ package sbes.distance;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import sbes.logging.Level;
+import sbes.option.Options;
 
 public class DistanceTest {
 
+	@BeforeClass
+	public static void setUp() {
+		Options.I().setLogLevel(Level.FATAL);
+	}
+	
 	@Test
 	public void testDistance_1()
 		throws Exception {
