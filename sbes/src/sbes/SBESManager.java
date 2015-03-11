@@ -1,11 +1,9 @@
 package sbes;
 
-import japa.parser.ast.ImportDeclaration;
-
 import java.util.List;
 
 import sbes.ast.CloneObjVisitor;
-import sbes.ast.CounterexampleVisitor;
+import sbes.exceptions.CompilationException;
 import sbes.exceptions.GenerationException;
 import sbes.exceptions.SBESException;
 import sbes.execution.ExecutionManager;
@@ -17,8 +15,10 @@ import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
 import sbes.result.EquivalenceRepository;
+import sbes.scenario.CounterexampleGeneralizer;
 import sbes.scenario.TestScenario;
 import sbes.scenario.TestScenarioLoader;
+import sbes.scenario.TestScenarioRepository;
 import sbes.statistics.Statistics;
 import sbes.stoppingcondition.StoppingCondition;
 import sbes.stub.CounterexampleStub;
@@ -57,13 +57,12 @@ public class SBESManager {
 		// TEST SCENARIO LOADING
 		statistics.scenarioStarted();
 		
-		TestScenarioLoader scenarioGenerator = TestScenarioLoader.getInstance();
+		List<TestScenario> initialScenarios = TestScenarioLoader.loadTestScenarios();
 		// load test scenarios from path
-		scenarioGenerator.loadTestScenarios();
-		List<TestScenario> initialScenarios = scenarioGenerator.getScenarios();
 		if (initialScenarios.isEmpty()) {
 			throw new SBESException("Unable to load any initial test scenarios");
 		}
+		TestScenarioRepository.I().addScenarios(initialScenarios);
 		
 		statistics.scenarioFinished();
 		
@@ -78,7 +77,7 @@ public class SBESManager {
 			 *   - unable to synthesize a candidate 
 			 */
 			while (!stoppingCondition.isReached() && !SBESShutdownInterceptor.isInterrupted()) {
-				scenarioGenerator.reset();
+				TestScenarioRepository.I().resetCounterexamples();
 				directory.createEquivalenceDirs();
 				directory.createFirstStubDir();
 				
@@ -98,50 +97,55 @@ public class SBESManager {
 				 * we loop until we either find an equivalence sequence (no counterexamples),
 				 *   we are able to synthesize a valid candidate, or we reach a time/iteration stopping condition
 				 */
-				boolean terminateIterations = false;
-				while (!terminateIterations && !stoppingCondition.isInternallyReached() && !SBESShutdownInterceptor.isInterrupted()) {
-					statistics.iterationStarted();
-					
-					// FIRST PHASE: SYNTHESIS OF CANDIDATE
-					CarvingResult candidateES = synthesizeCandidateEquivalence(stub, directory);
-					stoppingCondition.update(candidateES);
+				try {
+					boolean terminateIterations = false;
+					while (!terminateIterations && !stoppingCondition.isInternallyReached() && !SBESShutdownInterceptor.isInterrupted()) {
+						statistics.iterationStarted();
 
-					if (candidateES == null) {
-						// not able to carve any candidate, stop iteration
-						terminateIterations = true;
-					}
-					else {
-						// found a candidate, validate
-						// SECOND PHASE: COUNTEREXAMPLE SEARCH
-						
-						// generate second stub from carved test case
-						AbstractStubGenerator secondPhaseGenerator = SecondStageGeneratorFactory.createGenerator(firstPhaseGenerator, stub, candidateES);
-						Stub secondStub = secondPhaseGenerator.generateStub();
-						directory.createSecondStubDir();
-						secondStub.dumpStub(directory.getSecondStubDir());
+						// FIRST PHASE: SYNTHESIS OF CANDIDATE
+						CarvingResult candidateES = synthesizeCandidateEquivalence(stub, directory);
+						stoppingCondition.update(candidateES);
 
-						// search for a counterexample
-						CarvingResult counterexample = generateCounterexample(secondStub, directory);
-
-						// determine exit condition: counterexample found || timeout
-						if (counterexample == null) {
-							// timeout: found equivalent sequence, stop iteration
+						if (candidateES == null) {
+							// not able to carve any candidate, stop iteration
 							terminateIterations = true;
 						}
 						else {
-							// counterexample found: generate the corresponding test scenario and add it to the stub
-							stub = generateTestScenarioFromCounterexample(directory, counterexample);
+							// found a candidate, validate
+							// SECOND PHASE: COUNTEREXAMPLE SEARCH
+
+							// generate second stub from carved test case
+							AbstractStubGenerator secondPhaseGenerator = SecondStageGeneratorFactory.createGenerator(firstPhaseGenerator, stub, candidateES);
+							Stub secondStub = secondPhaseGenerator.generateStub();
+							directory.createSecondStubDir();
+							secondStub.dumpStub(directory.getSecondStubDir());
+
+							// search for a counterexample
+							CarvingResult counterexample = generateCounterexample(secondStub, directory);
+
+							// determine exit condition: counterexample found || timeout
+							if (counterexample == null) {
+								// timeout: found equivalent sequence, stop iteration
+								terminateIterations = true;
+							}
+							else {
+								// counterexample found: generate the corresponding test scenario and add it to the stub
+								stub = generateTestScenarioFromCounterexample(directory, counterexample);
+							}
 						}
-					}
-					
+
+						statistics.iterationFinished();
+					} // end iteration
+				} catch (CompilationException e) {
+					logger.fatal("Iteration aborted due to: " + e.getMessage());
 					statistics.iterationFinished();
-				} // end iteration
+				}
 				
 				logger.info("=========================================================================== " + 
 							"Finished synthesis attempt #" + directory.getEquivalences());
 			} // end search
 		} catch (SBESException | GenerationException e) {
-			logger.fatal("Execution aborted due: " + e.getMessage());
+			logger.fatal("Execution aborted due to: " + e.getMessage());
 		}
 		
 		logger.info("Stopping equivalent sequence generation");
@@ -174,7 +178,7 @@ public class SBESManager {
 		boolean compilationSucceeded = Compilation.compile(compilationContext);
 		if (!compilationSucceeded) {
 			logger.fatal("Unable to compile first-stage stub " + stub.getStubName());
-			throw new SBESException("Unable to compile first-stage stub " + stub.getStubName());
+			throw new CompilationException("Unable to compile first-stage stub " + stub.getStubName());
 		}
 		
 		// run evosuite
@@ -248,7 +252,7 @@ public class SBESManager {
 		boolean compilationSucceeded = Compilation.compile(compilationContext);
 		if (!compilationSucceeded) {
 			logger.fatal("Unable to compile second-stage stub " + secondStub.getStubName());
-			throw new SBESException("Unable to compile second-stage stub " + secondStub.getStubName());
+			throw new CompilationException("Unable to compile second-stage stub " + secondStub.getStubName());
 		}
 		
 		// run evosuite
@@ -300,27 +304,13 @@ public class SBESManager {
 	}
 	
 	private Stub generateTestScenarioFromCounterexample(DirectoryUtils directory, CarvingResult counterexample) {
-		cleanCounterexample(counterexample);
-		TestScenarioLoader.getInstance().carvedCounterexampleToScenario(counterexample);
-		AbstractStubGenerator counterexampleGenerator = FirstStageGeneratorFactory.createGenerator(TestScenarioLoader.getInstance().getScenarios());
+		TestScenario counterexampleScenario = CounterexampleGeneralizer.counterexampleToTestScenario(counterexample);
+		TestScenarioRepository.I().addCounterexample(counterexampleScenario);
+		AbstractStubGenerator counterexampleGenerator = FirstStageGeneratorFactory.createGenerator(TestScenarioRepository.I().getScenarios());
 		Stub stub = counterexampleGenerator.generateStub();
 		directory.createFirstStubDir();
 		stub.dumpStub(directory.getFirstStubDir());
 		return stub;
-	}
-	
-	private void cleanCounterexample(CarvingResult counterexample) {
-		String classname = ClassUtils.getSimpleClassname(Options.I().getMethodSignature());
-		CounterexampleVisitor cv = new CounterexampleVisitor();
-		cv.visit(counterexample.getBody(), classname);
-		
-		for (int i = 0; i < counterexample.getImports().size(); i++) {
-			ImportDeclaration importDecl = counterexample.getImports().get(i);
-			if (importDecl.getName().getName().endsWith(classname + "_Stub_2")) {
-				counterexample.getImports().remove(importDecl);
-				i--;
-			}
-		}
 	}
 	
 }
