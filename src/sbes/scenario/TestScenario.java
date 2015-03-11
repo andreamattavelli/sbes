@@ -22,7 +22,7 @@ public class TestScenario extends CarvingResult {
 		return scenarioBody;
 	}
 	
-	public List<FieldDeclaration> getInputs() {
+	public List<FieldDeclaration> getInputAsFields() {
 		return inputs;
 	}
 	

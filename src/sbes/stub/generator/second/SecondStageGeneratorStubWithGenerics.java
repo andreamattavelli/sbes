@@ -139,6 +139,41 @@ public class SecondStageGeneratorStubWithGenerics extends SecondStageGeneratorSt
 		AssignExpr assignment = new AssignExpr(left, right, Operator.assign);
 		return new ExpressionStmt(assignment);
 	}
+	
+	@Override
+	protected Statement createExpectedResult(Method targetMethod, List<Parameter> parameters) {
+		List<Expression> methodParameters = new ArrayList<Expression>();
+		for (Parameter parameter : parameters) {
+			methodParameters.add(ASTHelper.createNameExpr(parameter.getId().getName()));
+		}
+		Expression right = new MethodCallExpr(new ThisExpr(), targetMethod.getName(), methodParameters);
+		if (!targetMethod.getReturnType().equals(void.class)) {
+			List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+			vars.add(new VariableDeclarator(new VariableDeclaratorId("expected_result")));
+			String className = targetMethod.getGenericReturnType().toString();
+			if (className.length() == 1) {
+				// is a generic type, switch to concrete!
+				className = concreteClass;
+			}
+			int arrayDimension = 0;
+			if (targetMethod.getReturnType().isArray()) {
+				arrayDimension = 1;
+			}
+			Expression left = new VariableDeclarationExpr(ASTHelper.createReferenceType(className, arrayDimension), vars);
+			AssignExpr assignment = new AssignExpr(left, right, Operator.assign);
+			return new ExpressionStmt(assignment);
+		}
+		return new ExpressionStmt(right);
+	}
+	
+	protected String getActualResultType(Method targetMethod) {
+		String className = targetMethod.getGenericReturnType().toString();
+		if (className.length() == 1) {
+			// is a generic type, switch to concrete!
+			className = concreteClass;
+		}
+		return className;
+	}
 
 	private List<Parameter> getGenericParameterType(Type[] genericParams, Class<?>[] concreteParams) {
 		List<Parameter> toReturn = new ArrayList<Parameter>();

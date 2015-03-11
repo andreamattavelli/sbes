@@ -96,7 +96,7 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 		declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), concreteClass, ACTUAL_STATE));
 		
 		for (TestScenario scenario : scenarios) {
-			declarations.addAll(scenario.getInputs());
+			declarations.addAll(scenario.getInputAsFields());
 		}
 		
 		logger.debug("Adding class fields - done");
