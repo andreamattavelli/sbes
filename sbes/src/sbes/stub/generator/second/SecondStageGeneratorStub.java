@@ -453,7 +453,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		Expression arg = mce.getArgs().get(0);		
 		VariableDeclarationExpr vde = null;
 		String name = ASTUtils.getName(arg);
-		String resultType = targetMethod.getReturnType().getCanonicalName();
+		String resultType = getActualResultType(targetMethod);
 		int arrayDimension = 0;
 		if (targetMethod.getReturnType().isArray()) {
 			arrayDimension = 1;
@@ -650,6 +650,10 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 			ChangeObjNameVisitor conv = new ChangeObjNameVisitor(varName, "actual_result");
 			conv.visit(cloned, null);
 		}
+	}
+
+	protected String getActualResultType(Method targetMethod) {
+		return targetMethod.getReturnType().getCanonicalName();
 	}
 	
 	/*

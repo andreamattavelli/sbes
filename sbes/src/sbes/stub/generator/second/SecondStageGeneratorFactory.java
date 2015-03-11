@@ -18,7 +18,7 @@ public class SecondStageGeneratorFactory {
 	public static SecondStageGeneratorStub createGenerator(FirstStageGeneratorStub firstGenerator, Stub stub, CarvingResult candidateES) {
 		List<FieldDeclaration> fields = new ArrayList<>();
 		for (TestScenario scenario : firstGenerator.getScenarios()) {
-			fields.addAll(scenario.getInputs());
+			fields.addAll(scenario.getInputAsFields());
 		}
 		if (firstGenerator instanceof FirstStageGeneratorStubWithGenerics) {
 			FirstStageGeneratorStubWithGenerics fs = (FirstStageGeneratorStubWithGenerics) firstGenerator;
