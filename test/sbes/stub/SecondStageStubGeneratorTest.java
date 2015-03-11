@@ -64,7 +64,7 @@ public class SecondStageStubGeneratorTest {
 				"./test/resources/compilation/" + packagename, 
 				filename + ".java", 
 				"./test/resources/compilation", 
-				"./bin");
+				classesPath);
 		
 		boolean compilationSucceeded = Compilation.compile(compilationContext);
 		System.out.println("Compiles? " + compilationSucceeded);
@@ -272,13 +272,18 @@ public class SecondStageStubGeneratorTest {
 				"abstractEdge_Stub0.set_results(nodeArray0);"+
 				"abstractEdge_Stub0.method_under_test();}");
 
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("org.graphstream.graph.implementations.AbstractEdge"), false, false));
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
 		Stub second = sssg.generateStub();
+		second.dumpStub("./test/resources/compilation");
+		assertThatCompiles("org/graphstream/graph/implementations", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin:./bin");
+		
 		String actual = second.getAst().toString();
 		String expected = "package org.graphstream.graph.implementations;"+
 				"import sbes.distance.Distance;"+
 				"import sbes.cloning.Cloner;"+
+				"import org.graphstream.graph.implementations.AbstractEdge;"+
 				"public class AbstractEdge_Stub_2 extends AbstractEdge {"+
 				"protected AbstractEdge_Stub_2(java.lang.String p0, org.graphstream.graph.implementations.AbstractNode p1, org.graphstream.graph.implementations.AbstractNode p2, boolean p3) {"+
 				"super(p0, p1, p2, p3);"+
@@ -579,6 +584,9 @@ public class SecondStageStubGeneratorTest {
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
 		Stub second = sssg.generateStub();
+		second.dumpStub("./test/resources/compilation");
+		assertThatCompiles("org/graphstream/graph/implementations", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
+		
 		String actual = second.getAst().toString();
 		String expected = "package org.graphstream.graph.implementations;"+
 				"import sbes.distance.Distance;"+
@@ -851,12 +859,8 @@ public class SecondStageStubGeneratorTest {
 	public void test20() throws ParseException {
 		setUp("./test/resources/gs-core-1.2.jar", "org.graphstream.graph.implementations.AbstractEdge.addAttribute(String,Object)", "AbstractEdge_Stub");
 		
-		List<TypeDeclaration> decls = new ArrayList<TypeDeclaration>(); 
-		List<Comment> comments = new ArrayList<Comment>();
-		
-		stub = new Stub(new CompilationUnit(new PackageDeclaration(new NameExpr("asda")), imports, decls, comments), "AbstractEdge_Stub");
-		
-		BlockStmt body = JavaParser.parseBlock("{AbstractEdge_Stub abstractEdge_Stub0 = new AbstractEdge_Stub();"+
+		BlockStmt body = JavaParser.parseBlock(
+				"{AbstractEdge_Stub abstractEdge_Stub0 = new AbstractEdge_Stub();"+
 				"String string0 = AbstractEdge_Stub.ELEMENT_0_0;"+
 				"Object[] objectArray0 = AbstractEdge_Stub.ELEMENT_0_1;"+
 				"abstractEdge_Stub0.changeAttribute(string0, objectArray0);"+
@@ -864,20 +868,23 @@ public class SecondStageStubGeneratorTest {
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
 		Stub second = sssg.generateStub();
+		second.dumpStub("./test/resources/compilation");
+		assertThatCompiles("org/graphstream/graph/implementations", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
+		
 		String actual = second.getAst().toString();
 		String expected = 
 				"package org.graphstream.graph.implementations;"+
 				"import sbes.distance.Distance;"+
 				"import sbes.cloning.Cloner;"+
-				"public class AbstractEdge_Stub_2 extends AbstractEdge<Integer> {"+
+				"public class AbstractEdge_Stub_2 extends AbstractEdge {"+
 				"protected AbstractEdge_Stub_2(java.lang.String p0, org.graphstream.graph.implementations.AbstractNode p1, org.graphstream.graph.implementations.AbstractNode p2, boolean p3) {"+
 				"super(p0, p1, p2, p3);"+
 				"}"+
-				"public void method_under_test(java.lang.String p0, java.lang.Object[][] p1) {"+
+				"public void method_under_test(java.lang.String p0, java.lang.Object p1) {"+
 				"Cloner c = new Cloner();"+
-				"AbstractEdge<Integer> clone = c.deepClone(this);"+
+				"AbstractEdge clone = c.deepClone(this);"+
 				"this.addAttribute(p0, p1);"+
 				"clone.changeAttribute(p0, p1);"+
 				"if (Distance.distance(this, clone) > 0.0d)"+
@@ -1016,14 +1023,7 @@ public class SecondStageStubGeneratorTest {
 	
 	@Test
 	public void test24() throws ParseException {
-		setUp("./test/resources/gs-core-1.2.jar", "org.graphstream.graph.implementations.AbstractEdge.addAttribute(String,Object)", "AbstractEdge_Stub");
-		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/sbes/gs-core-1.2.jar");
-		Options.I().setMethodSignature("org.graphstream.graph.Path.getEdgeCount()");
-		
-		List<TypeDeclaration> decls = new ArrayList<TypeDeclaration>(); 
-		List<Comment> comments = new ArrayList<Comment>();
-		
-		stub = new Stub(new CompilationUnit(new PackageDeclaration(new NameExpr("asda")), imports, decls, comments), "Path_Stub");
+		setUp("./test/resources/gs-core-1.2.jar", "org.graphstream.graph.Path.getEdgeCount()", "Path_Stub");
 		
 		BlockStmt body = JavaParser.parseBlock("{Path_Stub path_Stub0 = new Path_Stub();"+
 				"AbstractEdge abstractEdge0 = (AbstractEdge)path_Stub0.popEdge();"+
@@ -1034,22 +1034,30 @@ public class SecondStageStubGeneratorTest {
 				"path_Stub0.set_results((int) short0);"+
 				"path_Stub0.method_under_test();}");
 
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("org.graphstream.graph.implementations.AbstractEdge"), false, false));
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("org.graphstream.graph.implementations.SingleNode"), false, false));
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.io.ObjectStreamConstants"), false, false));
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
 		Stub second = sssg.generateStub();
+		second.dumpStub("./test/resources/compilation");
+		assertThatCompiles("org/graphstream/graph", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
+		
 		String actual = second.getAst().toString();
 		String expected = 
 				"package org.graphstream.graph;"+
 				"import sbes.distance.Distance;"+
 				"import sbes.cloning.Cloner;"+
-				"public class Path_Stub_2 extends Path<Integer> {"+
+				"import org.graphstream.graph.implementations.AbstractEdge;"+
+				"import org.graphstream.graph.implementations.SingleNode;"+
+				"import java.io.ObjectStreamConstants;"+
+				"public class Path_Stub_2 extends Path {"+
 				"public Path_Stub_2() {"+
 				"super();"+
 				"}"+
 				"public void method_under_test() {"+
 				"Cloner c = new Cloner();"+
-				"Path<Integer> clone = c.deepClone(this);"+
+				"Path clone = c.deepClone(this);"+
 				"int expected_result = this.getEdgeCount();"+
 				"AbstractEdge abstractEdge0 = (AbstractEdge) clone.popEdge();"+
 				"clone.add((Edge) abstractEdge0);"+
@@ -1066,14 +1074,7 @@ public class SecondStageStubGeneratorTest {
 	
 	@Test
 	public void test25() throws ParseException {
-		setUp("./test/resources/gs-core-1.2.jar", "org.graphstream.graph.implementations.AbstractEdge.addAttribute(String,Object)", "AbstractEdge_Stub");
-		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/sbes/gs-core-1.2.jar");
-		Options.I().setMethodSignature("org.graphstream.ui.geom.Vector2.x()");
-		
-		List<TypeDeclaration> decls = new ArrayList<TypeDeclaration>(); 
-		List<Comment> comments = new ArrayList<Comment>();
-		
-		stub = new Stub(new CompilationUnit(new PackageDeclaration(new NameExpr("asda")), imports, decls, comments), "Vector2_Stub");
+		setUp("./test/resources/gs-core-1.2.jar", "org.graphstream.ui.geom.Vector2.x()", "Vector2_Stub");
 		
 		BlockStmt body = JavaParser.parseBlock("{Vector2_Stub vector2_Stub0 = new Vector2_Stub();"+
 				"Point2 point2_0 = new Point2();"+
@@ -1083,16 +1084,17 @@ public class SecondStageStubGeneratorTest {
 				"vector2_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		
-		
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
 		Stub second = sssg.generateStub();
+		second.dumpStub("./test/resources/compilation");
+		assertThatCompiles("org/graphstream/ui/geom", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
+		
 		String actual = second.getAst().toString();
 		String expected = 
 				"package org.graphstream.ui.geom;"+
 				"import sbes.distance.Distance;"+
 				"import sbes.cloning.Cloner;"+
-				"public class Vector2_Stub_2 extends Vector2<Integer> {"+
+				"public class Vector2_Stub_2 extends Vector2 {"+
 				"public Vector2_Stub_2(org.graphstream.ui.geom.Point2 p0, org.graphstream.ui.geom.Point2 p1) {"+
 				"super(p0, p1);"+
 				"}"+
@@ -1110,7 +1112,7 @@ public class SecondStageStubGeneratorTest {
 				"}"+
 				"public void method_under_test() {"+
 				"Cloner c = new Cloner();"+
-				"Vector2<Integer> clone = c.deepClone(this);"+
+				"Vector2 clone = c.deepClone(this);"+
 				"double expected_result = this.x();"+
 				"Point2 point2_0 = new Point2();"+
 				"clone.scalarDiv(point2_0.x);"+
@@ -1122,64 +1124,58 @@ public class SecondStageStubGeneratorTest {
 		assertAndPrint(actual, expected);
 	}
 	
-	@Test
-	public void test26() throws ParseException {
-		setUp("./test/resources/gs-core-1.2.jar", "org.graphstream.graph.implementations.AbstractEdge.addAttribute(String,Object)", "AbstractEdge_Stub");
-		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/sbes/gs-core-1.2.jar");
-		Options.I().setMethodSignature("org.graphstream.ui.geom.Vector2.x()");
-		
-		List<TypeDeclaration> decls = new ArrayList<TypeDeclaration>(); 
-		List<Comment> comments = new ArrayList<Comment>();
-		
-		stub = new Stub(new CompilationUnit(new PackageDeclaration(new NameExpr("asda")), imports, decls, comments), "Vector2_Stub");
-		
-		BlockStmt body = JavaParser.parseBlock("{Vector2_Stub vector2_Stub0 = new Vector2_Stub();"+
-				"Point2 point2_0 = new Point2();"+
-				"Vector2 vector2_0 = new Vector2(point2_0.x, point2_0.x);"+
-				"vector2_0.scalarDiv(point2_0.y);"+
-				"vector2_Stub0.set_results(vector2_0.data);"+
-				"vector2_Stub0.method_under_test();}");
-
-		CarvingResult candidateES = new CarvingResult(body, imports);
-		
-		
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
-		Stub second = sssg.generateStub();
-		String actual = second.getAst().toString();
-		String expected = 
-				"package org.graphstream.ui.geom;"+
-				"import sbes.distance.Distance;"+
-				"import sbes.cloning.Cloner;"+
-				"public class Vector2_Stub_2 extends Vector2<Integer> {"+
-				"public Vector2_Stub_2(org.graphstream.ui.geom.Point2 p0, org.graphstream.ui.geom.Point2 p1) {"+
-				"super(p0, p1);"+
-				"}"+
-				"public Vector2_Stub_2(org.graphstream.ui.geom.Point2 p0) {"+
-				"super(p0);"+
-				"}"+
-				"public Vector2_Stub_2(org.graphstream.ui.geom.Vector2 p0) {"+
-				"super(p0);"+
-				"}"+
-				"public Vector2_Stub_2(double p0, double p1) {"+
-				"super(p0, p1);"+
-				"}"+
-				"public Vector2_Stub_2() {"+
-				"super();"+
-				"}"+
-				"public void method_under_test() {"+
-				"Cloner c = new Cloner();"+
-				"Vector2<Integer> clone = c.deepClone(this);"+
-				"double expected_result = this.x();"+
-				"Point2 point2_0 = new Point2();"+
-				"Vector2 vector2_0 = new Vector2(point2_0.x, point2_0.x);"+
-				"vector2_0.scalarDiv(point2_0.y);"+
-				"double actual_result = vector2_0.data;"+
-				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
-				"System.out.println(\"Executed\");"+
-				"}"+
-				"}";
-		assertAndPrint(actual, expected);
-	}
+//	@Test
+//	public void test26() throws ParseException {
+//		setUp("./test/resources/gs-core-1.2.jar", "org.graphstream.ui.geom.Vector2.x()", "Vector2_Stub");
+//		
+//		BlockStmt body = JavaParser.parseBlock("{Vector2_Stub vector2_Stub0 = new Vector2_Stub();"+
+//				"Point2 point2_0 = new Point2();"+
+//				"Vector2 vector2_0 = new Vector2(point2_0.x, point2_0.x);"+
+//				"vector2_0.scalarDiv(point2_0.y);"+
+//				"vector2_Stub0.set_results(vector2_0.data);"+
+//				"vector2_Stub0.method_under_test();}");
+//
+//		CarvingResult candidateES = new CarvingResult(body, imports);
+//		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
+//		Stub second = sssg.generateStub();
+//		second.dumpStub("./test/resources/compilation");
+//		assertThatCompiles("org/graphstream/ui/geom", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
+//		
+//		String actual = second.getAst().toString();
+//		String expected = 
+//				"package org.graphstream.ui.geom;"+
+//				"import sbes.distance.Distance;"+
+//				"import sbes.cloning.Cloner;"+
+//				"public class Vector2_Stub_2 extends Vector2 {"+
+//				"public Vector2_Stub_2(org.graphstream.ui.geom.Point2 p0, org.graphstream.ui.geom.Point2 p1) {"+
+//				"super(p0, p1);"+
+//				"}"+
+//				"public Vector2_Stub_2(org.graphstream.ui.geom.Point2 p0) {"+
+//				"super(p0);"+
+//				"}"+
+//				"public Vector2_Stub_2(org.graphstream.ui.geom.Vector2 p0) {"+
+//				"super(p0);"+
+//				"}"+
+//				"public Vector2_Stub_2(double p0, double p1) {"+
+//				"super(p0, p1);"+
+//				"}"+
+//				"public Vector2_Stub_2() {"+
+//				"super();"+
+//				"}"+
+//				"public void method_under_test() {"+
+//				"Cloner c = new Cloner();"+
+//				"Vector2 clone = c.deepClone(this);"+
+//				"double expected_result = this.x();"+
+//				"Point2 point2_0 = new Point2();"+
+//				"Vector2 vector2_0 = new Vector2(point2_0.x, point2_0.x);"+
+//				"vector2_0.scalarDiv(point2_0.y);"+
+//				"double[] actual_result = vector2_0.data;"+
+//				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
+//				"System.out.println(\"Executed\");"+
+//				"}"+
+//				"}";
+//		assertAndPrint(actual, expected);
+//	}
 	
 	@Test
 	public void test27() throws ParseException {
@@ -1233,13 +1229,6 @@ public class SecondStageStubGeneratorTest {
 	@Test
 	public void test28() throws ParseException {
 		setUp("./test/resources/gs-core-1.2.jar", "org.graphstream.graph.implementations.AbstractEdge.addAttribute(String,Object)", "AbstractEdge_Stub");
-		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/sbes/gs-core-1.2.jar");
-		Options.I().setMethodSignature("org.graphstream.graph.implementations.AbstractEdge.getFirstAttributeOf(String)");
-		
-		List<TypeDeclaration> decls = new ArrayList<TypeDeclaration>(); 
-		List<Comment> comments = new ArrayList<Comment>();
-		
-		stub = new Stub(new CompilationUnit(new PackageDeclaration(new NameExpr("asda")), imports, decls, comments), "AbstractEdge_Stub");
 		
 		BlockStmt body = JavaParser.parseBlock("{AbstractEdge_Stub abstractEdge_Stub0 = new AbstractEdge_Stub();"+
 				"String string0 = AbstractEdge_Stub.ELEMENT_0_0;"+
@@ -1248,26 +1237,26 @@ public class SecondStageStubGeneratorTest {
 				"abstractEdge_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		
-		
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
 		Stub second = sssg.generateStub();
+		second.dumpStub("./test/resources/compilation");
+		assertThatCompiles("org/graphstream/graph/implementations", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
+		
 		String actual = second.getAst().toString();
 		String expected = 
 				"package org.graphstream.graph.implementations;"+
 				"import sbes.distance.Distance;"+
 				"import sbes.cloning.Cloner;"+
-				"public class AbstractEdge_Stub_2 extends AbstractEdge<Integer> {"+
+				"public class AbstractEdge_Stub_2 extends AbstractEdge {"+
 				"protected AbstractEdge_Stub_2(java.lang.String p0, org.graphstream.graph.implementations.AbstractNode p1, org.graphstream.graph.implementations.AbstractNode p2, boolean p3) {"+
 				"super(p0, p1, p2, p3);"+
 				"}"+
-				"public void method_under_test(java.lang.String[][] p0) {"+
+				"public void method_under_test(java.lang.String p0, java.lang.Object p1) {"+
 				"Cloner c = new Cloner();"+
-				"AbstractEdge<Integer> clone = c.deepClone(this);"+
-				"Integer expected_result = this.getFirstAttributeOf(p0);"+
+				"AbstractEdge clone = c.deepClone(this);"+
+				"this.addAttribute(p0, p1);"+
 				"Integer integer0 = (Integer) clone.getAttribute(p0);"+
-				"Integer actual_result = clone.getAttribute(p0);"+
-				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
+				"if (Distance.distance(this, clone) > 0.0d)"+
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
@@ -1277,13 +1266,6 @@ public class SecondStageStubGeneratorTest {
 	@Test
 	public void test29() throws ParseException {
 		setUp("./test/resources/gs-core-1.2.jar", "org.graphstream.graph.implementations.AbstractEdge.addAttribute(String,Object)", "AbstractEdge_Stub");
-		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/sbes/gs-core-1.2.jar");
-		Options.I().setMethodSignature("org.graphstream.graph.implementations.AbstractEdge.getFirstAttributeOf(String)");
-		
-		List<TypeDeclaration> decls = new ArrayList<TypeDeclaration>(); 
-		List<Comment> comments = new ArrayList<Comment>();
-		
-		stub = new Stub(new CompilationUnit(new PackageDeclaration(new NameExpr("asda")), imports, decls, comments), "AbstractEdge_Stub");
 		
 		BlockStmt body = JavaParser.parseBlock("{AbstractEdge_Stub abstractEdge_Stub0 = new AbstractEdge_Stub();"+
 				"String string0 = AbstractEdge_Stub.ELEMENT_0_0;"+
@@ -1292,26 +1274,26 @@ public class SecondStageStubGeneratorTest {
 				"abstractEdge_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		
-		
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
 		Stub second = sssg.generateStub();
+		second.dumpStub("./test/resources/compilation");
+		assertThatCompiles("org/graphstream/graph/implementations", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
+		
 		String actual = second.getAst().toString();
 		String expected = 
 				"package org.graphstream.graph.implementations;"+
 				"import sbes.distance.Distance;"+
 				"import sbes.cloning.Cloner;"+
-				"public class AbstractEdge_Stub_2 extends AbstractEdge<Integer> {"+
+				"public class AbstractEdge_Stub_2 extends AbstractEdge {"+
 				"protected AbstractEdge_Stub_2(java.lang.String p0, org.graphstream.graph.implementations.AbstractNode p1, org.graphstream.graph.implementations.AbstractNode p2, boolean p3) {"+
 				"super(p0, p1, p2, p3);"+
 				"}"+
-				"public void method_under_test(java.lang.String[][] p0) {"+
+				"public void method_under_test(java.lang.String p0, java.lang.Object p1) {"+
 				"Cloner c = new Cloner();"+
-				"AbstractEdge<Integer> clone = c.deepClone(this);"+
-				"Integer expected_result = this.getFirstAttributeOf(p0);"+
+				"AbstractEdge clone = c.deepClone(this);"+
+				"this.addAttribute(p0, p1);"+
 				"Integer integer0 = (Integer) clone.getAttribute(p0);"+
-				"Integer actual_result = clone.getAttribute(p0);"+
-				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
+				"if (Distance.distance(this, clone) > 0.0d)"+
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
