@@ -5,6 +5,7 @@ import java.io.File;
 import org.kohsuke.args4j.Option;
 
 import sbes.logging.Level;
+import sbes.logging.Logger;
 import sbes.stoppingcondition.StoppingConditionType;
 import sbes.stoppingcondition.TimeMeasure;
 
@@ -139,7 +140,7 @@ public class Options {
 	}
 
 	public void setLogLevel(Level logLevel) {
-		this.logLevel = logLevel;
+		Logger.setLevel(logLevel);
 	}
 	
 	public StoppingConditionType getStoppingCondition() {
