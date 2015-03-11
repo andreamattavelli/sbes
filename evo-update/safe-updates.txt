@@ -1,0 +1,68 @@
+arcuri
+3109c04 M
+Merge with c7e3df7b4414bbbb2ceeb5d234569f108c81a5a4
+2014-05-21
+
+gordon
+b1031b6 M
+Commit after merge
+2014-05-08
+
+gordon
+dbe1374 M
+Commit after merge
+2014-05-06
+
+gordon
+c91c233 M
+Commit after merge
+2014-05-01
+
+gordon
+73591f9
+Treat strings with primitive rather than object probability for reuse to make test pass again
+2014-04-13
+
+arcuri
+5d29daf
+fix for failing test case
+2014-04-07
+
+Juan Galeotti
+12c3b23
+bugfix: test transformation for containers was not preserving semantics
+2014-03-27
+
+Juan Galeotti
+1270058
+property values are escaped using the StringEscapeUtils
+2014-03-26
+
+gordon
+df3d053 M
+Commit after merge
+2014-03-20
+
+gordon
+742cf7d M
+Commit after merge
+2014-03-26
+
+Juan Galeotti
+2703a85
+test cases for JUnitProcessLauncher
+2014-03-18
+
+arcuri
+78aa883
+revert due to regression bug
+2014-03-03
+
+gordon
+96ab72f
+Remove unneeded (and wrong) imports
+2014-03-01
+
+
+
+

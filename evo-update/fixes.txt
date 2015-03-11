@@ -1,0 +1,14 @@
+TestCodeVisitor:getClassName:277 --- ResourceList.hasClass(fullName) -> TestCluster.getInheritanceTree().hasClass(fullName)
+
+TestFactory:createOrReuseObjectVariable:1121 --- filterVariablesByCastClasses(candidates) -> filterVariablesByClass(candidates, Object.class)
+
+Randomness:choice --- if (elements.length == 0)	throw new IllegalArgumentException("Cannot choose from empty collection") -> if (elements.length == 0) return null
+
+MethodStatement:execute:265 --- commentare tutto il blocco di codice di if(method.getReturnType() instanceof...
+
+TestClusterGenerator:getConcreteClasses --- commentare if(!hasStaticGenerator(subClazz)):1602 e if(hasStaticGenerator(clazz)):1633
+											if (c.getDeclaringClass().isMemberClass() && !canUse(c.getDeclaringClass())) -> if (c.getDeclaringClass().isMemberClass() && !Modifier.isPublic(c.getDeclaringClass().getModifiers()))
+
+GenericField, GenericMethod, GenericConstructor --- implementare hashCode() e equals()
+
+TestCluster:getGeneratorsForSpecialCase:716 --- commentare if(calls.isEmpty())
