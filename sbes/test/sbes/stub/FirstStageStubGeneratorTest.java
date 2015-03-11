@@ -4,191 +4,217 @@ import static org.junit.Assert.assertEquals;
 import japa.parser.JavaParser;
 import japa.parser.ParseException;
 import japa.parser.ast.ImportDeclaration;
+import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.stmt.BlockStmt;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+import sbes.logging.Level;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
-import sbes.result.TestScenario;
 import sbes.scenario.GenericTestScenario;
+import sbes.scenario.TestScenario;
 import sbes.scenario.TestScenarioGeneralizer;
-import sbes.stub.generator.FirstStageGenericStubGenerator;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FirstStageStubGeneratorTest {
-
-	@Before
-	public void setUp() throws Exception {
+	
+	private List<ImportDeclaration> imports = new ArrayList<ImportDeclaration>();
+	
+	private void setUp(String classesPath, String methodSignature) {
+		Options.I().setClassesPath(classesPath);
+		Options.I().setMethodSignature(methodSignature);
+		Options.I().setLogLevel(Level.FATAL);
 	}
-
-	@After
-	public void tearDown() throws Exception {
+	
+	protected void assertScenarioAndPrint(String actual, String expected) {
+		assertEquals(expected.replaceAll("\\s|\t|\n", ""), actual.replaceAll("\\s|\t|\n", ""));
+		System.out.println(actual);
+		System.out.println();
 	}
-
-//	@Test
-//	public void test() throws ParseException {
-//		List<ImportDeclaration> imports = new ArrayList<ImportDeclaration>();
-//		
-//		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/sbes/joda-time-2.3.jar");
-//		Options.I().setMethodSignature("org.joda.time.DateTime.minus(ReadableDuration)");
-//		
-//		BlockStmt body = JavaParser.parseBlock("{FixedDateTimeZone fixedDateTimeZone0 = new FixedDateTimeZone(\"\", \"\", 1836, 0);"+ 
-//				"DateTime dateTime0 = new DateTime((DateTimeZone) fixedDateTimeZone0);"+ 
-//				"Interval interval0 = new Interval((long) (-64), (long) 1836);"+ 
-//				"Duration duration0 = interval0.toDuration();"+ 
-//				"DateTime dateTime1 = dateTime0.minus((ReadableDuration) duration0);}");
-//		CarvingResult cr = new CarvingResult(body, imports);
-//		
-//		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer(0);
-//		TestScenario ts = tsg.generalizeTestToScenario(cr);
-//		
-//		System.out.println(ts.getScenario().toString());
-//		System.out.println(ts.getInputs());
-//	}
-//	
-//	@Test
-//	public void test2() throws ParseException {
-//		List<ImportDeclaration> imports = new ArrayList<ImportDeclaration>();
-//		
-//		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/Stack-UseCase/bin");
-//		Options.I().setMethodSignature("stack.util.Stack.push(Object)");
-//		
-//		BlockStmt body = JavaParser.parseBlock("{Stack<Integer> stack0 = new Stack<Integer>();"+
-//				"Integer integer0 = new Integer(954);"+
-//				"Integer integer1 = stack0.push(integer0);}");
-//		CarvingResult cr = new CarvingResult(body, imports);
-//		
-//		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer(0);
-//		TestScenario ts = tsg.generalizeTestToScenario(cr);
-//		
-//		System.out.println(ts.getScenario().toString());
-//		System.out.println(ts.getInputs());
-//		
-//		assertEquals(GenericTestScenario.class, ts.getClass());
-//	}
-//
-//	@Test
-//	public void test3() throws ParseException {
-//		List<ImportDeclaration> imports = new ArrayList<ImportDeclaration>();
-//		
-//		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/sbes/joda-time-2.3.jar");
-//		Options.I().setMethodSignature("org.joda.time.DateTime.minus(ReadableDuration)");
-//		
-//		BlockStmt body = JavaParser.parseBlock("{BuddhistChronology buddhistChronology0 = BuddhistChronology.getInstance();"+
-//				"CachedDateTimeZone cachedDateTimeZone0 = (CachedDateTimeZone)buddhistChronology0.getZone();"+
-//				"DateTime dateTime0 = DateTime.now((DateTimeZone) cachedDateTimeZone0);"+
-//				"PeriodType periodType0 = PeriodType.hours();"+
-//				"MutablePeriod mutablePeriod0 = new MutablePeriod((Object) null, periodType0);"+
-//				"Duration duration0 = mutablePeriod0.toDurationFrom((ReadableInstant) dateTime0);"+
-//				"DateTime dateTime1 = dateTime0.minus((ReadableDuration) duration0);}");
-//		CarvingResult cr = new CarvingResult(body, imports);
-//		
-//		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer(0);
-//		TestScenario ts = tsg.generalizeTestToScenario(cr);
-//		
-//		System.out.println(ts.getScenario().toString());
-//		
-//		System.out.println(ts.getInputs());
-//	}
-//	
-//	@Test
-//	public void test4() throws ParseException {
-//		List<ImportDeclaration> imports = new ArrayList<ImportDeclaration>();
-//		
-//		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/sbes/gs-core-1.2.jar");
-//		Options.I().setMethodSignature("org.graphstream.graph.implementations.AbstractEdge.getNode0()");
-//		
-//		BlockStmt body = JavaParser.parseBlock("{AdjacencyListGraph adjacencyListGraph0 = new AdjacencyListGraph(\"\");"+
-//												"MultiNode multiNode0 = new MultiNode((AbstractGraph) adjacencyListGraph0, \"\");"+
-//												"SingleNode singleNode0 = new SingleNode(adjacencyListGraph0, \"ele\");"+
-//												"AbstractEdge abstractEdge0 = new AbstractEdge(\"\", singleNode0, multiNode0, false);"+
-//												"SingleNode singleNode1 = (SingleNode)abstractEdge0.getNode0();}");
-//		CarvingResult cr = new CarvingResult(body, imports);
-//		
-//		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer(0);
-//		TestScenario ts = tsg.generalizeTestToScenario(cr);
-//		
-//		System.out.println(ts.getScenario().toString());
-//		System.out.println(ts.getInputs());
-//	}
-//	
-//	@Test
-//	public void test5() throws ParseException {
-//		List<ImportDeclaration> imports = new ArrayList<ImportDeclaration>();
-//		
-//		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/Stack-UseCase/bin");
-//		Options.I().setMethodSignature("stack.util.Stack.push(Object)");
-//		
-//		BlockStmt body = JavaParser.parseBlock("{Stack<Integer> stack0 = new Stack<Integer>();"+
-//												"Integer integer0 = stack0.push((Integer) 0);}");
-//		CarvingResult cr = new CarvingResult(body, imports);
-//		
-//		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer(0);
-//		TestScenario ts = tsg.generalizeTestToScenario(cr);
-//		
-//		System.out.println(ts.getScenario().toString());
-//		System.out.println(ts.getInputs());
-//		
-//		assertEquals(GenericTestScenario.class, ts.getClass());
-//	}
-//	
-//	@Test
-//	public void test6() throws ParseException {
-//		List<ImportDeclaration> imports = new ArrayList<ImportDeclaration>();
-//		
-//		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/Stack-UseCase/bin");
-//		Options.I().setMethodSignature("stack.util.Stack.pop()");
-//		
-//		BlockStmt body = JavaParser.parseBlock("{Stack<Integer> stack0 = new Stack<Integer>();"+
-//												"Integer integer0 = new Integer(1185);"+
-//												"boolean boolean0 = stack0.add(integer0);"+
-//												"Integer integer1 = stack0.pop();}");
-//		CarvingResult cr = new CarvingResult(body, imports);
-//		
-//		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer(0);
-//		TestScenario ts = tsg.generalizeTestToScenario(cr);
-//		
-//		System.out.println(ts.getScenario().toString());
-//		System.out.println(ts.getInputs());
-//		
-//		assertEquals(GenericTestScenario.class, ts.getClass());
-//	}
-//	
-//	@Test
-//	public void test7() throws ParseException {
-//		List<ImportDeclaration> imports = new ArrayList<ImportDeclaration>();
-//		
-//		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/sbes/gs-core-1.2.jar");
-//		Options.I().setMethodSignature("org.graphstream.graph.implementations.AbstractEdge.addAttribute(String,Object)");
-//		
-//		BlockStmt body = JavaParser.parseBlock("{AdjacencyListGraph adjacencyListGraph0 = new AdjacencyListGraph(\"-\");"+
-//				"MultiNode multiNode0 = new MultiNode((AbstractGraph) adjacencyListGraph0, \"Tz!\");"+
-//				"MultiGraph multiGraph0 = new MultiGraph(\"Tz!\", true, true);"+
-//				"SingleNode singleNode0 = new SingleNode(multiGraph0, \"-\");"+
-//				"AbstractEdge abstractEdge0 = new AbstractEdge(\"-\", multiNode0, singleNode0, true);"+
-//				"abstractEdge0.addAttribute(\"value\", 325);}");
-//		CarvingResult cr = new CarvingResult(body, imports);
-//		
-//		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer(0);
-//		TestScenario ts = tsg.generalizeTestToScenario(cr);
-//		
-//		System.out.println(ts.getScenario().toString());
-//		System.out.println(ts.getInputs());
-//	}
+	
+	protected void assertFieldsAndPrint(List<FieldDeclaration> actual, String[] expected) {
+		if (expected == null) {
+			assertEquals(0, actual.size());
+			System.out.println("No input fields");
+		}
+		else {
+			assertEquals(expected.length, actual.size());
+			for (int i = 0; i < expected.length; i++) {
+				assertEquals(actual.get(i).toString().replaceAll("\\s|\t|\n", ""), expected[i].replaceAll("\\s|\t|\n", ""));
+				System.out.println("Field #" + i + " " + actual.get(i));
+			}
+		}
+		System.out.println("====================================================");
+	}
 	
 	@Test
-	public void test8() throws ParseException {
-		List<ImportDeclaration> imports = new ArrayList<ImportDeclaration>();
+	public void test01() throws ParseException {
+		setUp("./bin", "stack.util.Stack.push(Object)");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"Stack<Integer> stack0 = new Stack<Integer>();"+
+				"Integer integer0 = new Integer(954);"+
+				"Integer integer1 = stack0.push(integer0);"+
+				"}");
+		
+		CarvingResult cr = new CarvingResult(body, imports);
+		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
+		assertEquals(GenericTestScenario.class, ts.getClass());
+		
+		String actualScenario = ts.getScenario().toString();
+		String expectedScenario = 
+				"{"+
+				"expected_states[0] = new Stack<Integer>();"+
+				"expected_results[0] = expected_states[0].push(ELEMENT_0_0);"+
+				"actual_states[0] = new Stack<Integer>();" +
+				"}";
+		assertScenarioAndPrint(actualScenario, expectedScenario);
+		
+		List<FieldDeclaration> actualFields = ts.getInputAsFields();
+		assertFieldsAndPrint(actualFields, new String[]{"public static final Integer ELEMENT_0_0 = new Integer(954);"});
+	}
+	
+	@Test
+	public void test02() throws ParseException {
+		setUp("./test/resources/gs-core-1.2.jar", "org.graphstream.graph.implementations.AbstractEdge.getNode0()");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"AdjacencyListGraph adjacencyListGraph0 = new AdjacencyListGraph(\"\");"+
+				"MultiNode multiNode0 = new MultiNode((AbstractGraph) adjacencyListGraph0, \"\");"+
+				"SingleNode singleNode0 = new SingleNode(adjacencyListGraph0, \"ele\");"+
+				"AbstractEdge abstractEdge0 = new AbstractEdge(\"\", singleNode0, multiNode0, false);"+
+				"SingleNode singleNode1 = (SingleNode)abstractEdge0.getNode0();"+
+				"}");
+		
+		CarvingResult cr = new CarvingResult(body, imports);
+		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
+		assertEquals(TestScenario.class, ts.getClass());
+		
+		String actualScenario = ts.getScenario().toString();
+		String expectedScenario = 
+				"{"+
+				"AdjacencyListGraph adjacencyListGraph0_0 = new AdjacencyListGraph(\"\");"+
+				"MultiNode multiNode0_0 = new MultiNode((AbstractGraph) adjacencyListGraph0_0, \"\");"+
+				"SingleNode singleNode0_0 = new SingleNode(adjacencyListGraph0_0, \"ele\");"+
+				"expected_states[0] = new AbstractEdge(\"\", singleNode0_0, multiNode0_0, false);"+
+				"expected_results[0] = expected_states[0].getNode0();"+
+				"actual_states[0] = new AbstractEdge(\"\", singleNode0_0, multiNode0_0, false);"+
+				"}";
+		assertScenarioAndPrint(actualScenario, expectedScenario);
+		
+		List<FieldDeclaration> actualFields = ts.getInputAsFields();
+		assertFieldsAndPrint(actualFields, null);
+	}
+	
+	@Test
+	public void test03() throws ParseException {
+		setUp("./bin", "stack.util.Stack.push(Object)");
 		
 		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/Stack-UseCase/bin");
-		Options.I().setMethodSignature("stack.util.Stack.clear()");
+		Options.I().setMethodSignature("stack.util.Stack.push(Object)");
 		
-		BlockStmt body = JavaParser.parseBlock("{Stack<Integer> stack0 = new Stack<Integer>();"+
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"Stack<Integer> stack0 = new Stack<Integer>();"+
+				"Integer integer0 = stack0.push((Integer) 0);"+
+				"}");
+		
+		CarvingResult cr = new CarvingResult(body, imports);
+		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
+		assertEquals(GenericTestScenario.class, ts.getClass());
+		
+		String actualScenario = ts.getScenario().toString();
+		String expectedScenario = 
+				"{"+
+				"expected_states[0] = new Stack<Integer>();"+
+				"expected_results[0] = expected_states[0].push(ELEMENT_0_0);"+
+				"actual_states[0] = new Stack<Integer>();"+
+				"}";
+		assertScenarioAndPrint(actualScenario, expectedScenario);
+		
+		List<FieldDeclaration> actualFields = ts.getInputAsFields();
+		assertFieldsAndPrint(actualFields, new String[] {"public static final Integer ELEMENT_0_0 = 0;"});
+	}
+	
+	@Test
+	public void test04() throws ParseException {
+		setUp("./bin", "stack.util.Stack.pop()");
+	
+		BlockStmt body = JavaParser.parseBlock(
+				"{Stack<Integer> stack0 = new Stack<Integer>();"+
+				"Integer integer0 = new Integer(1185);"+
+				"boolean boolean0 = stack0.add(integer0);"+
+				"Integer integer1 = stack0.pop();}");
+		
+		CarvingResult cr = new CarvingResult(body, imports);
+		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
+		assertEquals(GenericTestScenario.class, ts.getClass());
+		
+		String actualScenario = ts.getScenario().toString();
+		String expectedScenario = 
+				"{"+
+				"expected_states[0] = new Stack<Integer>();"+
+				"Integer integer0_0 = new Integer(1185);"+
+				"boolean boolean0_0 = expected_states[0].add(integer0_0);"+
+				"expected_results[0] = expected_states[0].pop();"+
+				"actual_states[0] = new Stack<Integer>();"+
+				"actual_states[0].add(integer0_0);"+
+				"}";
+		assertScenarioAndPrint(actualScenario, expectedScenario);
+		
+		List<FieldDeclaration> actualFields = ts.getInputAsFields();
+		assertFieldsAndPrint(actualFields, null);
+	}
+	
+	@Test
+	public void test05() throws ParseException {
+		setUp("./test/resources/gs-core-1.2.jar", "org.graphstream.graph.implementations.AbstractEdge.addAttribute(String,Object)");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{AdjacencyListGraph adjacencyListGraph0 = new AdjacencyListGraph(\"-\");"+
+				"MultiNode multiNode0 = new MultiNode((AbstractGraph) adjacencyListGraph0, \"Tz!\");"+
+				"MultiGraph multiGraph0 = new MultiGraph(\"Tz!\", true, true);"+
+				"SingleNode singleNode0 = new SingleNode(multiGraph0, \"-\");"+
+				"AbstractEdge abstractEdge0 = new AbstractEdge(\"-\", multiNode0, singleNode0, true);"+
+				"abstractEdge0.addAttribute(\"value\", 325);}");
+		
+		CarvingResult cr = new CarvingResult(body, imports);
+		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
+		assertEquals(TestScenario.class, ts.getClass());
+		
+		String actualScenario = ts.getScenario().toString();
+		String expectedScenario = 
+				"{"+
+				"AdjacencyListGraph adjacencyListGraph0_0 = new AdjacencyListGraph(\"-\");"+
+				"MultiNode multiNode0_0 = new MultiNode((AbstractGraph) adjacencyListGraph0_0, \"Tz!\");"+
+				"MultiGraph multiGraph0_0 = new MultiGraph(\"Tz!\", true, true);"+
+				"SingleNode singleNode0_0 = new SingleNode(multiGraph0_0, \"-\");"+
+				"expected_states[0] = new AbstractEdge(\"-\", multiNode0_0, singleNode0_0, true);"+
+				"expected_states[0].addAttribute(ELEMENT_0_0, ELEMENT_0_1);"+
+				"actual_states[0] = new AbstractEdge(\"-\", multiNode0_0, singleNode0_0, true);"+
+				"}";
+		assertScenarioAndPrint(actualScenario, expectedScenario);
+		
+		List<FieldDeclaration> actualFields = ts.getInputAsFields();
+		assertFieldsAndPrint(actualFields, new String[] {
+				"public static final String ELEMENT_0_0 = new String(\"value\");", 
+				"public static final Integer ELEMENT_0_1 = 325;"});
+	}
+	
+	@Test
+	public void test06() throws ParseException {
+		setUp("./bin", "stack.util.Stack.clear()");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{Stack<Integer> stack0 = new Stack<Integer>();"+
 				"Integer integer0 = new Integer(234);"+
 				"Integer integer1 = new Integer(55);"+
 				"Integer integer2 = new Integer(2);"+
@@ -196,16 +222,31 @@ public class FirstStageStubGeneratorTest {
 				"boolean boolean1 = stack0.add(integer1);"+
 				"boolean boolean2 = stack0.add(integer2);"+
 				"stack0.clear();}");
+		
 		CarvingResult cr = new CarvingResult(body, imports);
-		
-		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer(0);
-		TestScenario ts = tsg.generalizeTestToScenario(cr);
-		
-		System.out.println(ts.getScenario().toString());
-		System.out.println(ts.getInputs());
-		System.out.println(((GenericTestScenario)ts).getGenericClass());
-		
+		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
 		assertEquals(GenericTestScenario.class, ts.getClass());
+		
+		String actualScenario = ts.getScenario().toString();
+		String expectedScenario = 
+				"{"+
+				"expected_states[0] = new Stack<Integer>();"+
+				"Integer integer0_0 = new Integer(234);"+
+				"Integer integer1_0 = new Integer(55);"+
+				"Integer integer2_0 = new Integer(2);"+
+				"boolean boolean0_0 = expected_states[0].add(integer0_0);"+
+				"boolean boolean1_0 = expected_states[0].add(integer1_0);"+
+				"boolean boolean2_0 = expected_states[0].add(integer2_0);"+
+				"expected_states[0].clear();"+
+				"actual_states[0] = new Stack<Integer>();"+
+				"actual_states[0].add(integer0_0);"+
+				"actual_states[0].add(integer1_0);"+
+				"actual_states[0].add(integer2_0);"+
+				"}";
+		assertScenarioAndPrint(actualScenario, expectedScenario);
+		
+		List<FieldDeclaration> actualFields = ts.getInputAsFields();
+		assertFieldsAndPrint(actualFields, null);
 	}
 	
 }
