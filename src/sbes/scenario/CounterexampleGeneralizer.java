@@ -1,5 +1,6 @@
 package sbes.scenario;
 
+import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.body.VariableDeclarator;
 import japa.parser.ast.expr.CastExpr;
@@ -23,6 +24,7 @@ import java.util.Map;
 
 import sbes.ast.ActualStateVisitor;
 import sbes.ast.CounterexampleExpectedResultVisitor;
+import sbes.ast.CounterexampleVisitor;
 import sbes.ast.ExpectedStateVisitor;
 import sbes.ast.ExtractValuesFromTargetMethodVisitor;
 import sbes.ast.ExtractVariablesFromTargetMethodVisitor;
@@ -40,15 +42,30 @@ import sbes.util.ClassUtils;
 
 public class CounterexampleGeneralizer {
 
-private static final Logger logger = new Logger(TestScenarioGeneralizer.class);
+	private static final Logger logger = new Logger(TestScenarioGeneralizer.class);
 	
-	private int index;
-	
-	public CounterexampleGeneralizer(int scenarioSize) {
-		this.index = scenarioSize;
+	public static TestScenario counterexampleToTestScenario(CarvingResult carvedCounterexample) {
+		cleanCounterexample(carvedCounterexample);
+		int index = TestScenarioRepository.I().getScenarios().size();
+		TestScenario scenario = generalizeCounterexampleToScenario(index, carvedCounterexample);
+		return scenario;
 	}
 	
-	public TestScenario generalizeCounterexampleToScenario(CarvingResult carvedTest) {
+	private static void cleanCounterexample(CarvingResult counterexample) {
+		String classname = ClassUtils.getSimpleClassname(Options.I().getMethodSignature());
+		CounterexampleVisitor cv = new CounterexampleVisitor();
+		cv.visit(counterexample.getBody(), classname);
+		
+		for (int i = 0; i < counterexample.getImports().size(); i++) {
+			ImportDeclaration importDecl = counterexample.getImports().get(i);
+			if (importDecl.getName().getName().endsWith(classname + "_Stub_2")) {
+				counterexample.getImports().remove(importDecl);
+				i--;
+			}
+		}
+	}
+	
+	private static TestScenario generalizeCounterexampleToScenario(int index, CarvingResult carvedTest) {
 		logger.debug("Generalizing carved body");
 		
 		Class<?> c;
@@ -88,7 +105,7 @@ private static final Logger logger = new Logger(TestScenarioGeneralizer.class);
 		cerv.visit(cloned, null);
 		String objName = cerv.getExpectedState();
 		
-		// PHASE 2: find and substitute expected state
+		// PHASE 3: find and substitute expected state
 		ExpectedStateVisitor esv = new ExpectedStateVisitor(index, objName);
 		esv.visit(cloned, getConcreteClass(className, concreteClass));
 		ObjToExpectedStateVisitor oesv = new ObjToExpectedStateVisitor(objName, FirstStageGeneratorStub.EXPECTED_STATE, Integer.toString(index));
@@ -99,7 +116,7 @@ private static final Logger logger = new Logger(TestScenarioGeneralizer.class);
 		actualStatements.addAll(asv.getActualStates());
 		
 		// PHASE 4: extract candidate call parameters to fields (with all dependencies)
-		List<FieldDeclaration> inputs = extractParametersToInputs(cloned, methodName, targetMethod);
+		List<FieldDeclaration> inputs = extractParametersToInputs(cloned, methodName, targetMethod, index);
 		
 		cloned.getStmts().addAll(actualStatements);
 		
@@ -110,7 +127,7 @@ private static final Logger logger = new Logger(TestScenarioGeneralizer.class);
 		}
 	}
 	
-	private List<FieldDeclaration> extractParametersToInputs(BlockStmt cloned, String methodName, Method targetMethod) {
+	private static List<FieldDeclaration> extractParametersToInputs(BlockStmt cloned, String methodName, Method targetMethod, int index) {
 		List<String> varsToExtract = new ArrayList<String>();
 		List<VariableDeclarationExpr> varsToField = new ArrayList<VariableDeclarationExpr>();
 		List<FieldDeclaration> fields = new ArrayList<FieldDeclaration>();
@@ -169,7 +186,7 @@ private static final Logger logger = new Logger(TestScenarioGeneralizer.class);
 		return fields;
 	}
 	
-	private List<String> extractMethodDependencies(Expression init) {
+	private static List<String> extractMethodDependencies(Expression init) {
 		List<String> dependencies = new ArrayList<String>();
 		List<Expression> args = new ArrayList<Expression>();
 		if (init instanceof MethodCallExpr) {
@@ -204,7 +221,7 @@ private static final Logger logger = new Logger(TestScenarioGeneralizer.class);
 		return dependencies;
 	}
 
-	private String getConcreteClass(String className, String concreteClass) {
+	private static String getConcreteClass(String className, String concreteClass) {
 		if (concreteClass != null) {
 			return className + "<" + concreteClass + ">";
 		}

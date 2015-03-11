@@ -14,29 +14,8 @@ import sbes.testcase.CarvingContext;
 public class TestScenarioLoader {
 
 	private static final Logger logger = new Logger(TestScenarioLoader.class);
-
-	private static TestScenarioLoader instance;
-
-	private List<TestScenario> scenarios;
-	private List<TestScenario> counterexamples;
-
-	private TestScenarioLoader() {
-		scenarios = new ArrayList<TestScenario>();
-		counterexamples = new ArrayList<TestScenario>();
-	}
-
-	public static TestScenarioLoader getInstance() {
-		if (instance == null) {
-			instance = new TestScenarioLoader();
-		}
-		return instance;
-	}
 	
-	public void reset() {
-		counterexamples.clear();
-	}
-	
-	public void loadTestScenarios() {
+	public static List<TestScenario> loadTestScenarios() {
 		logger.info("Loading initial test scenarios");
 		File scenarioFile = Options.I().getTestScenarioPath();
 		String scenarioPath = scenarioFile.getAbsolutePath();
@@ -50,34 +29,24 @@ public class TestScenarioLoader {
 			throw new SBESException("Unable to generate any test scenarios, give up!");
 		}
 		
-		testToArrayScenario(carvedTests);
+		List<TestScenario> scenarios = testToArrayScenario(carvedTests);
 
 		logger.info("Generated " + scenarios.size() + " initial test scenarios - Done");
+		
+		return scenarios;
 	}
 
-	private void testToArrayScenario(List<CarvingResult> carvedTests) {
+	private static List<TestScenario> testToArrayScenario(List<CarvingResult> carvedTests) {
+		List<TestScenario> scenarios = new ArrayList<TestScenario>();
 		logger.debug("Generalizing carved bodies to array-based test scenarios");
 		for (CarvingResult carvedTest : carvedTests) {
-			TestScenarioGeneralizer generalizer = new TestScenarioGeneralizer(scenarios.size());
-			TestScenario ts = generalizer.generalizeTestToScenario(carvedTest);
+			TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(carvedTest);
 			if (ts != null) {
 				scenarios.add(ts);
 			}
 		}
 		logger.debug("Generalization - done");
-	}
-	
-	public void carvedCounterexampleToScenario(CarvingResult carvedCounterexample) {
-		CounterexampleGeneralizer generalizer = new CounterexampleGeneralizer(scenarios.size());
-		TestScenario scenario = generalizer.generalizeCounterexampleToScenario(carvedCounterexample);
-		counterexamples.add(scenario);
-	}
-
-	public List<TestScenario> getScenarios() {
-		ArrayList<TestScenario> all = new ArrayList<>();
-		all.addAll(scenarios);
-		all.addAll(counterexamples);
-		return all;
+		return scenarios;
 	}
 
 }

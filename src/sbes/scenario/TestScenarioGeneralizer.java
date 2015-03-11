@@ -41,14 +41,9 @@ import sbes.util.ClassUtils;
 public class TestScenarioGeneralizer {
 	
 	private static final Logger logger = new Logger(TestScenarioGeneralizer.class);
-	
-	private int index;
-	
-	public TestScenarioGeneralizer(int scenarioSize) {
-		this.index = scenarioSize;
-	}
 
-	public TestScenario generalizeTestToScenario(CarvingResult carvedTest) {
+	public static TestScenario generalizeTestToTestScenario(CarvingResult carvedTest) {
+		int index = TestScenarioRepository.I().getScenarios().size();
 		logger.debug("Generalizing carved body");
 
 		CloneVisitor cloner = new CloneVisitor();
@@ -99,7 +94,7 @@ public class TestScenarioGeneralizer {
 		actualStatements.addAll(asv.getActualStates());
 		
 		// PHASE 4: extract candidate call parameters to fields (with all dependencies)
-		List<FieldDeclaration> inputs = extractParametersToInputs(cloned, methodName, targetMethod);
+		List<FieldDeclaration> inputs = extractParametersToInputs(cloned, methodName, targetMethod, index);
 		
 		cloned.getStmts().addAll(actualStatements);
 		
@@ -110,7 +105,7 @@ public class TestScenarioGeneralizer {
 		}
 	}
 	
-	private List<FieldDeclaration> extractParametersToInputs(BlockStmt cloned, String methodName, Method targetMethod) {
+	private static List<FieldDeclaration> extractParametersToInputs(BlockStmt cloned, String methodName, Method targetMethod, int index) {
 		List<String> varsToExtract = new ArrayList<String>();
 		List<VariableDeclarationExpr> varsToField = new ArrayList<VariableDeclarationExpr>();
 		List<FieldDeclaration> fields = new ArrayList<FieldDeclaration>();
@@ -169,7 +164,7 @@ public class TestScenarioGeneralizer {
 		return fields;
 	}
 	
-	private List<String> extractMethodDependencies(Expression init) {
+	private static List<String> extractMethodDependencies(Expression init) {
 		List<String> dependencies = new ArrayList<String>();
 		List<Expression> args = new ArrayList<Expression>();
 		if (init instanceof MethodCallExpr) {
@@ -204,7 +199,7 @@ public class TestScenarioGeneralizer {
 		return dependencies;
 	}
 
-	private String getConcreteClass(String className, String concreteClass) {
+	private static String getConcreteClass(String className, String concreteClass) {
 		if (concreteClass != null) {
 			return className + "<" + concreteClass + ">";
 		}
