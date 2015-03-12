@@ -1,14 +1,18 @@
-package sbes.ast;
+package sbes.ast.renamer;
 
 import japa.parser.ast.body.VariableDeclaratorId;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
 
-public class ObjToObjVisitor extends VoidVisitorAdapter<Void> {
+/**
+ * Renames variable to insert a constant to avoid name collisions with previous
+ * test scenarios
+ */
+public class VariableNamesRenamer extends VoidVisitorAdapter<Void> {
 	
 	private int index;
 	
-	public ObjToObjVisitor(int index) {
+	public VariableNamesRenamer(int index) {
 		this.index = index;
 	}
 	
