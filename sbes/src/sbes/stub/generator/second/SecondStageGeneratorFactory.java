@@ -8,8 +8,8 @@ import java.util.List;
 import sbes.result.CarvingResult;
 import sbes.scenario.TestScenario;
 import sbes.stub.Stub;
-import sbes.stub.generator.first.FirstStageGeneratorStubWithGenerics;
 import sbes.stub.generator.first.FirstStageGeneratorStub;
+import sbes.stub.generator.first.FirstStageGeneratorStubWithGenerics;
 
 public class SecondStageGeneratorFactory {
 
