@@ -1490,25 +1490,26 @@ public class SecondStageStubGeneratorTest {
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
-//		String expected = 
-//				"package stack.util;"+
-//				"import sbes.distance.Distance;"+
-//				"import sbes.cloning.Cloner;"+
-//				"public class Stack_Stub_2 extends Stack<Integer> {"+
-//				"public Stack_Stub_2() {"+
-//				"super();"+
-//				"}"+
-//				"public void method_under_test(int p0) {"+
-//				"Cloner c = new Cloner();"+
-//				"Stack<Integer> clone = c.deepClone(this);"+
-//				"Integer expected_result = this.get(p0);"+
-//				"Integer actual_result = -2;"+
-//				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
-//				"System.out.println(\"Executed\");"+
-//				"}"+
-//				"}";
-//		assertAndPrint(actual, expected);
-		System.out.println(actual.toString());
+		String expected = 
+				"package stack.util;"+
+				"import sbes.distance.Distance;"+
+				"import sbes.cloning.Cloner;"+
+				"public class Stack_Stub_2 extends Stack<Integer> {"+
+				"public Stack_Stub_2() {"+
+				"super();"+
+				"}"+
+				"public void method_under_test(Integer p0) {"+
+				"Cloner c = new Cloner();"+
+				"Stack<Integer> clone = c.deepClone(this);"+
+				"boolean expected_result = this.remove(p0);"+
+				"boolean actual_result = clone.add(p0);"+
+				"clone.removeElement(p0);"+
+				"clone.pop();"+
+				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
+				"System.out.println(\"Executed\");"+
+				"}"+
+				"}";
+		assertAndPrint(actual, expected);
 	}
 	
 }
