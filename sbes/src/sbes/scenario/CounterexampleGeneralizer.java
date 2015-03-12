@@ -31,7 +31,7 @@ import sbes.ast.ExtractVariablesFromTargetMethodVisitor;
 import sbes.ast.GenericToConcreteClassVisitor;
 import sbes.ast.ObjToExpectedStateVisitor;
 import sbes.ast.ObjToObjVisitor;
-import sbes.ast.SubstituteNameVisitor;
+import sbes.ast.InputFieldRenamerVisitor;
 import sbes.exceptions.GenerationException;
 import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
@@ -172,7 +172,7 @@ public class CounterexampleGeneralizer {
 			vde.getVars().get(0).getId().setName(newName);
 
 			// substitute dependency names
-			SubstituteNameVisitor snv = new SubstituteNameVisitor();
+			InputFieldRenamerVisitor snv = new InputFieldRenamerVisitor();
 			snv.visit(vde, varMap);
 
 			// create field
@@ -180,7 +180,7 @@ public class CounterexampleGeneralizer {
 			fields.add(fd);
 		}
 		// substitute dependency names
-		SubstituteNameVisitor snv = new SubstituteNameVisitor();
+		InputFieldRenamerVisitor snv = new InputFieldRenamerVisitor();
 		snv.visit(cloned, varMap);
 		
 		return fields;

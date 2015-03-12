@@ -6,10 +6,10 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MethodVisitor extends VoidVisitorAdapter<Void> {
+public class EvoSuiteTestCaseVisitor extends VoidVisitorAdapter<Void> {
 	private final List<MethodDeclaration> tests;
 	
-	public MethodVisitor() {
+	public EvoSuiteTestCaseVisitor() {
 		this.tests = new ArrayList<MethodDeclaration>();
 	}
 	

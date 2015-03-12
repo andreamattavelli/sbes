@@ -5,7 +5,8 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 
 import java.util.Map;
 
-public class SubstituteNameVisitor extends VoidVisitorAdapter<Map<String, String>> {
+public class InputFieldRenamerVisitor extends VoidVisitorAdapter<Map<String, String>> {
+	
 	@Override
 	public void visit(NameExpr n, Map<String, String> arg) {
 		if (arg.containsKey(n.getName())) {
@@ -13,4 +14,5 @@ public class SubstituteNameVisitor extends VoidVisitorAdapter<Map<String, String
 		}
 		super.visit(n, arg);
 	}
+	
 }
