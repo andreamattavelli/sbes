@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/sbes-new/src/sbes/SBES.java"/>
+<listEntry value="/sbes/src/sbes/SBES.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
@@ -9,5 +9,5 @@
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="sbes.SBES"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-classes=/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/GraphStream-UseCase/lib/gs-core-1.2.jar -method=org.graphstream.graph.implementations.MultiNode.getAttribute(String) -junit=/Applications/eclipse/plugins/org.junit_4.11.0.v201303080030/junit.jar -test_scenario=initial_scenario/addAttributeMulti.java -counterexample_budget=180 -stopping_condition=MAXTIME -stopping_condition_value=1200"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="sbes-new"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="sbes"/>
 </launchConfiguration>
