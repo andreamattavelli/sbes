@@ -1,4 +1,4 @@
-package sbes.ast;
+package sbes.ast.renamer;
 
 import japa.parser.ASTHelper;
 import japa.parser.ast.expr.ArrayAccessExpr;
@@ -7,13 +7,13 @@ import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
 
-public class ObjToExpectedStateVisitor extends VoidVisitorAdapter<Void> {
+public class ExpectedStateRenamer extends VoidVisitorAdapter<Void> {
 
 	private String objName;
 	private String expectedName;
 	private String index;
 	
-	public ObjToExpectedStateVisitor(String objName, String expectedName, String index) {
+	public ExpectedStateRenamer(String objName, String expectedName, String index) {
 		this.objName = objName;
 		this.expectedName = expectedName;
 		this.index = index;

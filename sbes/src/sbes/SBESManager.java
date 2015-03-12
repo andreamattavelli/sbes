@@ -2,7 +2,7 @@ package sbes;
 
 import java.util.List;
 
-import sbes.ast.CloneObjVisitor;
+import sbes.ast.CloneMethodCallsVisitor;
 import sbes.exceptions.CompilationException;
 import sbes.exceptions.GenerationException;
 import sbes.exceptions.SBESException;
@@ -111,9 +111,7 @@ public class SBESManager {
 							terminateIterations = true;
 						}
 						else {
-							// found a candidate, validate
-							// SECOND PHASE: COUNTEREXAMPLE SEARCH
-
+							// SECOND PHASE: VALIDATION OF CANDIDATE (search for a counterexample)
 							// generate second stub from carved test case
 							AbstractStubGenerator secondPhaseGenerator = SecondStageGeneratorFactory.createGenerator(firstPhaseGenerator, stub, candidateES);
 							Stub secondStub = secondPhaseGenerator.generateStub();
@@ -280,7 +278,7 @@ public class SBESManager {
 		if (candidates.isEmpty()) {
 			CounterexampleStub cStub = (CounterexampleStub) secondStub;
 			logger.info("No counterexample found!");
-			CloneObjVisitor cov = new CloneObjVisitor();
+			CloneMethodCallsVisitor cov = new CloneMethodCallsVisitor();
 			cov.visit(cStub.getEquivalence().getBody(), null);
 			if (cov.getMethods().isEmpty()) {
 				logger.debug("Spurious result, iterating");

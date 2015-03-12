@@ -50,14 +50,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sbes.ast.ArrayCellDeclarationVisitor;
-import sbes.ast.ArrayDefVisitor;
-import sbes.ast.NameExprRenamerVisitor;
-import sbes.ast.CloneObjVisitor;
+import sbes.ast.ArrayDeclarationVisitor;
+import sbes.ast.CloneMethodCallsVisitor;
 import sbes.ast.EquivalentSequenceCallVisitor;
 import sbes.ast.MethodCallVisitor;
 import sbes.ast.ArrayStubRemoverVisitor;
 import sbes.ast.VariableDeclarationVisitor;
 import sbes.ast.VariableUseVisitor;
+import sbes.ast.renamer.NameExprRenamer;
 import sbes.exceptions.GenerationException;
 import sbes.exceptions.SBESException;
 import sbes.logging.Logger;
@@ -337,7 +337,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 			throw new GenerationException("Stub object not found!");
 		}
 		
-		NameExprRenamerVisitor visitor = new NameExprRenamerVisitor(stubObjectName, "clone");
+		NameExprRenamer visitor = new NameExprRenamer(stubObjectName, "clone");
 		visitor.visit(cloned, null);
 		
 		ArrayStubRemoverVisitor msv = new ArrayStubRemoverVisitor();
@@ -403,7 +403,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 				}
 				else if (init instanceof ArrayCreationExpr) {
 					// we should check what is inside the array
-					ArrayDefVisitor vuv = new ArrayDefVisitor(name);
+					ArrayDeclarationVisitor vuv = new ArrayDeclarationVisitor(name);
 					vuv.visit(cloned, methodCall.getName());
 					if (!vuv.isUsed()) {
 						methodCall.getArgs().set(i, new IntegerLiteralExpr("0")); // we assume it is and integer
@@ -663,7 +663,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 				return;
 				
 			}
-			NameExprRenamerVisitor conv = new NameExprRenamerVisitor(varName, "actual_result");
+			NameExprRenamer conv = new NameExprRenamer(varName, "actual_result");
 			conv.visit(cloned, null);
 		}
 	}
@@ -677,7 +677,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	 */
 	private void pruneArrayParameters(BlockStmt cloned, Method targetMethod) {
 		// get all calls on clone obj, therefore a stub obj
-		CloneObjVisitor cov = new CloneObjVisitor();
+		CloneMethodCallsVisitor cov = new CloneMethodCallsVisitor();
 		cov.visit(cloned, null);
 		List<MethodCallExpr> methods = cov.getMethods();
 		for (MethodCallExpr methodCallExpr : methods) {

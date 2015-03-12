@@ -10,20 +10,23 @@ import japa.parser.ast.expr.ObjectCreationExpr;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
 import sbes.util.ASTUtils;
 
-public class ArrayDefVisitor extends VoidVisitorAdapter<String> {
+public class ArrayDeclarationVisitor extends VoidVisitorAdapter<String> {
+	
 	private String variableId;
 	private boolean alive;
-	public ArrayDefVisitor(String variableId) {
+
+	public ArrayDeclarationVisitor(String variableId) {
 		this.variableId = variableId;
 		this.alive = false;
 	}
+
 	public boolean isUsed() {
 		return alive;
 	}
+
 	@Override
 	public void visit(AssignExpr n, String arg) {
-		if (n.getValue() instanceof NameExpr ||
-				n.getValue() instanceof CastExpr) {
+		if (n.getValue() instanceof NameExpr || n.getValue() instanceof CastExpr) {
 			ArrayAccessExpr aae = (ArrayAccessExpr) n.getTarget();
 			if (ASTUtils.getName(aae.getName()).equals(variableId)) {
 				alive = true;
@@ -31,6 +34,7 @@ public class ArrayDefVisitor extends VoidVisitorAdapter<String> {
 		}
 		super.visit(n, arg);
 	}
+
 	@Override
 	public void visit(MethodCallExpr arg0, String arg1) {
 		if (!arg0.getName().equals(arg1) && arg0.getScope() instanceof NameExpr) {
@@ -50,6 +54,7 @@ public class ArrayDefVisitor extends VoidVisitorAdapter<String> {
 		}
 		super.visit(arg0, arg1);
 	}
+
 	@Override
 	public void visit(ObjectCreationExpr arg0, String arg1) {
 		if (arg0.getArgs() != null) {

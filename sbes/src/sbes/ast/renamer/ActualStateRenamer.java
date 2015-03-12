@@ -1,4 +1,4 @@
-package sbes.ast;
+package sbes.ast.renamer;
 
 import japa.parser.ast.Node;
 import japa.parser.ast.expr.ArrayAccessExpr;
@@ -16,14 +16,14 @@ import java.util.List;
 import sbes.stub.generator.first.FirstStageGeneratorStub;
 import sbes.util.ASTUtils;
 
-public class ActualStateVisitor extends VoidVisitorAdapter<Void> {
+public class ActualStateRenamer extends VoidVisitorAdapter<Void> {
 
 	private String expectedState;
 	private String index;
 	private String methodName;
 	List<Statement> actualStates; 
 	
-	public ActualStateVisitor(String expectedState, String index, String methodName) {
+	public ActualStateRenamer(String expectedState, String index, String methodName) {
 		this.expectedState = expectedState;
 		this.index = index;
 		this.methodName = methodName;

@@ -1,4 +1,4 @@
-package sbes.ast;
+package sbes.ast.renamer;
 
 import japa.parser.ASTHelper;
 import japa.parser.ast.body.VariableDeclarator;
@@ -14,13 +14,13 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 import sbes.stub.generator.first.FirstStageGeneratorStub;
 import sbes.util.ASTUtils;
 
-public class ExpectedResultVisitor extends VoidVisitorAdapter<String> {
+public class ExpectedResultRenamer extends VoidVisitorAdapter<String> {
 	private int index;
 	private int parameters;
 	private String expectedState;
 	private boolean found;
 
-	public ExpectedResultVisitor(int index, int parameters) {
+	public ExpectedResultRenamer(int index, int parameters) {
 		this.index = index;
 		this.parameters = parameters;
 		this.found = false;

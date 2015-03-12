@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import sbes.ast.CloneObjVisitor;
+import sbes.ast.CloneMethodCallsVisitor;
 import sbes.exceptions.GenerationException;
 import sbes.exceptions.SBESException;
 import sbes.execution.InternalClassloader;
@@ -56,7 +56,7 @@ public class EquivalenceRepository {
 		
 		// find methods to exclude
 		BlockStmt body = eqSeq.getBody();
-		CloneObjVisitor cov = new CloneObjVisitor();
+		CloneMethodCallsVisitor cov = new CloneMethodCallsVisitor();
 		cov.visit(body, null);
 		for (MethodCallExpr mce : cov.getMethods()) {
 			String methodName = mce.getName();

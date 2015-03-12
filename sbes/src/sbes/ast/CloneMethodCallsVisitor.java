@@ -8,7 +8,10 @@ import java.util.List;
 
 import sbes.util.ASTUtils;
 
-public class CloneObjVisitor extends VoidVisitorAdapter<Void> {
+/**
+ * Retrieve all method calls on clone objects.
+ */
+public class CloneMethodCallsVisitor extends VoidVisitorAdapter<Void> {
 	List<MethodCallExpr> methods = new ArrayList<MethodCallExpr>();
 	
 	public List<MethodCallExpr> getMethods() {

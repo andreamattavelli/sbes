@@ -1,11 +1,11 @@
-package sbes.ast;
+package sbes.ast.renamer;
 
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
 
 import java.util.Map;
 
-public class InputFieldRenamerVisitor extends VoidVisitorAdapter<Map<String, String>> {
+public class InputFieldRenamer extends VoidVisitorAdapter<Map<String, String>> {
 	
 	@Override
 	public void visit(NameExpr n, Map<String, String> arg) {

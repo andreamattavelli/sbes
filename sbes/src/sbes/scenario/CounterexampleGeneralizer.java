@@ -22,16 +22,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import sbes.ast.ActualStateVisitor;
-import sbes.ast.CounterexampleExpectedResultVisitor;
-import sbes.ast.CounterexampleVisitor;
 import sbes.ast.ExpectedStateVisitor;
 import sbes.ast.ExtractValuesFromTargetMethodVisitor;
 import sbes.ast.ExtractVariablesFromTargetMethodVisitor;
 import sbes.ast.GenericToConcreteClassVisitor;
-import sbes.ast.ObjToExpectedStateVisitor;
-import sbes.ast.ObjToObjVisitor;
-import sbes.ast.InputFieldRenamerVisitor;
+import sbes.ast.renamer.ActualStateRenamer;
+import sbes.ast.renamer.ClassOrInterfaceRenamer;
+import sbes.ast.renamer.ExpectedResultCounterexampleRenamer;
+import sbes.ast.renamer.ExpectedStateRenamer;
+import sbes.ast.renamer.InputFieldRenamer;
+import sbes.ast.renamer.VariableNamesRenamer;
 import sbes.exceptions.GenerationException;
 import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
@@ -53,8 +53,8 @@ public class CounterexampleGeneralizer {
 	
 	private static void cleanCounterexample(CarvingResult counterexample) {
 		String classname = ClassUtils.getSimpleClassname(Options.I().getMethodSignature());
-		CounterexampleVisitor cv = new CounterexampleVisitor();
-		cv.visit(counterexample.getBody(), classname);
+		ClassOrInterfaceRenamer cv = new ClassOrInterfaceRenamer(classname + "_Stub_2", classname);
+		cv.visit(counterexample.getBody(), null);
 		
 		for (int i = 0; i < counterexample.getImports().size(); i++) {
 			ImportDeclaration importDecl = counterexample.getImports().get(i);
@@ -92,7 +92,7 @@ public class CounterexampleGeneralizer {
 		String methodName = ClassUtils.getMethodname(Options.I().getMethodSignature().split("\\(")[0]);
 
 		// PHASE 0: transform variable names to avoid collisions among different scenarios
-		ObjToObjVisitor oov = new ObjToObjVisitor(index);
+		VariableNamesRenamer oov = new VariableNamesRenamer(index);
 		oov.visit(cloned, null);
 		
 		// PHASE 1: get concrete class used, if any generic class is involved
@@ -101,17 +101,17 @@ public class CounterexampleGeneralizer {
 		String concreteClass = gccv.getConcreteClass();
 		
 		// PHASE 2: find and substitute expected result
-		CounterexampleExpectedResultVisitor cerv = new CounterexampleExpectedResultVisitor(targetMethod, index);
+		ExpectedResultCounterexampleRenamer cerv = new ExpectedResultCounterexampleRenamer(targetMethod, index);
 		cerv.visit(cloned, null);
 		String objName = cerv.getExpectedState();
 		
 		// PHASE 3: find and substitute expected state
 		ExpectedStateVisitor esv = new ExpectedStateVisitor(index, objName);
 		esv.visit(cloned, getConcreteClass(className, concreteClass));
-		ObjToExpectedStateVisitor oesv = new ObjToExpectedStateVisitor(objName, FirstStageGeneratorStub.EXPECTED_STATE, Integer.toString(index));
+		ExpectedStateRenamer oesv = new ExpectedStateRenamer(objName, FirstStageGeneratorStub.EXPECTED_STATE, Integer.toString(index));
 		oesv.visit(cloned, null);
 		// create actual state
-		ActualStateVisitor asv = new ActualStateVisitor(FirstStageGeneratorStub.EXPECTED_STATE, Integer.toString(index), methodName);
+		ActualStateRenamer asv = new ActualStateRenamer(FirstStageGeneratorStub.EXPECTED_STATE, Integer.toString(index), methodName);
 		asv.visit(cloned, null);
 		actualStatements.addAll(asv.getActualStates());
 		
@@ -172,7 +172,7 @@ public class CounterexampleGeneralizer {
 			vde.getVars().get(0).getId().setName(newName);
 
 			// substitute dependency names
-			InputFieldRenamerVisitor snv = new InputFieldRenamerVisitor();
+			InputFieldRenamer snv = new InputFieldRenamer();
 			snv.visit(vde, varMap);
 
 			// create field
@@ -180,7 +180,7 @@ public class CounterexampleGeneralizer {
 			fields.add(fd);
 		}
 		// substitute dependency names
-		InputFieldRenamerVisitor snv = new InputFieldRenamerVisitor();
+		InputFieldRenamer snv = new InputFieldRenamer();
 		snv.visit(cloned, varMap);
 		
 		return fields;
