@@ -20,6 +20,7 @@ import japa.parser.ast.expr.BooleanLiteralExpr;
 import japa.parser.ast.expr.CastExpr;
 import japa.parser.ast.expr.ConditionalExpr;
 import japa.parser.ast.expr.DoubleLiteralExpr;
+import japa.parser.ast.expr.EnclosedExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.FieldAccessExpr;
 import japa.parser.ast.expr.IntegerLiteralExpr;
@@ -29,6 +30,7 @@ import japa.parser.ast.expr.NullLiteralExpr;
 import japa.parser.ast.expr.ObjectCreationExpr;
 import japa.parser.ast.expr.StringLiteralExpr;
 import japa.parser.ast.expr.ThisExpr;
+import japa.parser.ast.expr.UnaryExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.stmt.BlockStmt;
 import japa.parser.ast.stmt.ExplicitConstructorInvocationStmt;
@@ -479,6 +481,10 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		if (vde != null) {
 			String varName = vde.getVars().get(0).getId().getName();
 			Expression init = vde.getVars().get(0).getInit();
+			if (init instanceof EnclosedExpr) {
+				init = ((EnclosedExpr) init).getInner();
+			}
+			
 			if (init instanceof ArrayCreationExpr) {
 				// we should check what is inside the array
 				ArrayCellDeclarationVisitor acdv = new ArrayCellDeclarationVisitor(name, Integer.toString(0));
@@ -646,6 +652,17 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 				VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
 				cloned.getStmts().add(new ExpressionStmt(actualResult));
 				return;
+			}
+			else if (init instanceof UnaryExpr) {
+				UnaryExpr ue = (UnaryExpr) init;
+				List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+				VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+				vd.setInit(ue);
+				vars.add(vd);
+				VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+				cloned.getStmts().add(new ExpressionStmt(actualResult));
+				return;
+				
 			}
 			ChangeObjNameVisitor conv = new ChangeObjNameVisitor(varName, "actual_result");
 			conv.visit(cloned, null);

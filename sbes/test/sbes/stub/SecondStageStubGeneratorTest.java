@@ -76,6 +76,9 @@ public class SecondStageStubGeneratorTest {
 	public static void tearDown() {
 		try {
 			Path directory = Paths.get("./test/resources/compilation");
+			if (!directory.toFile().exists()) {
+				return;
+			}
 			Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
 				@Override
 				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -1419,6 +1422,45 @@ public class SecondStageStubGeneratorTest {
 				"Integer expected_result = this.pop();"+
 				"Integer actual_result = clone.lastElement();"+
 				"clone.remove(actual_result);"+
+				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
+				"System.out.println(\"Executed\");"+
+				"}"+
+				"}";
+		assertAndPrint(actual, expected);
+	}
+	
+	@Test
+	public void test33() throws ParseException {
+		setUp("./bin", "stack.util.Stack.get(int)", "Stack_Stub");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"Stack_Stub stack_Stub0 = new Stack_Stub();"+
+				"int int0 = (-2);"+
+				"stack_Stub0.set_results((Integer) int0);"+
+				"stack_Stub0.method_under_test();"+
+				"}");
+
+		CarvingResult candidateES = new CarvingResult(body, imports);
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		Stub second = sssg.generateStub();
+		second.dumpStub("./test/resources/compilation");
+		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		
+		String actual = second.getAst().toString();
+		String expected = 
+				"package stack.util;"+
+				"import sbes.distance.Distance;"+
+				"import sbes.cloning.Cloner;"+
+				"public class Stack_Stub_2 extends Stack<Integer> {"+
+				"public Stack_Stub_2() {"+
+				"super();"+
+				"}"+
+				"public void method_under_test(int p0) {"+
+				"Cloner c = new Cloner();"+
+				"Stack<Integer> clone = c.deepClone(this);"+
+				"Integer expected_result = this.get(p0);"+
+				"Integer actual_result = -2;"+
 				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
 				"System.out.println(\"Executed\");"+
 				"}"+
