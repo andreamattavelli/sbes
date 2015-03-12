@@ -51,12 +51,11 @@ import java.util.List;
 
 import sbes.ast.ArrayCellDeclarationVisitor;
 import sbes.ast.ArrayDefVisitor;
-import sbes.ast.ChangeObjNameVisitor;
+import sbes.ast.NameExprRenamerVisitor;
 import sbes.ast.CloneObjVisitor;
 import sbes.ast.EquivalentSequenceCallVisitor;
 import sbes.ast.MethodCallVisitor;
 import sbes.ast.StubArrayVariableRemoverVisitor;
-import sbes.ast.StubObjToCloneObjVisitor;
 import sbes.ast.VariableDeclarationVisitor;
 import sbes.ast.VariableUseVisitor;
 import sbes.exceptions.GenerationException;
@@ -338,7 +337,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 			throw new GenerationException("Stub object not found!");
 		}
 		
-		StubObjToCloneObjVisitor visitor = new StubObjToCloneObjVisitor(stubObjectName);
+		NameExprRenamerVisitor visitor = new NameExprRenamerVisitor(stubObjectName, "clone");
 		visitor.visit(cloned, null);
 		
 		StubArrayVariableRemoverVisitor msv = new StubArrayVariableRemoverVisitor();
@@ -664,7 +663,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 				return;
 				
 			}
-			ChangeObjNameVisitor conv = new ChangeObjNameVisitor(varName, "actual_result");
+			NameExprRenamerVisitor conv = new NameExprRenamerVisitor(varName, "actual_result");
 			conv.visit(cloned, null);
 		}
 	}
