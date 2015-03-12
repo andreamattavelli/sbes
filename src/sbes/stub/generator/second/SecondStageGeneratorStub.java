@@ -41,6 +41,7 @@ import japa.parser.ast.type.ClassOrInterfaceType;
 import japa.parser.ast.type.PrimitiveType;
 import japa.parser.ast.type.PrimitiveType.Primitive;
 import japa.parser.ast.type.ReferenceType;
+import japa.parser.ast.type.Type;
 import japa.parser.ast.visitor.CloneVisitor;
 
 import java.lang.reflect.Constructor;
@@ -51,10 +52,10 @@ import java.util.List;
 
 import sbes.ast.ArrayCellDeclarationVisitor;
 import sbes.ast.ArrayDeclarationVisitor;
+import sbes.ast.ArrayStubRemoverVisitor;
 import sbes.ast.CloneMethodCallsVisitor;
 import sbes.ast.EquivalentSequenceCallVisitor;
 import sbes.ast.MethodCallVisitor;
-import sbes.ast.ArrayStubRemoverVisitor;
 import sbes.ast.VariableDeclarationVisitor;
 import sbes.ast.VariableLivenessVisitor;
 import sbes.ast.renamer.NameExprRenamer;
@@ -185,6 +186,8 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		}
 		equivalence = stmts;
 		stmt.getStmts().addAll(stmts);
+		
+		method_under_test.setParameters(param);
 		
 		NameExpr distanceClass = ASTHelper.createNameExpr("Distance");
 		String distanceMethod = "distance";
@@ -397,8 +400,20 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 					FieldAccessExpr fae = (FieldAccessExpr) init;
 					if (fae.getField().startsWith("ELEMENT_")) {
 						// it is an input
-						String index = fae.getField().substring(fae.getField().lastIndexOf('_') + 1);
-						methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(Integer.valueOf(index)).getId().getName()));
+						String indexString = fae.getField().substring(fae.getField().lastIndexOf('_') + 1);
+						int index = Integer.valueOf(indexString);
+						methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(index).getId().getName()));
+						// now we have to ensure that the type of the parameter
+						// in method_under_test corresponds to this type
+						Type testType = vde.getType();
+						Type paramType = param.get(index).getType();
+						if (!testType.toString().equals(paramType.toString())) {
+							// mismatch! we rely on the type found in the test
+//							if (testType) {
+//								
+//							}
+							param.get(index).setType(testType);
+						}
 					}
 				}
 				else if (init instanceof ArrayCreationExpr) {
@@ -423,8 +438,26 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 									FieldAccessExpr actual_fae = (FieldAccessExpr) actual_init;
 									if (actual_fae.getField().startsWith("ELEMENT_")) {
 										// it is an input
-										String index = actual_fae.getField().substring(actual_fae.getField().lastIndexOf('_') + 1);
-										methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(Integer.valueOf(index)).getId().getName()));
+										String indexString = actual_fae.getField().substring(actual_fae.getField().lastIndexOf('_') + 1);
+										int index = Integer.valueOf(indexString);
+										methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(index).getId().getName()));
+										// now we have to ensure that the type of the parameter
+										// in method_under_test corresponds to this type
+										Type testType = vde.getType();
+										Type paramType = param.get(index).getType();
+										if (!testType.toString().equals(paramType.toString())) {
+											// mismatch! we rely on the type found in the test
+											if (testType instanceof ReferenceType) {
+												ReferenceType rt = (ReferenceType) testType;
+												if (rt.getArrayCount() > 0) {
+													rt.setArrayCount(rt.getArrayCount() - 1);
+												}
+												param.get(index).setType(rt);
+											}
+											else {
+												param.get(index).setType(testType);
+											}
+										}
 									}
 								}
 								else if (actual_init instanceof ObjectCreationExpr) {

@@ -846,7 +846,7 @@ public class SecondStageStubGeneratorTest {
 				"public Stack_Stub_2() {"+
 				"super();"+
 				"}"+
-				"public void method_under_test(int p0) {"+
+				"public void method_under_test(Integer p0) {"+
 				"Cloner c = new Cloner();"+
 				"Stack<Integer> clone = c.deepClone(this);"+
 				"Integer expected_result = this.elementAt(p0);"+
@@ -885,7 +885,7 @@ public class SecondStageStubGeneratorTest {
 				"protected AbstractEdge_Stub_2(java.lang.String p0, org.graphstream.graph.implementations.AbstractNode p1, org.graphstream.graph.implementations.AbstractNode p2, boolean p3) {"+
 				"super(p0, p1, p2, p3);"+
 				"}"+
-				"public void method_under_test(java.lang.String p0, java.lang.Object p1) {"+
+				"public void method_under_test(String p0, Object[] p1) {"+
 				"Cloner c = new Cloner();"+
 				"AbstractEdge clone = c.deepClone(this);"+
 				"this.addAttribute(p0, p1);"+
@@ -1254,7 +1254,7 @@ public class SecondStageStubGeneratorTest {
 				"protected AbstractEdge_Stub_2(java.lang.String p0, org.graphstream.graph.implementations.AbstractNode p1, org.graphstream.graph.implementations.AbstractNode p2, boolean p3) {"+
 				"super(p0, p1, p2, p3);"+
 				"}"+
-				"public void method_under_test(java.lang.String p0, java.lang.Object p1) {"+
+				"public void method_under_test(String p0, java.lang.Object p1) {"+
 				"Cloner c = new Cloner();"+
 				"AbstractEdge clone = c.deepClone(this);"+
 				"this.addAttribute(p0, p1);"+
@@ -1291,7 +1291,7 @@ public class SecondStageStubGeneratorTest {
 				"protected AbstractEdge_Stub_2(java.lang.String p0, org.graphstream.graph.implementations.AbstractNode p1, org.graphstream.graph.implementations.AbstractNode p2, boolean p3) {"+
 				"super(p0, p1, p2, p3);"+
 				"}"+
-				"public void method_under_test(java.lang.String p0, java.lang.Object p1) {"+
+				"public void method_under_test(String p0, java.lang.Object p1) {"+
 				"Cloner c = new Cloner();"+
 				"AbstractEdge clone = c.deepClone(this);"+
 				"this.addAttribute(p0, p1);"+
@@ -1466,6 +1466,49 @@ public class SecondStageStubGeneratorTest {
 				"}"+
 				"}";
 		assertAndPrint(actual, expected);
+	}
+	
+	@Test
+	public void test34() throws ParseException {
+		setUp("./bin", "stack.util.Stack.remove(Object)", "Stack_Stub");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"Stack_Stub stack_Stub0 = new Stack_Stub();"+
+				"Integer integer0 = Stack_Stub.ELEMENT_0_0;"+
+				"boolean boolean0 = stack_Stub0.add(integer0);"+
+				"boolean boolean1 = stack_Stub0.removeElement(integer0);"+
+				"Integer integer1 = stack_Stub0.pop();"+
+				"stack_Stub0.set_results(boolean0);"+
+				"stack_Stub0.method_under_test();"+
+				"}");
+
+		CarvingResult candidateES = new CarvingResult(body, imports);
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		Stub second = sssg.generateStub();
+		second.dumpStub("./test/resources/compilation");
+		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		
+		String actual = second.getAst().toString();
+//		String expected = 
+//				"package stack.util;"+
+//				"import sbes.distance.Distance;"+
+//				"import sbes.cloning.Cloner;"+
+//				"public class Stack_Stub_2 extends Stack<Integer> {"+
+//				"public Stack_Stub_2() {"+
+//				"super();"+
+//				"}"+
+//				"public void method_under_test(int p0) {"+
+//				"Cloner c = new Cloner();"+
+//				"Stack<Integer> clone = c.deepClone(this);"+
+//				"Integer expected_result = this.get(p0);"+
+//				"Integer actual_result = -2;"+
+//				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
+//				"System.out.println(\"Executed\");"+
+//				"}"+
+//				"}";
+//		assertAndPrint(actual, expected);
+		System.out.println(actual.toString());
 	}
 	
 }
