@@ -55,7 +55,7 @@ import sbes.ast.NameExprRenamerVisitor;
 import sbes.ast.CloneObjVisitor;
 import sbes.ast.EquivalentSequenceCallVisitor;
 import sbes.ast.MethodCallVisitor;
-import sbes.ast.StubArrayVariableRemoverVisitor;
+import sbes.ast.ArrayStubRemoverVisitor;
 import sbes.ast.VariableDeclarationVisitor;
 import sbes.ast.VariableUseVisitor;
 import sbes.exceptions.GenerationException;
@@ -273,7 +273,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		//PHASE 0: clean carved result by removing method_under_test
 		removeMethodUnderTest(cloned);
 		//PHASE 1: remove accesses to the stub object and replace them to accesses to the clone object
-		stubObjToCloneObj(cloned);
+		stubToClone(cloned);
 		//PHASE 2: identify equivalent sequence parameters
 		identifyEquivalentSequenceParameters(cloned, param);
 		//PHASE 3: identify actual_result
@@ -313,7 +313,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	 * PHASE 1: remove stub constructor and rename all occurrences of the
 	 * stub object to the cloned object
 	 */
-	private void stubObjToCloneObj(BlockStmt cloned) {
+	private void stubToClone(BlockStmt cloned) {
 		String stubName = stub.getStubName();
 		String stubObjectName = null;
 		for (int i = 0; i < cloned.getStmts().size(); i++) {
@@ -340,7 +340,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		NameExprRenamerVisitor visitor = new NameExprRenamerVisitor(stubObjectName, "clone");
 		visitor.visit(cloned, null);
 		
-		StubArrayVariableRemoverVisitor msv = new StubArrayVariableRemoverVisitor();
+		ArrayStubRemoverVisitor msv = new ArrayStubRemoverVisitor();
 		msv.visit(cloned, null);
 	}
 	
