@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sbes.ast.MethodCallVisitor;
-import sbes.ast.MethodVisitor;
+import sbes.ast.EvoSuiteTestCaseVisitor;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
@@ -52,7 +52,7 @@ public class Carver {
 			String testPath = IOUtils.concatFilePath(context.getTestDirectory(), testClassname);
 			CompilationUnit cu = JavaParser.parse(new File(testPath));
 			
-			MethodVisitor visitor = new MethodVisitor();
+			EvoSuiteTestCaseVisitor visitor = new EvoSuiteTestCaseVisitor();
 			visitor.visit(cu, null);
 			for (MethodDeclaration method : visitor.getTests()) {
 				if (isSearchedClass(cu)) {
