@@ -2,6 +2,7 @@ package sbes.scenario;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.nio.file.Paths;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import sbes.exceptions.SBESException;
 import sbes.logging.Level;
 import sbes.option.Options;
 
@@ -17,13 +19,14 @@ public class TestScenarioLoaderTest {
 	@Before
 	public void setUp() throws Exception {
 		Options.I().setClassesPath("./bin");
-		Options.I().setMethodSignature("stack.util.Stack.elementAt(int)");
 		Options.I().setScenarioTestPath(Paths.get("./test/resources/InitialScenario.java").toFile());
 		Options.I().setLogLevel(Level.FATAL);
 	}
 
 	@Test
 	public void test() {
+		Options.I().setMethodSignature("stack.util.Stack.elementAt(int)");
+		
 		List<TestScenario> scenarios = TestScenarioLoader.loadTestScenarios();
 		assertNotNull(scenarios);
 		assertEquals(2, scenarios.size());
@@ -54,6 +57,19 @@ public class TestScenarioLoaderTest {
 				"Integer integer3 = stack0.elementAt((Integer) 1);"+
 				"}";
 		assertEquals(secondExpected.replaceAll("\\s|\t|\n", ""), secondActual.replaceAll("\\s|\t|\n", ""));
+	}
+	
+	@Test
+	public void test2() {
+		Options.I().setMethodSignature("stack.util.Stack.pop()");
+		
+		try {
+			TestScenarioLoader.loadTestScenarios();
+			fail();
+		}
+		catch(SBESException e) {
+			
+		}
 	}
 
 }
