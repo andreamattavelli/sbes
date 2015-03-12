@@ -143,6 +143,10 @@ public class Options {
 		Logger.setLevel(logLevel);
 	}
 	
+	public void setScenarioTestPath(File scenarioTestPath) {
+		this.scenarioTestPath = scenarioTestPath;
+	}
+	
 	public StoppingConditionType getStoppingCondition() {
 		return stoppingCondition;
 	}

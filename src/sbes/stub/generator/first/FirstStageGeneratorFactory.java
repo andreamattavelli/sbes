@@ -19,8 +19,7 @@ public class FirstStageGeneratorFactory {
 		}
 		if (generics) {
 			return new FirstStageGeneratorStubWithGenerics(scenarios);
-		}
-		else {
+		} else {
 			return new FirstStageGeneratorStub(scenarios);
 		}
 	}
