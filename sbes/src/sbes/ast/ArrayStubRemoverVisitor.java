@@ -9,6 +9,10 @@ import japa.parser.ast.type.Type;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
 import sbes.util.ASTUtils;
 
+/**
+ * Remove references to arrays to clean up the counterexample code from the
+ * syntax used in the stub
+ */
 public class ArrayStubRemoverVisitor extends VoidVisitorAdapter<Void> {
 
 	@Override
