@@ -56,7 +56,7 @@ import sbes.ast.EquivalentSequenceCallVisitor;
 import sbes.ast.MethodCallVisitor;
 import sbes.ast.ArrayStubRemoverVisitor;
 import sbes.ast.VariableDeclarationVisitor;
-import sbes.ast.VariableUseVisitor;
+import sbes.ast.VariableLivenessVisitor;
 import sbes.ast.renamer.NameExprRenamer;
 import sbes.exceptions.GenerationException;
 import sbes.exceptions.SBESException;
@@ -802,7 +802,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 							MethodCallExpr mce = (MethodCallExpr) vd.getInit();
 							if (ASTUtils.getName(mce.getScope()).equals("clone")) {
 								String varName = vd.getId().getName();
-								VariableUseVisitor vu = new VariableUseVisitor(varName);
+								VariableLivenessVisitor vu = new VariableLivenessVisitor(varName);
 								vu.visit(cloned, null);
 								if (!vu.isUsed()) {
 									ExpressionStmt exprStmt = (ExpressionStmt) vde.getParentNode();
@@ -834,7 +834,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 
 						// check use
 						String varName = vd.getId().getName();
-						VariableUseVisitor vu = new VariableUseVisitor(varName);
+						VariableLivenessVisitor vu = new VariableLivenessVisitor(varName);
 						vu.visit(cloned, null);
 						if (!vu.isUsed()) {
 							removeDeadAssignments(cloned, i, varName);

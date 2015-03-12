@@ -8,16 +8,23 @@ import japa.parser.ast.expr.ObjectCreationExpr;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
 import sbes.util.ASTUtils;
 
-public class VariableUseVisitor extends VoidVisitorAdapter<Void> {
+/**
+ * Check if a given variable is alive or not
+ */
+public class VariableLivenessVisitor extends VoidVisitorAdapter<Void> {
+	
 	private String variableId;
 	private boolean alive;
-	public VariableUseVisitor(String variableId) {
+
+	public VariableLivenessVisitor(String variableId) {
 		this.variableId = variableId;
 		this.alive = false;
 	}
+
 	public boolean isUsed() {
 		return alive;
 	}
+
 	@Override
 	public void visit(AssignExpr n, Void arg) {
 		if (n.getValue() instanceof NameExpr) {
@@ -28,6 +35,7 @@ public class VariableUseVisitor extends VoidVisitorAdapter<Void> {
 		}
 		super.visit(n, arg);
 	}
+
 	@Override
 	public void visit(MethodCallExpr arg0, Void arg1) {
 		if (arg0.getScope() instanceof NameExpr) {
@@ -47,6 +55,7 @@ public class VariableUseVisitor extends VoidVisitorAdapter<Void> {
 		}
 		super.visit(arg0, arg1);
 	}
+
 	@Override
 	public void visit(ObjectCreationExpr arg0, Void arg1) {
 		if (arg0.getArgs() != null) {
@@ -60,4 +69,5 @@ public class VariableUseVisitor extends VoidVisitorAdapter<Void> {
 		}
 		super.visit(arg0, arg1);
 	}
+	
 }
