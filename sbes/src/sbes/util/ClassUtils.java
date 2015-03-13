@@ -1,10 +1,14 @@
 package sbes.util;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import sbes.exceptions.GenerationException;
 
@@ -12,23 +16,65 @@ public class ClassUtils {
 
 	private static final Map<Class<?>, Method[]> cache = new HashMap<Class<?>, Method[]>();
 	
-	public static Method[] getClassMethods(Class<?> c) {
-		if (cache.containsKey(c)) {
-			return cache.get(c);
+	public static Method[] getClassMethods(Class<?> clazz) {
+		if (cache.containsKey(clazz)) {
+			return cache.get(clazz);
 		}
 		
-		List<Method> toReturn =  new ArrayList<Method>();
-		for (Method method : c.getMethods()) {
-			if (!method.getDeclaringClass().equals(Class.class) &&
-				!method.getDeclaringClass().equals(Object.class) &&
-				!method.isBridge() &&
-				!method.isSynthetic()) {
-				toReturn.add(method);
+		ArrayList<Method> methods = new ArrayList<Method>();
+		
+		// Build hierarchy
+		getHierarchy(clazz).stream()
+			.forEach(c -> 
+				methods.addAll(
+					Arrays.asList(c.getDeclaredMethods()).stream()
+					.filter(m -> Modifier.isPublic(m.getModifiers())&& !m.isSynthetic() && !m.isBridge())
+					.collect(Collectors.toList())));
+		
+		// Remove duplicates in methods
+		Method[] finalMethods = methods.toArray(new Method[]{});
+		for (int i = 0; i < finalMethods.length - 1; i++) {
+			for (int j = i + 1; j < finalMethods.length; j++) {
+				Method m1 = finalMethods[i];
+				Method m2 = finalMethods[j];
+				if (m1.getName().equals(m2.getName())) {
+					Class<?>[] p1 = m1.getParameterTypes();
+					Class<?>[] p2 = m2.getParameterTypes();
+					boolean override = true;
+					if (p1.length == p2.length) {
+						for (int k = 0; k < p1.length; k++) {
+							if (!p1[k].equals(p2[k])) {
+								override = false;
+			                }
+			            }
+						if (override) {
+							finalMethods[i] = null;
+							break;
+						}
+			        }
+					
+				}
 			}
 		}
-		cache.put(c, toReturn.toArray(new Method[0]));
 		
-		return cache.get(c);
+		cache.put(clazz, Arrays.stream(finalMethods).filter(m -> m!=null).collect(Collectors.toList()).toArray(new Method[0]));
+		
+		return cache.get(clazz);
+	}
+	
+	private static List<Class<?>> getHierarchy(Class<?> clazz) {
+		List<Class<?>> hierarchy = new ArrayList<Class<?>>();
+
+		// Build hierarchy
+		hierarchy.add(clazz);
+		Class<?> superclass = clazz.getSuperclass();
+		while (superclass != null && !superclass.getCanonicalName().equals("java.lang.Object")) {
+			hierarchy.add(superclass);	
+			superclass = superclass.getSuperclass();
+		}
+		Collections.reverse(hierarchy);
+		
+		return hierarchy;
 	}
 	
 	public static String getCanonicalClassname(final String signature) {
