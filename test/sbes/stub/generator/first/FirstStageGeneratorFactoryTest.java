@@ -16,7 +16,7 @@ import org.junit.Test;
 import sbes.logging.Level;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
-import sbes.scenario.GenericTestScenario;
+import sbes.scenario.TestScenarioWithGenerics;
 import sbes.scenario.TestScenario;
 
 public class FirstStageGeneratorFactoryTest {
@@ -44,7 +44,7 @@ public class FirstStageGeneratorFactoryTest {
 		LinkedList<String> linkedList2 = new LinkedList<String>();
 		linkedList2.add("Integer");
 		TestScenario testScenario0 = new TestScenario(carvingResult0, blockStmt0, (List<FieldDeclaration>) linkedList1);
-		linkedList0.add(new GenericTestScenario((CarvingResult) testScenario0, blockStmt0, linkedList1, linkedList2));
+		linkedList0.add(new TestScenarioWithGenerics((CarvingResult) testScenario0, blockStmt0, linkedList1, linkedList2));
 		FirstStageGeneratorStub firstStageGeneratorStubWithGenerics0 = FirstStageGeneratorFactory.createGenerator((List<TestScenario>) linkedList0);
 		assertNotNull(firstStageGeneratorStubWithGenerics0);
 		assertEquals(FirstStageGeneratorStubWithGenerics.class, firstStageGeneratorStubWithGenerics0.getClass());
