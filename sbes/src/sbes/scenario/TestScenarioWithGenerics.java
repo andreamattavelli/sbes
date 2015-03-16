@@ -7,16 +7,16 @@ import java.util.List;
 
 import sbes.result.CarvingResult;
 
-public class GenericTestScenario extends TestScenario {
+public class TestScenarioWithGenerics extends TestScenario {
 
 	private List<String> genericClass;
 	
-	public GenericTestScenario(CarvingResult carvedTest, BlockStmt scenarioBody, List<FieldDeclaration> inputs, List<String> concreteClasses) {
+	public TestScenarioWithGenerics(CarvingResult carvedTest, BlockStmt scenarioBody, List<FieldDeclaration> inputs, List<String> concreteClasses) {
 		super(carvedTest, scenarioBody, inputs);
 		this.genericClass = concreteClasses;
 	}
 	
-	public List<String> getGenericClass() {
+	public List<String> getGenericClasses() {
 		return genericClass;
 	}
 

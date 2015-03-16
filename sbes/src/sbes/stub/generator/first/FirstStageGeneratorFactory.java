@@ -2,7 +2,7 @@ package sbes.stub.generator.first;
 
 import java.util.List;
 
-import sbes.scenario.GenericTestScenario;
+import sbes.scenario.TestScenarioWithGenerics;
 import sbes.scenario.TestScenario;
 
 public class FirstStageGeneratorFactory {
@@ -12,7 +12,7 @@ public class FirstStageGeneratorFactory {
 	public static FirstStageGeneratorStub createGenerator(List<TestScenario> scenarios) {
 		boolean generics = false;
 		for (TestScenario testScenario : scenarios) {
-			if (testScenario instanceof GenericTestScenario) {
+			if (testScenario instanceof TestScenarioWithGenerics) {
 				generics = true;
 				break;
 			}

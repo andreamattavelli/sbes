@@ -99,7 +99,7 @@ public class TestScenarioGeneralizer {
 		cloned.getStmts().addAll(actualStatements);
 		
 		if (concreteClasses != null && concreteClasses.size() > 0) {
-			return new GenericTestScenario(carvedTest, cloned, inputs, concreteClasses);
+			return new TestScenarioWithGenerics(carvedTest, cloned, inputs, concreteClasses);
 		} else {
 			return new TestScenario(carvedTest, cloned, inputs);
 		}
