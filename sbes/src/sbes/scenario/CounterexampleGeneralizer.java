@@ -98,7 +98,7 @@ public class CounterexampleGeneralizer {
 		// PHASE 1: get concrete class used, if any generic class is involved
 		GenericToConcreteClassVisitor gccv = new GenericToConcreteClassVisitor(className);
 		gccv.visit(cloned, null);
-		List<String> concreteClass = gccv.getConcreteClass(); //FIXME
+		List<String> concreteClasses = gccv.getConcreteClass(); //FIXME
 		
 		// PHASE 2: find and substitute expected result
 		ExpectedResultCounterexampleRenamer cerv = new ExpectedResultCounterexampleRenamer(targetMethod, index);
@@ -107,7 +107,7 @@ public class CounterexampleGeneralizer {
 		
 		// PHASE 3: find and substitute expected state
 		ExpectedStateVisitor esv = new ExpectedStateVisitor(index, objName);
-		esv.visit(cloned, getConcreteClass(className, concreteClass));
+		esv.visit(cloned, getConcreteClass(className, concreteClasses));
 		ExpectedStateRenamer oesv = new ExpectedStateRenamer(objName, FirstStageGeneratorStub.EXPECTED_STATE, Integer.toString(index));
 		oesv.visit(cloned, null);
 		// create actual state
@@ -120,7 +120,7 @@ public class CounterexampleGeneralizer {
 		
 		cloned.getStmts().addAll(actualStatements);
 		
-		if (concreteClass != null) {
+		if (concreteClasses != null && concreteClasses.size() > 0) {
 			return new GenericTestScenario(carvedTest, cloned, inputs, gccv.getConcreteClass()); //FIXME
 		} else {
 			return new TestScenario(carvedTest, cloned, inputs);
