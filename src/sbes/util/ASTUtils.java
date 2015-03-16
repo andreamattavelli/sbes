@@ -32,6 +32,8 @@ import sbes.stub.generator.first.FirstStageGeneratorStub;
 
 public class ASTUtils {
 
+	private ASTUtils() {}
+	
 	public static Type getReturnType(Method method) {
 		if (method.getReturnType().isArray()) {
 			return ASTHelper.createReferenceType(method.getReturnType().getComponentType().getCanonicalName(), 
@@ -111,7 +113,8 @@ public class ASTUtils {
 	public static BodyDeclaration createGenericStubHelperArray(String classType, String concreteClass, String varId) {
 		ArrayCreationExpr es_ace = new ArrayCreationExpr(ASTHelper.createReferenceType(classType, 0), ASTUtils.getArraysDimension(), 0);
 		VariableDeclarator expected_states = ASTUtils.createDeclarator(varId, es_ace);
-		BodyDeclaration es_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL, ASTHelper.createReferenceType(classType + "<"+concreteClass+">", 1), expected_states);
+		String referenceType = classType + "<" + concreteClass + ">";
+		BodyDeclaration es_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL, ASTHelper.createReferenceType(referenceType, 1), expected_states);
 		return es_bd;
 	}
 	
