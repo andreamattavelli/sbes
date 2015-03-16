@@ -201,7 +201,7 @@ public class TestScenarioGeneralizer {
 
 	private static String getConcreteClass(String className, List<String> concreteClasses) {
 		if (concreteClasses != null && concreteClasses.size() > 0) {
-			return className + "<" + concreteClasses.get(0) + ">"; //FIXME
+			return className + "<" + concreteClasses.toString().replace("[", "").replace("]", "") + ">";
 		}
 		else {
 			return className;
