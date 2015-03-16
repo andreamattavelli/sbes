@@ -33,8 +33,8 @@ public class Compilation {
 			final String[] options = new String[] {
 					"-d",  context.getDestinationDirectory(),
 					"-classpath", context.getClassPath(),
-					"-source", "1.7",
-					"-target", "1.7",
+					"-source", "1.6",
+					"-target", "1.6"
 			};
 
 			/*
