@@ -12,6 +12,7 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
 import sbes.logging.Logger;
+import sbes.option.Options;
 import sbes.util.IOUtils;
 import sbes.util.NullWriter;
 
@@ -34,7 +35,8 @@ public class Compilation {
 					"-d",  context.getDestinationDirectory(),
 					"-classpath", context.getClassPath(),
 					"-source", "1.6",
-					"-target", "1.6"
+					"-target", "1.6",
+					"-bootclasspath", Options.I().getJavaCCRtPath()
 			};
 
 			/*
