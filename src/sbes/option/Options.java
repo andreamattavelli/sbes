@@ -35,8 +35,8 @@ public class Options {
 			usage = "Path to EvoSuite jar (included jar name). Default: \"./evosuite.jar\"")
 	private String evosuitePath = "./evosuite.jar";
 
-	@Option(name = "-java",
-			usage = "Path to Java excutable",
+	@Option(name = "-javaCCRT",
+			usage = "Path to Java cross-compiler rt.jar",
 			required = true)
 	private String javaCCRtPath = "";
 	
