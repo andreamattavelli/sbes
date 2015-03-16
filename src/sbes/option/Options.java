@@ -38,7 +38,7 @@ public class Options {
 	@Option(name = "-java_ccrt",
 			usage = "Path to Java cross-compiler rt.jar",
 			required = true)
-	private String javaCCRtPath = "";
+	private String javaRTPath = "";
 	
 	@Option(name = "-java",
 			usage = "Path to Java excutable")
@@ -109,7 +109,7 @@ public class Options {
 	}
 
 	public String getJavaCCRtPath() {
-		return javaCCRtPath;
+		return javaRTPath;
 	}
 
 	public String getJavaPath() {
