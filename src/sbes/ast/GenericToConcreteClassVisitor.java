@@ -19,7 +19,7 @@ public class GenericToConcreteClassVisitor extends VoidVisitorAdapter<Void> {
 		this.generics = new ArrayList<String>();
 	}
 	
-	public List<String> getConcreteClass() {
+	public List<String> getConcreteClasses() {
 		return generics;
 	}
 	

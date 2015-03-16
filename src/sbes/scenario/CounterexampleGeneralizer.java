@@ -98,7 +98,7 @@ public class CounterexampleGeneralizer {
 		// PHASE 1: get concrete class used, if any generic class is involved
 		GenericToConcreteClassVisitor gccv = new GenericToConcreteClassVisitor(className);
 		gccv.visit(cloned, null);
-		List<String> concreteClasses = gccv.getConcreteClass(); //FIXME
+		List<String> concreteClasses = gccv.getConcreteClasses();
 		
 		// PHASE 2: find and substitute expected result
 		ExpectedResultCounterexampleRenamer cerv = new ExpectedResultCounterexampleRenamer(targetMethod, index);
@@ -121,7 +121,7 @@ public class CounterexampleGeneralizer {
 		cloned.getStmts().addAll(actualStatements);
 		
 		if (concreteClasses != null && concreteClasses.size() > 0) {
-			return new TestScenarioWithGenerics(carvedTest, cloned, inputs, gccv.getConcreteClass()); //FIXME
+			return new TestScenarioWithGenerics(carvedTest, cloned, inputs, gccv.getConcreteClasses());
 		} else {
 			return new TestScenario(carvedTest, cloned, inputs);
 		}
@@ -223,7 +223,7 @@ public class CounterexampleGeneralizer {
 
 	private static String getConcreteClass(String className, List<String> concreteClasses) {
 		if (concreteClasses != null && concreteClasses.size() > 0) {
-			return className + "<" + concreteClasses.get(0) + ">"; //FIXME
+			return className + "<" + concreteClasses.toString().replace("[", "").replace("]", "") + ">";
 		}
 		else {
 			return className;
