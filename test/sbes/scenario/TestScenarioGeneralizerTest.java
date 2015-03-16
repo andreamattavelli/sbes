@@ -17,7 +17,7 @@ import org.junit.runners.MethodSorters;
 import sbes.logging.Level;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
-import sbes.scenario.GenericTestScenario;
+import sbes.scenario.TestScenarioWithGenerics;
 import sbes.scenario.TestScenario;
 import sbes.scenario.TestScenarioGeneralizer;
 
@@ -66,7 +66,7 @@ public class TestScenarioGeneralizerTest {
 		
 		CarvingResult cr = new CarvingResult(body, imports);
 		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
-		assertEquals(GenericTestScenario.class, ts.getClass());
+		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
 		
 		String actualScenario = ts.getScenario().toString();
 		String expectedScenario = 
@@ -129,7 +129,7 @@ public class TestScenarioGeneralizerTest {
 		
 		CarvingResult cr = new CarvingResult(body, imports);
 		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
-		assertEquals(GenericTestScenario.class, ts.getClass());
+		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
 		
 		String actualScenario = ts.getScenario().toString();
 		String expectedScenario = 
@@ -156,7 +156,7 @@ public class TestScenarioGeneralizerTest {
 		
 		CarvingResult cr = new CarvingResult(body, imports);
 		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
-		assertEquals(GenericTestScenario.class, ts.getClass());
+		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
 		
 		String actualScenario = ts.getScenario().toString();
 		String expectedScenario = 
@@ -225,7 +225,7 @@ public class TestScenarioGeneralizerTest {
 		
 		CarvingResult cr = new CarvingResult(body, imports);
 		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
-		assertEquals(GenericTestScenario.class, ts.getClass());
+		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
 		
 		String actualScenario = ts.getScenario().toString();
 		String expectedScenario = 
@@ -257,7 +257,7 @@ public class TestScenarioGeneralizerTest {
 				"{"+
 				"ArrayListMultimap<Integer, String> arrayListMultimap0 = ArrayListMultimap.create();"+
 				"Integer integer0 = new Integer(234);"+
-				"List<String> list0 = Collections.emptyList();"+
+				"List<String> list0 = new ArrayList();"+
 				"list0.add(\"pippo\");"+
 				"boolean boolean0 = arrayListMultimap0.putAll(integer0, list0);"+
 				"Integer integer3 = new Integer(-1698);"+
@@ -267,19 +267,21 @@ public class TestScenarioGeneralizerTest {
 		
 		CarvingResult cr = new CarvingResult(body, imports);
 		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
-		assertEquals(GenericTestScenario.class, ts.getClass());
+		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
 		
 		String actualScenario = ts.getScenario().toString();
 		String expectedScenario = 
 				"{"+
-				"ArrayListMultimap<Integer, String> arrayListMultimap0_0 = ArrayListMultimap.create();"+
+				"expected_states[0] = ArrayListMultimap.create();"+
 				"Integer integer0_0 = new Integer(234);"+
-				"List<String> list0_0 = Collections.emptyList();"+
+				"List<String> list0_0 = new ArrayList();"+
 				"list0_0.add(\"pippo\");"+
 				"boolean boolean0_0 = expected_states[0].putAll(integer0_0, list0_0);"+
 				"expected_results[0] = expected_states[0].put(ELEMENT_0_1, ELEMENT_0_0);"+
+				"actual_states[0] = ArrayListMultimap.create();"+
 				"actual_states[0].putAll(integer0_0, list0_0);"+
 				"}";
+		
 		assertScenarioAndPrint(actualScenario, expectedScenario);
 		
 		List<FieldDeclaration> actualFields = ts.getInputAsFields();
