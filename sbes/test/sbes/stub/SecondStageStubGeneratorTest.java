@@ -22,6 +22,7 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.AfterClass;
@@ -116,7 +117,7 @@ public class SecondStageStubGeneratorTest {
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), "Integer");
+				new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -158,7 +159,7 @@ public class SecondStageStubGeneratorTest {
 				"}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -200,7 +201,7 @@ public class SecondStageStubGeneratorTest {
 				"}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -240,7 +241,7 @@ public class SecondStageStubGeneratorTest {
 				"stack_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -318,7 +319,7 @@ public class SecondStageStubGeneratorTest {
 
 		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.LinkedList"), false, false));
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -357,7 +358,7 @@ public class SecondStageStubGeneratorTest {
 				"stack_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -393,7 +394,7 @@ public class SecondStageStubGeneratorTest {
 				"stack_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -430,7 +431,7 @@ public class SecondStageStubGeneratorTest {
 				"stack_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -468,7 +469,7 @@ public class SecondStageStubGeneratorTest {
 											"stack_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -506,7 +507,7 @@ public class SecondStageStubGeneratorTest {
 				"stack_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -545,7 +546,7 @@ public class SecondStageStubGeneratorTest {
 
 		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.LinkedList"), false, false));
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -622,7 +623,7 @@ public class SecondStageStubGeneratorTest {
 
 		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.LinkedList"), false, false));
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -664,7 +665,7 @@ public class SecondStageStubGeneratorTest {
 				"stack_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -704,7 +705,7 @@ public class SecondStageStubGeneratorTest {
 				"stack_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -747,7 +748,7 @@ public class SecondStageStubGeneratorTest {
 				"}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -789,7 +790,7 @@ public class SecondStageStubGeneratorTest {
 				"}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -832,7 +833,7 @@ public class SecondStageStubGeneratorTest {
 				"stack_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -910,7 +911,7 @@ public class SecondStageStubGeneratorTest {
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -952,7 +953,7 @@ public class SecondStageStubGeneratorTest {
 		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.LinkedList"), false, false));
 		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.Collection"), false, false));
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -997,7 +998,7 @@ public class SecondStageStubGeneratorTest {
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -1198,7 +1199,7 @@ public class SecondStageStubGeneratorTest {
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		
 		
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -1317,7 +1318,7 @@ public class SecondStageStubGeneratorTest {
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		
 		
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -1361,7 +1362,7 @@ public class SecondStageStubGeneratorTest {
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
 				
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -1402,7 +1403,7 @@ public class SecondStageStubGeneratorTest {
 				"stack_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -1442,7 +1443,7 @@ public class SecondStageStubGeneratorTest {
 				"}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
@@ -1484,7 +1485,7 @@ public class SecondStageStubGeneratorTest {
 				"}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>(), Arrays.asList(new String[] {"Integer"}));
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("stack/util", second.getStubName(), "./bin");
