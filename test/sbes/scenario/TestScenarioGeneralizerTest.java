@@ -1,4 +1,4 @@
-package sbes.stub;
+package sbes.scenario;
 
 import static org.junit.Assert.assertEquals;
 import japa.parser.JavaParser;
@@ -22,7 +22,7 @@ import sbes.scenario.TestScenario;
 import sbes.scenario.TestScenarioGeneralizer;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class FirstStageStubGeneratorTest {
+public class TestScenarioGeneralizerTest {
 	
 	private List<ImportDeclaration> imports = new ArrayList<ImportDeclaration>();
 	
@@ -247,6 +247,45 @@ public class FirstStageStubGeneratorTest {
 		
 		List<FieldDeclaration> actualFields = ts.getInputAsFields();
 		assertFieldsAndPrint(actualFields, null);
+	}
+	
+	@Test
+	public void test07() throws ParseException {
+		setUp("./test/resources/guava-12.0.1.jar", "com.google.common.collect.ArrayListMultimap.put(Object,Object)");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"ArrayListMultimap<Integer, String> arrayListMultimap0 = ArrayListMultimap.create();"+
+				"Integer integer0 = new Integer(234);"+
+				"List<String> list0 = Collections.emptyList();"+
+				"list0.add(\"pippo\");"+
+				"boolean boolean0 = arrayListMultimap0.putAll(integer0, list0);"+
+				"Integer integer3 = new Integer(-1698);"+
+				"String string0 = \"pluto\";"+
+				"boolean boolean3 = arrayListMultimap0.put(integer3, string0);"+
+				"}");
+		
+		CarvingResult cr = new CarvingResult(body, imports);
+		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
+		assertEquals(GenericTestScenario.class, ts.getClass());
+		
+		String actualScenario = ts.getScenario().toString();
+		String expectedScenario = 
+				"{"+
+				"ArrayListMultimap<Integer, String> arrayListMultimap0_0 = ArrayListMultimap.create();"+
+				"Integer integer0_0 = new Integer(234);"+
+				"List<String> list0_0 = Collections.emptyList();"+
+				"list0_0.add(\"pippo\");"+
+				"boolean boolean0_0 = expected_states[0].putAll(integer0_0, list0_0);"+
+				"expected_results[0] = expected_states[0].put(ELEMENT_0_1, ELEMENT_0_0);"+
+				"actual_states[0].putAll(integer0_0, list0_0);"+
+				"}";
+		assertScenarioAndPrint(actualScenario, expectedScenario);
+		
+		List<FieldDeclaration> actualFields = ts.getInputAsFields();
+		assertFieldsAndPrint(actualFields, new String[] {
+				"public static final String ELEMENT_0_0 = \"pluto\";",
+				"public static final Integer ELEMENT_0_1 = new Integer(-1698);"});
 	}
 	
 }
