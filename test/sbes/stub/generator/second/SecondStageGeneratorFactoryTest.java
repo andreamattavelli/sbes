@@ -13,8 +13,11 @@ import japa.parser.ast.stmt.BlockStmt;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import sbes.logging.Level;
+import sbes.option.Options;
 import sbes.result.CarvingResult;
 import sbes.scenario.TestScenario;
 import sbes.stub.Stub;
@@ -23,6 +26,11 @@ import sbes.stub.generator.first.FirstStageGeneratorStubWithGenerics;
 
 public class SecondStageGeneratorFactoryTest {
 
+	@BeforeClass
+	public static void setUp() throws Exception {
+		Options.I().setLogLevel(Level.FATAL);
+	}
+	
 	@Test
 	public void test0()  throws Throwable  {
 		LinkedList<TestScenario> linkedList0 = new LinkedList<TestScenario>();

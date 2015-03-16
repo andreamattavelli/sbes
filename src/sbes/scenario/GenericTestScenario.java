@@ -9,14 +9,14 @@ import sbes.result.CarvingResult;
 
 public class GenericTestScenario extends TestScenario {
 
-	private String genericClass;
+	private List<String> genericClass;
 	
-	public GenericTestScenario(CarvingResult carvedTest, BlockStmt scenarioBody, List<FieldDeclaration> inputs, String genericClass) {
+	public GenericTestScenario(CarvingResult carvedTest, BlockStmt scenarioBody, List<FieldDeclaration> inputs, List<String> concreteClasses) {
 		super(carvedTest, scenarioBody, inputs);
-		this.genericClass = genericClass;
+		this.genericClass = concreteClasses;
 	}
 	
-	public String getGenericClass() {
+	public List<String> getGenericClass() {
 		return genericClass;
 	}
 

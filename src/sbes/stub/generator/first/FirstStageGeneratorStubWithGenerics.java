@@ -59,10 +59,10 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 				GenericTestScenario generic = (GenericTestScenario) scenario;
 				if (concretes.containsKey(generic.getGenericClass())) {
 					Integer i = concretes.get(generic.getGenericClass());
-					concretes.put(generic.getGenericClass(), ++i);
+					concretes.put(generic.getGenericClass().get(0), ++i); //FIXME
 				}
 				else {
-					concretes.put(generic.getGenericClass(), 1);
+					concretes.put(generic.getGenericClass().get(0), 1); //FIXME
 				}
 			}
 		}
