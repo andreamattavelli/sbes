@@ -76,7 +76,7 @@ public class TestScenarioGeneralizer {
 		// PHASE 1: get concrete class used, if any generic class is involved
 		GenericToConcreteClassVisitor gccv = new GenericToConcreteClassVisitor(className);
 		gccv.visit(cloned, null);
-		List<String> concreteClasses = gccv.getConcreteClass();
+		List<String> concreteClasses = gccv.getConcreteClasses();
 		
 		// PHASE 2: find and substitute expected result
 		ExpectedResultRenamer erv = new ExpectedResultRenamer(index, targetMethod.getParameterTypes().length);
