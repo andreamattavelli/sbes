@@ -34,11 +34,6 @@ public class Options {
 	@Option(name = "-evosuite",
 			usage = "Path to EvoSuite jar (included jar name). Default: \"./evosuite.jar\"")
 	private String evosuitePath = "./evosuite.jar";
-
-	@Option(name = "-java_ccrt",
-			usage = "Path to Java cross-compiler rt.jar",
-			required = true)
-	private String javaRTPath = "";
 	
 	@Option(name = "-java",
 			usage = "Path to Java excutable")
@@ -106,10 +101,6 @@ public class Options {
 
 	public String getEvosuitePath() {
 		return evosuitePath;
-	}
-
-	public String getJavaCCRtPath() {
-		return javaRTPath;
 	}
 
 	public String getJavaPath() {

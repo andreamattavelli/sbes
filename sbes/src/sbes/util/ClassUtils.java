@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import sbes.exceptions.GenerationException;
 
@@ -21,18 +20,17 @@ public class ClassUtils {
 			return cache.get(clazz);
 		}
 		
-		ArrayList<Method> methods = new ArrayList<Method>();
-		
-		// Build hierarchy
-		getHierarchy(clazz).stream()
-			.forEach(c -> 
-				methods.addAll(
-					Arrays.asList(c.getDeclaredMethods()).stream()
-					.filter(m -> Modifier.isPublic(m.getModifiers())&& !m.isSynthetic() && !m.isBridge())
-					.collect(Collectors.toList())));
+		List<Method> methods = new ArrayList<Method>();
+		for (Class<?> c : getHierarchy(clazz)) {
+			for (Method m : c.getDeclaredMethods()) {
+				if (Modifier.isPublic(m.getModifiers())&& !m.isSynthetic() && !m.isBridge()) {
+					methods.add(m);
+				}
+			}
+		}
 		
 		// Remove duplicates in methods
-		Method[] finalMethods = methods.toArray(new Method[]{});
+		Method[] finalMethods = methods.toArray(new Method[0]);
 		for (int i = 0; i < finalMethods.length - 1; i++) {
 			for (int j = i + 1; j < finalMethods.length; j++) {
 				Method m1 = finalMethods[i];
@@ -57,7 +55,16 @@ public class ClassUtils {
 			}
 		}
 		
-		cache.put(clazz, Arrays.stream(finalMethods).filter(m -> m!=null).collect(Collectors.toList()).toArray(new Method[0]));
+		methods.clear();
+		methods.addAll(Arrays.asList(finalMethods));
+		for (int i = 0; i < methods.size(); i++) {
+			if (methods.get(i) == null) {
+				methods.remove(i);
+				i--;
+			}
+		}
+		
+		cache.put(clazz, methods.toArray(new Method[0]));
 		
 		return cache.get(clazz);
 	}

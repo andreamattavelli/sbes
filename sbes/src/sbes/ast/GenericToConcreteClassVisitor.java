@@ -3,6 +3,7 @@ package sbes.ast;
 import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.type.ClassOrInterfaceType;
 import japa.parser.ast.type.ReferenceType;
+import japa.parser.ast.type.Type;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
 
 import java.util.ArrayList;
@@ -30,7 +31,9 @@ public class GenericToConcreteClassVisitor extends VoidVisitorAdapter<Void> {
 				ClassOrInterfaceType coit = (ClassOrInterfaceType) refType.getType();
 				if (coit.getName().startsWith(className)) {
 					if (coit.getTypeArgs() != null) {
-						coit.getTypeArgs().stream().forEach(t -> generics.add(t.toString()));
+						for (Type t : coit.getTypeArgs()) {
+							generics.add(t.toString());
+						}
 					}
 				}
 			}
