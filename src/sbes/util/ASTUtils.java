@@ -37,14 +37,14 @@ public class ASTUtils {
 	public static Type getReturnType(Method method) {
 		if (method.getReturnType().isArray()) {
 			return ASTHelper.createReferenceType(method.getReturnType().getComponentType().getCanonicalName(), 
-													ReflectionUtils.getArrayDimensionCount(method.getReturnType()));
+												 ReflectionUtils.getArrayDimensionCount(method.getReturnType()));
 		}
 		else {
 			return ASTHelper.createReferenceType(method.getReturnType().getCanonicalName(), 0);
 		}
 	}
 	
-	public static Type getReturnConcreteType(TypeVariable<?>[] generics, String concreteClass, Method method) {
+	public static Type getReturnConcreteType(TypeVariable<?>[] generics, List<String> concreteClasses, Method method) {
 		String canonicalName = "";
 		int arrayDimension = 0;
 		
@@ -52,14 +52,22 @@ public class ASTUtils {
 			arrayDimension = ReflectionUtils.getArrayDimensionCount(method.getReturnType());
 		}
 		
-		String[] genericString = ArrayUtils.toArrayString(generics);
-		
-		String genericReturn = method.getGenericReturnType().toString();
-		if (ArrayUtils.contains(genericString, genericReturn)) {
-			canonicalName = concreteClass;
+		if (method.getGenericReturnType().getClass().equals(Class.class)) {
+			// not a generic type
+			canonicalName = method.getReturnType().getCanonicalName();
 		}
 		else {
-			canonicalName = method.getReturnType().getCanonicalName();
+			canonicalName = method.getGenericReturnType().toString();
+			if (canonicalName.contains("$")) {
+				canonicalName = method.getReturnType().getCanonicalName();
+			}
+			TypeVariable<?>[] types = method.getDeclaringClass().getTypeParameters();
+			for (int i = 0; i < types.length; i++) {
+				TypeVariable<?> typeVariable = types[i];
+				if (canonicalName.contains(typeVariable.toString())) {
+					canonicalName = canonicalName.replaceAll(typeVariable.toString(), concreteClasses.get(i));
+				}
+			}
 		}
 
 		return ASTHelper.createReferenceType(canonicalName, arrayDimension);
@@ -76,7 +84,7 @@ public class ASTUtils {
 		}
 	}
 	
-	public static Type getReturnConcreteTypeAsArray(TypeVariable<?>[] generics, String concreteClass, Method method) {
+	public static Type getReturnConcreteTypeAsArray(TypeVariable<?>[] generics, List<String> concreteClass, Method method) {
 		Class<?> returnType = method.getReturnType();
 		
 		if (returnType.getSimpleName().equals("void")) {
@@ -110,10 +118,10 @@ public class ASTUtils {
 		return es_bd;
 	}
 	
-	public static BodyDeclaration createGenericStubHelperArray(String classType, String concreteClass, String varId) {
+	public static BodyDeclaration createGenericStubHelperArray(String classType, List<String> concreteClasses, String varId) {
 		ArrayCreationExpr es_ace = new ArrayCreationExpr(ASTHelper.createReferenceType(classType, 0), ASTUtils.getArraysDimension(), 0);
 		VariableDeclarator expected_states = ASTUtils.createDeclarator(varId, es_ace);
-		String referenceType = classType + "<" + concreteClass + ">";
+		String referenceType = classType + "<" + concreteClasses.toString().replace("[", "").replace("]", "") + ">";
 		BodyDeclaration es_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL, ASTHelper.createReferenceType(referenceType, 1), expected_states);
 		return es_bd;
 	}
