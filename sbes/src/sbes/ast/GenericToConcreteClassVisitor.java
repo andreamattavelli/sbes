@@ -5,17 +5,21 @@ import japa.parser.ast.type.ClassOrInterfaceType;
 import japa.parser.ast.type.ReferenceType;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GenericToConcreteClassVisitor extends VoidVisitorAdapter<Void> {
 
 	private String className;
-	private String concreteClass;
+	private List<String> generics;
 	
 	public GenericToConcreteClassVisitor(String className) {
 		this.className = className;
+		this.generics = new ArrayList<String>();
 	}
 	
-	public String getConcreteClass() {
-		return concreteClass;
+	public List<String> getConcreteClass() {
+		return generics;
 	}
 	
 	@Override
@@ -26,7 +30,7 @@ public class GenericToConcreteClassVisitor extends VoidVisitorAdapter<Void> {
 				ClassOrInterfaceType coit = (ClassOrInterfaceType) refType.getType();
 				if (coit.getName().startsWith(className)) {
 					if (coit.getTypeArgs() != null) {
-						concreteClass = coit.getTypeArgs().toString().replaceAll("\\[", "").replaceAll("\\]", "");
+						coit.getTypeArgs().stream().forEach(t -> generics.add(t.toString()));
 					}
 				}
 			}

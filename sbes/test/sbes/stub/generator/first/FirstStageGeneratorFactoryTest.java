@@ -10,14 +10,22 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import sbes.logging.Level;
+import sbes.option.Options;
 import sbes.result.CarvingResult;
 import sbes.scenario.GenericTestScenario;
 import sbes.scenario.TestScenario;
 
 public class FirstStageGeneratorFactoryTest {
 
+	@BeforeClass
+	public static void setUp() throws Exception {
+		Options.I().setLogLevel(Level.FATAL);
+	}
+	
 	@Test
 	public void test0()  throws Throwable  {
 		LinkedList<TestScenario> linkedList0 = new LinkedList<TestScenario>();
@@ -33,8 +41,10 @@ public class FirstStageGeneratorFactoryTest {
 		BlockStmt blockStmt0 = new BlockStmt();
 		CarvingResult carvingResult0 = new CarvingResult(blockStmt0, (List<ImportDeclaration>) null);
 		LinkedList<FieldDeclaration> linkedList1 = new LinkedList<FieldDeclaration>();
+		LinkedList<String> linkedList2 = new LinkedList<String>();
+		linkedList2.add("Integer");
 		TestScenario testScenario0 = new TestScenario(carvingResult0, blockStmt0, (List<FieldDeclaration>) linkedList1);
-		linkedList0.add(new GenericTestScenario((CarvingResult) testScenario0, blockStmt0, (List<FieldDeclaration>) linkedList1, (String) null));
+		linkedList0.add(new GenericTestScenario((CarvingResult) testScenario0, blockStmt0, linkedList1, linkedList2));
 		FirstStageGeneratorStub firstStageGeneratorStubWithGenerics0 = FirstStageGeneratorFactory.createGenerator((List<TestScenario>) linkedList0);
 		assertNotNull(firstStageGeneratorStubWithGenerics0);
 		assertEquals(FirstStageGeneratorStubWithGenerics.class, firstStageGeneratorStubWithGenerics0.getClass());

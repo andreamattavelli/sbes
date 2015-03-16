@@ -76,7 +76,7 @@ public class TestScenarioGeneralizer {
 		// PHASE 1: get concrete class used, if any generic class is involved
 		GenericToConcreteClassVisitor gccv = new GenericToConcreteClassVisitor(className);
 		gccv.visit(cloned, null);
-		String concreteClass = gccv.getConcreteClass();
+		List<String> concreteClasses = gccv.getConcreteClass();
 		
 		// PHASE 2: find and substitute expected result
 		ExpectedResultRenamer erv = new ExpectedResultRenamer(index, targetMethod.getParameterTypes().length);
@@ -85,7 +85,7 @@ public class TestScenarioGeneralizer {
 		
 		// PHASE 2: find and substitute expected state
 		ExpectedStateVisitor esv = new ExpectedStateVisitor(index, objName);
-		esv.visit(cloned, getConcreteClass(className, concreteClass));
+		esv.visit(cloned, getConcreteClass(className, concreteClasses));
 		ExpectedStateRenamer oesv = new ExpectedStateRenamer(objName, FirstStageGeneratorStub.EXPECTED_STATE, Integer.toString(index));
 		oesv.visit(cloned, null);
 		// create actual state
@@ -98,8 +98,8 @@ public class TestScenarioGeneralizer {
 		
 		cloned.getStmts().addAll(actualStatements);
 		
-		if (concreteClass != null) {
-			return new GenericTestScenario(carvedTest, cloned, inputs, concreteClass);
+		if (concreteClasses != null && concreteClasses.size() > 0) {
+			return new GenericTestScenario(carvedTest, cloned, inputs, concreteClasses);
 		} else {
 			return new TestScenario(carvedTest, cloned, inputs);
 		}
@@ -199,9 +199,9 @@ public class TestScenarioGeneralizer {
 		return dependencies;
 	}
 
-	private static String getConcreteClass(String className, String concreteClass) {
-		if (concreteClass != null) {
-			return className + "<" + concreteClass + ">";
+	private static String getConcreteClass(String className, List<String> concreteClasses) {
+		if (concreteClasses != null && concreteClasses.size() > 0) {
+			return className + "<" + concreteClasses.get(0) + ">"; //FIXME
 		}
 		else {
 			return className;
