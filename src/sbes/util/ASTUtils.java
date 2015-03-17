@@ -27,6 +27,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import sbes.stub.generator.first.FirstStageGeneratorStub;
 
@@ -44,7 +45,7 @@ public class ASTUtils {
 		}
 	}
 	
-	public static Type getReturnConcreteType(TypeVariable<?>[] generics, List<String> concreteClasses, Method method) {
+	public static Type getReturnConcreteType(TypeVariable<?>[] generics, Map<TypeVariable<?>, String> genericToConcreteClasses, Method method) {
 		String canonicalName = "";
 		int arrayDimension = 0;
 		
@@ -65,7 +66,7 @@ public class ASTUtils {
 			for (int i = 0; i < types.length; i++) {
 				TypeVariable<?> typeVariable = types[i];
 				if (canonicalName.contains(typeVariable.toString())) {
-					canonicalName = canonicalName.replaceAll(typeVariable.toString(), concreteClasses.get(i));
+					canonicalName = canonicalName.replaceAll(typeVariable.toString(), genericToConcreteClasses.get(i));
 				}
 			}
 		}
@@ -84,14 +85,14 @@ public class ASTUtils {
 		}
 	}
 	
-	public static Type getReturnConcreteTypeAsArray(TypeVariable<?>[] generics, List<String> concreteClass, Method method) {
+	public static Type getReturnConcreteTypeAsArray(TypeVariable<?>[] generics, Map<TypeVariable<?>, String> genericToConcreteClasses, Method method) {
 		Class<?> returnType = method.getReturnType();
 		
 		if (returnType.getSimpleName().equals("void")) {
 			return ASTHelper.createReferenceType(returnType.getCanonicalName(), 0);
 		}
 		else {
-			ReferenceType t = (ReferenceType) getReturnConcreteType(generics, concreteClass, method);
+			ReferenceType t = (ReferenceType) getReturnConcreteType(generics, genericToConcreteClasses, method);
 			t.setArrayCount(t.getArrayCount() + 1);
 			return t;
 		}
@@ -118,10 +119,10 @@ public class ASTUtils {
 		return es_bd;
 	}
 	
-	public static BodyDeclaration createGenericStubHelperArray(String classType, List<String> concreteClasses, String varId) {
+	public static BodyDeclaration createGenericStubHelperArray(String classType, Map<TypeVariable<?>, String> genericToConcreteClasses, String varId) {
 		ArrayCreationExpr es_ace = new ArrayCreationExpr(ASTHelper.createReferenceType(classType, 0), ASTUtils.getArraysDimension(), 0);
 		VariableDeclarator expected_states = ASTUtils.createDeclarator(varId, es_ace);
-		String referenceType = classType + "<" + concreteClasses.toString().replace("[", "").replace("]", "") + ">";
+		String referenceType = classType + "<" + genericToConcreteClasses.toString().replace("[", "").replace("]", "") + ">";
 		BodyDeclaration es_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL, ASTHelper.createReferenceType(referenceType, 1), expected_states);
 		return es_bd;
 	}

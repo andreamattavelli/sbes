@@ -3,21 +3,24 @@ package sbes.scenario;
 import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.stmt.BlockStmt;
 
+import java.lang.reflect.TypeVariable;
 import java.util.List;
+import java.util.Map;
 
 import sbes.result.CarvingResult;
 
 public class TestScenarioWithGenerics extends TestScenario {
 
-	private List<String> genericClass;
-	
-	public TestScenarioWithGenerics(CarvingResult carvedTest, BlockStmt scenarioBody, List<FieldDeclaration> inputs, List<String> concreteClasses) {
+	private Map<TypeVariable<?>, String> genericToConcreteClasses;
+
+	public TestScenarioWithGenerics(CarvingResult carvedTest, BlockStmt scenarioBody, 
+									List<FieldDeclaration> inputs, Map<TypeVariable<?>, String> genericToConcreteClasses) {
 		super(carvedTest, scenarioBody, inputs);
-		this.genericClass = concreteClasses;
+		this.genericToConcreteClasses = genericToConcreteClasses;
 	}
-	
-	public List<String> getGenericClasses() {
-		return genericClass;
+
+	public Map<TypeVariable<?>, String> getGenericToConcreteClasses() {
+		return genericToConcreteClasses;
 	}
 
 }

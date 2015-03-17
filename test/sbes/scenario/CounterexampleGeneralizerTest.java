@@ -69,15 +69,14 @@ public class CounterexampleGeneralizerTest {
 		BlockStmt block = JavaParser.parseBlock(
 				"{"+
 				"Stack_Stub_2 stack_Stub_2_0 = new Stack_Stub_2();"+
-				"int int0 = 0;"+
+				"int int0 = (-8);"+
 				"Integer integer0 = new Integer(int0);"+
-				"Integer integer1 = stack_Stub_2_0.push(integer0);"+
-				"boolean boolean0 = stack_Stub_2_0.add(integer1);"+
-				"boolean boolean1 = stack_Stub_2_0.add(integer0);"+
-				"Object object0 = new Object();"+
-				"int int1 = stack_Stub_2_0.lastIndexOf(object0);"+
-				"boolean boolean2 = stack_Stub_2_0.add((Integer) int1);"+
-				"stack_Stub_2_0.method_under_test(integer1);"+
+				"int int1 = 3;"+
+				"Integer integer1 = new Integer(int1);"+
+				"Integer integer2 = new Integer((int) integer1);"+
+				"stack_Stub_2_0.setSize((int) integer2);"+
+				"boolean boolean0 = stack_Stub_2_0.add(integer0);"+
+				"stack_Stub_2_0.method_under_test((int) integer2);"+
 				"}");
 		
 		System.out.println(block.toString());

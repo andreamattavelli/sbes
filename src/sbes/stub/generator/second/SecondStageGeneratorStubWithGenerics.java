@@ -29,6 +29,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import sbes.exceptions.SBESException;
 import sbes.logging.Logger;
@@ -44,12 +45,16 @@ public class SecondStageGeneratorStubWithGenerics extends SecondStageGeneratorSt
 	
 	private static final Logger logger = new Logger(SecondStageGeneratorStubWithGenerics.class);
 
-	private List<String> concreteClasses;
+	private Map<TypeVariable<?>, String> genericToConcreteClasses;
 	
-	public SecondStageGeneratorStubWithGenerics(final List<TestScenario> scenarios, final Stub stub, final CarvingResult candidateES, 
-												final List<FieldDeclaration> fields, final List<String> concreteClasses) {
+	public SecondStageGeneratorStubWithGenerics(
+			final List<TestScenario> scenarios, 
+			final Stub stub,
+			final CarvingResult candidateES,
+			final List<FieldDeclaration> fields,
+			final Map<TypeVariable<?>, String> genericToConcreteClasses) {
 		super(scenarios, stub, candidateES, fields);
-		this.concreteClasses = concreteClasses;
+		this.genericToConcreteClasses = genericToConcreteClasses;
 	}
 	
 	@Override
@@ -57,7 +62,7 @@ public class SecondStageGeneratorStubWithGenerics extends SecondStageGeneratorSt
 		stubName = className + STUB_EXTENSION + "_2";
 		
 		// extends base class
-		ClassOrInterfaceType extendClassDecl = new ClassOrInterfaceType(className + "<" + concreteClasses.toString().replaceAll("\\[", "").replaceAll("\\]", "") + ">");
+		ClassOrInterfaceType extendClassDecl = new ClassOrInterfaceType(className + "<" + genericToConcreteClasses.toString().replaceAll("\\[", "").replaceAll("\\]", "") + ">");
 		List<ClassOrInterfaceType> extendClasses = new ArrayList<ClassOrInterfaceType>();
 		extendClasses.add(extendClassDecl);
 		
@@ -136,27 +141,42 @@ public class SecondStageGeneratorStubWithGenerics extends SecondStageGeneratorSt
 		List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
 		vars.add(new VariableDeclarator(new VariableDeclaratorId("clone")));
 		String className = ClassUtils.getSimpleClassname(Options.I().getMethodSignature());
-		Expression left = new VariableDeclarationExpr(ASTHelper.createReferenceType(className + "<" + concreteClasses.toString().replaceAll("\\[", "").replaceAll("\\]", "") + ">", 0), vars);
+		Expression left = new VariableDeclarationExpr(ASTHelper.createReferenceType(className + "<" + genericToConcreteClasses.toString().replaceAll("\\[", "").replaceAll("\\]", "") + ">", 0), vars);
 		AssignExpr assignment = new AssignExpr(left, right, Operator.assign);
 		return new ExpressionStmt(assignment);
 	}
 	
 	@Override
 	protected Statement createExpectedResult(Method targetMethod, List<Parameter> parameters) {
+		TypeVariable<?>[] types = targetMethod.getDeclaringClass().getTypeParameters();
+		Type[] genericParameters = targetMethod.getGenericParameterTypes();
+		
 		List<Expression> methodParameters = new ArrayList<Expression>();
-		for (Parameter parameter : parameters) {
-			methodParameters.add(ASTHelper.createNameExpr(parameter.getId().getName()));
+		for (int i = 0; i < genericParameters.length; i++) {
+			Type param = genericParameters[i];
+			for (TypeVariable<?> type : types) {
+				if (type.getName().equals(param.toString())) {
+					methodParameters.add(ASTHelper.createNameExpr(parameters.get(i).getId().getName()));
+				}
+			}
+//			if (index >= 0) {
+//				methodParameters.add(ASTHelper.createNameExpr(parameters.get(index).getId().getName()));
+//			}
 		}
+//		
+//		
+//		for (Parameter parameter : parameters) {
+//			methodParameters.add(ASTHelper.createNameExpr(parameter.getId().getName()));
+//		}
 		Expression right = new MethodCallExpr(new ThisExpr(), targetMethod.getName(), methodParameters);
 		if (!targetMethod.getReturnType().equals(void.class)) {
 			List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
 			vars.add(new VariableDeclarator(new VariableDeclaratorId("expected_result")));
 			String className = targetMethod.getGenericReturnType().toString();
-			TypeVariable<?>[] types = targetMethod.getDeclaringClass().getTypeParameters();
 			for (int i = 0; i < types.length; i++) {
 				TypeVariable<?> typeVariable = types[i];
 				if (className.contains(typeVariable.toString())) {
-					className = className.replaceAll(typeVariable.toString(), concreteClasses.get(i));
+					className = className.replaceAll(typeVariable.toString(), genericToConcreteClasses.get(i));
 				}
 			}
 			int arrayDimension = 0;
@@ -176,7 +196,7 @@ public class SecondStageGeneratorStubWithGenerics extends SecondStageGeneratorSt
 		for (int i = 0; i < types.length; i++) {
 			TypeVariable<?> typeVariable = types[i];
 			if (className.contains(typeVariable.toString())) {
-				className = className.replaceAll(typeVariable.toString(), concreteClasses.get(i));
+				className = className.replaceAll(typeVariable.toString(), genericToConcreteClasses.get(i));
 			}
 		}
 		
@@ -195,7 +215,7 @@ public class SecondStageGeneratorStubWithGenerics extends SecondStageGeneratorSt
 				for (int j = 0; j < types.length; j++) {
 					TypeVariable<?> typeVariable = types[j];
 					if (typeClass.contains(typeVariable.toString())) {
-						typeClass = typeClass.replaceAll(typeVariable.toString(), concreteClasses.get(j));
+						typeClass = typeClass.replaceAll(typeVariable.toString(), genericToConcreteClasses.get(j));
 					}
 				}
 			} 

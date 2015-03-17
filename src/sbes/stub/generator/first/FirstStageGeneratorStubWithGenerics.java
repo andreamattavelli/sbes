@@ -29,6 +29,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,9 +46,9 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 
 	private static final Logger logger = new Logger(FirstStageGeneratorStubWithGenerics.class);
 	
-	private List<String> concreteClasses;
+	private Map<TypeVariable<?>, String> genericToConcreteClasses;
 	
-	public FirstStageGeneratorStubWithGenerics(List<TestScenario> scenarios) {
+	public FirstStageGeneratorStubWithGenerics(final List<TestScenario> scenarios) {
 		super(scenarios);
 		checkConcreteClasses();
 	}
@@ -57,12 +58,12 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 		for (TestScenario scenario : scenarios) {
 			if (scenario instanceof TestScenarioWithGenerics) {
 				TestScenarioWithGenerics generic = (TestScenarioWithGenerics) scenario;
-				if (cClasses.containsKey(generic.getGenericClasses().toString())) {
-					Integer i = cClasses.get(generic.getGenericClasses().toString());
-					cClasses.put(generic.getGenericClasses().toString(), ++i);
+				if (cClasses.containsKey(generic.getGenericToConcreteClasses().toString())) {
+					Integer i = cClasses.get(generic.getGenericToConcreteClasses().toString());
+					cClasses.put(generic.getGenericToConcreteClasses().toString(), ++i);
 				}
 				else {
-					cClasses.put(generic.getGenericClasses().toString(), 1);
+					cClasses.put(generic.getGenericToConcreteClasses().toString(), 1);
 				}
 			} else {
 				logger.warn("Generating fist stage stub with generics, but a test scenario does not have any!");
@@ -73,8 +74,13 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 			throw new GenerationException("Many concrete types for the same generic type. NOT IMPLEMENTED YET");
 		} else {
 			//FIXME: better ideas?
-			TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) scenarios.get(0);
-			concreteClasses = tswg.getGenericClasses();
+			if (scenarios.size() > 0) {
+				TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) scenarios.get(0);
+				genericToConcreteClasses = tswg.getGenericToConcreteClasses();
+			}
+			else {
+				genericToConcreteClasses = new LinkedHashMap<>();
+			}
 		}
 	}
 
@@ -89,11 +95,11 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 		
 		// stub helper arrays
 		if (!targetMethod.getReturnType().equals(void.class)) {
-			declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnConcreteType(generics, concreteClasses, targetMethod).toString(), EXPECTED_RESULT));
-			declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnConcreteType(generics, concreteClasses, targetMethod).toString(), ACTUAL_RESULT));
+			declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnConcreteType(generics, genericToConcreteClasses, targetMethod).toString(), EXPECTED_RESULT));
+			declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnConcreteType(generics, genericToConcreteClasses, targetMethod).toString(), ACTUAL_RESULT));
 		}
-		declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), concreteClasses, EXPECTED_STATE));
-		declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), concreteClasses, ACTUAL_STATE));
+		declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), genericToConcreteClasses, EXPECTED_STATE));
+		declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), genericToConcreteClasses, ACTUAL_STATE));
 		
 		for (TestScenario scenario : scenarios) {
 			declarations.addAll(scenario.getInputAsFields());
@@ -134,8 +140,8 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 			
 			String paramsNames[] = AsmParameterNames.getParameterNames(method);
 			
-			Type returnType = ASTUtils.getReturnConcreteType(generics, concreteClasses, method);
-			Type returnStubType = ASTUtils.getReturnConcreteTypeAsArray(generics, concreteClasses, method);
+			Type returnType = ASTUtils.getReturnConcreteType(generics, genericToConcreteClasses, method);
+			Type returnStubType = ASTUtils.getReturnConcreteTypeAsArray(generics, genericToConcreteClasses, method);
 			MethodDeclaration md;
 			if (scenarios.size() > 1) {
 				md = new MethodDeclaration(method.getModifiers() & Modifier.TRANSIENT & Modifier.VOLATILE | Modifier.PUBLIC, returnStubType, method.getName());
@@ -259,7 +265,7 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 				for (int j = 0; j < types.length; j++) {
 					TypeVariable<?> typeVariable = types[j];
 					if (typeClass.contains(typeVariable.getName())) {
-						typeClass = typeClass.replaceAll(typeVariable.getName(), concreteClasses.get(j));
+						typeClass = typeClass.replaceAll(typeVariable.getName(), genericToConcreteClasses.get(j));
 					}
 				}
 			}
@@ -288,7 +294,7 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 			return null;
 		}
 		else if (returnType.toString().equals("java.lang.Object")) {
-			returnType = ASTHelper.createReferenceType(concreteClasses.get(0), 0); //FIXME: GENERICS!!!!!!!!!!!
+			returnType = ASTHelper.createReferenceType(genericToConcreteClasses.get(0), 0); //FIXME: GENERICS!!!!!!!!!!!
 		}
 		
 		MethodDeclaration set_results = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "set_results");
@@ -339,8 +345,8 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 		return set_results;
 	}
 	
-	public List<String> getConcreteClasses() {
-		return concreteClasses;
+	public Map<TypeVariable<?>, String> getGenericToConcreteClasses() {
+		return genericToConcreteClasses;
 	}
 
 }

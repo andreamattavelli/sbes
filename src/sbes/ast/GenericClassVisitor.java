@@ -9,12 +9,12 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GenericToConcreteClassVisitor extends VoidVisitorAdapter<Void> {
+public class GenericClassVisitor extends VoidVisitorAdapter<Void> {
 
 	private String className;
 	private List<String> generics;
 	
-	public GenericToConcreteClassVisitor(String className) {
+	public GenericClassVisitor(String className) {
 		this.className = className;
 		this.generics = new ArrayList<String>();
 	}
