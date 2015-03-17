@@ -1,6 +1,7 @@
 package sbes.scenario;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import japa.parser.JavaParser;
 import japa.parser.ParseException;
 import japa.parser.ast.ImportDeclaration;
@@ -17,9 +18,6 @@ import org.junit.runners.MethodSorters;
 import sbes.logging.Level;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
-import sbes.scenario.TestScenarioWithGenerics;
-import sbes.scenario.TestScenario;
-import sbes.scenario.TestScenarioGeneralizer;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestScenarioGeneralizerTest {
@@ -68,8 +66,8 @@ public class TestScenarioGeneralizerTest {
 		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
 		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
 		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
-		assertEquals(1, tswg.getGenericClasses().size());
-		assertEquals("Integer", tswg.getGenericClasses().get(0));
+		assertEquals(1, tswg.getGenericToConcreteClasses().size());
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
 		
 		String actualScenario = ts.getScenario().toString();
 		String expectedScenario = 
@@ -134,8 +132,8 @@ public class TestScenarioGeneralizerTest {
 		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
 		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
 		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
-		assertEquals(1, tswg.getGenericClasses().size());
-		assertEquals("Integer", tswg.getGenericClasses().get(0));
+		assertEquals(1, tswg.getGenericToConcreteClasses().size());
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
 		
 		String actualScenario = ts.getScenario().toString();
 		String expectedScenario = 
@@ -164,8 +162,8 @@ public class TestScenarioGeneralizerTest {
 		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
 		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
 		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
-		assertEquals(1, tswg.getGenericClasses().size());
-		assertEquals("Integer", tswg.getGenericClasses().get(0));
+		assertEquals(1, tswg.getGenericToConcreteClasses().size());
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
 		
 		String actualScenario = ts.getScenario().toString();
 		String expectedScenario = 
@@ -236,8 +234,8 @@ public class TestScenarioGeneralizerTest {
 		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
 		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
 		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
-		assertEquals(1, tswg.getGenericClasses().size());
-		assertEquals("Integer", tswg.getGenericClasses().get(0));
+		assertEquals(1, tswg.getGenericToConcreteClasses().size());
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
 		
 		String actualScenario = ts.getScenario().toString();
 		String expectedScenario = 
@@ -281,9 +279,12 @@ public class TestScenarioGeneralizerTest {
 		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
 		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
 		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
-		assertEquals(2, tswg.getGenericClasses().size());
-		assertEquals("Integer", tswg.getGenericClasses().get(0));
-		assertEquals("String", tswg.getGenericClasses().get(1));
+		assertEquals(2, tswg.getGenericToConcreteClasses().size());
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("String"));
+		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
+		assertEquals("Integer", values.get(0));
+		assertEquals("String", values.get(1));
 		
 		String actualScenario = ts.getScenario().toString();
 		String expectedScenario = 

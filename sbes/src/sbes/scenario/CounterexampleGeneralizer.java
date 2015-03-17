@@ -16,16 +16,18 @@ import japa.parser.ast.visitor.CloneVisitor;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import sbes.ast.ExpectedStateVisitor;
 import sbes.ast.ExtractValuesFromTargetMethodVisitor;
 import sbes.ast.ExtractVariablesFromTargetMethodVisitor;
-import sbes.ast.GenericToConcreteClassVisitor;
+import sbes.ast.GenericClassVisitor;
 import sbes.ast.renamer.ActualStateRenamer;
 import sbes.ast.renamer.ClassOrInterfaceRenamer;
 import sbes.ast.renamer.ExpectedResultCounterexampleRenamer;
@@ -83,6 +85,8 @@ public class CounterexampleGeneralizer {
 		String methodSignature = ClassUtils.getMethodname(Options.I().getMethodSignature());
 		// get target method from the list of class' methods
 		Method targetMethod = ClassUtils.findTargetMethod(methods, methodSignature);
+		// get generic types defined
+		TypeVariable<?>[] genericTypes = c.getTypeParameters();
 
 		CloneVisitor cloner = new CloneVisitor();
 		BlockStmt cloned = (BlockStmt) cloner.visit(carvedTest.getBody(), null);
@@ -96,9 +100,13 @@ public class CounterexampleGeneralizer {
 		oov.visit(cloned, null);
 		
 		// PHASE 1: get concrete class used, if any generic class is involved
-		GenericToConcreteClassVisitor gccv = new GenericToConcreteClassVisitor(className);
+		GenericClassVisitor gccv = new GenericClassVisitor(className);
 		gccv.visit(cloned, null);
 		List<String> concreteClasses = gccv.getConcreteClasses();
+		Map<TypeVariable<?>, String> genericToConcrete = new LinkedHashMap<>();
+		for (int i = 0; i < concreteClasses.size(); i++) {
+			genericToConcrete.put(genericTypes[i], concreteClasses.get(i));
+		}
 		
 		// PHASE 2: find and substitute expected result
 		ExpectedResultCounterexampleRenamer cerv = new ExpectedResultCounterexampleRenamer(targetMethod, index);
@@ -121,7 +129,7 @@ public class CounterexampleGeneralizer {
 		cloned.getStmts().addAll(actualStatements);
 		
 		if (concreteClasses != null && concreteClasses.size() > 0) {
-			return new TestScenarioWithGenerics(carvedTest, cloned, inputs, gccv.getConcreteClasses());
+			return new TestScenarioWithGenerics(carvedTest, cloned, inputs, genericToConcrete);
 		} else {
 			return new TestScenario(carvedTest, cloned, inputs);
 		}
