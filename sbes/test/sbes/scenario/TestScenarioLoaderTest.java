@@ -28,6 +28,8 @@ public class TestScenarioLoaderTest {
 		List<TestScenario> scenarios = TestScenarioLoader.loadTestScenarios();
 		assertNotNull(scenarios);
 		assertEquals(2, scenarios.size());
+		
+		assertEquals(TestScenarioWithGenerics.class, scenarios.get(0).getClass());
 		String firstActual = scenarios.get(0).toString();
 		String firstExpected = 
 				"{"+
@@ -42,6 +44,7 @@ public class TestScenarioLoaderTest {
 				"}";
 		assertEquals(firstExpected.replaceAll("\\s|\t|\n", ""), firstActual.replaceAll("\\s|\t|\n", ""));
 		
+		assertEquals(TestScenarioWithGenerics.class, scenarios.get(1).getClass());
 		String secondActual = scenarios.get(1).toString();
 		String secondExpected =
 				"{"+
@@ -66,6 +69,8 @@ public class TestScenarioLoaderTest {
 		List<TestScenario> scenarios = TestScenarioLoader.loadTestScenarios();
 		assertNotNull(scenarios);
 		assertEquals(1, scenarios.size());
+		
+		assertEquals(TestScenarioWithGenerics.class, scenarios.get(0).getClass());
 		String firstActual = scenarios.get(0).toString();
 		String firstExpected = 
 				"{"+
