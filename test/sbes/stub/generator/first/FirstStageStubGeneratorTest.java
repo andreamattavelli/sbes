@@ -1,4 +1,4 @@
-package sbes.stub;
+package sbes.stub.generator.first;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -29,6 +29,7 @@ import sbes.result.CarvingResult;
 import sbes.scenario.TestScenario;
 import sbes.scenario.TestScenarioGeneralizer;
 import sbes.scenario.TestScenarioWithGenerics;
+import sbes.stub.Stub;
 import sbes.stub.generator.first.FirstStageGeneratorStubWithGenerics;
 import sbes.testcase.Compilation;
 import sbes.testcase.CompilationContext;
