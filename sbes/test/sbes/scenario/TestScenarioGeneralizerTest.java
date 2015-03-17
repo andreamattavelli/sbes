@@ -18,6 +18,7 @@ import org.junit.runners.MethodSorters;
 import sbes.logging.Level;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
+import sbes.scenario.generalizer.TestScenarioGeneralizer;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestScenarioGeneralizerTest {

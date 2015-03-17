@@ -8,6 +8,7 @@ import sbes.exceptions.SBESException;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
+import sbes.scenario.generalizer.TestScenarioGeneralizer;
 import sbes.testcase.Carver;
 import sbes.testcase.CarvingContext;
 
