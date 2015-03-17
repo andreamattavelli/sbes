@@ -28,7 +28,7 @@ public abstract class Evosuite {
 
 	public String[] getCommand() {
 		List<String> evo = new ArrayList<String>();
-		if (!Options.I().getJavaPath().equals("")) {
+		if (Options.I().getJavaPath() != null && !Options.I().getJavaPath().equals("")) {
 			evo.add(Options.I().getJavaPath() + File.separatorChar + "java");
 		}
 		else {
@@ -37,7 +37,7 @@ public abstract class Evosuite {
 		evo.add("-Xmx4G");
 		evo.add("-jar");
 		evo.add(Options.I().getEvosuitePath());
-		evo.add("-DCP="+ getClassPath());
+		evo.add("-DCP=" + getClassPath());
 		evo.add("-class");
 		evo.add(classSignature);
 		evo.add("-Dtarget_method=" + getTargetMethodSignature());
@@ -45,7 +45,7 @@ public abstract class Evosuite {
 		evo.add("-Dtest_dir=" + outputDir);
 		evo.add("-Dassertions=false");
 		evo.add("-Dhtml=false");
-		evo.add("-Dvirtual_fs=false"); 
+		evo.add("-Dvirtual_fs=false");
 		evo.add("-Dobject_reuse_probability=1");
 		evo.add("-mem=2048");
 		evo.addAll(getAdditionalParameters());
