@@ -67,6 +67,9 @@ public class TestScenarioGeneralizerTest {
 		CarvingResult cr = new CarvingResult(body, imports);
 		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
 		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
+		assertEquals(1, tswg.getGenericClasses().size());
+		assertEquals("Integer", tswg.getGenericClasses().get(0));
 		
 		String actualScenario = ts.getScenario().toString();
 		String expectedScenario = 
@@ -130,6 +133,9 @@ public class TestScenarioGeneralizerTest {
 		CarvingResult cr = new CarvingResult(body, imports);
 		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
 		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
+		assertEquals(1, tswg.getGenericClasses().size());
+		assertEquals("Integer", tswg.getGenericClasses().get(0));
 		
 		String actualScenario = ts.getScenario().toString();
 		String expectedScenario = 
@@ -157,6 +163,9 @@ public class TestScenarioGeneralizerTest {
 		CarvingResult cr = new CarvingResult(body, imports);
 		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
 		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
+		assertEquals(1, tswg.getGenericClasses().size());
+		assertEquals("Integer", tswg.getGenericClasses().get(0));
 		
 		String actualScenario = ts.getScenario().toString();
 		String expectedScenario = 
@@ -226,6 +235,9 @@ public class TestScenarioGeneralizerTest {
 		CarvingResult cr = new CarvingResult(body, imports);
 		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
 		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
+		assertEquals(1, tswg.getGenericClasses().size());
+		assertEquals("Integer", tswg.getGenericClasses().get(0));
 		
 		String actualScenario = ts.getScenario().toString();
 		String expectedScenario = 
@@ -268,6 +280,10 @@ public class TestScenarioGeneralizerTest {
 		CarvingResult cr = new CarvingResult(body, imports);
 		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
 		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
+		assertEquals(2, tswg.getGenericClasses().size());
+		assertEquals("Integer", tswg.getGenericClasses().get(0));
+		assertEquals("String", tswg.getGenericClasses().get(1));
 		
 		String actualScenario = ts.getScenario().toString();
 		String expectedScenario = 
