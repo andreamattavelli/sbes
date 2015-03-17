@@ -2,29 +2,27 @@ package sbes.scenario;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import sbes.exceptions.SBESException;
 import sbes.logging.Level;
 import sbes.option.Options;
 
 public class TestScenarioLoaderTest {
 
-	@Before
-	public void setUp() throws Exception {
-		Options.I().setClassesPath("./bin");
-		Options.I().setScenarioTestPath(Paths.get("./test/resources/InitialScenario.java").toFile());
+	@BeforeClass
+	public static void setUp() throws Exception {
 		Options.I().setLogLevel(Level.FATAL);
 	}
 
 	@Test
 	public void test() {
+		Options.I().setClassesPath("./bin");
+		Options.I().setScenarioTestPath(Paths.get("./test/resources/InitialScenario.java").toFile());
 		Options.I().setMethodSignature("stack.util.Stack.elementAt(int)");
 		
 		List<TestScenario> scenarios = TestScenarioLoader.loadTestScenarios();
@@ -61,15 +59,26 @@ public class TestScenarioLoaderTest {
 	
 	@Test
 	public void test2() {
-		Options.I().setMethodSignature("stack.util.Stack.pop()");
+		Options.I().setClassesPath("./test/resources/guava-12.0.1.jar");
+		Options.I().setScenarioTestPath(Paths.get("./test/resources/InitialScenarioGuava.java").toFile());
+		Options.I().setMethodSignature("com.google.common.collect.ArrayListMultimap.put(Object,Object)");
 		
-		try {
-			TestScenarioLoader.loadTestScenarios();
-			fail();
-		}
-		catch(SBESException e) {
-			
-		}
+		List<TestScenario> scenarios = TestScenarioLoader.loadTestScenarios();
+		assertNotNull(scenarios);
+		assertEquals(1, scenarios.size());
+		String firstActual = scenarios.get(0).toString();
+		String firstExpected = 
+				"{"+
+				"ArrayListMultimap<Integer, String> arrayListMultimap0 = ArrayListMultimap.create();"+
+				"Integer integer0 = new Integer(234);"+
+				"List<String> list0 = new ArrayList();"+
+				"list0.add(\"pippo\");"+
+				"boolean boolean0 = arrayListMultimap0.putAll(integer0, list0);"+
+				"Integer integer3 = new Integer(-1698);"+
+				"String string0 = \"pluto\";"+
+				"boolean boolean3 = arrayListMultimap0.put(integer3, string0);"+
+				"}";
+		assertEquals(firstExpected.replaceAll("\\s|\t|\n", ""), firstActual.replaceAll("\\s|\t|\n", ""));
 	}
 
 }
