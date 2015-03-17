@@ -138,7 +138,8 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		List<BodyDeclaration> toReturn = new ArrayList<BodyDeclaration>(); 
 		Constructor<?> constructors[] = c.getDeclaredConstructors();
 		for (Constructor<?> constructor : constructors) {
-			if (!constructor.isSynthetic()) {
+			if (!constructor.isSynthetic() && 
+					(Modifier.isPublic(constructor.getModifiers()) || Modifier.isProtected(constructor.getModifiers()))) {
 				ConstructorDeclaration cons = new ConstructorDeclaration(constructor.getModifiers(), stubName);
 				cons.setParameters(getParameterType(constructor.getParameterTypes()));
 				List<Expression> methodParameters = ASTUtils.createParameters(cons.getParameters());
