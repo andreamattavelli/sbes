@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import sbes.option.Options;
 import sbes.result.CarvingResult;
+import sbes.scenario.generalizer.CounterexampleGeneralizer;
 
 public class CounterexampleGeneralizerTest {
 
