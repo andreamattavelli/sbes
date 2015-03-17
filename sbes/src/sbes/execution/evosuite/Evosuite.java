@@ -34,7 +34,7 @@ public abstract class Evosuite {
 		else {
 			evo.add("java");
 		}
-		evo.add("-Xmx2G");
+		evo.add("-Xmx4G");
 		evo.add("-jar");
 		evo.add(Options.I().getEvosuitePath());
 		evo.add("-DCP="+ getClassPath());
@@ -47,6 +47,7 @@ public abstract class Evosuite {
 		evo.add("-Dhtml=false");
 		evo.add("-Dvirtual_fs=false"); 
 		evo.add("-Dobject_reuse_probability=1");
+		evo.add("-mem=2048");
 		evo.addAll(getAdditionalParameters());
 		this.command = evo.toString();
 		return evo.toArray(new String[0]);
