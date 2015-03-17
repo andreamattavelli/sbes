@@ -288,7 +288,7 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 			return null;
 		}
 		else if (returnType.toString().equals("java.lang.Object")) {
-			returnType = ASTHelper.createReferenceType(concreteClasses.get(0), 0); //FIXME
+			returnType = ASTHelper.createReferenceType(concreteClasses.get(0), 0); //FIXME: GENERICS!!!!!!!!!!!
 		}
 		
 		MethodDeclaration set_results = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "set_results");
