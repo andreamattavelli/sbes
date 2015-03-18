@@ -28,6 +28,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import sbes.stub.generator.first.FirstStageGeneratorStub;
 
@@ -62,11 +63,10 @@ public class ASTUtils {
 			if (canonicalName.contains("$")) {
 				canonicalName = method.getReturnType().getCanonicalName();
 			}
-			TypeVariable<?>[] types = method.getDeclaringClass().getTypeParameters();
-			for (int i = 0; i < types.length; i++) {
-				TypeVariable<?> typeVariable = types[i];
+			Set<TypeVariable<?>> types = genericToConcreteClasses.keySet();
+			for (TypeVariable<?> typeVariable : types) {
 				if (canonicalName.contains(typeVariable.toString())) {
-					canonicalName = canonicalName.replaceAll(typeVariable.toString(), genericToConcreteClasses.get(i));
+					canonicalName = canonicalName.replaceAll(typeVariable.toString(), genericToConcreteClasses.get(typeVariable));
 				}
 			}
 		}
@@ -122,7 +122,7 @@ public class ASTUtils {
 	public static BodyDeclaration createGenericStubHelperArray(String classType, Map<TypeVariable<?>, String> genericToConcreteClasses, String varId) {
 		ArrayCreationExpr es_ace = new ArrayCreationExpr(ASTHelper.createReferenceType(classType, 0), ASTUtils.getArraysDimension(), 0);
 		VariableDeclarator expected_states = ASTUtils.createDeclarator(varId, es_ace);
-		String referenceType = classType + "<" + genericToConcreteClasses.toString().replace("[", "").replace("]", "") + ">";
+		String referenceType = classType + "<" + GenericsUtils.toGenericsString(genericToConcreteClasses) + ">";
 		BodyDeclaration es_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL, ASTHelper.createReferenceType(referenceType, 1), expected_states);
 		return es_bd;
 	}

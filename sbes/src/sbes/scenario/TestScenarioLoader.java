@@ -40,8 +40,9 @@ public class TestScenarioLoader {
 	private static List<TestScenario> testToArrayScenario(List<CarvingResult> carvedTests) {
 		List<TestScenario> scenarios = new ArrayList<TestScenario>();
 		logger.debug("Generalizing carved bodies to array-based test scenarios");
+		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
 		for (CarvingResult carvedTest : carvedTests) {
-			TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(carvedTest);
+			TestScenario ts = tsg.testToTestScenario(carvedTest);
 			if (ts != null) {
 				scenarios.add(ts);
 			}

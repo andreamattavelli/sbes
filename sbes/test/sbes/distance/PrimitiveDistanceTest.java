@@ -3,9 +3,18 @@ package sbes.distance;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import sbes.logging.Level;
+import sbes.option.Options;
+
 public class PrimitiveDistanceTest {
+	
+	@BeforeClass
+	public static void setUp() throws Exception {
+		Options.I().setLogLevel(Level.FATAL);
+	}
 	
 	@Test
 	public void test00()  throws Throwable  {

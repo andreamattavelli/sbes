@@ -10,22 +10,104 @@ import japa.parser.ast.expr.ObjectCreationExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.stmt.BlockStmt;
 import japa.parser.ast.stmt.ExpressionStmt;
+import japa.parser.ast.stmt.Statement;
+import japa.parser.ast.visitor.CloneVisitor;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import sbes.ast.ExpectedStateVisitor;
 import sbes.ast.ExtractValuesFromTargetMethodVisitor;
 import sbes.ast.ExtractVariablesFromTargetMethodVisitor;
+import sbes.ast.GenericClassVisitor;
+import sbes.ast.renamer.ActualStateRenamer;
+import sbes.ast.renamer.ExpectedStateRenamer;
 import sbes.ast.renamer.InputFieldRenamer;
+import sbes.ast.renamer.VariableNamesRenamer;
+import sbes.exceptions.GenerationException;
+import sbes.execution.InternalClassloader;
+import sbes.option.Options;
+import sbes.result.CarvingResult;
+import sbes.scenario.TestScenario;
+import sbes.scenario.TestScenarioRepository;
+import sbes.scenario.TestScenarioWithGenerics;
+import sbes.stub.generator.first.FirstStageGeneratorStub;
+import sbes.util.ClassUtils;
 
 public abstract class AbstractGeneralizer {
 
-	protected static List<FieldDeclaration> extractParametersToInputs(BlockStmt cloned, String methodName, Method targetMethod, int index) {
+	protected TestScenario generalizeToTestScenario(final CarvingResult carvedTest) {
+		int index = TestScenarioRepository.I().getScenarios().size();
+
+		BlockStmt cloned = (BlockStmt) new CloneVisitor().visit(carvedTest.getBody(), null);
+		List<Statement> actualStatements = new ArrayList<Statement>();
+
+		String className = ClassUtils.getSimpleClassname(Options.I().getMethodSignature());
+		String methodName = ClassUtils.getMethodname(Options.I().getMethodSignature().split("\\(")[0]);
+
+		Class<?> c;
+		try {
+			InternalClassloader ic = new InternalClassloader(Options.I().getClassesPath());
+			c = Class.forName(ClassUtils.getCanonicalClassname(Options.I().getMethodSignature()), false, ic.getClassLoader());
+		} catch (ClassNotFoundException e) {
+			// infeasible, we already checked the classpath
+			throw new GenerationException("Target class not found");
+		}
+
+		// get class' methods
+		Method[] methods = ClassUtils.getClassMethods(c);
+		// get method signature
+		String methodSignature = ClassUtils.getMethodname(Options.I().getMethodSignature());
+		// get target method from the list of class' methods
+		Method targetMethod = ClassUtils.findTargetMethod(methods, methodSignature);
+		// get generic types defined
+		TypeVariable<?>[] genericTypes = c.getTypeParameters();
+
+		// PHASE 0: transform variable names to avoid collisions among different scenarios
+		new VariableNamesRenamer(index).visit(cloned, null);
+
+		// PHASE 1: get concrete class used, if any generic class is involved
+		GenericClassVisitor gccv = new GenericClassVisitor(className);
+		gccv.visit(cloned, null);
+		List<String> concreteClasses = gccv.getConcreteClasses();
+		Map<TypeVariable<?>, String> genericToConcrete = new LinkedHashMap<>();
+		for (int i = 0; i < concreteClasses.size(); i++) {
+			genericToConcrete.put(genericTypes[i], concreteClasses.get(i));
+		}
+
+		// PHASE 2: find and substitute expected result
+		String objName = getAndRenameExpectedResult(cloned, targetMethod, methodName, index);
+
+		// PHASE 3: find and substitute expected state
+		new ExpectedStateVisitor(index, objName).visit(cloned, getConcreteClass(className, concreteClasses));
+		new ExpectedStateRenamer(objName, FirstStageGeneratorStub.EXPECTED_STATE, Integer.toString(index)).visit(cloned, null);
+		// create actual state
+		ActualStateRenamer asv = new ActualStateRenamer(FirstStageGeneratorStub.EXPECTED_STATE, Integer.toString(index), methodName);
+		asv.visit(cloned, null);
+		actualStatements.addAll(asv.getActualStates());
+
+		// PHASE 4: extract candidate call parameters to fields (with all dependencies)
+		List<FieldDeclaration> inputs = extractParametersToInputs(cloned, methodName, targetMethod, index);
+
+		cloned.getStmts().addAll(actualStatements);
+
+		if (concreteClasses != null && concreteClasses.size() > 0) {
+			return new TestScenarioWithGenerics(carvedTest, cloned, inputs, genericToConcrete);
+		} else {
+			return new TestScenario(carvedTest, cloned, inputs);
+		}
+	}
+	
+	protected abstract String getAndRenameExpectedResult(final BlockStmt cloned, final Method targetMethod, final String methodName, final int index);
+	
+	protected List<FieldDeclaration> extractParametersToInputs(final BlockStmt cloned, final String methodName, final Method targetMethod, final int index) {
 		List<String> varsToExtract = new ArrayList<String>();
 		List<VariableDeclarationExpr> varsToField = new ArrayList<VariableDeclarationExpr>();
 		List<FieldDeclaration> fields = new ArrayList<FieldDeclaration>();
@@ -84,7 +166,7 @@ public abstract class AbstractGeneralizer {
 		return fields;
 	}
 	
-	protected static List<String> extractMethodDependencies(Expression init) {
+	protected List<String> extractMethodDependencies(final Expression init) {
 		List<String> dependencies = new ArrayList<String>();
 		List<Expression> args = new ArrayList<Expression>();
 		if (init instanceof MethodCallExpr) {
@@ -119,7 +201,7 @@ public abstract class AbstractGeneralizer {
 		return dependencies;
 	}
 
-	protected static String getConcreteClass(String className, List<String> concreteClasses) {
+	protected String getConcreteClass(final String className, final List<String> concreteClasses) {
 		if (concreteClasses != null && concreteClasses.size() > 0) {
 			return className + "<" + concreteClasses.toString().replace("[", "").replace("]", "") + ">";
 		}

@@ -302,7 +302,8 @@ public class SBESManager {
 	}
 	
 	private Stub generateTestScenarioFromCounterexample(DirectoryUtils directory, CarvingResult counterexample) {
-		TestScenario counterexampleScenario = CounterexampleGeneralizer.counterexampleToTestScenario(counterexample);
+		CounterexampleGeneralizer cg = new CounterexampleGeneralizer();
+		TestScenario counterexampleScenario = cg.counterexampleToTestScenario(counterexample);
 		TestScenarioRepository.I().addCounterexample(counterexampleScenario);
 		AbstractStubGenerator counterexampleGenerator = FirstStageGeneratorFactory.createGenerator(TestScenarioRepository.I().getScenarios());
 		Stub stub = counterexampleGenerator.generateStub();
