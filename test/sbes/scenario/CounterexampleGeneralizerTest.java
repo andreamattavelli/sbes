@@ -83,7 +83,8 @@ public class CounterexampleGeneralizerTest {
 		System.out.println(block.toString());
 		
 		CarvingResult counterexample = new CarvingResult(block, new ArrayList<ImportDeclaration>());
-		TestScenario ts = CounterexampleGeneralizer.counterexampleToTestScenario(counterexample);
+		CounterexampleGeneralizer cg = new CounterexampleGeneralizer();
+		TestScenario ts = cg.counterexampleToTestScenario(counterexample);
 		System.out.println(ts.getScenario());
 		System.out.println(ts.getInputAsFields());
 	}

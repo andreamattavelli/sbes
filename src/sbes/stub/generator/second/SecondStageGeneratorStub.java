@@ -246,7 +246,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		return new ExpressionStmt(assignment);
 	}
 	
-	protected Statement createExpectedResult(Method targetMethod, List<Parameter> parameters) {
+	protected Statement createExpectedResult(Method targetMethod, final List<Parameter> parameters) {
 		List<Expression> methodParameters = new ArrayList<Expression>();
 		for (Parameter parameter : parameters) {
 			methodParameters.add(ASTHelper.createNameExpr(parameter.getId().getName()));
@@ -267,7 +267,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		return new ExpressionStmt(right);
 	}
 	
-	protected List<Statement> createActualResult(Method targetMethod, CarvingResult candidateES2, List<Parameter> param) {
+	protected List<Statement> createActualResult(Method targetMethod, CarvingResult candidateES2, final List<Parameter> param) {
 		List<Statement> stmts = new ArrayList<Statement>();
 		
 		BlockStmt carved = candidateES2.getBody();
@@ -354,7 +354,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	 *  this means that, if they are references to the static inputs in the
 	 *  first stub, we need to match an input in the current stub
 	 */
-	private void identifyEquivalentSequenceParameters(BlockStmt cloned, List<Parameter> param) {
+	private void identifyEquivalentSequenceParameters(BlockStmt cloned, final List<Parameter> param) {
 		EquivalentSequenceCallVisitor escv = new EquivalentSequenceCallVisitor();
 		escv.visit(cloned, null);
 		for (MethodCallExpr methodCall : escv.getDependencies()) {
@@ -366,6 +366,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 				FieldAccessExpr fae = (FieldAccessExpr) init;
 				if (fae.getField().startsWith("ELEMENT_")) {
 					// it is an input
+					vde.getType();
 					String index = fae.getField().substring(fae.getField().lastIndexOf('_') + 1);
 					vde.getVars().get(0).setInit(ASTHelper.createNameExpr(param.get(Integer.valueOf(index)).getId().getName()));
 				}
@@ -373,7 +374,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		}
 	}
 
-	private void analyzeParameters(BlockStmt cloned, List<Parameter> param, MethodCallExpr methodCall) {
+	private void analyzeParameters(BlockStmt cloned, final List<Parameter> param, MethodCallExpr methodCall) {
 		for (int i = 0; i < methodCall.getArgs().size(); i++) { 
 			Expression arg = methodCall.getArgs().get(i);
 			VariableDeclarationExpr vde = null;
@@ -399,23 +400,20 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 				Expression init = vde.getVars().get(0).getInit();
 				if (init instanceof FieldAccessExpr) {
 					FieldAccessExpr fae = (FieldAccessExpr) init;
-					if (fae.getField().startsWith("ELEMENT_")) {
-						// it is an input
-						String indexString = fae.getField().substring(fae.getField().lastIndexOf('_') + 1);
-						int index = Integer.valueOf(indexString);
-						methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(index).getId().getName()));
-						// now we have to ensure that the type of the parameter
-						// in method_under_test corresponds to this type
-						Type testType = vde.getType();
-						Type paramType = param.get(index).getType();
-						if (!testType.toString().equals(paramType.toString())) {
-							// mismatch! we rely on the type found in the test
-//							if (testType) {
-//								
-//							}
-							param.get(index).setType(testType);
-						}
-					}
+//					if (fae.getField().startsWith("ELEMENT_")) {
+//						// it is an input
+//						String indexString = fae.getField().substring(fae.getField().lastIndexOf('_') + 1);
+//						int index = Integer.valueOf(indexString);
+//						methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(index).getId().getName()));
+//						// now we have to ensure that the type of the parameter
+//						// in method_under_test corresponds to this type
+//						Type testType = vde.getType();
+//						Type paramType = param.get(index).getType();
+//						if (!testType.toString().equals(paramType.toString())) {
+//							// mismatch! we rely on the type found in the test
+//							param.get(index).setType(testType);
+//						}
+//					}
 				}
 				else if (init instanceof ArrayCreationExpr) {
 					// we should check what is inside the array
@@ -461,13 +459,6 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 										}
 									}
 								}
-								else if (actual_init instanceof ObjectCreationExpr) {
-//									ObjectCreationExpr oce = (ObjectCreationExpr) actual_init;
-//									if (oce.getArgs() != null) {
-//										Expression oce_arg = oce.getArgs().get(0);
-//										if (oce_arg)
-//									}
-								}
 							}
 						}
 					}
@@ -480,7 +471,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	 * PHASE 3: search for set_results and then resolve the definition of the
 	 * variable used as input
 	 */
-	private void identifyActualResult(BlockStmt cloned, Method targetMethod, List<Parameter> param) {
+	private void identifyActualResult(BlockStmt cloned, Method targetMethod, final List<Parameter> param) {
 		MethodCallVisitor mcv = new MethodCallVisitor("set_results", 1);
 		mcv.visit(cloned, null);
 		MethodCallExpr mce = mcv.getMethodCall();

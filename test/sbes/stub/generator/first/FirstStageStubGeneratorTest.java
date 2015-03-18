@@ -27,8 +27,8 @@ import sbes.logging.Level;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
 import sbes.scenario.TestScenario;
-import sbes.scenario.TestScenarioGeneralizer;
 import sbes.scenario.TestScenarioWithGenerics;
+import sbes.scenario.generalizer.TestScenarioGeneralizer;
 import sbes.stub.Stub;
 import sbes.stub.generator.first.FirstStageGeneratorStubWithGenerics;
 import sbes.testcase.Compilation;
@@ -112,14 +112,18 @@ public class FirstStageStubGeneratorTest {
 		CarvingResult carvedScenario = new CarvingResult(body, imports);
 		
 		List<TestScenario> scenarios = new ArrayList<>();
-		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(carvedScenario);
+		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
+		TestScenario ts = tsg.testToTestScenario(carvedScenario);
 		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
 		assertEquals(2, ts.getInputAsFields().size());
 		
 		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
-		assertEquals(2, tswg.getGenericClasses().size());
-		assertEquals("Integer", tswg.getGenericClasses().get(0));
-		assertEquals("String", tswg.getGenericClasses().get(1));
+		assertEquals(2, tswg.getGenericToConcreteClasses().size());
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("String"));
+		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
+		assertEquals("Integer", values.get(0));
+		assertEquals("String", values.get(1));
 		
 		scenarios.add(tswg);
 		

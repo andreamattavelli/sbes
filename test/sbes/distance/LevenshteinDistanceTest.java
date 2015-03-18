@@ -8,10 +8,19 @@ package sbes.distance;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import sbes.logging.Level;
+import sbes.option.Options;
 
 public class LevenshteinDistanceTest {
 
+	@BeforeClass
+	public static void setUp() throws Exception {
+		Options.I().setLogLevel(Level.FATAL);
+	}
+	
 	@Test
 	public void test0()  throws Throwable  {
 		int int0 = LevenshteinDistance.calculateDistance("Jd!:=-l0m", "Jd!:=-l0m");

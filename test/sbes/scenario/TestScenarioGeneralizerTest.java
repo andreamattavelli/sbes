@@ -64,7 +64,8 @@ public class TestScenarioGeneralizerTest {
 				"}");
 		
 		CarvingResult cr = new CarvingResult(body, imports);
-		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
+		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
+		TestScenario ts = tsg.testToTestScenario(cr);
 		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
 		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
 		assertEquals(1, tswg.getGenericToConcreteClasses().size());
@@ -97,7 +98,8 @@ public class TestScenarioGeneralizerTest {
 				"}");
 		
 		CarvingResult cr = new CarvingResult(body, imports);
-		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
+		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
+		TestScenario ts = tsg.testToTestScenario(cr);
 		assertEquals(TestScenario.class, ts.getClass());
 		
 		String actualScenario = ts.getScenario().toString();
@@ -130,7 +132,8 @@ public class TestScenarioGeneralizerTest {
 				"}");
 		
 		CarvingResult cr = new CarvingResult(body, imports);
-		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
+		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
+		TestScenario ts = tsg.testToTestScenario(cr);
 		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
 		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
 		assertEquals(1, tswg.getGenericToConcreteClasses().size());
@@ -160,7 +163,8 @@ public class TestScenarioGeneralizerTest {
 				"Integer integer1 = stack0.pop();}");
 		
 		CarvingResult cr = new CarvingResult(body, imports);
-		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
+		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
+		TestScenario ts = tsg.testToTestScenario(cr);
 		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
 		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
 		assertEquals(1, tswg.getGenericToConcreteClasses().size());
@@ -195,7 +199,8 @@ public class TestScenarioGeneralizerTest {
 				"abstractEdge0.addAttribute(\"value\", 325);}");
 		
 		CarvingResult cr = new CarvingResult(body, imports);
-		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
+		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
+		TestScenario ts = tsg.testToTestScenario(cr);
 		assertEquals(TestScenario.class, ts.getClass());
 		
 		String actualScenario = ts.getScenario().toString();
@@ -232,7 +237,8 @@ public class TestScenarioGeneralizerTest {
 				"stack0.clear();}");
 		
 		CarvingResult cr = new CarvingResult(body, imports);
-		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
+		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
+		TestScenario ts = tsg.testToTestScenario(cr);
 		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
 		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
 		assertEquals(1, tswg.getGenericToConcreteClasses().size());
@@ -277,7 +283,8 @@ public class TestScenarioGeneralizerTest {
 				"}");
 		
 		CarvingResult cr = new CarvingResult(body, imports);
-		TestScenario ts = TestScenarioGeneralizer.generalizeTestToTestScenario(cr);
+		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
+		TestScenario ts = tsg.testToTestScenario(cr);
 		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
 		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
 		assertEquals(2, tswg.getGenericToConcreteClasses().size());

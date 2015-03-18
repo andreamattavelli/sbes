@@ -28,16 +28,15 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import sbes.exceptions.GenerationException;
 import sbes.logging.Logger;
 import sbes.result.EquivalenceRepository;
-import sbes.scenario.TestScenarioWithGenerics;
 import sbes.scenario.TestScenario;
+import sbes.scenario.TestScenarioWithGenerics;
 import sbes.util.ASTUtils;
 import sbes.util.AsmParameterNames;
 import sbes.util.MethodUtils;
@@ -54,33 +53,13 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 	}
 	
 	private void checkConcreteClasses() {
-		Map<String, Integer> cClasses = new HashMap<String, Integer>();
-		for (TestScenario scenario : scenarios) {
-			if (scenario instanceof TestScenarioWithGenerics) {
-				TestScenarioWithGenerics generic = (TestScenarioWithGenerics) scenario;
-				if (cClasses.containsKey(generic.getGenericToConcreteClasses().toString())) {
-					Integer i = cClasses.get(generic.getGenericToConcreteClasses().toString());
-					cClasses.put(generic.getGenericToConcreteClasses().toString(), ++i);
-				}
-				else {
-					cClasses.put(generic.getGenericToConcreteClasses().toString(), 1);
-				}
-			} else {
-				logger.warn("Generating fist stage stub with generics, but a test scenario does not have any!");
-			}
+		//FIXME: better ideas?
+		if (scenarios.size() > 0) {
+			TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) scenarios.get(0);
+			genericToConcreteClasses = tswg.getGenericToConcreteClasses();
 		}
-		if (cClasses.keySet().size() > 1) {
-			logger.warn("Many concrete types for the same generic type. Choosing the most used one");
-			throw new GenerationException("Many concrete types for the same generic type. NOT IMPLEMENTED YET");
-		} else {
-			//FIXME: better ideas?
-			if (scenarios.size() > 0) {
-				TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) scenarios.get(0);
-				genericToConcreteClasses = tswg.getGenericToConcreteClasses();
-			}
-			else {
-				genericToConcreteClasses = new LinkedHashMap<>();
-			}
+		else {
+			genericToConcreteClasses = new LinkedHashMap<>();
 		}
 	}
 
@@ -261,11 +240,10 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 			String typeClass;
 			if (i < genericParameterTypes.length && !genericParameterTypes[i].getClass().equals(Class.class)) {
 				typeClass = genericParameterTypes[i].toString();
-				TypeVariable<?>[] types = method.getDeclaringClass().getTypeParameters();
-				for (int j = 0; j < types.length; j++) {
-					TypeVariable<?> typeVariable = types[j];
+				Set<TypeVariable<?>> types = genericToConcreteClasses.keySet();
+				for (TypeVariable<?> typeVariable : types) {
 					if (typeClass.contains(typeVariable.getName())) {
-						typeClass = typeClass.replaceAll(typeVariable.getName(), genericToConcreteClasses.get(j));
+						typeClass = typeClass.replaceAll(typeVariable.getName(), genericToConcreteClasses.get(typeVariable));
 					}
 				}
 			}
@@ -294,7 +272,8 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 			return null;
 		}
 		else if (returnType.toString().equals("java.lang.Object")) {
-			returnType = ASTHelper.createReferenceType(genericToConcreteClasses.get(0), 0); //FIXME: GENERICS!!!!!!!!!!!
+			List<String> concretes = new ArrayList<>(genericToConcreteClasses.values());
+			returnType = ASTHelper.createReferenceType(concretes.get(0), 0); //FIXME: GENERICS!!!!!!!!!!!
 		}
 		
 		MethodDeclaration set_results = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "set_results");
