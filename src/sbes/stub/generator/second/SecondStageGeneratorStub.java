@@ -74,12 +74,12 @@ import sbes.util.ClassUtils;
 public class SecondStageGeneratorStub extends AbstractStubGenerator {
 
 	private static final Logger logger = new Logger(SecondStageGeneratorStub.class);
-	
+
 	protected CarvingResult candidateES;
 	protected List<Statement> equivalence;
 	protected List<FieldDeclaration> fields;
 	protected Stub stub;
-	
+
 	public SecondStageGeneratorStub(final List<TestScenario> scenarios, Stub stub, CarvingResult candidateES, List<FieldDeclaration> fields) {
 		super(scenarios);
 		this.stub = stub;
@@ -94,7 +94,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		logger.info("Generating stub for second phase - done");
 		return counterexampleStub;
 	}
-	
+
 	@Override
 	protected List<ImportDeclaration> getImports() {
 		List<ImportDeclaration> imports = new ArrayList<>();
@@ -107,19 +107,19 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		}
 		return imports;
 	}
-	
+
 	@Override
 	protected TypeDeclaration getClassDeclaration(String className) {
 		stubName = className + STUB_EXTENSION + "_2";
-		
+
 		// extends base class
 		ClassOrInterfaceType extendClassDecl = new ClassOrInterfaceType(className);
 		List<ClassOrInterfaceType> extendClasses = new ArrayList<ClassOrInterfaceType>();
 		extendClasses.add(extendClassDecl);
-		
+
 		ClassOrInterfaceDeclaration classDecl = new ClassOrInterfaceDeclaration(Modifier.PUBLIC, false, stubName);
 		classDecl.setExtends(extendClasses);
-		
+
 		return classDecl;
 	}
 
@@ -127,7 +127,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	protected List<BodyDeclaration> getClassFields(Method targetMethod, Class<?> c) {
 		return new ArrayList<BodyDeclaration>();
 	}
-	
+
 	@Override
 	protected List<BodyDeclaration> getStubConstructor(Method targetMethod, Class<?> c) {
 		/*
@@ -143,7 +143,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 				ConstructorDeclaration cons = new ConstructorDeclaration(constructor.getModifiers(), stubName);
 				cons.setParameters(getParameterType(constructor.getParameterTypes()));
 				List<Expression> methodParameters = ASTUtils.createParameters(cons.getParameters());
-				
+
 				BlockStmt stmt = new BlockStmt();
 				ExplicitConstructorInvocationStmt ecis = new ExplicitConstructorInvocationStmt(false, null, methodParameters);
 				ASTHelper.addStmt(stmt, ecis);
@@ -151,10 +151,10 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 				toReturn.add(cons);
 			}
 		}
-		
+
 		return toReturn;
 	}
-	
+
 	@Override
 	protected List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods) {
 		return new ArrayList<BodyDeclaration>();
@@ -164,22 +164,22 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	protected MethodDeclaration getMethodUnderTest(Method targetMethod) {
 		logger.debug("Adding method_under_test method");
 		MethodDeclaration method_under_test = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "method_under_test");
-		
+
 		Class<?>[] parameters = targetMethod.getParameterTypes();
 		List<Parameter> param = getParameterType(parameters, targetMethod);
 		method_under_test.setParameters(param);
-		
+
 		BlockStmt stmt = new BlockStmt();
-		
+
 		// Cloner c = new Cloner();
 		ASTHelper.addStmt(stmt, createClonerObj());
-		
+
 		// CLASS clone = c.deepClone(this);
 		ASTHelper.addStmt(stmt, createCloneObj(targetMethod));
-		
+
 		// RESULT_CLASS expected_result = this.METHOD
 		ASTHelper.addStmt(stmt, createExpectedResult(targetMethod, param));
-		
+
 		// RESULT_CLASS actual_result = clone.CARVED_METHOD(S)
 		List<Statement> stmts = createActualResult(targetMethod, candidateES, param);
 		if (stmts.isEmpty()) {
@@ -187,12 +187,12 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		}
 		equivalence = stmts;
 		stmt.getStmts().addAll(stmts);
-		
+
 		method_under_test.setParameters(param);
-		
+
 		NameExpr distanceClass = ASTHelper.createNameExpr("Distance");
 		String distanceMethod = "distance";
-		
+
 		// if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)
 		Expression zeroDouble = new DoubleLiteralExpr("0.0d");
 		List<Expression> distanceStateArgs = new ArrayList<Expression>();
@@ -200,7 +200,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		distanceStateArgs.add(ASTHelper.createNameExpr("clone"));
 		Expression state = new MethodCallExpr(distanceClass, distanceMethod, distanceStateArgs);
 		BinaryExpr stateCondition = new BinaryExpr(state, zeroDouble, japa.parser.ast.expr.BinaryExpr.Operator.greater);
-		
+
 		BinaryExpr ifCondition;
 		if (!targetMethod.getReturnType().equals(void.class)) {
 			List<Expression> distanceResultArgs = new ArrayList<Expression>();
@@ -214,12 +214,12 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		else {
 			ifCondition = stateCondition;
 		}
-		
+
 		IfStmt ifStmt = new IfStmt(ifCondition, new ExpressionStmt(ASTUtils.createSystemOut("Executed")), null);
 		ASTHelper.addStmt(stmt, ifStmt);
-		
+
 		method_under_test.setBody(stmt);
-		
+
 		return method_under_test;
 	}
 
@@ -233,7 +233,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		VariableDeclarationExpr clonerVde = new VariableDeclarationExpr(ASTHelper.createReferenceType("Cloner", 0), vars);
 		return new ExpressionStmt(clonerVde);
 	}
-	
+
 	protected ExpressionStmt createCloneObj(Method targetMethod) {
 		List<Expression> methodParameters = new ArrayList<Expression>();
 		methodParameters.add(new ThisExpr());
@@ -245,7 +245,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		AssignExpr assignment = new AssignExpr(left, right, Operator.assign);
 		return new ExpressionStmt(assignment);
 	}
-	
+
 	protected Statement createExpectedResult(Method targetMethod, final List<Parameter> parameters) {
 		List<Expression> methodParameters = new ArrayList<Expression>();
 		for (Parameter parameter : parameters) {
@@ -266,14 +266,14 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		}
 		return new ExpressionStmt(right);
 	}
-	
+
 	protected List<Statement> createActualResult(Method targetMethod, CarvingResult candidateES2, final List<Parameter> param) {
 		List<Statement> stmts = new ArrayList<Statement>();
-		
+
 		BlockStmt carved = candidateES2.getBody();
 		CloneVisitor visitor = new CloneVisitor();
 		BlockStmt cloned = (BlockStmt) visitor.visit(carved, null);
-		
+
 		//PHASE 0: clean carved result by removing method_under_test
 		removeMethodUnderTest(cloned);
 		//PHASE 1: remove accesses to the stub object and replace them to accesses to the clone object
@@ -288,9 +288,9 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		pruneArrayParameters(cloned, targetMethod);
 		//PHASE 5: remove dead code
 		deadCodeElimination(cloned);
-		
+
 		stmts.addAll(cloned.getStmts());
-		
+
 		return stmts;
 	}
 
@@ -336,18 +336,18 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 				}
 			}
 		}
-		
+
 		if (stubObjectName == null) {
 			throw new GenerationException("Stub object not found!");
 		}
-		
+
 		NameExprRenamer visitor = new NameExprRenamer(stubObjectName, "clone");
 		visitor.visit(cloned, null);
-		
+
 		ArrayStubRemoverVisitor msv = new ArrayStubRemoverVisitor();
 		msv.visit(cloned, null);
 	}
-	
+
 	/*
 	 * 	PHASE 2: identify parameters in all the calls on clone object and 
 	 * 	identify their source.
@@ -366,9 +366,12 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 				FieldAccessExpr fae = (FieldAccessExpr) init;
 				if (fae.getField().startsWith("ELEMENT_")) {
 					// it is an input
-					vde.getType();
-					String index = fae.getField().substring(fae.getField().lastIndexOf('_') + 1);
-					vde.getVars().get(0).setInit(ASTHelper.createNameExpr(param.get(Integer.valueOf(index)).getId().getName()));
+					for (Parameter p : param) {
+						if (p.getType().equals(vde.getType())) {
+							vde.getVars().get(0).setInit(ASTHelper.createNameExpr(p.getId().getName()));
+							break;
+						}
+					}
 				}
 			}
 		}
@@ -378,7 +381,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		for (int i = 0; i < methodCall.getArgs().size(); i++) { 
 			Expression arg = methodCall.getArgs().get(i);
 			VariableDeclarationExpr vde = null;
-			
+
 			String name = null;
 			if (arg instanceof ArrayAccessExpr) {
 				ArrayAccessExpr aae = (ArrayAccessExpr) arg;
@@ -389,31 +392,39 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 			else {
 				name = ASTUtils.getName(arg);
 			}
-			
+
 			if (name != null) {
 				VariableDeclarationVisitor visitor = new VariableDeclarationVisitor(name);
 				visitor.visit(cloned, null);
 				vde = visitor.getVariable();
 			}
-			
+
 			if (vde != null) {
 				Expression init = vde.getVars().get(0).getInit();
 				if (init instanceof FieldAccessExpr) {
 					FieldAccessExpr fae = (FieldAccessExpr) init;
-//					if (fae.getField().startsWith("ELEMENT_")) {
-//						// it is an input
-//						String indexString = fae.getField().substring(fae.getField().lastIndexOf('_') + 1);
-//						int index = Integer.valueOf(indexString);
-//						methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(index).getId().getName()));
-//						// now we have to ensure that the type of the parameter
-//						// in method_under_test corresponds to this type
-//						Type testType = vde.getType();
-//						Type paramType = param.get(index).getType();
-//						if (!testType.toString().equals(paramType.toString())) {
-//							// mismatch! we rely on the type found in the test
-//							param.get(index).setType(testType);
-//						}
-//					}
+					if (fae.getField().startsWith("ELEMENT_")) {
+						// it is an input
+						int index = 0;
+						for (int j = 0; j < param.size(); j++) {
+							Parameter p = param.get(j);
+							if (p.getType().toString().contains(vde.getType().toString().replace("[]", ""))) {
+								index = j;
+								break;
+							}
+						}
+						methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(index).getId().getName()));
+						// now we have to ensure that the type of the parameter
+						// in method_under_test corresponds to this type
+						Type testType = vde.getType();
+						Type paramType = param.get(index).getType();
+						if (!paramType.toString().contains(testType.toString())) {
+							if (paramType.toString().contains("Object") || testType.toString().contains("Object")){
+								// mismatch! we rely on the type found in the test
+								param.get(index).setType(testType);
+							}
+						}
+					}
 				}
 				else if (init instanceof ArrayCreationExpr) {
 					// we should check what is inside the array
@@ -466,7 +477,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 			}
 		}
 	}
-	
+
 	/*
 	 * PHASE 3: search for set_results and then resolve the definition of the
 	 * variable used as input
@@ -475,7 +486,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		MethodCallVisitor mcv = new MethodCallVisitor("set_results", 1);
 		mcv.visit(cloned, null);
 		MethodCallExpr mce = mcv.getMethodCall();
-		
+
 		Expression arg = mce.getArgs().get(0);		
 		VariableDeclarationExpr vde = null;
 		String name = ASTUtils.getName(arg);
@@ -484,7 +495,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		if (targetMethod.getReturnType().isArray()) {
 			arrayDimension = 1;
 		}
-		
+
 		if (arg instanceof FieldAccessExpr) {
 			FieldAccessExpr fae = (FieldAccessExpr) arg;
 			List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
@@ -495,20 +506,20 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 			cloned.getStmts().add(new ExpressionStmt(actualResult));
 			return;
 		}
-		
+
 		if (name != null) {
 			VariableDeclarationVisitor visitor = new VariableDeclarationVisitor(name);
 			visitor.visit(cloned, null);
 			vde = visitor.getVariable();
 		}
-		
+
 		if (vde != null) {
 			String varName = vde.getVars().get(0).getId().getName();
 			Expression init = vde.getVars().get(0).getInit();
 			if (init instanceof EnclosedExpr) {
 				init = ((EnclosedExpr) init).getInner();
 			}
-			
+
 			if (init instanceof ArrayCreationExpr) {
 				// we should check what is inside the array
 				ArrayCellDeclarationVisitor acdv = new ArrayCellDeclarationVisitor(name, Integer.toString(0));
@@ -686,7 +697,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 				VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
 				cloned.getStmts().add(new ExpressionStmt(actualResult));
 				return;
-				
+
 			}
 			NameExprRenamer conv = new NameExprRenamer(varName, "actual_result");
 			conv.visit(cloned, null);
@@ -696,7 +707,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	protected String getActualResultType(Method targetMethod) {
 		return targetMethod.getReturnType().getCanonicalName();
 	}
-	
+
 	/*
 	 * PHASE 4: remove spurious parameters from method calls due to array-based stub
 	 */
@@ -752,7 +763,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 			}
 		}
 	}
-	
+
 	/*
 	 * PHASE 5: dead code elimination: remove everything not necessary
 	 */
@@ -779,21 +790,21 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 							MethodCallExpr mce = (MethodCallExpr) vde.getVars().get(0).getInit();
 							if (mce.getName().equals("realSize")) {
 								ConditionalExpr ce = new ConditionalExpr();
-								
+
 								BinaryExpr condition = new BinaryExpr();
 								condition.setLeft(new MethodCallExpr(mce.getScope(), "size"));
 								condition.setRight(new IntegerLiteralExpr("0"));
 								condition.setOperator(japa.parser.ast.expr.BinaryExpr.Operator.greater);
 								ce.setCondition(condition);
-								
+
 								BinaryExpr subtraction = new BinaryExpr();
 								subtraction.setLeft(new MethodCallExpr(mce.getScope(), "size"));
 								subtraction.setRight(new IntegerLiteralExpr("1"));
 								subtraction.setOperator(japa.parser.ast.expr.BinaryExpr.Operator.minus);
 								ce.setThenExpr(subtraction);
-								
+
 								ce.setElseExpr(new IntegerLiteralExpr("0"));
-								
+
 								vde.getVars().get(0).setInit(ce);
 								vde.setType(new PrimitiveType(Primitive.Int));
 							}
@@ -803,7 +814,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 								vde.setType(new PrimitiveType(Primitive.Int));
 							}
 						}
-						
+
 						if (vd.getId().getName().equals("actual_result")) {
 							continue;
 						}
@@ -903,7 +914,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 			}
 		}
 	}
-	
+
 	protected List<Parameter> getParameterType(Class<?>[] parameters, Method targetMethod) {
 		List<Parameter> toReturn = new ArrayList<Parameter>();
 		for (int i = 0; i < parameters.length; i++) {
@@ -918,10 +929,10 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 			Parameter p = new Parameter(ASTHelper.createReferenceType(typeClass, 0), id);
 			toReturn.add(p);
 		}
-		
+
 		return toReturn;
 	}
-	
+
 	@Override
 	protected MethodDeclaration getSetResultsMethod(Method targetMethod) {
 		return null;
