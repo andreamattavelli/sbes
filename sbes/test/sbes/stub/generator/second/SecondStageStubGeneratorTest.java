@@ -972,7 +972,7 @@ public class SecondStageStubGeneratorTest {
 				"protected AbstractEdge_Stub_2(java.lang.String p0, org.graphstream.graph.implementations.AbstractNode p1, org.graphstream.graph.implementations.AbstractNode p2, boolean p3) {"+
 				"super(p0, p1, p2, p3);"+
 				"}"+
-				"public void method_under_test(String p0, Object[] p1) {"+
+				"public void method_under_test(java.lang.String p0, Object[] p1) {"+
 				"Cloner c = new Cloner();"+
 				"AbstractEdge clone = c.deepClone(this);"+
 				"this.addAttribute(p0, p1);"+
@@ -981,6 +981,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
+		System.out.println(actual);
 		assertAndPrint(actual, expected);
 	}
 	
@@ -1359,7 +1360,7 @@ public class SecondStageStubGeneratorTest {
 				"protected AbstractEdge_Stub_2(java.lang.String p0, org.graphstream.graph.implementations.AbstractNode p1, org.graphstream.graph.implementations.AbstractNode p2, boolean p3) {"+
 				"super(p0, p1, p2, p3);"+
 				"}"+
-				"public void method_under_test(String p0, java.lang.Object p1) {"+
+				"public void method_under_test(java.lang.String p0, java.lang.Object p1) {"+
 				"Cloner c = new Cloner();"+
 				"AbstractEdge clone = c.deepClone(this);"+
 				"this.addAttribute(p0, p1);"+
@@ -1396,7 +1397,7 @@ public class SecondStageStubGeneratorTest {
 				"protected AbstractEdge_Stub_2(java.lang.String p0, org.graphstream.graph.implementations.AbstractNode p1, org.graphstream.graph.implementations.AbstractNode p2, boolean p3) {"+
 				"super(p0, p1, p2, p3);"+
 				"}"+
-				"public void method_under_test(String p0, java.lang.Object p1) {"+
+				"public void method_under_test(java.lang.String p0, java.lang.Object p1) {"+
 				"Cloner c = new Cloner();"+
 				"AbstractEdge clone = c.deepClone(this);"+
 				"this.addAttribute(p0, p1);"+
