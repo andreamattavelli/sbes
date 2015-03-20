@@ -1672,32 +1672,33 @@ public class SecondStageStubGeneratorTest {
 													stub, candidateES, new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		
-		System.out.println(second.getAst().toString());
-		
-		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+//		second.dumpStub("./test/resources/compilation");
+//		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
 
-//		String actual = second.getAst().toString();
-//		String expected = 
-//				"package stack.util;"+
-//				"import sbes.distance.Distance;"+
-//				"import sbes.cloning.Cloner;"+
-//				"public class Stack_Stub_2 extends Stack<Integer> {"+
-//				"public Stack_Stub_2() {"+
-//				"super();"+
-//				"}"+
-//				"public void method_under_test(Integer p0) {"+
-//				"Cloner c = new Cloner();"+
-//				"Stack<Integer> clone = c.deepClone(this);"+
-//				"boolean expected_result = this.remove(p0);"+
-//				"boolean actual_result = clone.add(p0);"+
-//				"clone.removeElement(p0);"+
-//				"clone.pop();"+
-//				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
-//				"System.out.println(\"Executed\");"+
-//				"}"+
-//				"}";
-//		assertAndPrint(actual, expected);
+		String actual = second.getAst().toString();
+		String expected = 
+				"package com.google.common.collect;"+
+				"import sbes.distance.Distance;"+
+				"import sbes.cloning.Cloner;"+
+				"import java.util.ArrayDeque;"+
+				"import java.util.LinkedList;"+
+				"public class ArrayListMultimap_Stub_2 extends ArrayListMultimap<Integer, String> {"+
+				"public void method_under_test(Integer p0, String p1) {"+
+				"Cloner c = new Cloner();"+
+				"ArrayListMultimap<Integer, String> clone = c.deepClone(this);"+
+				"boolean expected_result = this.put(p0, p1);"+
+				"ArrayDeque<LinkedList<BoundType>> arrayDeque0 = new ArrayDeque<LinkedList<BoundType>>();"+
+				"LinkedList<BoundType> linkedList0 = new LinkedList<BoundType>();"+
+				"boolean actual_result = arrayDeque0.add(linkedList0);"+
+				"ArrayDeque<String> arrayDeque1 = new ArrayDeque<String>();"+
+				"String string0 = p1;"+
+				"boolean boolean1 = arrayDeque1.offerLast(string0);"+
+				"clone.replaceValues(p0, (Iterable<? extends String>) arrayDeque1);"+
+				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
+				"System.out.println(\"Executed\");"+
+				"}"+
+				"}";
+		assertAndPrint(actual, expected);
 	}
 	
 	@Test
@@ -1727,32 +1728,29 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		
-		System.out.println(second.getAst().toString());
-		
 //		second.dumpStub("./test/resources/compilation");
 //		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
-//		
-//		String actual = second.getAst().toString();
-//		String expected = 
-//				"package stack.util;"+
-//				"import sbes.distance.Distance;"+
-//				"import sbes.cloning.Cloner;"+
-//				"public class Stack_Stub_2 extends Stack<Integer> {"+
-//				"public Stack_Stub_2() {"+
-//				"super();"+
-//				"}"+
-//				"public void method_under_test(Integer p0) {"+
-//				"Cloner c = new Cloner();"+
-//				"Stack<Integer> clone = c.deepClone(this);"+
-//				"boolean expected_result = this.remove(p0);"+
-//				"boolean actual_result = clone.add(p0);"+
-//				"clone.removeElement(p0);"+
-//				"clone.pop();"+
-//				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
-//				"System.out.println(\"Executed\");"+
-//				"}"+
-//				"}";
-//		assertAndPrint(actual, expected);
+		
+		String actual = second.getAst().toString();
+		String expected = 
+				"package com.google.common.collect;"+
+				"import sbes.distance.Distance;"+
+				"import sbes.cloning.Cloner;"+
+				"public class ArrayListMultimap_Stub_2 extends ArrayListMultimap<Integer, String> {"+
+				"public void method_under_test(Integer p0, String p1) {"+
+				"Cloner c = new Cloner();"+
+				"ArrayListMultimap<Integer, String> clone = c.deepClone(this);"+
+				"boolean expected_result = this.put(p0, p1);"+
+				"Integer integer0 = p0;"+
+				"String string0 = p1;"+
+				"SingletonImmutableSet<String> singletonImmutableSet0 = new SingletonImmutableSet<String>(string0, (int) integer0);"+
+				"clone.replaceValues(p0, (Iterable<? extends String>) singletonImmutableSet0);"+
+				"boolean actual_result = true;"+
+				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
+				"System.out.println(\"Executed\");"+
+				"}"+
+				"}";
+		assertAndPrint(actual, expected);
 	}
 	
 }
