@@ -1672,8 +1672,8 @@ public class SecondStageStubGeneratorTest {
 													stub, candidateES, new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		
-//		second.dumpStub("./test/resources/compilation");
-//		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+		second.dumpStub("./test/resources/compilation");
+		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
 
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1683,6 +1683,7 @@ public class SecondStageStubGeneratorTest {
 				"import java.util.ArrayDeque;"+
 				"import java.util.LinkedList;"+
 				"public class ArrayListMultimap_Stub_2 extends ArrayListMultimap<Integer, String> {"+
+				"protected ArrayListMultimap_Stub_2(){super();}"+
 				"public void method_under_test(Integer p0, String p1) {"+
 				"Cloner c = new Cloner();"+
 				"ArrayListMultimap<Integer, String> clone = c.deepClone(this);"+
@@ -1728,8 +1729,8 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		
-//		second.dumpStub("./test/resources/compilation");
-//		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+		second.dumpStub("./test/resources/compilation");
+		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1737,6 +1738,7 @@ public class SecondStageStubGeneratorTest {
 				"import sbes.distance.Distance;"+
 				"import sbes.cloning.Cloner;"+
 				"public class ArrayListMultimap_Stub_2 extends ArrayListMultimap<Integer, String> {"+
+				"protected ArrayListMultimap_Stub_2(){super();}"+
 				"public void method_under_test(Integer p0, String p1) {"+
 				"Cloner c = new Cloner();"+
 				"ArrayListMultimap<Integer, String> clone = c.deepClone(this);"+
