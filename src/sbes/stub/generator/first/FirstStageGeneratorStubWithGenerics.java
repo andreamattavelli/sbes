@@ -163,9 +163,10 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 			else if (scenarios.size() > 1) {
 				// return type non void - need to build a return array
 				List<Expression> arraysDimension = ASTUtils.getArraysDimension();
-				ArrayCreationExpr ace = new ArrayCreationExpr(returnType, arraysDimension, 0);
-				if (returnType instanceof ReferenceType) {
-					ReferenceType rtype = (ReferenceType) returnType;
+				Type t = ASTHelper.createReferenceType(returnType.toString().split("<")[0], 0);
+				ArrayCreationExpr ace = new ArrayCreationExpr(t, arraysDimension, 0);
+				if (t instanceof ReferenceType) {
+					ReferenceType rtype = (ReferenceType) t;
 					if (rtype.getArrayCount() > 0) {
 						ace = new ArrayCreationExpr(rtype.getType(), arraysDimension, rtype.getArrayCount());
 					}
