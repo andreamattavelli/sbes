@@ -44,6 +44,10 @@ public class Options {
 			required = true)
 	private String junitPath;
 
+	@Option(name = "-local_search_rate",
+			usage = "Apply local search at every X generation")
+	private int local_search_rate = -1;
+	
 	@Option(name = "-log_level",
 			usage = "Logging level to be used: FATAL, ERROR, WARN, INFO, DEBUG",
 			handler = LevelHandler.class)
@@ -109,6 +113,10 @@ public class Options {
 	
 	public String getJunitPath() {
 		return junitPath;
+	}
+	
+	public int getLocalSearchRate() {
+		return local_search_rate;
 	}
 
 	public int getMethodBloatFactor() {

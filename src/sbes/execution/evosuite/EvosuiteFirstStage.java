@@ -31,6 +31,9 @@ public class EvosuiteFirstStage extends Evosuite {
 	protected Collection<String> getAdditionalParameters() {
 		Collection<String> additional = new ArrayList<String>();
 		additional.add("-Dsbes_phase=1");
+		if (Options.I().getLocalSearchRate() > 0) {
+			additional.add("-Dlocal_search_rate=" + Options.I().getLocalSearchRate());	
+		}
 		return additional;
 	}
 	
