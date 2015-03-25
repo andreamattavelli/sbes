@@ -2,10 +2,15 @@ package sbes.scenario.generalizer;
 
 import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.body.VariableDeclarator;
+import japa.parser.ast.expr.Expression;
+import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.stmt.BlockStmt;
+import japa.parser.ast.stmt.ExpressionStmt;
+import japa.parser.ast.stmt.Statement;
 
 import java.lang.reflect.Method;
 
+import sbes.ast.VariableUseVisitor;
 import sbes.ast.inliner.FieldVariablesToInline;
 import sbes.ast.inliner.Inliner;
 import sbes.ast.inliner.PrimitiveVariablesToInline;
@@ -65,6 +70,23 @@ public class CounterexampleGeneralizer extends AbstractGeneralizer {
 		}
 		for (VariableDeclarator vd : fvi.getToInline()) {
 			new Inliner().visit(counterexample.getBody(), vd);
+		}
+		
+		for (int i = 0; i < counterexample.getBody().getStmts().size(); i++) {
+			Statement stmt = counterexample.getBody().getStmts().get(i);
+			if (stmt instanceof ExpressionStmt) {
+				Expression e = ((ExpressionStmt) stmt).getExpression();
+				if (e instanceof VariableDeclarationExpr) {
+					VariableDeclarationExpr vde = (VariableDeclarationExpr) e;
+					VariableDeclarator var = vde.getVars().get(0); // safe
+					
+					VariableUseVisitor vuv = new VariableUseVisitor(var.getId().getName()); 
+					if (!vuv.isUsed()) {
+						counterexample.getBody().getStmts().remove(i);
+						i--;
+					}
+				}
+			}
 		}
 	}
 
