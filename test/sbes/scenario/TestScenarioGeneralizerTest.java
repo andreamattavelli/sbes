@@ -11,6 +11,7 @@ import japa.parser.ast.stmt.BlockStmt;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -24,6 +25,11 @@ import sbes.scenario.generalizer.TestScenarioGeneralizer;
 public class TestScenarioGeneralizerTest {
 	
 	private List<ImportDeclaration> imports = new ArrayList<ImportDeclaration>();
+	
+	@Before
+	public void setUp() {
+		TestScenarioRepository.reset();
+	}
 	
 	private void setUp(String classesPath, String methodSignature) {
 		Options.I().setClassesPath(classesPath);
