@@ -1755,4 +1755,75 @@ public class SecondStageStubGeneratorTest {
 		assertAndPrint(actual, expected);
 	}
 	
+	@Test
+	public void test37() throws ParseException {
+		setUp("./test/resources/guava-12.0.1.jar", "com.google.common.collect.ArrayListMultimap.putAll(Object,Iterable)", "ArrayListMultimap_Stub");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"ArrayListMultimap_Stub arrayListMultimap_Stub0 = new ArrayListMultimap_Stub();"+
+				"Integer integer0 = ArrayListMultimap_Stub.ELEMENT_0_1;"+
+				"String string0 = \"Lwtep\\\\V&\";"+
+				"String string1 = \"RK\";"+
+				"Integer integer1 = ArrayListMultimap_Stub.ELEMENT_0_1;"+
+				"StackTraceElement stackTraceElement0 = new StackTraceElement(string0, string0, string1, (int) integer1);"+
+				"String string2 = stackTraceElement0.getMethodName();"+
+				"Integer integer2 = ArrayListMultimap_Stub.ELEMENT_0_1;"+
+				"List<String> list0 = ArrayListMultimap_Stub.ELEMENT_0_0;"+
+				"List<String> list1 = arrayListMultimap_Stub0.replaceValues(integer2, (Iterable<? extends String>) list0);"+
+				"ArrayListMultimap<Integer, String> arrayListMultimap0 = arrayListMultimap_Stub0.create();"+
+				"Object object0 = null;"+
+				"arrayListMultimap0.trimToSize();"+
+				"boolean boolean0 = arrayListMultimap_Stub0.remove(object0, object0);"+
+				"boolean boolean1 = true;"+
+				"boolean boolean2 = true;"+
+				"arrayListMultimap_Stub0.set_results(boolean2);"+
+				"arrayListMultimap_Stub0.method_under_test();"+
+				"}");
+
+		CarvingResult candidateES = new CarvingResult(body, imports);
+		Map<TypeVariable<?>, String> genericToConcrete = new LinkedHashMap<>();
+		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "K", null, null);
+		TypeVariable<?> v = TypeVariableImpl.<GenericDeclaration>make(Object.class, "V", null, null);
+		genericToConcrete.put(k, "Integer");
+		genericToConcrete.put(v, "String");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(
+				new ArrayList<TestScenario>(), stub, candidateES,
+				new ArrayList<FieldDeclaration>(), genericToConcrete);
+		Stub second = sssg.generateStub();
+		
+		second.dumpStub("./test/resources/compilation");
+		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+		
+		String actual = second.getAst().toString();
+		String expected = 
+				"package com.google.common.collect;"+
+				"import sbes.distance.Distance;"+
+				"import sbes.cloning.Cloner;"+
+				"public class ArrayListMultimap_Stub_2 extends ArrayListMultimap<Integer, String> {"+
+				"protected ArrayListMultimap_Stub_2() {"+
+				"super();"+
+				"}"+
+				"public void method_under_test(Integer p0, java.lang.Iterable<? extends String> p1) {"+
+				"Cloner c = new Cloner();"+
+				"ArrayListMultimap<Integer, String> clone = c.deepClone(this);"+
+				"boolean expected_result = this.putAll(p0, p1);"+
+				"String string0 = \"Lwtep\\\\V&\";"+
+				"String string1 = \"RK\";"+
+				"Integer integer1 = p0;"+
+				"StackTraceElement stackTraceElement0 = new StackTraceElement(string0, string0, string1, (int) integer1);"+
+				"String string2 = stackTraceElement0.getMethodName();"+
+				"clone.replaceValues(p0, p1);"+
+				"ArrayListMultimap<Integer, String> arrayListMultimap0 = clone.create();"+
+				"Object object0 = null;"+
+				"arrayListMultimap0.trimToSize();"+
+				"clone.remove(object0, object0);"+
+				"boolean actual_result = true;"+
+				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
+				"System.out.println(\"Executed\");"+
+				"}"+
+				"}";
+		assertAndPrint(actual, expected);
+	}
+	
 }

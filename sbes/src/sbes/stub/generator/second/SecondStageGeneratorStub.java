@@ -412,7 +412,12 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 								index = j;
 								break;
 							}
-						}
+							else if (p.getType().toString().contains("java.lang.Iterable") && 
+									(vde.getType().toString().contains("Collection") || vde.getType().toString().contains("List") )) {
+								index = j;
+								break;
+							}
+ 						}
 						methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(index).getId().getName()));
 						// now we have to ensure that the type of the parameter
 						// in method_under_test corresponds to this type

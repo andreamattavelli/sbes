@@ -5,6 +5,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,11 +45,11 @@ public class ClassUtils {
 		}
 		
 		// Remove duplicates in methods
-		Method[] finalMethods = methods.toArray(new Method[0]);
-		for (int i = 0; i < finalMethods.length - 1; i++) {
-			for (int j = i + 1; j < finalMethods.length; j++) {
-				Method m1 = finalMethods[i];
-				Method m2 = finalMethods[j];
+		Method[] methodsArray = methods.toArray(new Method[0]);
+		for (int i = 0; i < methodsArray.length - 1; i++) {
+			for (int j = i + 1; j < methodsArray.length; j++) {
+				Method m1 = methodsArray[i];
+				Method m2 = methodsArray[j];
 				if (m1.getName().equals(m2.getName())) {
 					Class<?>[] p1 = m1.getParameterTypes();
 					Class<?>[] p2 = m2.getParameterTypes();
@@ -57,26 +58,32 @@ public class ClassUtils {
 						for (int k = 0; k < p1.length; k++) {
 							if (!p1[k].equals(p2[k])) {
 								override = false;
-			                }
-			            }
+							}
+						}
 						if (override) {
-							finalMethods[i] = null;
+							methodsArray[i] = null;
 							break;
 						}
-			        }
-					
+					}
 				}
 			}
 		}
 		
 		methods.clear();
-		methods.addAll(Arrays.asList(finalMethods));
+		methods.addAll(Arrays.asList(methodsArray));
 		for (int i = 0; i < methods.size(); i++) {
 			if (methods.get(i) == null) {
 				methods.remove(i);
 				i--;
 			}
 		}
+		
+		Collections.sort(methods, new Comparator<Method>() {
+			@Override
+			public int compare(Method o1, Method o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
 		
 		cache.put(clazz, methods.toArray(new Method[0]));
 		
