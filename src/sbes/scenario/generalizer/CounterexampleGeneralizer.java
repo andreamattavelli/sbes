@@ -1,10 +1,14 @@
 package sbes.scenario.generalizer;
 
 import japa.parser.ast.ImportDeclaration;
+import japa.parser.ast.body.VariableDeclarator;
 import japa.parser.ast.stmt.BlockStmt;
 
 import java.lang.reflect.Method;
 
+import sbes.ast.inliner.Inliner;
+import sbes.ast.inliner.PrimitiveVariablesToInline;
+import sbes.ast.inliner.StringVariablesToInline;
 import sbes.ast.renamer.ClassOrInterfaceRenamer;
 import sbes.ast.renamer.ExpectedResultCounterexampleRenamer;
 import sbes.logging.Logger;
@@ -41,6 +45,19 @@ public class CounterexampleGeneralizer extends AbstractGeneralizer {
 				counterexample.getImports().remove(importDecl);
 				i--;
 			}
+		}
+		
+		PrimitiveVariablesToInline pvi = new PrimitiveVariablesToInline();
+		pvi.visit(counterexample.getBody(), null);
+		
+		StringVariablesToInline svi = new StringVariablesToInline();
+		svi.visit(counterexample.getBody(), null);
+		
+		for (VariableDeclarator vd : pvi.getToInline()) {
+			new Inliner().visit(counterexample.getBody(), vd);
+		}
+		for (VariableDeclarator vd : svi.getToInline()) {
+			new Inliner().visit(counterexample.getBody(), vd);
 		}
 	}
 
