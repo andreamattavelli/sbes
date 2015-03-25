@@ -21,8 +21,10 @@ public class StoppingCondition {
 		switch(stoppingCondition) {
 		case TIME:
 			this.stoppingConditionValue = TimeUtils.getNormalizedTime(this.stoppingConditionValue);
+			break;
 		case NOSYNTHESIS:
 			this.stoppingConditionValue = 1L;
+			break;
 		default:
 			break;
 		}
