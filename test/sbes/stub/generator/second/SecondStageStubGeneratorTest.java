@@ -50,7 +50,7 @@ public class SecondStageStubGeneratorTest {
 	
 	private void setUp(String classesPath, String methodSignature, String stubName) {
 		Options.I().setClassesPath(classesPath);
-		Options.I().setMethodSignature(methodSignature);
+		Options.I().setTargetMethod(methodSignature);
 		Options.I().setLogLevel(Level.ERROR);
 		List<TypeDeclaration> decls = new ArrayList<TypeDeclaration>(); 
 		List<Comment> comments = new ArrayList<Comment>();

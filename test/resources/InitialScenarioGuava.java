@@ -27,4 +27,14 @@ public class StackEvoSuiteTest {
 		String string0 = "pluto";
 		boolean boolean3 = arrayListMultimap0.put(integer3, string0);
 	}
+	
+	@Test
+	public void test1()  throws Throwable  {
+		ArrayListMultimap<Integer, String> arrayListMultimap0 = ArrayListMultimap.create();
+		boolean boolean1 = arrayListMultimap0.put(-1698, "pluto");
+		boolean boolean2 = arrayListMultimap0.put(123, "asd");
+		boolean boolean3 = arrayListMultimap0.put(18, "ginger");
+		boolean boolean4 = arrayListMultimap0.remove(18, "ginger");
+	}
+	
 }

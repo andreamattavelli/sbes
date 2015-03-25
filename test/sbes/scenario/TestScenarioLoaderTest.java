@@ -23,7 +23,7 @@ public class TestScenarioLoaderTest {
 	public void test() {
 		Options.I().setClassesPath("./bin");
 		Options.I().setScenarioTestPath(Paths.get("./test/resources/InitialScenario.java").toFile());
-		Options.I().setMethodSignature("stack.util.Stack.elementAt(int)");
+		Options.I().setTargetMethod("stack.util.Stack.elementAt(int)");
 		
 		List<TestScenario> scenarios = TestScenarioLoader.loadTestScenarios();
 		assertNotNull(scenarios);
@@ -64,11 +64,11 @@ public class TestScenarioLoaderTest {
 	public void test2() {
 		Options.I().setClassesPath("./test/resources/guava-12.0.1.jar");
 		Options.I().setScenarioTestPath(Paths.get("./test/resources/InitialScenarioGuava.java").toFile());
-		Options.I().setMethodSignature("com.google.common.collect.ArrayListMultimap.put(Object,Object)");
+		Options.I().setTargetMethod("com.google.common.collect.ArrayListMultimap.put(Object,Object)");
 		
 		List<TestScenario> scenarios = TestScenarioLoader.loadTestScenarios();
 		assertNotNull(scenarios);
-		assertEquals(1, scenarios.size());
+		assertEquals(2, scenarios.size());
 		
 		assertEquals(TestScenarioWithGenerics.class, scenarios.get(0).getClass());
 		String firstActual = scenarios.get(0).toString();
@@ -84,6 +84,20 @@ public class TestScenarioLoaderTest {
 				"boolean boolean3 = arrayListMultimap0.put(integer3, string0);"+
 				"}";
 		assertEquals(firstExpected.replaceAll("\\s|\t|\n", ""), firstActual.replaceAll("\\s|\t|\n", ""));
+		TestScenarioRepository.I().addScenario(scenarios.get(0));
+		
+		assertEquals(TestScenarioWithGenerics.class, scenarios.get(1).getClass());
+		String secondActual = scenarios.get(1).toString();
+		String secondExpected =
+				"{"+
+				"ArrayListMultimap<Integer, String> arrayListMultimap0 = ArrayListMultimap.create();"+
+				"boolean boolean1 = arrayListMultimap0.put(-1698, \"pluto\");"+
+				"boolean boolean2 = arrayListMultimap0.put(123, \"asd\");"+
+				"boolean boolean3 = arrayListMultimap0.put(18, \"ginger\");"+
+				"boolean boolean4 = arrayListMultimap0.remove(18, \"ginger\");"+
+				"}";
+		assertEquals(secondExpected.replaceAll("\\s|\t|\n", ""), secondActual.replaceAll("\\s|\t|\n", ""));
+		System.out.println(scenarios.get(1).getInputAsFields());
 	}
 
 }

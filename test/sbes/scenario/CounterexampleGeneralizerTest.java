@@ -65,7 +65,7 @@ public class CounterexampleGeneralizerTest {
 	@Test
 	public void test3() throws ParseException {
 		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/Stack-UseCase/bin");
-		Options.I().setMethodSignature("stack.util.Stack.get(int)");
+		Options.I().setTargetMethod("stack.util.Stack.get(int)");
 		
 		BlockStmt block = JavaParser.parseBlock(
 				"{"+

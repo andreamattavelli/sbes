@@ -41,7 +41,7 @@ public class FirstStageStubGeneratorTest {
 	
 	private void setUp(String classesPath, String methodSignature, String stubName) {
 		Options.I().setClassesPath(classesPath);
-		Options.I().setMethodSignature(methodSignature);
+		Options.I().setTargetMethod(methodSignature);
 		Options.I().setLogLevel(Level.ERROR);
 	}
 	
