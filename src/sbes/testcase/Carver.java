@@ -56,7 +56,7 @@ public class Carver {
 			visitor.visit(cu, null);
 			for (MethodDeclaration method : visitor.getTests()) {
 				if (isSearchedClass(cu)) {
-					String methodSignature = ClassUtils.getMethodname(Options.I().getMethodSignature());
+					String methodSignature = ClassUtils.getMethodname(Options.I().getTargetMethod());
 					String methodName = methodSignature.split("\\(")[0];
 					String parameters = methodSignature.substring(methodSignature.indexOf("(") + 1, methodSignature.indexOf(")"));
 					int parametersNumber = parameters.equals("") ? 0 : parameters.split(",").length;
@@ -86,7 +86,7 @@ public class Carver {
 	
 	private boolean isSearchedClass(CompilationUnit cu) {
 		String stringCU = cu.toString();
-		String canonicalName = ClassUtils.getCanonicalClassname(Options.I().getMethodSignature());
+		String canonicalName = ClassUtils.getCanonicalClassname(Options.I().getTargetMethod());
 		String simpleName = ClassUtils.getSimpleClassnameFromCanonical(canonicalName);
 		if (stringCU.contains(canonicalName) || stringCU.contains(simpleName)) {
 			return true;

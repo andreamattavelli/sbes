@@ -49,13 +49,13 @@ public abstract class AbstractGeneralizer {
 		BlockStmt cloned = (BlockStmt) new CloneVisitor().visit(carvedTest.getBody(), null);
 		List<Statement> actualStatements = new ArrayList<Statement>();
 
-		String className = ClassUtils.getSimpleClassname(Options.I().getMethodSignature());
-		String methodName = ClassUtils.getMethodname(Options.I().getMethodSignature().split("\\(")[0]);
+		String className = ClassUtils.getSimpleClassname(Options.I().getTargetMethod());
+		String methodName = ClassUtils.getMethodname(Options.I().getTargetMethod().split("\\(")[0]);
 
 		Class<?> c;
 		try {
 			InternalClassloader ic = new InternalClassloader(Options.I().getClassesPath());
-			c = Class.forName(ClassUtils.getCanonicalClassname(Options.I().getMethodSignature()), false, ic.getClassLoader());
+			c = Class.forName(ClassUtils.getCanonicalClassname(Options.I().getTargetMethod()), false, ic.getClassLoader());
 		} catch (ClassNotFoundException e) {
 			// infeasible, we already checked the classpath
 			throw new GenerationException("Target class not found");
@@ -64,7 +64,7 @@ public abstract class AbstractGeneralizer {
 		// get class' methods
 		Method[] methods = ClassUtils.getClassMethods(c);
 		// get method signature
-		String methodSignature = ClassUtils.getMethodname(Options.I().getMethodSignature());
+		String methodSignature = ClassUtils.getMethodname(Options.I().getTargetMethod());
 		// get target method from the list of class' methods
 		Method targetMethod = ClassUtils.findTargetMethod(methods, methodSignature);
 		// get generic types defined
@@ -94,7 +94,7 @@ public abstract class AbstractGeneralizer {
 		actualStatements.addAll(asv.getActualStates());
 
 		// PHASE 4: extract candidate call parameters to fields (with all dependencies)
-		List<FieldDeclaration> inputs = extractParametersToInputs(cloned, methodName, targetMethod, index);
+		List<FieldDeclaration> inputs = extractParametersToInputs(cloned, methodName, targetMethod);
 
 		cloned.getStmts().addAll(actualStatements);
 
@@ -107,7 +107,8 @@ public abstract class AbstractGeneralizer {
 	
 	protected abstract String getAndRenameExpectedResult(final BlockStmt cloned, final Method targetMethod, final String methodName, final int index);
 	
-	protected List<FieldDeclaration> extractParametersToInputs(final BlockStmt cloned, final String methodName, final Method targetMethod, final int index) {
+	protected List<FieldDeclaration> extractParametersToInputs(final BlockStmt cloned, final String methodName, final Method targetMethod) {
+		int index = TestScenarioRepository.I().getScenarios().size();
 		List<String> varsToExtract = new ArrayList<String>();
 		List<VariableDeclarationExpr> varsToField = new ArrayList<VariableDeclarationExpr>();
 		List<FieldDeclaration> fields = new ArrayList<FieldDeclaration>();

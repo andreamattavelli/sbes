@@ -8,7 +8,7 @@ import sbes.option.Options;
 public class EvosuiteUtils {
 
 	public static boolean succeeded(ExecutionResult result) {
-		String signature = Options.I().getMethodSignature();
+		String signature = Options.I().getTargetMethod();
 		String packagename = IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
 		String testDirectory = IOUtils.concatFilePath(result.getOutputDir(), packagename);
 		

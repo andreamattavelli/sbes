@@ -14,7 +14,12 @@ public class ClasspathUtils {
 	public static void checkClasspath() {
 		// check classpath: if the class is not found it raise an exception
 		logger.debug("Checking classpath");
-		checkClasspath(ClassUtils.getCanonicalClassname(Options.I().getMethodSignature()));
+		if (Options.I().getTargetMethod() != null) {
+			checkClasspath(ClassUtils.getCanonicalClassname(Options.I().getTargetMethod()));
+		}
+		else {
+			checkClasspath(Options.I().getTargetClass());
+		}
 		logger.debug("Classpath OK");
 		logger.debug("Checking EvoSuite");
 		File evo = new File(Options.I().getEvosuitePath());

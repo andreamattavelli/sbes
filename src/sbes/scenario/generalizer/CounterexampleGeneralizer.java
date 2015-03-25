@@ -31,7 +31,7 @@ public class CounterexampleGeneralizer extends AbstractGeneralizer {
 	}
 	
 	private void cleanCounterexample(CarvingResult counterexample) {
-		String classname = ClassUtils.getSimpleClassname(Options.I().getMethodSignature());
+		String classname = ClassUtils.getSimpleClassname(Options.I().getTargetMethod());
 		ClassOrInterfaceRenamer cv = new ClassOrInterfaceRenamer(classname + "_Stub_2", classname);
 		cv.visit(counterexample.getBody(), null);
 

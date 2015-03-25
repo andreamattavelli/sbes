@@ -26,6 +26,7 @@ public class SBES {
 
 		try {
 			parser.parseArgument(processArgs(args));
+			Options.I().checkConsistency();
 		} catch (CmdLineException e) {
 			System.err.println("Error: " + e.getMessage());
 			printUsage(parser);
@@ -37,7 +38,7 @@ public class SBES {
 			Signal.handle(new Signal("INT"), shutdown);
 			
 			SBESManager generator = new SBESManager();
-			generator.generateEquivalences();
+			generator.generate();
 			logger.info("SBES ended successfully");
 		} catch (SBESException | GenerationException | WorkerException e) {
 			logger.fatal("Execution aborted due: " + e.getMessage());

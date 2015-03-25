@@ -22,6 +22,10 @@ public class TestScenarioRepository {
 		return instance;
 	}
 	
+	public static void reset() {
+		instance = null;
+	}
+	
 	public void resetCounterexamples() {
 		counterexamples.clear();
 	}

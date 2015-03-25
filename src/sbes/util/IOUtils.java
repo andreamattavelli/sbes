@@ -3,8 +3,36 @@ package sbes.util;
 import java.io.File;
 import java.util.regex.Matcher;
 
+import sbes.logging.Logger;
+
 public class IOUtils {
 
+	/*
+	 * IOUTILS for printing
+	 */
+	public static void formatInitMessage(Logger logger, String method) {
+		logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   " + method
+				+ "   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		logger.info("Generating equivalences for method " + method);
+	}
+
+	public static void formatIterationStartMessage(Logger logger, DirectoryUtils directory) {
+		logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   "
+				+ "Starting synthesis attempt #" + directory.getEquivalences()
+				+ "   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+	}
+
+	public static void formatIterationEndMessage(Logger logger, DirectoryUtils directory) {
+		logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   "
+				+ "Finished synthesis attempt #" + directory.getEquivalences()
+				+ "   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+	}
+	
+	
+	
+	/*
+	 * IOUTILS for file system
+	 */
 	public static String concatFilePath(final String ... args) {
 		StringBuilder builder = new StringBuilder();
 		for (String arg : args) {
@@ -35,5 +63,5 @@ public class IOUtils {
 		String[] dirs = path.split(File.separatorChar=='\\' ? "\\\\" : File.separator);
 		return dirs[dirs.length - 1];
 	}
-
+	
 }

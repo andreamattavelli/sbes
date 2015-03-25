@@ -29,6 +29,11 @@ public class TestScenarioLoader {
 		if (carvedTests.isEmpty()) {
 			throw new SBESException("Unable to generate any test scenarios, give up!");
 		}
+		else if (carvedTests.size() > 1) {
+			logger.warn("Found more than one test scenario! Heuristically pruning to one, for faster convergence");
+			List<CarvingResult> retain = carvedTests.subList(0, 1);
+			carvedTests.retainAll(retain);
+		}
 		
 		List<TestScenario> scenarios = testToArrayScenario(carvedTests);
 
@@ -45,6 +50,7 @@ public class TestScenarioLoader {
 			TestScenario ts = tsg.testToTestScenario(carvedTest);
 			if (ts != null) {
 				scenarios.add(ts);
+				TestScenarioRepository.I().addScenario(ts);
 			}
 		}
 		logger.debug("Generalization - done");

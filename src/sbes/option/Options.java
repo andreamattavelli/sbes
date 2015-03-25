@@ -2,6 +2,7 @@ package sbes.option;
 
 import java.io.File;
 
+import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.Option;
 
 import sbes.logging.Level;
@@ -57,10 +58,13 @@ public class Options {
 			usage = "Method bloat factor")
 	private int methodBloatFactor = 20;
 
-	@Option(name = "-method",
-			usage = "Java-like method signature under investigation",
-			required = true)
-	private String methodSignature;
+	@Option(name = "-target_method",
+			usage = "Java-like method signature under investigation")
+	private String methodSignature = null;
+	
+	@Option(name = "-target_class",
+			usage = "Java class signature under investigation")
+	private String classSignature = null;
 
 	@Option(name = "-scenario_budget",
 			usage = "Search budget for test case generation. Default: 30s")
@@ -95,6 +99,14 @@ public class Options {
 	private boolean verbose = false;
 	
 	
+	// check consistency of the options
+	public void checkConsistency() throws CmdLineException {
+		if (methodSignature == null && classSignature == null) {
+			throw new CmdLineException(null, "Select either an input method (-target_method) or an input class (-target_class)");
+		}
+	}
+	
+	
 	public String getClassesPath() {
 		return classesPath;
 	}
@@ -123,8 +135,12 @@ public class Options {
 		return methodBloatFactor;
 	}
 
-	public String getMethodSignature() {
+	public String getTargetMethod() {
 		return methodSignature;
+	}
+	
+	public String getTargetClass() {
+		return classSignature;
 	}
 	
 	public int getSearchBudget() {
@@ -163,7 +179,7 @@ public class Options {
 		Logger.setLevel(logLevel);
 	}
 	
-	public void setMethodSignature(String methodSignature) {
+	public void setTargetMethod(String methodSignature) {
 		this.methodSignature = methodSignature;
 	}
 
