@@ -23,7 +23,7 @@ public class TimeUtils {
 	 * For CPUTIME, we need to use nanoseconds, while for GLOBALTIME we need to
 	 * use MILLISECONDS.
 	 */
-	public static long getNormalizedTime(long time) {
+	public static long getNormalizedTime(final long time) {
 		if (Options.I().getTimeMeasure() == TimeMeasure.CPUTIME) {
 			return TimeUnit.NANOSECONDS.convert(time, TimeUnit.SECONDS);
 		}
