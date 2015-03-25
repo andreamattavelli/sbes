@@ -14,7 +14,7 @@ public class GenericClassVisitor extends VoidVisitorAdapter<Void> {
 	private String className;
 	private List<String> generics;
 	
-	public GenericClassVisitor(String className) {
+	public GenericClassVisitor(final String className) {
 		this.className = className;
 		this.generics = new ArrayList<String>();
 	}
@@ -24,7 +24,7 @@ public class GenericClassVisitor extends VoidVisitorAdapter<Void> {
 	}
 	
 	@Override
-	public void visit(VariableDeclarationExpr vde, Void arg1) {
+	public void visit(final VariableDeclarationExpr vde, final Void arg1) {
 		if (vde.getType() instanceof ReferenceType) {
 			ReferenceType refType = (ReferenceType) vde.getType();
 			if (refType.getType() instanceof ClassOrInterfaceType) {

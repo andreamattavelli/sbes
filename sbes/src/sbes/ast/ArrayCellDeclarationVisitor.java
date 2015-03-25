@@ -12,7 +12,7 @@ public class ArrayCellDeclarationVisitor extends VoidVisitorAdapter<Void> {
 	private String index;
 	private Expression value;
 
-	public ArrayCellDeclarationVisitor(String variableId, String index) {
+	public ArrayCellDeclarationVisitor(final String variableId, final String index) {
 		this.variableId = variableId;
 		this.index = index;
 		this.value = null;
@@ -23,7 +23,7 @@ public class ArrayCellDeclarationVisitor extends VoidVisitorAdapter<Void> {
 	}
 
 	@Override
-	public void visit(AssignExpr n, Void arg) {
+	public void visit(final AssignExpr n, final Void arg) {
 		if (n.getTarget() instanceof ArrayAccessExpr) {
 			ArrayAccessExpr aae = (ArrayAccessExpr) n.getTarget();
 			if (ASTUtils.getName(aae.getName()).equals(variableId) && aae.getIndex().toString().equals(index)) {

@@ -16,7 +16,7 @@ public class VariableLivenessVisitor extends VoidVisitorAdapter<Void> {
 	private String variableId;
 	private boolean alive;
 
-	public VariableLivenessVisitor(String variableId) {
+	public VariableLivenessVisitor(final String variableId) {
 		this.variableId = variableId;
 		this.alive = false;
 	}
@@ -26,7 +26,7 @@ public class VariableLivenessVisitor extends VoidVisitorAdapter<Void> {
 	}
 
 	@Override
-	public void visit(AssignExpr n, Void arg) {
+	public void visit(final AssignExpr n, final Void arg) {
 		if (n.getValue() instanceof NameExpr) {
 			NameExpr ne = (NameExpr) n.getValue();
 			if (ne.getName().equals(variableId)) {
@@ -37,7 +37,7 @@ public class VariableLivenessVisitor extends VoidVisitorAdapter<Void> {
 	}
 
 	@Override
-	public void visit(MethodCallExpr arg0, Void arg1) {
+	public void visit(final MethodCallExpr arg0, final Void arg1) {
 		if (arg0.getScope() instanceof NameExpr) {
 			NameExpr ne = (NameExpr) arg0.getScope();
 			if (ne.getName().equals(variableId)) {
@@ -57,7 +57,7 @@ public class VariableLivenessVisitor extends VoidVisitorAdapter<Void> {
 	}
 
 	@Override
-	public void visit(ObjectCreationExpr arg0, Void arg1) {
+	public void visit(final ObjectCreationExpr arg0, final Void arg1) {
 		if (arg0.getArgs() != null) {
 			for (Expression arg : arg0.getArgs()) {
 				String name = ASTUtils.getName(arg);

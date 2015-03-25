@@ -20,7 +20,7 @@ public class ExpectedStateVisitor extends VoidVisitorAdapter<String> {
 	
 	private ExpressionStmt actualState;
 	
-	public ExpectedStateVisitor(int index, String objName) {
+	public ExpectedStateVisitor(final int index, final String objName) {
 		this.index = index;
 		this.objName = objName;
 	}
@@ -30,7 +30,7 @@ public class ExpectedStateVisitor extends VoidVisitorAdapter<String> {
 	}
 	
 	@Override
-	public void visit(VariableDeclarationExpr n, String concreteClassName) {
+	public void visit(final VariableDeclarationExpr n, final String concreteClassName) {
 		if (n.getType().toString().equals(concreteClassName)) {
 			VariableDeclarator vd = n.getVars().get(0);
 			if (vd.getId().getName().equals(objName)) {
@@ -62,7 +62,7 @@ public class ExpectedStateVisitor extends VoidVisitorAdapter<String> {
 		super.visit(n, concreteClassName);
 	}
 
-	private ExpressionStmt createActualState(VariableDeclarationExpr arg0) {
+	private ExpressionStmt createActualState(final VariableDeclarationExpr arg0) {
 		CloneVisitor cv = new CloneVisitor();
 		VariableDeclarationExpr actual = (VariableDeclarationExpr) cv.visit(arg0, null);
 		

@@ -15,7 +15,7 @@ public class ArrayDeclarationVisitor extends VoidVisitorAdapter<String> {
 	private String variableId;
 	private boolean alive;
 
-	public ArrayDeclarationVisitor(String variableId) {
+	public ArrayDeclarationVisitor(final String variableId) {
 		this.variableId = variableId;
 		this.alive = false;
 	}
@@ -25,7 +25,7 @@ public class ArrayDeclarationVisitor extends VoidVisitorAdapter<String> {
 	}
 
 	@Override
-	public void visit(AssignExpr n, String arg) {
+	public void visit(final AssignExpr n, final String arg) {
 		if (n.getValue() instanceof NameExpr || n.getValue() instanceof CastExpr) {
 			ArrayAccessExpr aae = (ArrayAccessExpr) n.getTarget();
 			if (ASTUtils.getName(aae.getName()).equals(variableId)) {
@@ -36,7 +36,7 @@ public class ArrayDeclarationVisitor extends VoidVisitorAdapter<String> {
 	}
 
 	@Override
-	public void visit(MethodCallExpr arg0, String arg1) {
+	public void visit(final MethodCallExpr arg0, final String arg1) {
 		if (!arg0.getName().equals(arg1) && arg0.getScope() instanceof NameExpr) {
 			NameExpr ne = (NameExpr) arg0.getScope();
 			if (ne.getName().equals(variableId)) {
@@ -56,7 +56,7 @@ public class ArrayDeclarationVisitor extends VoidVisitorAdapter<String> {
 	}
 
 	@Override
-	public void visit(ObjectCreationExpr arg0, String arg1) {
+	public void visit(final ObjectCreationExpr arg0, final String arg1) {
 		if (arg0.getArgs() != null) {
 			for (Expression arg : arg0.getArgs()) {
 				String name = ASTUtils.getName(arg);

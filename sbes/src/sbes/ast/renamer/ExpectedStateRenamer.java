@@ -13,14 +13,14 @@ public class ExpectedStateRenamer extends VoidVisitorAdapter<Void> {
 	private String expectedName;
 	private String index;
 	
-	public ExpectedStateRenamer(String objName, String expectedName, String index) {
+	public ExpectedStateRenamer(final String objName, final String expectedName, final String index) {
 		this.objName = objName;
 		this.expectedName = expectedName;
 		this.index = index;
 	}
 	
 	@Override
-	public void visit(NameExpr n, Void arg) {
+	public void visit(final NameExpr n, final Void arg) {
 		if (n.getName().equals(objName)) {
 			if (n.getParentNode() instanceof MethodCallExpr) {
 				MethodCallExpr mce = (MethodCallExpr) n.getParentNode();

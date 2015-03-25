@@ -20,7 +20,7 @@ public class ExpectedResultRenamer extends VoidVisitorAdapter<String> {
 	private String expectedState;
 	private boolean found;
 
-	public ExpectedResultRenamer(int index, int parameters) {
+	public ExpectedResultRenamer(final int index, final int parameters) {
 		this.index = index;
 		this.parameters = parameters;
 		this.found = false;
@@ -31,7 +31,7 @@ public class ExpectedResultRenamer extends VoidVisitorAdapter<String> {
 	}
 
 	@Override
-	public void visit(VariableDeclarationExpr n, String methodName) {
+	public void visit(final VariableDeclarationExpr n, final String methodName) {
 		VariableDeclarator vd = n.getVars().get(0);
 		if (vd.getInit() instanceof MethodCallExpr) {
 			MethodCallExpr mce = (MethodCallExpr) vd.getInit();
@@ -47,14 +47,14 @@ public class ExpectedResultRenamer extends VoidVisitorAdapter<String> {
 	}
 	
 	@Override
-	public void visit(MethodCallExpr arg0, String methodName) {
+	public void visit(final MethodCallExpr arg0, final String methodName) {
 		if (!found) {
 			handleMethodCall(null, methodName, arg0);
 		}
 		super.visit(arg0, methodName);
 	}
 	
-	private void handleMethodCall(VariableDeclarationExpr n, String methodName, MethodCallExpr mce) {
+	private void handleMethodCall(final VariableDeclarationExpr n, final String methodName, final MethodCallExpr mce) {
 		if (mce.getName().equals(methodName) && (parameters == 0 || mce.getArgs().size() == parameters)) {
 			found = true;
 			// found class constructor, switch to EXPECTED_STATES

@@ -12,12 +12,12 @@ public class VariableNamesRenamer extends VoidVisitorAdapter<Void> {
 	
 	private int index;
 	
-	public VariableNamesRenamer(int index) {
+	public VariableNamesRenamer(final int index) {
 		this.index = index;
 	}
 	
 	@Override
-	public void visit(NameExpr n, Void arg) {
+	public void visit(final NameExpr n, final Void arg) {
 		if (!Character.isUpperCase(n.getName().charAt(0))) {
 			n.setName(n.getName() + "_" + index);
 		}
@@ -25,7 +25,7 @@ public class VariableNamesRenamer extends VoidVisitorAdapter<Void> {
 	}
 	
 	@Override
-	public void visit(VariableDeclaratorId n, Void arg) {
+	public void visit(final VariableDeclaratorId n, final Void arg) {
 		if (!Character.isUpperCase(n.getName().charAt(0))) {
 			n.setName(n.getName() + "_" + index);
 		}

@@ -18,7 +18,7 @@ public class ExtractVariablesFromTargetMethodVisitor extends VoidVisitorAdapter<
 		return dependencies;
 	}
 	@Override
-	public void visit(MethodCallExpr n, String methodName) {
+	public void visit(final MethodCallExpr n, final String methodName) {
 		if (n.getName().equals(methodName)) {
 			if (n.getArgs() != null) {
 				for (Expression arg : n.getArgs()) {

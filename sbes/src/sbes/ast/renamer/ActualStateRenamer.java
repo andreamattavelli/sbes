@@ -23,7 +23,7 @@ public class ActualStateRenamer extends VoidVisitorAdapter<Void> {
 	private String methodName;
 	List<Statement> actualStates; 
 	
-	public ActualStateRenamer(String expectedState, String index, String methodName) {
+	public ActualStateRenamer(final String expectedState, final String index, final String methodName) {
 		this.expectedState = expectedState;
 		this.index = index;
 		this.methodName = methodName;
@@ -35,7 +35,7 @@ public class ActualStateRenamer extends VoidVisitorAdapter<Void> {
 	}
 	
 	@Override
-	public void visit(ArrayAccessExpr n, Void arg) {
+	public void visit(final ArrayAccessExpr n, final Void arg) {
 		String name_ = ASTUtils.getName(n.getName());
 		String index_ = ASTUtils.getName(n.getIndex());
 		if (name_ != null && index_ != null) {
@@ -46,7 +46,7 @@ public class ActualStateRenamer extends VoidVisitorAdapter<Void> {
 		super.visit(n, arg);
 	}
 	
-	private void handleParent(Node n) {
+	private void handleParent(final Node n) {
 		if (n instanceof AssignExpr) {
 			AssignExpr ae = (AssignExpr) n;
 			AssignExpr actual = new AssignExpr();

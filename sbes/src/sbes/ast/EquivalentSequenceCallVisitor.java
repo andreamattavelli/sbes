@@ -27,7 +27,7 @@ public class EquivalentSequenceCallVisitor extends VoidVisitorAdapter<Void> {
 	}
 	
 	@Override
-	public void visit(MethodCallExpr arg0, Void arg1) {
+	public void visit(final MethodCallExpr arg0, final Void arg1) {
 		if (!arg0.getName().equals("set_results") && arg0.getScope() != null && 
 				arg0.getArgs() != null && arg0.getScope() instanceof NameExpr) {
 			NameExpr ne = (NameExpr) arg0.getScope();
@@ -40,7 +40,7 @@ public class EquivalentSequenceCallVisitor extends VoidVisitorAdapter<Void> {
 	}
 	
 	@Override
-	public void visit(VariableDeclarationExpr arg0, Void arg1) {
+	public void visit(final VariableDeclarationExpr arg0, final Void arg1) {
 		if (arg0.getVars().get(0).getInit() instanceof FieldAccessExpr) {
 			FieldAccessExpr fae = (FieldAccessExpr) arg0.getVars().get(0).getInit();
 			if (fae.getField().startsWith("ELEMENT_")) {
