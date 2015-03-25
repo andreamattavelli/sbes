@@ -5,7 +5,10 @@ import japa.parser.ast.stmt.BlockStmt;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import sbes.ast.CloneMethodCallsVisitor;
 import sbes.exceptions.GenerationException;
@@ -20,12 +23,13 @@ public class EquivalenceRepository {
 	private static final Logger logger = new Logger(EquivalenceRepository.class);
 	private static EquivalenceRepository instance = null;
 	
-	private List<EquivalentSequence> equivalences;
+	private Map<String, List<EquivalentSequence>> equivalences;
+	
 	private List<Method> excluded;
 	private Method[] methods;
 	
 	private EquivalenceRepository() {
-		equivalences = new ArrayList<EquivalentSequence>();
+		equivalences = new HashMap<String, List<EquivalentSequence>>();
 		excluded = new ArrayList<Method>();
 		initTargetMethods();
 	}
@@ -51,12 +55,11 @@ public class EquivalenceRepository {
 		return instance;
 	}
 	
-	public static void reset() {
-		instance = null;
-	}
-	
 	public void addEquivalence(EquivalentSequence eqSeq) {
-		equivalences.add(eqSeq);
+		if (!equivalences.containsKey(Options.I().getTargetMethod())) {
+			equivalences.put(Options.I().getTargetMethod(), new ArrayList<EquivalentSequence>());
+		}
+		equivalences.get(Options.I().getTargetMethod()).add(eqSeq);
 		
 		// find methods to exclude
 		BlockStmt body = eqSeq.getBody();
@@ -123,10 +126,13 @@ public class EquivalenceRepository {
 	public void printEquivalences() {
 		if (equivalences.size() > 0) {
 			logger.info("Equivalent sequences synthesized:");
-			int i = 1;
-			for (EquivalentSequence eqSeq : equivalences) {
-				System.out.println("EqSeq" + i++);
-				System.out.println(eqSeq.toString());
+			for (Entry<String, List<EquivalentSequence>> e : equivalences.entrySet()) {
+				logger.info("Target method: " + e.getKey());
+				int i = 1;
+				for (EquivalentSequence eqSeq : e.getValue()) {
+					System.out.println("EqSeq" + i++);
+					System.out.println(eqSeq.toString());
+				}
 			}
 		}
 		else {
