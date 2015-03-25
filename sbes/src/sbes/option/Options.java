@@ -14,19 +14,21 @@ public class Options {
 
 	private static Options instance = null;
 
-	private Options() {}
-	
 	public static Options I() {
 		if (instance == null) {
 			instance = new Options();
 		}
 		return instance;
 	}
-
+	
 	@Option(name = "-classes",
 			usage = "Path to classes",
 			required = true)
 	private String classesPath;
+
+	@Option(name = "-target_class",
+			usage = "Java class signature under investigation")
+	private String classSignature = null;
 
 	@Option(name = "-counterexample_budget",
 			usage = "Search budget for counterexample synthesis. Default: 180s")
@@ -36,10 +38,14 @@ public class Options {
 			usage = "Path to EvoSuite jar (included jar name). Default: \"./evosuite.jar\"")
 	private String evosuitePath = "./evosuite.jar";
 	
+	@Option(name = "-prune_scenarios",
+			usage = "Heuristically pruning initial test scenarios to one")
+	private boolean heuristicPruningScenarios = true;
+
 	@Option(name = "-java",
 			usage = "Path to Java excutable")
 	private String javaPath = "";
-
+	
 	@Option(name = "-junit",
 			usage = "Path to JUnit 4 jar",
 			required = true)
@@ -62,10 +68,6 @@ public class Options {
 			usage = "Java-like method signature under investigation")
 	private String methodSignature = null;
 	
-	@Option(name = "-target_class",
-			usage = "Java class signature under investigation")
-	private String classSignature = null;
-
 	@Option(name = "-scenario_budget",
 			usage = "Search budget for test case generation. Default: 30s")
 	private int scenarioBudget = 30;
@@ -80,15 +82,15 @@ public class Options {
 					"ITERATIONS, TIME, NOSYNTHESIS, MAXWITHOUTSYNTHESIS. Default: NOSYNTHESIS",
 			required = true)
 	private StoppingConditionType stoppingCondition = StoppingConditionType.NOSYNTHESIS;
-	
+
 	@Option(name = "-stopping_condition_value",
 			usage = "Value to be applied to the chosen stopping condition.")
 	private int stoppingConditionValue = 0;
-
+	
 	@Option(name = "-synthesis_budget",
 			usage = "Search budget for equivalent sequence synthesis. Default: 180s")
 	private int synthesisBudget = 180;
-	
+
 	@Option(name = "-time_measure",
 			usage = "How to measure the elapsed time: CPUTIME, GLOBALTIME",
 			handler = LevelHandler.class)
@@ -97,6 +99,8 @@ public class Options {
 	@Option(name = "-verbose",
 			usage = "Verbose output for EvoSuite execution. Default: false")
 	private boolean verbose = false;
+	
+	private Options() {}
 	
 	
 	// check consistency of the options
@@ -135,24 +139,24 @@ public class Options {
 		return methodBloatFactor;
 	}
 
-	public String getTargetMethod() {
-		return methodSignature;
-	}
-	
-	public String getTargetClass() {
-		return classSignature;
-	}
-	
 	public int getSearchBudget() {
 		return synthesisBudget;
 	}
-
+	
 	public StoppingConditionType getStoppingCondition() {
 		return stoppingCondition;
 	}
-
+	
 	public int getStoppingConditionValue() {
 		return stoppingConditionValue;
+	}
+
+	public String getTargetClass() {
+		return classSignature;
+	}
+
+	public String getTargetMethod() {
+		return methodSignature;
 	}
 
 	public File getTestScenarioPath() {
@@ -167,6 +171,10 @@ public class Options {
 		return timeMeasure;
 	}
 	
+	public boolean isHeuristicPruningScenarios() {
+		return heuristicPruningScenarios;
+	}
+	
 	public boolean isVerbose() {
 		return verbose;
 	}
@@ -179,12 +187,16 @@ public class Options {
 		Logger.setLevel(logLevel);
 	}
 	
-	public void setTargetMethod(String methodSignature) {
-		this.methodSignature = methodSignature;
+	public void setHeuristicPruningScenarios(boolean heuristicPruningScenarios) {
+		this.heuristicPruningScenarios = heuristicPruningScenarios;
 	}
-
+	
 	public void setScenarioTestPath(File scenarioTestPath) {
 		this.scenarioTestPath = scenarioTestPath;
+	}
+
+	public void setTargetMethod(String methodSignature) {
+		this.methodSignature = methodSignature;
 	}
 
 }

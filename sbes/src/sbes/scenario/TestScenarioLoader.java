@@ -29,7 +29,7 @@ public class TestScenarioLoader {
 		if (carvedTests.isEmpty()) {
 			throw new SBESException("Unable to load any test scenarios, give up!");
 		}
-		else if (carvedTests.size() > 1) {
+		else if (carvedTests.size() > 1 && Options.I().isHeuristicPruningScenarios()) {
 			logger.warn("Found more than one test scenario! Heuristically pruning to one, for faster convergence");
 			List<CarvingResult> retain = carvedTests.subList(0, 1);
 			carvedTests.retainAll(retain);

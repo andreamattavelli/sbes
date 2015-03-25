@@ -16,6 +16,7 @@ public class TestScenarioLoaderTest {
 
 	@BeforeClass
 	public static void setUp() throws Exception {
+		Options.I().setHeuristicPruningScenarios(false);
 		Options.I().setLogLevel(Level.FATAL);
 	}
 
@@ -97,7 +98,6 @@ public class TestScenarioLoaderTest {
 				"boolean boolean4 = arrayListMultimap0.remove(18, \"ginger\");"+
 				"}";
 		assertEquals(secondExpected.replaceAll("\\s|\t|\n", ""), secondActual.replaceAll("\\s|\t|\n", ""));
-		System.out.println(scenarios.get(1).getInputAsFields());
 	}
 
 }
