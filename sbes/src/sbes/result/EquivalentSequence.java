@@ -7,7 +7,7 @@ import java.util.List;
 
 public class EquivalentSequence extends Result {
 
-	public EquivalentSequence(List<Statement> stmts) {
+	public EquivalentSequence(final List<Statement> stmts) {
 		super(new BlockStmt(stmts));
 	}
 	

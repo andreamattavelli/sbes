@@ -6,7 +6,7 @@ public class Result {
 
 	protected final BlockStmt body;
 	
-	public Result(BlockStmt body) {
+	public Result(final BlockStmt body) {
 		this.body = body;
 	}
 	

@@ -5,7 +5,7 @@ public class CompilationContext extends CarvingContext {
 	private String classPath;
 	private String destinationDirectory;
 	
-	public CompilationContext(String testDirectory, String testFilename, String destinationDirectory, String classPath) {
+	public CompilationContext(final String testDirectory, final String testFilename, final String destinationDirectory, final String classPath) {
 		super(testDirectory, testFilename);
 		this.classPath = classPath;
 		this.destinationDirectory = destinationDirectory;

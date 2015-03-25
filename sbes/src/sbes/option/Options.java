@@ -179,23 +179,23 @@ public class Options {
 		return verbose;
 	}
 	
-	public void setClassesPath(String classesPath) {
+	public void setClassesPath(final String classesPath) {
 		this.classesPath = classesPath;
 	}
 	
-	public void setLogLevel(Level logLevel) {
+	public void setLogLevel(final Level logLevel) {
 		Logger.setLevel(logLevel);
 	}
 	
-	public void setHeuristicPruningScenarios(boolean heuristicPruningScenarios) {
+	public void setHeuristicPruningScenarios(final boolean heuristicPruningScenarios) {
 		this.heuristicPruningScenarios = heuristicPruningScenarios;
 	}
 	
-	public void setScenarioTestPath(File scenarioTestPath) {
+	public void setScenarioTestPath(final File scenarioTestPath) {
 		this.scenarioTestPath = scenarioTestPath;
 	}
 
-	public void setTargetMethod(String methodSignature) {
+	public void setTargetMethod(final String methodSignature) {
 		this.methodSignature = methodSignature;
 	}
 

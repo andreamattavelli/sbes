@@ -15,7 +15,7 @@ public class EvosuiteTestScenario extends Evosuite {
 	private String bytecodeSignature;
 	private Method target;
 	
-	public EvosuiteTestScenario(String classSignature, String methodSignature) {
+	public EvosuiteTestScenario(final String classSignature, final String methodSignature) {
 		super(classSignature, methodSignature);
 		this.outputDir = DirectoryUtils.I().getTestScenarioDir();
 		this.bytecodeSignature = getBytecodeSignature(classSignature, methodSignature);
