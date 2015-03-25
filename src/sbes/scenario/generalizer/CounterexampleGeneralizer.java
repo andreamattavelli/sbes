@@ -6,6 +6,7 @@ import japa.parser.ast.stmt.BlockStmt;
 
 import java.lang.reflect.Method;
 
+import sbes.ast.inliner.FieldVariablesToInline;
 import sbes.ast.inliner.Inliner;
 import sbes.ast.inliner.PrimitiveVariablesToInline;
 import sbes.ast.inliner.StringVariablesToInline;
@@ -53,10 +54,16 @@ public class CounterexampleGeneralizer extends AbstractGeneralizer {
 		StringVariablesToInline svi = new StringVariablesToInline();
 		svi.visit(counterexample.getBody(), null);
 		
+		FieldVariablesToInline fvi = new FieldVariablesToInline();
+		fvi.visit(counterexample.getBody(), null);
+		
 		for (VariableDeclarator vd : pvi.getToInline()) {
 			new Inliner().visit(counterexample.getBody(), vd);
 		}
 		for (VariableDeclarator vd : svi.getToInline()) {
+			new Inliner().visit(counterexample.getBody(), vd);
+		}
+		for (VariableDeclarator vd : fvi.getToInline()) {
 			new Inliner().visit(counterexample.getBody(), vd);
 		}
 	}
