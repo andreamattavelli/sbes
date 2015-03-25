@@ -8,7 +8,7 @@ import sbes.util.ReflectionUtils;
 
 public class ObjectDistance {
 
-	public static double getNullDistance(Object o1, Object o2) {
+	public static double getNullDistance(final Object o1, final Object o2) {
 		if (o1 == null) {
 			if (ReflectionUtils.isPrimitive(o2)) {
 				return 1.0 * Distance.NULL_WEIGHT;
@@ -29,7 +29,7 @@ public class ObjectDistance {
 		}
 	}
 	
-	private static int getObjectSize(Object o) {
+	private static int getObjectSize(final Object o) {
 		int size = 0;
 		List<Class<?>> worklist = new LinkedList<Class<?>>();
 		

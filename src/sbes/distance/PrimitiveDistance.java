@@ -7,7 +7,7 @@ import sbes.util.ReflectionUtils;
 
 public class PrimitiveDistance {
 
-	public static double distance(Field f1, Object obj1, Field f2, Object obj2) {
+	public static double distance(final Field f1, final Object obj1, final Field f2, final Object obj2) {
 		double distance = 0.0d;
 		
 		Class<?> f1Type = f1.getType().getComponentType() == null ? f1.getType() : f1.getType().getComponentType();
@@ -51,7 +51,7 @@ public class PrimitiveDistance {
 		return distance;
 	}
 	
-	public static double distance(Object obj1, Object obj2) {
+	public static double distance(final Object obj1, final Object obj2) {
 		double distance = 0.0d;
 		
 		Class<?> clazz = obj1.getClass().getComponentType() == null ? obj1.getClass() : obj1.getClass().getComponentType();
@@ -167,11 +167,11 @@ public class PrimitiveDistance {
 		return distance;
 	}
 	
-	public static double intDistance(int a, int b) {
+	public static double intDistance(final int a, final int b) {
 		return Math.abs(a - b);
 	}
 	
-	public static double intDistance(int[] a, int[] b) {
+	public static double intDistance(final int[] a, final int[] b) {
 		double distance = 0;
 		for (int i = 0; i < Math.min(a.length, b.length); i++) {
 			distance += intDistance(a[i], b[i]);
@@ -180,11 +180,11 @@ public class PrimitiveDistance {
 		return distance;
 	}
 
-	public static double shortDistance(short a, short b) {
+	public static double shortDistance(final short a, final short b) {
 		return Math.abs(a - b);
 	}
 	
-	public static double shortDistance(short[] a, short[] b) {
+	public static double shortDistance(final short[] a, final short[] b) {
 		double distance = 0;
 		for (int i = 0; i < Math.min(a.length, b.length); i++) {
 			distance += shortDistance(a[i], b[i]);
@@ -193,11 +193,11 @@ public class PrimitiveDistance {
 		return distance;
 	}
 
-	public static double longDistance(long a, long b) {
+	public static double longDistance(final long a, final long b) {
 		return Math.abs(a - b);
 	}
 	
-	public static double longDistance(long[] a, long[] b) {
+	public static double longDistance(final long[] a, final long[] b) {
 		double distance = 0;
 		for (int i = 0; i < Math.min(a.length, b.length); i++) {
 			distance += longDistance(a[i], b[i]);
@@ -206,7 +206,7 @@ public class PrimitiveDistance {
 		return distance;
 	}
 
-	public static double floatDistance(float a, float b) {
+	public static double floatDistance(final float a, final float b) {
 		if (Float.isNaN(a) && Float.isNaN(b)) { 
 			return 0;
 		}
@@ -222,7 +222,7 @@ public class PrimitiveDistance {
 		return Math.abs(a - b);
 	}
 
-	public static double floatDistance(float[] a, float[] b) {
+	public static double floatDistance(final float[] a, final float[] b) {
 		double distance = 0;
 		for (int i = 0; i < Math.min(a.length, b.length); i++) {
 			distance += floatDistance(a[i], b[i]);
@@ -231,7 +231,7 @@ public class PrimitiveDistance {
 		return distance;
 	}
 	
-	public static double doubleDistance(double a, double b) {
+	public static double doubleDistance(final double a, final double b) {
 		if (Double.isNaN(a) && Double.isNaN(b)) { 
 			return 0;
 		}
@@ -247,7 +247,7 @@ public class PrimitiveDistance {
 		return Math.abs(a - b);
 	}
 	
-	public static double doubleDistance(double[] a, double[] b) {
+	public static double doubleDistance(final double[] a, final double[] b) {
 		double distance = 0;
 		for (int i = 0; i < Math.min(a.length, b.length); i++) {
 			distance += doubleDistance(a[i], b[i]);
@@ -256,11 +256,11 @@ public class PrimitiveDistance {
 		return distance;
 	}
 	
-	public static double byteDistance(byte a, byte b) {
+	public static double byteDistance(final byte a, final byte b) {
 		return Math.abs(a - b);
 	}
 	
-	public static double byteDistance(byte[] a, byte[] b) {
+	public static double byteDistance(final byte[] a, final byte[] b) {
 		double distance = 0;
 		for (int i = 0; i < Math.min(a.length, b.length); i++) {
 			distance += byteDistance(a[i], b[i]);
@@ -269,23 +269,23 @@ public class PrimitiveDistance {
 		return distance;
 	}
 	
-	public static double charDistance(char a, char b) {
+	public static double charDistance(final char a, final char b) {
 		String stringF1 = new String(new char[] { a });
 		String stringF2 = new String(new char[] { b });
 		return LevenshteinDistance.calculateDistance(stringF1, stringF2);
 	}
 	
-	public static double charDistance(char[] a, char[] b) {
+	public static double charDistance(final char[] a, final char[] b) {
 		String stringF1 = new String(a);
 		String stringF2 = new String(b);
 		return LevenshteinDistance.calculateDistance(stringF1, stringF2);
 	}
 
-	public static double booleanDistance(boolean a, boolean b) {
+	public static double booleanDistance(final boolean a, final boolean b) {
 		return a ^ b ? 1 : 0;
 	}
 	
-	public static double booleanDistance(boolean[] a, boolean[] b) {
+	public static double booleanDistance(final boolean[] a, final boolean[] b) {
 		double distance = 0;
 		for (int i = 0; i < Math.min(a.length, b.length); i++) {
 			distance += booleanDistance(a[i], b[i]);
