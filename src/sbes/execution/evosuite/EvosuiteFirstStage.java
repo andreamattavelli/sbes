@@ -11,7 +11,7 @@ public class EvosuiteFirstStage extends Evosuite {
 
 	private final String additionalClasspath;
 
-	public EvosuiteFirstStage(String classSignature, String methodSignature, String additionalClasspath) {
+	public EvosuiteFirstStage(final String classSignature, final String methodSignature, final String additionalClasspath) {
 		super(classSignature, methodSignature);
 		this.additionalClasspath = additionalClasspath;
 		this.outputDir = DirectoryUtils.I().getFirstStubEvosuiteDir();

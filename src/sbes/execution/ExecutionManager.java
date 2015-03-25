@@ -16,7 +16,7 @@ public class ExecutionManager {
 
 	private static final Logger logger = new Logger(ExecutionManager.class);
 
-	public static ExecutionResult execute(Evosuite evosuite) {
+	public static ExecutionResult execute(final Evosuite evosuite) {
 		ExecutorService executor = Executors.newFixedThreadPool(1);
 		Worker worker = new Worker(evosuite);
 		
@@ -48,7 +48,7 @@ public class ExecutionManager {
 		return toReturn;
 	}
 
-	private static long calculateTimeout(Evosuite evosuite) {
+	private static long calculateTimeout(final Evosuite evosuite) {
 		int searchBudget = evosuite instanceof EvosuiteFirstStage ? Options.I().getSearchBudget() : Options.I().getCounterexampleBudget();
 		if (searchBudget <= 60) {
 			return searchBudget * 3;

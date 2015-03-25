@@ -17,20 +17,20 @@ public class CounterexampleGeneralizer extends AbstractGeneralizer {
 
 	private static final Logger logger = new Logger(CounterexampleGeneralizer.class);
 
-	public TestScenario counterexampleToTestScenario(CarvingResult carvedCounterexample) {
+	public TestScenario counterexampleToTestScenario(final CarvingResult carvedCounterexample) {
 		logger.debug("Generalizing carved counterexample");
 		cleanCounterexample(carvedCounterexample);
 		return super.generalizeToTestScenario(carvedCounterexample);
 	}
 
 	@Override
-	protected String getAndRenameExpectedResult(BlockStmt cloned, Method targetMethod, String methodName, int index) {
+	protected String getAndRenameExpectedResult(final BlockStmt cloned, final Method targetMethod, final String methodName, final int index) {
 		ExpectedResultCounterexampleRenamer cerv = new ExpectedResultCounterexampleRenamer(targetMethod, index);
 		cerv.visit(cloned, null);
 		return cerv.getExpectedState();
 	}
 	
-	private void cleanCounterexample(CarvingResult counterexample) {
+	private void cleanCounterexample(final CarvingResult counterexample) {
 		String classname = ClassUtils.getSimpleClassname(Options.I().getTargetMethod());
 		ClassOrInterfaceRenamer cv = new ClassOrInterfaceRenamer(classname + "_Stub_2", classname);
 		cv.visit(counterexample.getBody(), null);

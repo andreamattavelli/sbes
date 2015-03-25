@@ -86,13 +86,13 @@ public class FirstStageGeneratorStub extends AbstractStubGenerator {
 	}
 	
 	@Override
-	protected TypeDeclaration getClassDeclaration(String className) {
+	protected TypeDeclaration getClassDeclaration(final String className) {
 		stubName = className + STUB_EXTENSION;
 		return new ClassOrInterfaceDeclaration(Modifier.PUBLIC, false, stubName);
 	}
 
 	@Override
-	protected List<BodyDeclaration> getClassFields(Method targetMethod, Class<?> c) {
+	protected List<BodyDeclaration> getClassFields(final Method targetMethod, final Class<?> c) {
 		logger.debug("Adding class fields");
 		List<BodyDeclaration> declarations = new ArrayList<BodyDeclaration>();
 		
@@ -118,7 +118,7 @@ public class FirstStageGeneratorStub extends AbstractStubGenerator {
 	}
 	
 	@Override
-	protected List<BodyDeclaration> getStubConstructor(Method targetMethod, Class<?> c) {
+	protected List<BodyDeclaration> getStubConstructor(final Method targetMethod, final Class<?> c) {
 		List<BodyDeclaration> constructors = new ArrayList<BodyDeclaration>();
 		ConstructorDeclaration constructor = new ConstructorDeclaration(Modifier.PUBLIC, stubName);
 		List<Statement> statements = new ArrayList<Statement>();
@@ -138,7 +138,7 @@ public class FirstStageGeneratorStub extends AbstractStubGenerator {
 	}
 	
 	@Override
-	protected List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods) {
+	protected List<BodyDeclaration> getAdditionalMethods(final Method targetMethod, Method[] methods) {
 		logger.debug("Adding original class method wrappers");
 		
 		boolean collectionReturn = false;
@@ -273,7 +273,7 @@ public class FirstStageGeneratorStub extends AbstractStubGenerator {
 		return members;
 	}
 	
-	protected void addRealSize(List<BodyDeclaration> members) {
+	protected void addRealSize(final List<BodyDeclaration> members) {
 		if (scenarios.size() > 1) {
 			Type returnStubType = ASTHelper.createReferenceType("Integer", 1);
 			MethodDeclaration md = new MethodDeclaration(Modifier.PUBLIC, returnStubType, "realSize");
@@ -337,7 +337,7 @@ public class FirstStageGeneratorStub extends AbstractStubGenerator {
 		}
 	}
 	
-	protected void addCollectionSize(List<BodyDeclaration> members) {
+	protected void addCollectionSize(final List<BodyDeclaration> members) {
 		Type returnStubType;
 		if (scenarios.size() > 1) {
 			returnStubType = ASTHelper.createReferenceType("int", 1);
@@ -404,7 +404,7 @@ public class FirstStageGeneratorStub extends AbstractStubGenerator {
 		}
 	}
 
-	protected List<Parameter> getParameterType(Class<?>[] parameters, String paramNames[], boolean isVarArgs) {
+	protected List<Parameter> getParameterType(final Class<?>[] parameters, final String paramNames[], final boolean isVarArgs) {
 		List<Parameter> toReturn = new ArrayList<Parameter>();
 		for (int i = 0; i < parameters.length; i++) {
 			Class<?> type = parameters[i];
@@ -436,7 +436,7 @@ public class FirstStageGeneratorStub extends AbstractStubGenerator {
 		return toReturn;
 	}
 
-	protected Method[] preventMethodBloat(Method targetMethod, Method[] methods) {
+	protected Method[] preventMethodBloat(final Method targetMethod, final Method[] methods) {
 		if (methods.length > Options.I().getMethodBloatFactor()) {
 			logger.debug("Preventing method bloat");
 			List<Method> toReturn = new ArrayList<Method>();
@@ -463,7 +463,7 @@ public class FirstStageGeneratorStub extends AbstractStubGenerator {
 	}
 
 	@Override
-	protected MethodDeclaration getSetResultsMethod(Method targetMethod) {
+	protected MethodDeclaration getSetResultsMethod(final Method targetMethod) {
 		logger.debug("Adding set_results method");
 		Type returnType = ASTUtils.getReturnType(targetMethod);
 		if (returnType.toString().equals("void")) {
@@ -519,7 +519,7 @@ public class FirstStageGeneratorStub extends AbstractStubGenerator {
 	}
 	
 	@Override
-	protected MethodDeclaration getMethodUnderTest(Method targetMethod) {
+	protected MethodDeclaration getMethodUnderTest(final Method targetMethod) {
 		logger.debug("Adding method_under_test method");
 		MethodDeclaration set_results = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "method_under_test");
 		

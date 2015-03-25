@@ -19,7 +19,7 @@ public class Compilation {
 
 	private final static Logger logger = new Logger(Compilation.class);
 
-	public static boolean compile(CompilationContext context) {
+	public static boolean compile(final CompilationContext context) {
 		logger.debug("Compiling file: " + context.getTestFilename());
 		
 		String testPath = IOUtils.concatFilePath(context.getTestDirectory(), context.getTestFilename());

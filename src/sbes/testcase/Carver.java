@@ -84,7 +84,7 @@ public class Carver {
 		return bodies;
 	}
 	
-	private boolean isSearchedClass(CompilationUnit cu) {
+	private boolean isSearchedClass(final CompilationUnit cu) {
 		String stringCU = cu.toString();
 		String canonicalName = ClassUtils.getCanonicalClassname(Options.I().getTargetMethod());
 		String simpleName = ClassUtils.getSimpleClassnameFromCanonical(canonicalName);
@@ -94,7 +94,7 @@ public class Carver {
 		return false;
 	}
 	
-	private List<ImportDeclaration> getCleanImports(CompilationUnit cu) {
+	private List<ImportDeclaration> getCleanImports(final CompilationUnit cu) {
 		List<ImportDeclaration> cleanImports = new ArrayList<ImportDeclaration>();
 		if (cu.getImports() != null) {
 			for (int i = 0; i < cu.getImports().size(); i++) {

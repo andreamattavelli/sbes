@@ -113,7 +113,7 @@ public abstract class AbstractStubGenerator {
 		return scenarios;
 	}
 	
-	protected List<Parameter> getParameterType(Class<?>[] parameters) {
+	protected List<Parameter> getParameterType(final Class<?>[] parameters) {
 		List<Parameter> toReturn = new ArrayList<Parameter>();
 		for (int i = 0; i < parameters.length; i++) {
 			Class<?> type = parameters[i];

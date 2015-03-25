@@ -5,7 +5,7 @@ public class CarvingContext {
 	protected String testDirectory;
 	protected String testFilename;
 	
-	public CarvingContext(String testDirectory, String testFilename) {
+	public CarvingContext(final String testDirectory, final String testFilename) {
 		this.testDirectory = testDirectory;
 		this.testFilename = testFilename;
 	}

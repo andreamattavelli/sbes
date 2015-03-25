@@ -12,7 +12,7 @@ public class TestScenario extends CarvingResult {
 	protected BlockStmt scenarioBody;
 	protected List<FieldDeclaration> inputs;
 	
-	public TestScenario(CarvingResult carvedTest, BlockStmt scenarioBody, List<FieldDeclaration> inputs) {
+	public TestScenario(final CarvingResult carvedTest, final BlockStmt scenarioBody, final List<FieldDeclaration> inputs) {
 		super(carvedTest.getBody(), carvedTest.getImports());
 		this.scenarioBody = scenarioBody;
 		this.inputs = inputs;
