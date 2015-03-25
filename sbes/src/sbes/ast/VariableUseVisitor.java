@@ -11,12 +11,12 @@ import sbes.util.ASTUtils;
 /**
  * Check if a given variable is alive or not
  */
-public class VariableLivenessVisitor extends VoidVisitorAdapter<Void> {
+public class VariableUseVisitor extends VoidVisitorAdapter<Void> {
 	
 	private String variableId;
 	private boolean alive;
 
-	public VariableLivenessVisitor(final String variableId) {
+	public VariableUseVisitor(final String variableId) {
 		this.variableId = variableId;
 		this.alive = false;
 	}

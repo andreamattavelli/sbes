@@ -10,6 +10,7 @@ import java.util.Set;
 public class ReflectionUtils {
 
 	public final static Set<Class<?>> primitives;
+	public final static Set<String> primitivesStringRepresentation;
 	
 	static {
 		primitives = new HashSet<Class<?>>();
@@ -21,6 +22,15 @@ public class ReflectionUtils {
 		primitives.add(Double.class);
 		primitives.add(Float.class);
 		primitives.add(Byte.class);
+		primitivesStringRepresentation = new HashSet<String>();
+		primitivesStringRepresentation.add("Integer");
+		primitivesStringRepresentation.add("Short");
+		primitivesStringRepresentation.add("Long");
+		primitivesStringRepresentation.add("Boolean");
+		primitivesStringRepresentation.add("Character");
+		primitivesStringRepresentation.add("Double");
+		primitivesStringRepresentation.add("Float");
+		primitivesStringRepresentation.add("Byte");
 	}
 	
 	public static boolean isPrimitive(final Object o) {
