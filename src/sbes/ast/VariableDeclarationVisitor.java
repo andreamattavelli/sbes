@@ -9,7 +9,7 @@ public class VariableDeclarationVisitor extends VoidVisitorAdapter<Void> {
 	private String variableId;
 	private VariableDeclarationExpr variable;
 
-	public VariableDeclarationVisitor(String variableId) {
+	public VariableDeclarationVisitor(final String variableId) {
 		this.variableId = variableId;
 		this.variable = null;
 	}
@@ -19,7 +19,7 @@ public class VariableDeclarationVisitor extends VoidVisitorAdapter<Void> {
 	}
 
 	@Override
-	public void visit(VariableDeclarationExpr arg0, Void arg1) {
+	public void visit(final VariableDeclarationExpr arg0, final Void arg1) {
 		// Safe since evosuite instantiate only one variable at a time
 		VariableDeclarator vd = arg0.getVars().get(0);
 		if (vd.getId().getName().equals(variableId)) {

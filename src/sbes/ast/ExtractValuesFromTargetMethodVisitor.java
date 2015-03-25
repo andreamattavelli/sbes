@@ -26,7 +26,7 @@ public class ExtractValuesFromTargetMethodVisitor extends VoidVisitorAdapter<Str
 	private Method targetMethod;
 	private List<FieldDeclaration> fields;
 
-	public ExtractValuesFromTargetMethodVisitor(int index, Method targetMethod) {
+	public ExtractValuesFromTargetMethodVisitor(final int index, final Method targetMethod) {
 		this.index = index;
 		this.targetMethod = targetMethod;
 		fields = new ArrayList<FieldDeclaration>();
@@ -37,7 +37,7 @@ public class ExtractValuesFromTargetMethodVisitor extends VoidVisitorAdapter<Str
 	}
 
 	@Override
-	public void visit(MethodCallExpr n, String methodName) {
+	public void visit(final MethodCallExpr n, final String methodName) {
 		if (n != null && n.getName() != null && n.getName().equals(methodName) && 
 				(targetMethod.getParameterTypes().length == 0 || n.getArgs().size() == targetMethod.getParameterTypes().length)) {
 			if (n.getArgs() != null) {
@@ -50,7 +50,7 @@ public class ExtractValuesFromTargetMethodVisitor extends VoidVisitorAdapter<Str
 		super.visit(n, methodName);
 	}
 
-	private void handleArgument(MethodCallExpr n, Expression arg, int i) {
+	private void handleArgument(final MethodCallExpr n, final Expression arg, final int i) {
 		if (arg instanceof IntegerLiteralExpr) {
 			Class<?> parameterType = targetMethod.getParameterTypes()[i];
 			n.getArgs().set(i, new NameExpr("ELEMENT_" + index + "_" + fields.size()));

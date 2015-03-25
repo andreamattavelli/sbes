@@ -8,13 +8,13 @@ public class TestScenarioCleaner extends VoidVisitorAdapter<Void>{
 	private String originalClassname;
 	private String newClassname;
 	
-	public TestScenarioCleaner(String originalClassname, String newClassname) {
+	public TestScenarioCleaner(final String originalClassname, final String newClassname) {
 		this.originalClassname = originalClassname;
 		this.newClassname = newClassname;
 	}
 
 	@Override
-	public void visit(ClassOrInterfaceType arg0, Void arg1) {
+	public void visit(final ClassOrInterfaceType arg0, final Void arg1) {
 		if (arg0.getName().startsWith(originalClassname)) {
 			String newClass = newClassname;
 			if (arg0.getName().contains("<")) {

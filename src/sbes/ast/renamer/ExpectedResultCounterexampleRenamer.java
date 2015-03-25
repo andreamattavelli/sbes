@@ -20,7 +20,7 @@ public class ExpectedResultCounterexampleRenamer extends VoidVisitorAdapter<Void
 	private String expectedState;
 	private Method targetMethod;
 	
-	public ExpectedResultCounterexampleRenamer(Method targetMethod, int index) {
+	public ExpectedResultCounterexampleRenamer(final Method targetMethod, final int index) {
 		this.targetMethod = targetMethod;
 		this.index = index;
 	}
@@ -30,12 +30,12 @@ public class ExpectedResultCounterexampleRenamer extends VoidVisitorAdapter<Void
 	}
 
 	@Override
-	public void visit(MethodCallExpr arg0, Void methodName) {
+	public void visit(final MethodCallExpr arg0, final Void methodName) {
 		handleMethodCall(arg0);
 		super.visit(arg0, methodName);
 	}
 	
-	private void handleMethodCall(MethodCallExpr mce) {
+	private void handleMethodCall(final MethodCallExpr mce) {
 		if (mce.getName().equals("method_under_test")) {
 			// found class constructor, switch to EXPECTED_STATES
 			mce.setName(targetMethod.getName());

@@ -8,7 +8,7 @@ import java.util.Map;
 public class InputFieldRenamer extends VoidVisitorAdapter<Map<String, String>> {
 	
 	@Override
-	public void visit(NameExpr n, Map<String, String> arg) {
+	public void visit(final NameExpr n, final Map<String, String> arg) {
 		if (arg.containsKey(n.getName())) {
 			n.setName(arg.get(n.getName()));
 		}

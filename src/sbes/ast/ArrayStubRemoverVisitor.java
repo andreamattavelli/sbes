@@ -16,7 +16,7 @@ import sbes.util.ASTUtils;
 public class ArrayStubRemoverVisitor extends VoidVisitorAdapter<Void> {
 
 	@Override
-	public void visit(VariableDeclarationExpr arg0, Void arg1) {
+	public void visit(final VariableDeclarationExpr arg0, final Void arg1) {
 		Expression e = arg0.getVars().get(0).getInit();
 		if (e instanceof MethodCallExpr) {
 			MethodCallExpr mce = (MethodCallExpr) e;

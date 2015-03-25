@@ -12,13 +12,13 @@ public class NameExprRenamer extends VoidVisitorAdapter<Void> {
 	private String oldName;
 	private String newName;
 	
-	public NameExprRenamer(String oldName, String newName) {
+	public NameExprRenamer(final String oldName, final String newName) {
 		this.oldName = oldName;
 		this.newName = newName;
 	}
 	
 	@Override
-	public void visit(NameExpr n, Void arg) {
+	public void visit(final NameExpr n, final Void arg) {
 		if (n.getName().equals(oldName)) {
 			n.setName(newName);
 		}

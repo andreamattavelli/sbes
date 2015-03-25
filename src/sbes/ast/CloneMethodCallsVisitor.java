@@ -19,7 +19,7 @@ public class CloneMethodCallsVisitor extends VoidVisitorAdapter<Void> {
 	}
 	
 	@Override
-	public void visit(MethodCallExpr arg0, Void arg1) {
+	public void visit(final MethodCallExpr arg0, final Void arg1) {
 		if (arg0.getScope() != null) {
 			String name = ASTUtils.getName(arg0.getScope());
 			if (name != null && name.equals("clone")) {
