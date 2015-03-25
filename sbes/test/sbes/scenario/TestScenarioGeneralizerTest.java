@@ -27,7 +27,7 @@ public class TestScenarioGeneralizerTest {
 	
 	private void setUp(String classesPath, String methodSignature) {
 		Options.I().setClassesPath(classesPath);
-		Options.I().setMethodSignature(methodSignature);
+		Options.I().setTargetMethod(methodSignature);
 		Options.I().setLogLevel(Level.FATAL);
 	}
 	
@@ -123,7 +123,7 @@ public class TestScenarioGeneralizerTest {
 		setUp("./bin", "stack.util.Stack.push(Object)");
 		
 		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/Stack-UseCase/bin");
-		Options.I().setMethodSignature("stack.util.Stack.push(Object)");
+		Options.I().setTargetMethod("stack.util.Stack.push(Object)");
 		
 		BlockStmt body = JavaParser.parseBlock(
 				"{"+
