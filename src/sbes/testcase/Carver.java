@@ -32,13 +32,13 @@ public class Carver {
 	}
 
 	public List<CarvingResult> carveBodyFromTests() {
-		logger.info("Carving body from test cases" );
+		logger.debug("Carving body from test cases" );
 		List<CarvingResult> tests = carveTests();
 		if (tests.size() == 1) {
-			logger.info("Carved 1 body" );
+			logger.debug("Carved 1 body" );
 		}
 		else {
-			logger.info("Carved " + tests.size() + " bodies" );
+			logger.debug("Carved " + tests.size() + " bodies" );
 		}
 		return tests;
 	}
