@@ -167,7 +167,7 @@ public class SBESManager {
 							}
 							else {
 								// counterexample found: generate the corresponding test scenario and add it to the stub
-								stub = generateTestScenarioFromCounterexample(directory, counterexample);
+								stub = generateTestScenarioFromCounterexample(counterexample, directory);
 							}
 						}
 
@@ -190,7 +190,7 @@ public class SBESManager {
 		statistics.writeCSV();
 	}
 
-	private CarvingResult synthesizeCandidateEquivalence(Stub stub, DirectoryUtils directory) {
+	private CarvingResult synthesizeCandidateEquivalence(final Stub stub, final DirectoryUtils directory) {
 		logger.info("Synthesizing equivalent sequence candidate");
 		statistics.synthesisStarted();
 		
@@ -264,7 +264,7 @@ public class SBESManager {
 		return candidates.get(0);
 	}
 
-	private CarvingResult generateCounterexample(Stub secondStub, DirectoryUtils directory) {
+	private CarvingResult generateCounterexample(final Stub secondStub, final DirectoryUtils directory) {
 		logger.info("Generating counterexample");
 		statistics.counterexampleStarted();
 		
@@ -338,7 +338,7 @@ public class SBESManager {
 		return toReturn;
 	}
 	
-	private Stub generateTestScenarioFromCounterexample(DirectoryUtils directory, CarvingResult counterexample) {
+	private Stub generateTestScenarioFromCounterexample(final CarvingResult counterexample, final DirectoryUtils directory) {
 		CounterexampleGeneralizer cg = new CounterexampleGeneralizer();
 		TestScenario counterexampleScenario = cg.counterexampleToTestScenario(counterexample);
 		TestScenarioRepository.I().addCounterexample(counterexampleScenario);

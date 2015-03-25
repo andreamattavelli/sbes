@@ -19,7 +19,7 @@ public class SBES {
 
 	private static final Logger logger = new Logger(SBES.class);
 
-	public static void main(String args[]) {
+	public static void main(final String args[]) {
 		logger.info("SBES started");
 		final Options arguments = Options.I();
 		final CmdLineParser parser = new CmdLineParser(arguments);
@@ -34,10 +34,10 @@ public class SBES {
 		}
 
 		try {
-			SBESShutdownInterceptor shutdown = new SBESShutdownInterceptor();
+			final SBESShutdownInterceptor shutdown = new SBESShutdownInterceptor();
 			Signal.handle(new Signal("INT"), shutdown);
 			
-			SBESManager generator = new SBESManager();
+			final SBESManager generator = new SBESManager();
 			generator.generate();
 			logger.info("SBES ended successfully");
 		} catch (SBESException | GenerationException | WorkerException e) {
@@ -54,9 +54,9 @@ public class SBES {
 	}
 
 	private static String[] processArgs(final String[] args) {
-		Pattern argPattern = Pattern.compile("(-[a-zA-Z_-]+)=(.*)");
-		Pattern quotesPattern = Pattern.compile("^['\"](.*)['\"]$");
-		List<String> processedArgs = new ArrayList<String>();
+		final Pattern argPattern = Pattern.compile("(-[a-zA-Z_-]+)=(.*)");
+		final Pattern quotesPattern = Pattern.compile("^['\"](.*)['\"]$");
+		final List<String> processedArgs = new ArrayList<String>();
 
 		for (String arg : args) {
 			Matcher matcher = argPattern.matcher(arg);

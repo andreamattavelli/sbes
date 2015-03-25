@@ -12,7 +12,7 @@ public class SBESShutdownInterceptor implements SignalHandler {
 	private static boolean interrupted = false;
 	
 	@Override
-	public void handle(Signal arg0) {
+	public void handle(final Signal signal) {
 		logger.info("User requested search stop!");
 		
 		if (interrupted) {
