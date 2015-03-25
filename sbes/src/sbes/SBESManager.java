@@ -65,7 +65,7 @@ public class SBESManager {
 			}
 		}
 		
-		while (targetMethods.size() > 0) {
+		while (targetMethods.size() > 0 && !SBESShutdownInterceptor.isInterrupted()) {
 			String method = targetMethods.remove(0);
 			
 			//setup
@@ -85,6 +85,8 @@ public class SBESManager {
 				cleanup();
 			}
 		}
+		
+		EquivalenceRepository.getInstance().printEquivalences();
 	}
 
 	private void generateEquivalencesForMethod() throws SBESException {
@@ -183,7 +185,6 @@ public class SBESManager {
 		}
 		
 		logger.info("Stopping equivalent sequence generation");
-		EquivalenceRepository.getInstance().printEquivalences();
 		
 		statistics.processFinished();
 		statistics.writeCSV();
@@ -353,7 +354,6 @@ public class SBESManager {
 	private void cleanup() {
 		DirectoryUtils.reset();
 		TestScenarioRepository.reset();
-		EquivalenceRepository.reset();
 	}
 	
 }

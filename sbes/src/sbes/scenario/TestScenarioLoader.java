@@ -27,7 +27,7 @@ public class TestScenarioLoader {
 		Carver carver = new Carver(context, true);
 		List<CarvingResult> carvedTests = carver.carveBodyFromTests();
 		if (carvedTests.isEmpty()) {
-			throw new SBESException("Unable to generate any test scenarios, give up!");
+			throw new SBESException("Unable to load any test scenarios, give up!");
 		}
 		else if (carvedTests.size() > 1) {
 			logger.warn("Found more than one test scenario! Heuristically pruning to one, for faster convergence");
