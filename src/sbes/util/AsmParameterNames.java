@@ -20,7 +20,7 @@ import sbes.option.Options;
 
 public class AsmParameterNames {
 	
-	public static boolean isSizeParam(String param) {
+	public static boolean isSizeParam(final String param) {
 		if (param.contains("index") || param.contains("size") || param.contains("capacity") ||
 				param.contains("Index") || param.contains("Size") || param.contains("Capacity")) {
 			return true;
@@ -28,7 +28,7 @@ public class AsmParameterNames {
 		return false;
 	}
 	
-	public static String[] getParameterNames(AccessibleObject methodOrConstructor) {
+	public static String[] getParameterNames(final AccessibleObject methodOrConstructor) {
 		Class<?>[] types = null;
 		Class<?> declaringClass = null;
 		String name = null;
@@ -91,14 +91,14 @@ class TypeCollector extends ClassVisitor {
 	private ParameterVisitor mv = null;
 	private List<String> parameterNames;
 	
-	public TypeCollector(ClassVisitor cv, String methodName, Class<?>[] parametersType) {
+	public TypeCollector(final ClassVisitor cv, final String methodName, final Class<?>[] parametersType) {
 		super(Opcodes.ASM4, cv);
 		this.methodName = methodName;
 		this.parametersType = parametersType;
 	}
 
 	@Override
-	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+	public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature, final String[] exceptions) {
 		if (mv != null) {
 			return null;
 		}
@@ -118,7 +118,7 @@ class TypeCollector extends ClassVisitor {
 		}
 	}
 
-	private boolean isMethod(String name, String desc) {
+	private boolean isMethod(final String name, final String desc) {
 		boolean isMethod = false;
 		
 		// check method name
@@ -142,7 +142,7 @@ class TypeCollector extends ClassVisitor {
 		return isMethod;		
 	}
 	
-	private int indexLimits(String desc) {
+	private int indexLimits(final String desc) {
 		int toReturn = 0;
 		
 		Type argsType[] = Type.getArgumentTypes(desc);
@@ -169,14 +169,14 @@ class ParameterVisitor extends MethodVisitor {
 	private int indexLimit;
 	private List<String> parameterNames;
 	
-	public ParameterVisitor(MethodVisitor mv, int indexLimit) {
+	public ParameterVisitor(final MethodVisitor mv, final int indexLimit) {
 		super(Opcodes.ASM4, mv);
 		this.indexLimit = indexLimit;
 		this.parameterNames = new ArrayList<String>();
 	}
 	
 	@Override
-	public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
+	public void visitLocalVariable(final String name, final String desc, final String signature, final Label start, final Label end, final int index) {
 		if (index > 0 && index <= indexLimit) {
 			parameterNames.add(name);
 		}

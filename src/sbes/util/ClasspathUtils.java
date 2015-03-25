@@ -40,14 +40,13 @@ public class ClasspathUtils {
 		}
 	}
 	
-	public static String getCompilerClasspath(String stubDirectory) {
+	public static String getCompilerClasspath(final String stubDirectory) {
 		String classPath =	Options.I().getClassesPath() + File.pathSeparatorChar + 
 				Options.I().getJunitPath() + File.pathSeparatorChar +
 				Options.I().getEvosuitePath() + File.pathSeparatorChar +
 				stubDirectory + File.pathSeparatorChar +
 				ClasspathUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		return classPath;
-		
 	}
 	
 }

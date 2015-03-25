@@ -10,19 +10,19 @@ public class IOUtils {
 	/*
 	 * IOUTILS for printing
 	 */
-	public static void formatInitMessage(Logger logger, String method) {
+	public static void formatInitMessage(final Logger logger, final String method) {
 		logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   " + method
 				+ "   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		logger.info("Generating equivalences for method " + method);
 	}
 
-	public static void formatIterationStartMessage(Logger logger, DirectoryUtils directory) {
+	public static void formatIterationStartMessage(final Logger logger, final DirectoryUtils directory) {
 		logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   "
 				+ "Starting synthesis attempt #" + directory.getEquivalences()
 				+ "   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 	}
 
-	public static void formatIterationEndMessage(Logger logger, DirectoryUtils directory) {
+	public static void formatIterationEndMessage(final Logger logger, final DirectoryUtils directory) {
 		logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   "
 				+ "Finished synthesis attempt #" + directory.getEquivalences()
 				+ "   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");

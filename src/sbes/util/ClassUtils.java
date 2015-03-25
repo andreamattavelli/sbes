@@ -19,7 +19,7 @@ public class ClassUtils {
 
 	private static final Map<Class<?>, Method[]> cache = new HashMap<Class<?>, Method[]>();
 	
-	public static Class<?> getClass(String className) {
+	public static Class<?> getClass(final String className) {
 		Class<?> toReturn = null;
 		try {
 			InternalClassloader ic = new InternalClassloader(Options.I().getClassesPath());
@@ -30,7 +30,7 @@ public class ClassUtils {
 		return toReturn;
 	}
 	
-	public static Method[] getClassMethods(Class<?> clazz) {
+	public static Method[] getClassMethods(final Class<?> clazz) {
 		if (cache.containsKey(clazz)) {
 			return cache.get(clazz);
 		}
@@ -80,7 +80,7 @@ public class ClassUtils {
 		
 		Collections.sort(methods, new Comparator<Method>() {
 			@Override
-			public int compare(Method o1, Method o2) {
+			public int compare(final Method o1, final Method o2) {
 				return o1.getName().compareTo(o2.getName());
 			}
 		});
@@ -90,7 +90,7 @@ public class ClassUtils {
 		return cache.get(clazz);
 	}
 	
-	private static List<Class<?>> getHierarchy(Class<?> clazz) {
+	private static List<Class<?>> getHierarchy(final Class<?> clazz) {
 		List<Class<?>> hierarchy = new ArrayList<Class<?>>();
 
 		// Build hierarchy
@@ -123,7 +123,7 @@ public class ClassUtils {
 		return canonical.substring(0, canonical.lastIndexOf('.'));
 	}
 	
-	public static String getMethodSignature(Class<?> clazz, Method method) {
+	public static String getMethodSignature(final Class<?> clazz, final Method method) {
 		StringBuilder methodSignature = new StringBuilder();
 		methodSignature.append(clazz.getCanonicalName());
 		methodSignature.append('.');
@@ -141,7 +141,7 @@ public class ClassUtils {
 		return signature.substring(signature.lastIndexOf('.') + 1);
 	}
 	
-	public static Method findTargetMethod(Method[] methods, String methodName) {
+	public static Method findTargetMethod(final Method[] methods, final String methodName) {
 		Method targetMethod = null;
 		String method = methodName.split("\\(")[0];
 		String args[] = methodName.split("\\(")[1].replaceAll("\\)", "").split(",");
