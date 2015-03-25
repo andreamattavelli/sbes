@@ -1,5 +1,7 @@
 package sbes;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 import sbes.ast.CloneMethodCallsVisitor;
@@ -47,12 +49,49 @@ public class SBESManager {
 		this.statistics = new Statistics();
 	}
 	
-	public void generateEquivalences() throws SBESException {
+	public void generate() throws SBESException {
+		ClasspathUtils.checkClasspath();
+		
+		List<String> targetMethods = new ArrayList<>();
+		
+		if (Options.I().getTargetMethod() != null) {
+			targetMethods.add(Options.I().getTargetMethod());
+		}
+		else {
+			Class<?> clazz = ClassUtils.getClass(Options.I().getTargetClass());
+			Method[] methods = ClassUtils.getClassMethods(clazz);
+			for (Method method : methods) {
+				targetMethods.add(ClassUtils.getMethodSignature(clazz, method));
+			}
+		}
+		
+		while (targetMethods.size() > 0) {
+			String method = targetMethods.remove(0);
+			
+			//setup
+			IOUtils.formatInitMessage(logger, method);
+			Options.I().setTargetMethod(method);
+			
+			try {
+				// generation
+				generateEquivalencesForMethod();
+			} catch (Throwable t) {
+				logger.error(t.getMessage());
+			} finally {
+				// cleanup
+				logger.info("Finished generation of equivalences");
+				System.out.println("");
+				System.out.println("");
+				cleanup();
+			}
+		}
+	}
+
+	private void generateEquivalencesForMethod() throws SBESException {
 		statistics.processStarted();
 		
 		// INIT 
 		DirectoryUtils directory = DirectoryUtils.I();
-		ClasspathUtils.checkClasspath();
 
 		// TEST SCENARIO LOADING
 		statistics.scenarioStarted();
@@ -62,7 +101,6 @@ public class SBESManager {
 		if (initialScenarios.isEmpty()) {
 			throw new SBESException("Unable to load any initial test scenarios");
 		}
-		TestScenarioRepository.I().addScenarios(initialScenarios);
 		
 		statistics.scenarioFinished();
 		
@@ -81,8 +119,7 @@ public class SBESManager {
 				directory.createEquivalenceDirs();
 				directory.createFirstStubDir();
 				
-				logger.info("=========================================================================== " + 
-							"Starting synthesis attempt #" + directory.getEquivalences());
+				IOUtils.formatIterationStartMessage(logger, directory);
 				
 				// FIRST PHASE STUB GENERATION
 				FirstStageGeneratorStub firstPhaseGenerator = FirstStageGeneratorFactory.createGenerator(initialScenarios);
@@ -139,8 +176,7 @@ public class SBESManager {
 					statistics.iterationFinished();
 				}
 				
-				logger.info("=========================================================================== " + 
-							"Finished synthesis attempt #" + directory.getEquivalences());
+				IOUtils.formatIterationEndMessage(logger, directory);
 			} // end search
 		} catch (SBESException | GenerationException e) {
 			logger.fatal("Execution aborted due to: " + e.getMessage());
@@ -157,7 +193,7 @@ public class SBESManager {
 		logger.info("Synthesizing equivalent sequence candidate");
 		statistics.synthesisStarted();
 		
-		String signature 	= Options.I().getMethodSignature();
+		String signature 	= Options.I().getTargetMethod();
 		String packagename 	= IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
 		String testDirectory= IOUtils.concatFilePath(directory.getFirstStubDir(), packagename);
 		
@@ -180,9 +216,9 @@ public class SBESManager {
 		}
 		
 		// run evosuite
-		String stubSignature = ClassUtils.getPackage(Options.I().getMethodSignature()) + '.' + stub.getStubName();
+		String stubSignature = ClassUtils.getPackage(Options.I().getTargetMethod()) + '.' + stub.getStubName();
 		Evosuite evosuite = new EvosuiteFirstStage(	stubSignature, 
-													ClassUtils.getMethodname(Options.I().getMethodSignature()), 
+													ClassUtils.getMethodname(Options.I().getTargetMethod()), 
 													classPath);
 		ExecutionResult result = ExecutionManager.execute(evosuite);
 		
@@ -231,7 +267,7 @@ public class SBESManager {
 		logger.info("Generating counterexample");
 		statistics.counterexampleStarted();
 		
-		String signature =		Options.I().getMethodSignature();
+		String signature =		Options.I().getTargetMethod();
 		String packagename =	IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
 		String testDirectory =	IOUtils.concatFilePath(directory.getSecondStubDir(), packagename);
 		
@@ -254,9 +290,9 @@ public class SBESManager {
 		}
 		
 		// run evosuite
-		String stubSignature = ClassUtils.getPackage(Options.I().getMethodSignature()) + '.' + secondStub.getStubName();
+		String stubSignature = ClassUtils.getPackage(Options.I().getTargetMethod()) + '.' + secondStub.getStubName();
 		Evosuite evosuite = new EvosuiteSecondStage(stubSignature, 
-													ClassUtils.getMethodname(Options.I().getMethodSignature()), 
+													ClassUtils.getMethodname(Options.I().getTargetMethod()), 
 													classPath);
 		ExecutionResult result = ExecutionManager.execute(evosuite);
 		
@@ -305,11 +341,19 @@ public class SBESManager {
 		CounterexampleGeneralizer cg = new CounterexampleGeneralizer();
 		TestScenario counterexampleScenario = cg.counterexampleToTestScenario(counterexample);
 		TestScenarioRepository.I().addCounterexample(counterexampleScenario);
+		
 		AbstractStubGenerator counterexampleGenerator = FirstStageGeneratorFactory.createGenerator(TestScenarioRepository.I().getScenarios());
 		Stub stub = counterexampleGenerator.generateStub();
 		directory.createFirstStubDir();
 		stub.dumpStub(directory.getFirstStubDir());
+		
 		return stub;
+	}
+	
+	private void cleanup() {
+		DirectoryUtils.reset();
+		TestScenarioRepository.reset();
+		EquivalenceRepository.reset();
 	}
 	
 }

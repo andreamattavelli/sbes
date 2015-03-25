@@ -25,7 +25,7 @@ public class DirectoryUtils {
 	private int secondStubs;
 
 	private DirectoryUtils() {
-		String method = Options.I().getMethodSignature();
+		String method = Options.I().getTargetMethod();
 		experimentDir = method;
 		equivalence = 0;
 		firstStubs = 0;
@@ -38,6 +38,10 @@ public class DirectoryUtils {
 			createExperimentDirs();
 		}
 		return instance;
+	}
+	
+	public static void reset() {
+		instance = null;
 	}
 
 	private static void createExperimentDirs() {

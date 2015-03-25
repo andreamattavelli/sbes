@@ -43,7 +43,7 @@ public abstract class AbstractStubGenerator {
 	public Stub generateStub() {
 		Class<?> c;
 		try {
-			c = Class.forName(ClassUtils.getCanonicalClassname(Options.I().getMethodSignature()), false, classloader);
+			c = Class.forName(ClassUtils.getCanonicalClassname(Options.I().getTargetMethod()), false, classloader);
 		} catch (ClassNotFoundException e) {
 			// infeasible, we already checked the classpath
 			throw new GenerationException("Target class not found");
@@ -55,7 +55,7 @@ public abstract class AbstractStubGenerator {
 		// get class' methods
 		Method[] methods = ClassUtils.getClassMethods(c);
 		// get method signature
-		String methodSignature = ClassUtils.getMethodname(Options.I().getMethodSignature());
+		String methodSignature = ClassUtils.getMethodname(Options.I().getTargetMethod());
 		// get target method from the list of class' methods
 		Method targetMethod = ClassUtils.findTargetMethod(methods, methodSignature);
 		

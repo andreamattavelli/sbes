@@ -35,7 +35,7 @@ public class EquivalenceRepository {
 		ClassLoader classloader = ic.getClassLoader();
 		Class<?> c;
 		try {
-			c = Class.forName(ClassUtils.getCanonicalClassname(Options.I().getMethodSignature()), false, classloader);
+			c = Class.forName(ClassUtils.getCanonicalClassname(Options.I().getTargetMethod()), false, classloader);
 		} catch (ClassNotFoundException e) {
 			// infeasible, we already checked the classpath
 			throw new GenerationException("Target class not found");
@@ -49,6 +49,10 @@ public class EquivalenceRepository {
 			instance = new EquivalenceRepository();
 		}
 		return instance;
+	}
+	
+	public static void reset() {
+		instance = null;
 	}
 	
 	public void addEquivalence(EquivalentSequence eqSeq) {

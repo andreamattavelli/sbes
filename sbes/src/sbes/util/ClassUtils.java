@@ -10,10 +10,24 @@ import java.util.List;
 import java.util.Map;
 
 import sbes.exceptions.GenerationException;
+import sbes.exceptions.SBESException;
+import sbes.execution.InternalClassloader;
+import sbes.option.Options;
 
 public class ClassUtils {
 
 	private static final Map<Class<?>, Method[]> cache = new HashMap<Class<?>, Method[]>();
+	
+	public static Class<?> getClass(String className) {
+		Class<?> toReturn = null;
+		try {
+			InternalClassloader ic = new InternalClassloader(Options.I().getClassesPath());
+			toReturn = Class.forName(className, false, ic.getClassLoader());
+		} catch (ClassNotFoundException e) {
+			throw new SBESException(e);
+		}
+		return toReturn;
+	}
 	
 	public static Method[] getClassMethods(Class<?> clazz) {
 		if (cache.containsKey(clazz)) {
@@ -101,7 +115,21 @@ public class ClassUtils {
 		String canonical = getCanonicalClassname(signature); 
 		return canonical.substring(0, canonical.lastIndexOf('.'));
 	}
-
+	
+	public static String getMethodSignature(Class<?> clazz, Method method) {
+		StringBuilder methodSignature = new StringBuilder();
+		methodSignature.append(clazz.getCanonicalName());
+		methodSignature.append('.');
+		methodSignature.append(method.getName());
+		methodSignature.append('(');
+		for (Class<?> c : method.getParameterTypes()) {
+			methodSignature.append(c.getSimpleName());
+			methodSignature.append(',');
+		}
+		methodSignature.append(')');
+		return methodSignature.toString().replace(",)", ")");
+	}
+	
 	public static String getMethodname(final String signature) {
 		return signature.substring(signature.lastIndexOf('.') + 1);
 	}

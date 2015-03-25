@@ -240,7 +240,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		Expression right = new MethodCallExpr(ASTHelper.createNameExpr("c"), "deepClone", methodParameters);
 		List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
 		vars.add(new VariableDeclarator(new VariableDeclaratorId("clone")));
-		String className = ClassUtils.getSimpleClassname(Options.I().getMethodSignature());
+		String className = ClassUtils.getSimpleClassname(Options.I().getTargetMethod());
 		Expression left = new VariableDeclarationExpr(ASTHelper.createReferenceType(className, 0), vars);
 		AssignExpr assignment = new AssignExpr(left, right, Operator.assign);
 		return new ExpressionStmt(assignment);
