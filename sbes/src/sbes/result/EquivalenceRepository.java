@@ -127,7 +127,7 @@ public class EquivalenceRepository {
 		if (equivalences.size() > 0) {
 			logger.info("Equivalent sequences synthesized:");
 			for (Entry<String, List<EquivalentSequence>> e : equivalences.entrySet()) {
-				logger.info("Target method: " + e.getKey());
+				System.out.println("Target method: " + e.getKey());
 				int i = 1;
 				for (EquivalentSequence eqSeq : e.getValue()) {
 					System.out.println("EqSeq" + i++);
