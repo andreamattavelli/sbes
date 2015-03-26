@@ -321,4 +321,37 @@ public class TestScenarioGeneralizerTest {
 				"public static final Integer ELEMENT_0_1 = new Integer(-1698);"});
 	}
 	
+	@Test
+	public void test08() throws ParseException {
+		setUp("./test/resources/guava-12.0.1.jar", "com.google.common.collect.ArrayListMultimap.create()");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+						"ArrayListMultimap<Integer, String> arrayListMultimap0 = ArrayListMultimap.create();" +
+						"}");
+		
+		CarvingResult cr = new CarvingResult(body, imports);
+		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
+		TestScenario ts = tsg.testToTestScenario(cr);
+		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
+		assertEquals(2, tswg.getGenericToConcreteClasses().size());
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("String"));
+		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
+		assertEquals("Integer", values.get(0));
+		assertEquals("String", values.get(1));
+		
+		String actualScenario = ts.getScenario().toString();
+		String expectedScenario = 
+				"{"+
+				"expected_results[0] = ArrayListMultimap.create();"+
+				"}";
+		
+		assertScenarioAndPrint(actualScenario, expectedScenario);
+		
+		List<FieldDeclaration> actualFields = ts.getInputAsFields();
+		assertEquals(0, actualFields.size());
+	}
+	
 }

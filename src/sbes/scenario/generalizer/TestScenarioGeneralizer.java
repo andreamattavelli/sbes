@@ -3,6 +3,7 @@ package sbes.scenario.generalizer;
 import japa.parser.ast.stmt.BlockStmt;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import sbes.ast.renamer.ExpectedResultRenamer;
 import sbes.logging.Logger;
@@ -20,7 +21,7 @@ public class TestScenarioGeneralizer extends AbstractGeneralizer  {
 	
 	@Override
 	protected String getAndRenameExpectedResult(final BlockStmt cloned, final Method targetMethod, final String methodName, final int index) {
-		ExpectedResultRenamer erv = new ExpectedResultRenamer(index, targetMethod.getParameterTypes().length);
+		ExpectedResultRenamer erv = new ExpectedResultRenamer(index, targetMethod.getParameterTypes().length, Modifier.isStatic(targetMethod.getModifiers()));
 		erv.visit(cloned, methodName);
 		return erv.getExpectedState();
 	}

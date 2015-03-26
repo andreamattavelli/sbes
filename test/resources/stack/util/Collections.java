@@ -31,7 +31,6 @@ import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.AbstractList;
 import java.util.AbstractMap;
-import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.AbstractQueue;
 import java.util.AbstractSet;
 import java.util.ArrayList;

@@ -15,14 +15,18 @@ import sbes.stub.generator.first.FirstStageGeneratorStub;
 import sbes.util.ASTUtils;
 
 public class ExpectedResultRenamer extends VoidVisitorAdapter<String> {
-	private int index;
-	private int parameters;
+	private final int index;
+	private final int parameters;
+	private final boolean isStatic;
+	
 	private String expectedState;
 	private boolean found;
 
-	public ExpectedResultRenamer(final int index, final int parameters) {
+	public ExpectedResultRenamer(final int index, final int parameters, final boolean isStatic) {
 		this.index = index;
 		this.parameters = parameters;
+		this.isStatic = isStatic;
+		
 		this.found = false;
 	}
 	
@@ -62,9 +66,11 @@ public class ExpectedResultRenamer extends VoidVisitorAdapter<String> {
 													ASTHelper.createNameExpr(Integer.toString(index)));
 			
 			if (mce.getScope() != null) {
-				expectedState = ASTUtils.getName(mce.getScope());
-				mce.setScope(new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageGeneratorStub.EXPECTED_STATE),
-											ASTHelper.createNameExpr(Integer.toString(index))));
+				if (!isStatic && !Character.isUpperCase(ASTUtils.getName(mce.getScope()).toCharArray()[0])) {
+					expectedState = ASTUtils.getName(mce.getScope());
+					mce.setScope(new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageGeneratorStub.EXPECTED_STATE),
+												ASTHelper.createNameExpr(Integer.toString(index))));
+				}
 			}
 			
 			if (n != null) {

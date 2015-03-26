@@ -53,8 +53,7 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 	}
 	
 	private void checkConcreteClasses() {
-		//FIXME: better ideas?
-		if (scenarios.size() > 0) {
+		if (scenarios.size() > 0) { // TODO: better ideas?
 			TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) scenarios.get(0);
 			genericToConcreteClasses = tswg.getGenericToConcreteClasses();
 		}
@@ -74,8 +73,15 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 		
 		// stub helper arrays
 		if (!targetMethod.getReturnType().equals(void.class)) {
-			declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnConcreteType(generics, genericToConcreteClasses, targetMethod).toString(), EXPECTED_RESULT));
-			declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnConcreteType(generics, genericToConcreteClasses, targetMethod).toString(), ACTUAL_RESULT));
+			Type returnType = ASTUtils.getReturnConcreteType(generics, genericToConcreteClasses, targetMethod);
+			if (returnType.toString().contains("<")) {
+				declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), genericToConcreteClasses, EXPECTED_RESULT));
+				declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), genericToConcreteClasses, ACTUAL_RESULT));
+			}
+			else {
+				declarations.add(ASTUtils.createStubHelperArray(returnType.toString(), EXPECTED_RESULT));
+				declarations.add(ASTUtils.createStubHelperArray(returnType.toString(), ACTUAL_RESULT));
+			}
 		}
 		declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), genericToConcreteClasses, EXPECTED_STATE));
 		declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), genericToConcreteClasses, ACTUAL_STATE));
