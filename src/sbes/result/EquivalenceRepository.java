@@ -133,6 +133,7 @@ public class EquivalenceRepository {
 					System.out.println("EqSeq" + i++);
 					System.out.println(eqSeq.toString());
 				}
+				System.out.println("================================================================================");
 			}
 		}
 		else {
