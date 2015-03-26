@@ -19,7 +19,6 @@ public class IOUtils {
 	public static void formatEndMessage(final Logger logger, final String method) {
 		logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   " + emptyString(method.length())
 				+ "   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-		logger.info("Generating equivalences for method " + method);
 	}
 	
 	private static String emptyString(int length) {
