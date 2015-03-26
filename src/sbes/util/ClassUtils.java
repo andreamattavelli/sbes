@@ -7,8 +7,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import sbes.exceptions.GenerationException;
 import sbes.exceptions.SBESException;
@@ -180,7 +182,7 @@ public class ClassUtils {
 		return builder.toString();
 	}
 
-	private static String getBytecodeRepresentation(final Class<?> c) {
+	public static String getBytecodeRepresentation(final Class<?> c) {
 		String className = c.getName();
 		if (className.charAt(0) == '[') {
 			return className.replaceAll("\\.", "/");
@@ -207,6 +209,18 @@ public class ClassUtils {
 			}
 			return "L" + className.replaceAll("\\.", "/") + ";";
 		}
+	}
+	
+	public static Set<Class<?>> getInterfaces(final Class<?> c) {
+		Set<Class<?>> toReturn = new HashSet<Class<?>>();
+		
+		Class<?> current = c;
+		while (!current.equals(Object.class)) {
+			toReturn.addAll(Arrays.asList(current.getInterfaces()));
+			current = current.getSuperclass();
+		}
+		
+		return toReturn;
 	}
 	
 }

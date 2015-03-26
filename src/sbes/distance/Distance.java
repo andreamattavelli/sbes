@@ -129,6 +129,8 @@ public class Distance {
 						continue;
 					}
 					
+					logger.debug("Comparing " + f1.getName() + " vs " + f2.getName());
+					
 					ComparisonType type = getComparisonType(f1.getType(), f2.getType());
 					switch (type) {
 					case PRIMITIVE:
@@ -155,6 +157,8 @@ public class Distance {
 						logger.error("Unknown comparison type: " + type);
 						break;
 					}
+					
+					logger.debug("Distance: " + distance);
 				} catch (Exception e) {
 					logger.error("Error during distance calculation", e);
 				}
