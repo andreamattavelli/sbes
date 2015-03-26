@@ -11,6 +11,12 @@ public class FieldFilter {
 		else if (f1.getName().equals("hashSeed") && f1.getType().equals(int.class)) {
 			return true;
 		}
+		else if (f1.getName().startsWith("expected") && f1.getType().equals(int.class)) {
+			return true;
+		}
+		else if (f1.getName().equals("threshold") && f1.getType().equals(int.class)) {
+			return true;
+		}
 		return false;
 	}
 
