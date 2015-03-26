@@ -80,6 +80,7 @@ public class SBESManager {
 			} finally {
 				// cleanup
 				logger.info("Finished generation of equivalences");
+				IOUtils.formatEndMessage(logger, method);
 				System.out.println("");
 				System.out.println("");
 				cleanup();
@@ -234,7 +235,7 @@ public class SBESManager {
 		
 		// analyze synthesis process
 		if (!EvosuiteUtils.generatedCandidate(result.getStdout())) {
-			if (!EvosuiteUtils.succeeded(result)) {
+			if (!EvosuiteUtils.succeeded(result) && result.getStderr().length() > 0) {
 				logger.error(result.getStdout());
 				logger.error(result.getStderr());
 			}

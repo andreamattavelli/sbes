@@ -15,6 +15,20 @@ public class IOUtils {
 				+ "   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		logger.info("Generating equivalences for method " + method);
 	}
+	
+	public static void formatEndMessage(final Logger logger, final String method) {
+		logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   " + emptyString(method.length())
+				+ "   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		logger.info("Generating equivalences for method " + method);
+	}
+	
+	private static String emptyString(int length) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < length; i++) {
+			sb.append(' ');
+		}
+		return sb.toString();
+	}
 
 	public static void formatIterationStartMessage(final Logger logger, final DirectoryUtils directory) {
 		logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   "
