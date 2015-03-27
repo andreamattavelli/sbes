@@ -1826,4 +1826,51 @@ public class SecondStageStubGeneratorTest {
 		assertAndPrint(actual, expected);
 	}
 	
+	@Test
+	public void test38() throws ParseException {
+		setUp("./test/resources/guava-12.0.1.jar", "com.google.common.collect.ArrayListMultimap.containsEntry(Object,Object)", "ArrayListMultimap_Stub");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"ArrayListMultimap_Stub arrayListMultimap_Stub0 = new ArrayListMultimap_Stub();"+
+				"boolean boolean0 = true;"+
+				"arrayListMultimap_Stub0.set_results(boolean0);"+
+				"arrayListMultimap_Stub0.method_under_test();"+
+				"}");
+
+		CarvingResult candidateES = new CarvingResult(body, imports);
+		Map<TypeVariable<?>, String> genericToConcrete = new LinkedHashMap<>();
+		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "K", null, null);
+		TypeVariable<?> v = TypeVariableImpl.<GenericDeclaration>make(Object.class, "V", null, null);
+		genericToConcrete.put(k, "Integer");
+		genericToConcrete.put(v, "String");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(
+				new ArrayList<TestScenario>(), stub, candidateES,
+				new ArrayList<FieldDeclaration>(), genericToConcrete);
+		Stub second = sssg.generateStub();
+		
+		second.dumpStub("./test/resources/compilation");
+		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+		
+		String actual = second.getAst().toString();
+		String expected = 
+				"package com.google.common.collect;"+
+				"import sbes.distance.Distance;"+
+				"import sbes.cloning.Cloner;"+
+				"public class ArrayListMultimap_Stub_2 extends ArrayListMultimap<Integer, String> {"+
+				"protected ArrayListMultimap_Stub_2() {"+
+				"super();"+
+				"}"+
+				"public void method_under_test(java.lang.Object p0, java.lang.Object p1) {"+
+				"Cloner c = new Cloner();"+
+				"ArrayListMultimap<Integer, String> clone = c.deepClone(this);"+
+				"boolean expected_result = this.containsEntry(p0, p1);"+
+				"boolean actual_result = true;"+
+				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
+				"System.out.println(\"Executed\");"+
+				"}"+
+				"}";
+		assertAndPrint(actual, expected);
+	}
+	
 }
