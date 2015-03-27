@@ -26,7 +26,7 @@ public class IOUtils {
 		for (int i = 0; i < length/2; i++) {
 			sb.append('<');
 		}
-		for (int i = (length/2) + 1; i < length; i++) {
+		for (int i = (length/2); i < length; i++) {
 			sb.append('>');
 		}
 		return sb.toString();
