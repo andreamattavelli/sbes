@@ -80,7 +80,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	protected List<FieldDeclaration> fields;
 	protected Stub stub;
 
-	public SecondStageGeneratorStub(final List<TestScenario> scenarios, final Stub stub, final CarvingResult candidateES, final List<FieldDeclaration> fields) {
+	public SecondStageGeneratorStub(final List<TestScenario> scenarios, Stub stub, CarvingResult candidateES, List<FieldDeclaration> fields) {
 		super(scenarios);
 		this.stub = stub;
 		this.candidateES = candidateES;
@@ -109,7 +109,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	}
 
 	@Override
-	protected TypeDeclaration getClassDeclaration(final String className) {
+	protected TypeDeclaration getClassDeclaration(String className) {
 		stubName = className + STUB_EXTENSION + "_2";
 
 		// extends base class
@@ -124,12 +124,12 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	}
 
 	@Override
-	protected List<BodyDeclaration> getClassFields(final Method targetMethod, final Class<?> c) {
+	protected List<BodyDeclaration> getClassFields(Method targetMethod, Class<?> c) {
 		return new ArrayList<BodyDeclaration>();
 	}
 
 	@Override
-	protected List<BodyDeclaration> getStubConstructor(final Method targetMethod, final Class<?> c) {
+	protected List<BodyDeclaration> getStubConstructor(Method targetMethod, Class<?> c) {
 		/*
 		 * We must adhere to inheritance as defined in Java, which imposes to
 		 * add constructor to a child if an explicit constructor is defined in
@@ -156,12 +156,12 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	}
 
 	@Override
-	protected List<BodyDeclaration> getAdditionalMethods(final Method targetMethod, final Method[] methods) {
+	protected List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods) {
 		return new ArrayList<BodyDeclaration>();
 	}
 
 	@Override
-	protected MethodDeclaration getMethodUnderTest(final Method targetMethod) {
+	protected MethodDeclaration getMethodUnderTest(Method targetMethod) {
 		logger.debug("Adding method_under_test method");
 		MethodDeclaration method_under_test = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "method_under_test");
 
@@ -234,7 +234,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		return new ExpressionStmt(clonerVde);
 	}
 
-	protected ExpressionStmt createCloneObj(final Method targetMethod) {
+	protected ExpressionStmt createCloneObj(Method targetMethod) {
 		List<Expression> methodParameters = new ArrayList<Expression>();
 		methodParameters.add(new ThisExpr());
 		Expression right = new MethodCallExpr(ASTHelper.createNameExpr("c"), "deepClone", methodParameters);
@@ -246,7 +246,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		return new ExpressionStmt(assignment);
 	}
 
-	protected Statement createExpectedResult(final Method targetMethod, final List<Parameter> parameters) {
+	protected Statement createExpectedResult(Method targetMethod, final List<Parameter> parameters) {
 		List<Expression> methodParameters = new ArrayList<Expression>();
 		for (Parameter parameter : parameters) {
 			methodParameters.add(ASTHelper.createNameExpr(parameter.getId().getName()));
@@ -267,7 +267,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		return new ExpressionStmt(right);
 	}
 
-	protected List<Statement> createActualResult(final Method targetMethod, final CarvingResult candidateES2, final List<Parameter> param) {
+	protected List<Statement> createActualResult(Method targetMethod, CarvingResult candidateES2, final List<Parameter> param) {
 		List<Statement> stmts = new ArrayList<Statement>();
 
 		BlockStmt carved = candidateES2.getBody();
@@ -297,7 +297,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	/*
 	 * PHASE 0: remove method_under_test
 	 */
-	private void removeMethodUnderTest(final BlockStmt cloned) {
+	private void removeMethodUnderTest(BlockStmt cloned) {
 		for (int i = cloned.getStmts().size() - 1; i > 0; i--) {
 			Statement stmt = cloned.getStmts().get(i);
 			if (stmt instanceof ExpressionStmt) {
@@ -317,7 +317,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	 * PHASE 1: remove stub constructor and rename all occurrences of the
 	 * stub object to the cloned object
 	 */
-	private void stubToClone(final BlockStmt cloned) {
+	private void stubToClone(BlockStmt cloned) {
 		String stubName = stub.getStubName();
 		String stubObjectName = null;
 		for (int i = 0; i < cloned.getStmts().size(); i++) {
@@ -354,7 +354,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	 *  this means that, if they are references to the static inputs in the
 	 *  first stub, we need to match an input in the current stub
 	 */
-	private void identifyEquivalentSequenceParameters(final BlockStmt cloned, final List<Parameter> param) {
+	private void identifyEquivalentSequenceParameters(BlockStmt cloned, final List<Parameter> param) {
 		EquivalentSequenceCallVisitor escv = new EquivalentSequenceCallVisitor();
 		escv.visit(cloned, null);
 		for (MethodCallExpr methodCall : escv.getDependencies()) {
@@ -377,7 +377,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		}
 	}
 
-	private void analyzeParameters(final BlockStmt cloned, final List<Parameter> param, final MethodCallExpr methodCall) {
+	private void analyzeParameters(BlockStmt cloned, final List<Parameter> param, MethodCallExpr methodCall) {
 		for (int i = 0; i < methodCall.getArgs().size(); i++) { 
 			Expression arg = methodCall.getArgs().get(i);
 			VariableDeclarationExpr vde = null;
@@ -487,7 +487,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	 * PHASE 3: search for set_results and then resolve the definition of the
 	 * variable used as input
 	 */
-	private void identifyActualResult(final BlockStmt cloned, final Method targetMethod, final List<Parameter> param) {
+	private void identifyActualResult(BlockStmt cloned, Method targetMethod, final List<Parameter> param) {
 		MethodCallVisitor mcv = new MethodCallVisitor("set_results", 1);
 		mcv.visit(cloned, null);
 		MethodCallExpr mce = mcv.getMethodCall();
@@ -709,14 +709,14 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		}
 	}
 
-	protected String getActualResultType(final Method targetMethod) {
+	protected String getActualResultType(Method targetMethod) {
 		return targetMethod.getReturnType().getCanonicalName();
 	}
 
 	/*
 	 * PHASE 4: remove spurious parameters from method calls due to array-based stub
 	 */
-	private void pruneArrayParameters(final BlockStmt cloned, final Method targetMethod) {
+	private void pruneArrayParameters(BlockStmt cloned, Method targetMethod) {
 		// get all calls on clone obj, therefore a stub obj
 		CloneMethodCallsVisitor cov = new CloneMethodCallsVisitor();
 		cov.visit(cloned, null);
@@ -772,7 +772,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	/*
 	 * PHASE 5: dead code elimination: remove everything not necessary
 	 */
-	private void deadCodeElimination(final BlockStmt cloned) {
+	private void deadCodeElimination(BlockStmt cloned) {
 		boolean changed = false;
 		do {
 			changed = false;
@@ -894,7 +894,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		} while (changed);
 	}
 
-	private void removeDeadAssignments(final BlockStmt cloned, final int i, final String varName) {
+	private void removeDeadAssignments(BlockStmt cloned, int i, String varName) {
 		for (int j = i; j < cloned.getStmts().size(); j++) {
 			ExpressionStmt es = (ExpressionStmt) cloned.getStmts().get(j);
 			if (es.getExpression() instanceof AssignExpr) {
@@ -920,7 +920,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		}
 	}
 
-	protected List<Parameter> getParameterType(final Class<?>[] parameters, final Method targetMethod) {
+	protected List<Parameter> getParameterType(Class<?>[] parameters, Method targetMethod) {
 		List<Parameter> toReturn = new ArrayList<Parameter>();
 		for (int i = 0; i < parameters.length; i++) {
 			Class<?> type = parameters[i];
@@ -939,7 +939,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	}
 
 	@Override
-	protected MethodDeclaration getSetResultsMethod(final Method targetMethod) {
+	protected MethodDeclaration getSetResultsMethod(Method targetMethod) {
 		return null;
 	}
 

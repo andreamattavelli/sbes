@@ -52,26 +52,10 @@ public class SBESManager {
 	public void generate() throws SBESException {
 		ClasspathUtils.checkClasspath();
 		
-		List<String> targetMethods = new ArrayList<>();
-		
-		if (Options.I().getTargetMethod() != null) {
-			targetMethods.add(Options.I().getTargetMethod());
-		}
-		else {
-			Class<?> clazz = ClassUtils.getClass(Options.I().getTargetClass());
-			Method[] methods = ClassUtils.getClassMethods(clazz);
-			for (Method method : methods) {
-				targetMethods.add(ClassUtils.getMethodSignature(clazz, method));
-			}
-		}
-		
+		List<String> targetMethods = computeTargets();
 		while (targetMethods.size() > 0 && !SBESShutdownInterceptor.isInterrupted()) {
 			String method = targetMethods.remove(0);
-			
-			//setup
-			IOUtils.formatInitMessage(logger, method);
-			Options.I().setTargetMethod(method);
-			
+			setup(method);
 			try {
 				// generation
 				generateEquivalencesForMethod();
@@ -79,11 +63,7 @@ public class SBESManager {
 				logger.error(t.getMessage());
 			} finally {
 				// cleanup
-				logger.info("Finished generation of equivalences");
-				IOUtils.formatEndMessage(logger, method);
-				System.out.println("");
-				System.out.println("");
-				cleanup();
+				cleanup(method);
 			}
 		}
 		
@@ -143,7 +123,7 @@ public class SBESManager {
 						statistics.iterationStarted();
 
 						// FIRST PHASE: SYNTHESIS OF CANDIDATE
-						CarvingResult candidateES = synthesizeCandidateEquivalence(stub, directory);
+						CarvingResult candidateES = synthesizeCandidateEquivalence(stub);
 						stoppingCondition.update(candidateES);
 
 						if (candidateES == null) {
@@ -152,14 +132,8 @@ public class SBESManager {
 						}
 						else {
 							// SECOND PHASE: VALIDATION OF CANDIDATE (search for a counterexample)
-							// generate second stub from carved test case
-							AbstractStubGenerator secondPhaseGenerator = SecondStageGeneratorFactory.createGenerator(firstPhaseGenerator, stub, candidateES);
-							Stub secondStub = secondPhaseGenerator.generateStub();
-							directory.createSecondStubDir();
-							secondStub.dumpStub(directory.getSecondStubDir());
-
 							// search for a counterexample
-							CarvingResult counterexample = generateCounterexample(secondStub, directory);
+							CarvingResult counterexample = generateCounterexample(firstPhaseGenerator, stub, candidateES);
 
 							// determine exit condition: counterexample found || timeout
 							if (counterexample == null) {
@@ -168,7 +142,7 @@ public class SBESManager {
 							}
 							else {
 								// counterexample found: generate the corresponding test scenario and add it to the stub
-								stub = generateTestScenarioFromCounterexample(counterexample, directory);
+								stub = generateFirstStageStubWithCounterexample(counterexample);
 							}
 						}
 
@@ -191,9 +165,11 @@ public class SBESManager {
 		statistics.writeCSV();
 	}
 
-	private CarvingResult synthesizeCandidateEquivalence(final Stub stub, final DirectoryUtils directory) {
+	private CarvingResult synthesizeCandidateEquivalence(final Stub stub) {
 		logger.info("Synthesizing equivalent sequence candidate");
 		statistics.synthesisStarted();
+		
+		final DirectoryUtils directory = DirectoryUtils.I();
 		
 		String signature 	= Options.I().getTargetMethod();
 		String packagename 	= IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
@@ -227,6 +203,8 @@ public class SBESManager {
 		if (SBESShutdownInterceptor.isInterrupted()) {
 			return null;
 		}
+		
+		dumpEvosuiteLog(result, null);
 		
 		if (Options.I().isVerbose()) {
 			logger.info(result.getStdout());
@@ -265,9 +243,18 @@ public class SBESManager {
 		return candidates.get(0);
 	}
 
-	private CarvingResult generateCounterexample(final Stub secondStub, final DirectoryUtils directory) {
+	private CarvingResult generateCounterexample(final FirstStageGeneratorStub firstPhaseGenerator, final Stub stub,
+												 final CarvingResult candidateES) {
 		logger.info("Generating counterexample");
+		
+		final DirectoryUtils directory = DirectoryUtils.I();
+		
 		statistics.counterexampleStarted();
+		
+		AbstractStubGenerator secondPhaseGenerator = SecondStageGeneratorFactory.createGenerator(firstPhaseGenerator, stub, candidateES);
+		Stub secondStub = secondPhaseGenerator.generateStub();
+		directory.createSecondStubDir();
+		secondStub.dumpStub(directory.getSecondStubDir());
 		
 		String signature =		Options.I().getTargetMethod();
 		String packagename =	IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
@@ -301,6 +288,8 @@ public class SBESManager {
 		if (SBESShutdownInterceptor.isInterrupted()) {
 			return null;
 		}
+		
+		dumpEvosuiteLog(result, null);
 		
 		if (Options.I().isVerbose()) {
 			logger.info("EvoSuite Stdout:" + '\n' + result.getStdout());
@@ -338,8 +327,9 @@ public class SBESManager {
 		logger.info("Generating counterexample - done");
 		return toReturn;
 	}
-	
-	private Stub generateTestScenarioFromCounterexample(final CarvingResult counterexample, final DirectoryUtils directory) {
+
+	private Stub generateFirstStageStubWithCounterexample(final CarvingResult counterexample) {
+		DirectoryUtils directory = DirectoryUtils.I();
 		CounterexampleGeneralizer cg = new CounterexampleGeneralizer();
 		TestScenario counterexampleScenario = cg.counterexampleToTestScenario(counterexample);
 		TestScenarioRepository.I().addCounterexample(counterexampleScenario);
@@ -352,9 +342,43 @@ public class SBESManager {
 		return stub;
 	}
 	
-	private void cleanup() {
+	private void setup(String method) {
+		IOUtils.formatInitMessage(logger, method);
+		Options.I().setTargetMethod(method);
+	}
+	
+	private void cleanup(String method) {
 		DirectoryUtils.reset();
 		TestScenarioRepository.reset();
+		
+		logger.info("Finished generation of equivalences");
+		IOUtils.formatEndMessage(logger, method);
+		System.out.println("");
+		System.out.println("");
+	}
+
+	private List<String> computeTargets() {
+		List<String> targetMethods = new ArrayList<>();
+		if (Options.I().getTargetMethod() != null) {
+			logger.info("Single target mode. Target method: " + Options.I().getTargetMethod());
+			targetMethods.add(Options.I().getTargetMethod());
+		}
+		else {
+			logger.info("Class target mode. Target class: " + Options.I().getTargetClass());
+			logger.info("Target methods:");
+			Class<?> clazz = ClassUtils.getClass(Options.I().getTargetClass());
+			Method[] methods = ClassUtils.getClassMethods(clazz);
+			for (Method method : methods) {
+				String signature = ClassUtils.getMethodSignature(clazz, method);
+				System.out.println("\t" + signature);
+				targetMethods.add(signature);
+			}
+		}
+		return targetMethods;
+	}
+	
+	private void dumpEvosuiteLog(final ExecutionResult result, final String directory) {
+		
 	}
 	
 }

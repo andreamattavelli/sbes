@@ -53,7 +53,7 @@ public class ExecutionResult {
 		return exitStatus;
 	}
 	
-	public void setExitStatus(final int exitStatus) {
+	public void setExitStatus(int exitStatus) {
 		this.exitStatus = exitStatus;
 	}
 	

@@ -32,7 +32,7 @@ public class ClassUtils {
 		return toReturn;
 	}
 	
-	public static Method[] getClassMethods(final Class<?> clazz) {
+	public static Method[] getClassMethods(Class<?> clazz) {
 		if (cache.containsKey(clazz)) {
 			return cache.get(clazz);
 		}
@@ -92,7 +92,7 @@ public class ClassUtils {
 		return cache.get(clazz);
 	}
 	
-	private static List<Class<?>> getHierarchy(final Class<?> clazz) {
+	private static List<Class<?>> getHierarchy(Class<?> clazz) {
 		List<Class<?>> hierarchy = new ArrayList<Class<?>>();
 
 		// Build hierarchy
@@ -143,7 +143,7 @@ public class ClassUtils {
 		return signature.substring(signature.lastIndexOf('.') + 1);
 	}
 	
-	public static Method findTargetMethod(final Method[] methods, final String methodName) {
+	public static Method findTargetMethod(Method[] methods, String methodName) {
 		Method targetMethod = null;
 		String method = methodName.split("\\(")[0];
 		String args[] = methodName.split("\\(")[1].replaceAll("\\)", "").split(",");

@@ -13,8 +13,8 @@ public class TestScenarioWithGenerics extends TestScenario {
 
 	private Map<TypeVariable<?>, String> genericToConcreteClasses;
 
-	public TestScenarioWithGenerics(final CarvingResult carvedTest, final BlockStmt scenarioBody, 
-									final List<FieldDeclaration> inputs, final Map<TypeVariable<?>, String> genericToConcreteClasses) {
+	public TestScenarioWithGenerics(CarvingResult carvedTest, BlockStmt scenarioBody, 
+									List<FieldDeclaration> inputs, Map<TypeVariable<?>, String> genericToConcreteClasses) {
 		super(carvedTest, scenarioBody, inputs);
 		this.genericToConcreteClasses = genericToConcreteClasses;
 	}

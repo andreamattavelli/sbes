@@ -55,7 +55,7 @@ public class EquivalenceRepository {
 		return instance;
 	}
 	
-	public void addEquivalence(final EquivalentSequence eqSeq) {
+	public void addEquivalence(EquivalentSequence eqSeq) {
 		if (!equivalences.containsKey(Options.I().getTargetMethod())) {
 			equivalences.put(Options.I().getTargetMethod(), new ArrayList<EquivalentSequence>());
 		}
@@ -99,7 +99,7 @@ public class EquivalenceRepository {
 		}
 	}
 	
-	public boolean isExcluded(final Method method) {
+	public boolean isExcluded(Method method) {
 		for (Method excl : excluded) {
 			if (method.getName().equals(excl.getName())) {
 				if (method.getParameterTypes().length == 0 && excl.getParameterTypes().length == 0) {

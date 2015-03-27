@@ -20,7 +20,6 @@ public class SBES {
 	private static final Logger logger = new Logger(SBES.class);
 
 	public static void main(final String args[]) {
-		logger.info("SBES started");
 		final Options arguments = Options.I();
 		final CmdLineParser parser = new CmdLineParser(arguments);
 
@@ -39,7 +38,6 @@ public class SBES {
 			
 			final SBESManager generator = new SBESManager();
 			generator.generate();
-			logger.info("SBES ended successfully");
 		} catch (SBESException | GenerationException | WorkerException e) {
 			logger.fatal("Execution aborted due: " + e.getMessage());
 		}

@@ -18,7 +18,7 @@ public class InternalClassloader {
 	
 	private final ClassLoader classLoader;
 
-	public InternalClassloader(final String classpath) {
+	public InternalClassloader(String classpath) {
 		try {
 			ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
 

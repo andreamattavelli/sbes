@@ -7,7 +7,7 @@ import sbes.option.Options;
 
 public class EvosuiteUtils {
 
-	public static boolean succeeded(final ExecutionResult result) {
+	public static boolean succeeded(ExecutionResult result) {
 		String signature = Options.I().getTargetMethod();
 		String packagename = IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
 		String testDirectory = IOUtils.concatFilePath(result.getOutputDir(), packagename);
@@ -30,7 +30,7 @@ public class EvosuiteUtils {
 		return true;
 	}
 	
-	public static boolean generatedCandidate(final String stdout) {
+	public static boolean generatedCandidate(String stdout) {
 		if (stdout.contains("Covered 1/1 goals")) {
 			return true;
 		}

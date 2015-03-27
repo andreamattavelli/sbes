@@ -25,7 +25,7 @@ public class Distance {
 
 	private Distance() {}
 	
-	public static double distance(final Object o1, final Object o2) {
+	public static double distance(Object o1, Object o2) {
 		logger.debug("distance between: " + o1 + " and " + o2);
 		if (o1 == null && o2 == null) {
 			logger.debug("both null");
@@ -55,7 +55,7 @@ public class Distance {
 		return calculate(o1, o2);
 	}
 	
-	private static double calculate(final Object o1, final Object o2) {
+	private static double calculate(Object o1, Object o2) {
 		double distance = 0.0d;
 		int fieldCount = 0;
 		
@@ -129,7 +129,8 @@ public class Distance {
 						continue;
 					}
 					
-					logger.debug("Comparing " + f1.getName() + " vs " + f2.getName());
+					logger.debug("Comparing " + Modifier.toString(f1.getModifiers())  + " " + f1.getDeclaringClass().getCanonicalName() + "." + f1.getName() + " vs " +  
+							Modifier.toString(f1.getModifiers())  + " " + f2.getDeclaringClass().getCanonicalName() + "." + f2.getName());
 					
 					ComparisonType type = getComparisonType(f1.getType(), f2.getType());
 					switch (type) {
@@ -157,8 +158,6 @@ public class Distance {
 						logger.error("Unknown comparison type: " + type);
 						break;
 					}
-					
-					logger.debug("Distance: " + distance);
 				} catch (Exception e) {
 					logger.error("Error during distance calculation", e);
 				}
@@ -173,7 +172,7 @@ public class Distance {
 		}
 	}
 	
-	private static double handleArray(final Object obj1, final Object obj2) {
+	private static double handleArray(Object obj1, Object obj2) {
 		double distance = 0.0d;
 		
 		ComparisonType arrayType = getComparisonType(obj1.getClass().getComponentType(), obj1.getClass().getComponentType());
@@ -224,7 +223,7 @@ public class Distance {
 		return distance;
 	}
 
-	private static double handleArray(final Field f1, final Object obj1, final Field f2, final Object obj2) {
+	private static double handleArray(Field f1, Object obj1, Field f2, Object obj2) {
 		double distance = 0.0d;
 		
 		ComparisonType arrayType = getComparisonType(f1.getType().getComponentType(), f2.getType().getComponentType());
@@ -357,7 +356,7 @@ public class Distance {
 		return distance;
 	}
 
-	private static ComparisonType getComparisonType(final Class<?> f1, final Class<?> f2) {
+	private static ComparisonType getComparisonType(Class<?> f1, Class<?> f2) {
 		if (f1.isPrimitive()) {
 			return ComparisonType.PRIMITIVE;
 		}
@@ -380,7 +379,7 @@ class DistancePair {
 	Object o1;
 	Object o2;
 
-	public DistancePair(final Object o1, final Object o2) {
+	public DistancePair(Object o1, Object o2) {
 		this.o1 = o1;
 		this.o2 = o2;
 	}

@@ -18,7 +18,7 @@ public class Worker implements Callable<ExecutionResult> {
 	private ByteArrayOutputStream errStream = null;
 	private ByteArrayOutputStream outStream = null;
 
-	public Worker(final Evosuite evosuite) {
+	public Worker(Evosuite evosuite) {
 		this.evosuite = evosuite;
 	}
 

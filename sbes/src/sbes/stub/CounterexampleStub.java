@@ -11,7 +11,7 @@ public class CounterexampleStub extends Stub {
 
 	private EquivalentSequence equivalence;
 	
-	public CounterexampleStub(final CompilationUnit cu, final String stubName, final List<Statement> stmts) {
+	public CounterexampleStub(CompilationUnit cu, String stubName, List<Statement> stmts) {
 		super(cu, stubName);
 		this.equivalence = new EquivalentSequence(stmts);
 	}
