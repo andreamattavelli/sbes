@@ -273,7 +273,7 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 	@Override
 	protected MethodDeclaration getSetResultsMethod(Method targetMethod) {
 		logger.debug("Adding set_results method");
-		Type returnType = ASTUtils.getReturnType(targetMethod);
+		Type returnType = ASTUtils.getReturnConcreteType(generics, genericToConcreteClasses, targetMethod);
 		if (returnType.toString().equals("void")) {
 			logger.debug("Original method's return value is void, stopping");
 			return null;
