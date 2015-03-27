@@ -80,7 +80,8 @@ public class CounterexampleGeneralizer extends AbstractGeneralizer {
 					VariableDeclarationExpr vde = (VariableDeclarationExpr) e;
 					VariableDeclarator var = vde.getVars().get(0); // safe
 					
-					VariableUseVisitor vuv = new VariableUseVisitor(var.getId().getName()); 
+					VariableUseVisitor vuv = new VariableUseVisitor(var.getId().getName());
+					vuv.visit(counterexample.getBody(), null);
 					if (!vuv.isUsed()) {
 						counterexample.getBody().getStmts().remove(i);
 						i--;
