@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import sbes.ast.CloneMethodCallsVisitor;
-import sbes.exceptions.GenerationException;
 import sbes.exceptions.SBESException;
 import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
@@ -42,7 +41,7 @@ public class EquivalenceRepository {
 			c = Class.forName(ClassUtils.getCanonicalClassname(Options.I().getTargetMethod()), false, classloader);
 		} catch (ClassNotFoundException e) {
 			// infeasible, we already checked the classpath
-			throw new GenerationException("Target class not found");
+			throw new SBESException("Target class not found");
 		}
 		// get class methods
 		methods = ClassUtils.getClassMethods(c);

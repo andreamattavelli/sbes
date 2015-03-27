@@ -1,7 +1,12 @@
 package sbes;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import sbes.ast.CloneMethodCallsVisitor;
@@ -60,7 +65,7 @@ public class SBESManager {
 				// generation
 				generateEquivalencesForMethod();
 			} catch (Throwable t) {
-				logger.error(t.getMessage());
+				logger.fatal(t.getMessage());
 			} finally {
 				// cleanup
 				cleanup(method);
@@ -148,14 +153,14 @@ public class SBESManager {
 
 						statistics.iterationFinished();
 					} // end iteration
-				} catch (CompilationException e) {
+				} catch (CompilationException | GenerationException e) {
 					logger.fatal("Iteration aborted due to: " + e.getMessage());
 					statistics.iterationFinished();
 				}
 				
 				IOUtils.formatIterationEndMessage(logger, directory);
 			} // end search
-		} catch (SBESException | GenerationException e) {
+		} catch (SBESException e) {
 			logger.fatal("Execution aborted due to: " + e.getMessage());
 		}
 		
@@ -204,7 +209,7 @@ public class SBESManager {
 			return null;
 		}
 		
-		dumpEvosuiteLog(result, null);
+		dumpEvosuiteLog(result, directory.getFirstStubEvosuiteDir());
 		
 		if (Options.I().isVerbose()) {
 			logger.info(result.getStdout());
@@ -245,8 +250,6 @@ public class SBESManager {
 
 	private CarvingResult generateCounterexample(final FirstStageGeneratorStub firstPhaseGenerator, final Stub stub,
 												 final CarvingResult candidateES) {
-		logger.info("Generating counterexample");
-		
 		final DirectoryUtils directory = DirectoryUtils.I();
 		
 		statistics.counterexampleStarted();
@@ -283,13 +286,16 @@ public class SBESManager {
 		Evosuite evosuite = new EvosuiteSecondStage(stubSignature, 
 													ClassUtils.getMethodname(Options.I().getTargetMethod()), 
 													classPath);
+		
+		logger.info("Generating counterexample");
+		
 		ExecutionResult result = ExecutionManager.execute(evosuite);
 		
 		if (SBESShutdownInterceptor.isInterrupted()) {
 			return null;
 		}
 		
-		dumpEvosuiteLog(result, null);
+		dumpEvosuiteLog(result, directory.getSecondStubEvosuiteDir());
 		
 		if (Options.I().isVerbose()) {
 			logger.info("EvoSuite Stdout:" + '\n' + result.getStdout());
@@ -369,16 +375,32 @@ public class SBESManager {
 			Class<?> clazz = ClassUtils.getClass(Options.I().getTargetClass());
 			Method[] methods = ClassUtils.getClassMethods(clazz);
 			for (Method method : methods) {
+				if (method.getName().equals("toString") 	|| 
+						method.getName().equals("hashCode") ||
+						method.getName().equals("equals") 	||
+						method.getName().equals("toArray")) {
+					continue;
+				}
 				String signature = ClassUtils.getMethodSignature(clazz, method);
-				System.out.println("\t" + signature);
+				logger.info("  " + signature);
 				targetMethods.add(signature);
 			}
 		}
+		System.out.println();
 		return targetMethods;
 	}
 	
 	private void dumpEvosuiteLog(final ExecutionResult result, final String directory) {
-		
+		try {
+			Files.write(Paths.get(directory + "/evosuite-out.txt"), Arrays.toString(result.getCommand()).getBytes());
+			Files.write(Paths.get(directory + "/evosuite-out.txt"), System.getProperty("line.separator").getBytes(), StandardOpenOption.APPEND);
+			Files.write(Paths.get(directory + "/evosuite-out.txt"), result.getStdout().getBytes(), StandardOpenOption.APPEND);
+			if (result.getStderr().length() > 0) {
+				Files.write(Paths.get(directory + "/evosuite-err.txt"), result.getStderr().getBytes());
+			}
+		} catch (IOException e) {
+			logger.error("Unable to dump EvoSuite log files", e);
+		}
 	}
 	
 }

@@ -15,7 +15,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
 
-import sbes.exceptions.GenerationException;
+import sbes.exceptions.SBESException;
 import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
 import sbes.option.Options;
@@ -46,7 +46,7 @@ public abstract class AbstractStubGenerator {
 			c = Class.forName(ClassUtils.getCanonicalClassname(Options.I().getTargetMethod()), false, classloader);
 		} catch (ClassNotFoundException e) {
 			// infeasible, we already checked the classpath
-			throw new GenerationException("Target class not found");
+			throw new SBESException("Target class not found");
 		}
 		
 		// get generic types (if any)

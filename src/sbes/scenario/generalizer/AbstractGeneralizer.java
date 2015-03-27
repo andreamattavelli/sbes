@@ -31,7 +31,7 @@ import sbes.ast.renamer.ActualStateRenamer;
 import sbes.ast.renamer.ExpectedStateRenamer;
 import sbes.ast.renamer.InputFieldRenamer;
 import sbes.ast.renamer.VariableNamesRenamer;
-import sbes.exceptions.GenerationException;
+import sbes.exceptions.SBESException;
 import sbes.execution.InternalClassloader;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
@@ -58,7 +58,7 @@ public abstract class AbstractGeneralizer {
 			c = Class.forName(ClassUtils.getCanonicalClassname(Options.I().getTargetMethod()), false, ic.getClassLoader());
 		} catch (ClassNotFoundException e) {
 			// infeasible, we already checked the classpath
-			throw new GenerationException("Target class not found");
+			throw new SBESException("Target class not found");
 		}
 
 		// get class' methods

@@ -60,7 +60,6 @@ import sbes.ast.VariableDeclarationVisitor;
 import sbes.ast.VariableUseVisitor;
 import sbes.ast.renamer.NameExprRenamer;
 import sbes.exceptions.GenerationException;
-import sbes.exceptions.SBESException;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
@@ -183,7 +182,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		// RESULT_CLASS actual_result = clone.CARVED_METHOD(S)
 		List<Statement> stmts = createActualResult(targetMethod, candidateES, param);
 		if (stmts.isEmpty()) {
-			throw new SBESException("Unable to carve candidate: no statements!");
+			throw new GenerationException("Unable to carve candidate: no statements!");
 		}
 		equivalence = stmts;
 		stmt.getStmts().addAll(stmts);
