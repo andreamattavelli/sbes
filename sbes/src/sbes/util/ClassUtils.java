@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import sbes.exceptions.GenerationException;
 import sbes.exceptions.SBESException;
 import sbes.execution.InternalClassloader;
 import sbes.option.Options;
@@ -165,7 +164,7 @@ public class ClassUtils {
 			}
 		}
 		if (targetMethod == null) {
-			throw new GenerationException("Target method not found"); // failed to find method, give up
+			throw new SBESException("Target method not found"); // failed to find method, give up
 		}
 		return targetMethod;
 	}
