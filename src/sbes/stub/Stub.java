@@ -17,7 +17,7 @@ public class Stub {
 	private String packageName;
 	private CompilationUnit ast;
 
-	public Stub(final CompilationUnit cu, final String stubName) {
+	public Stub(CompilationUnit cu, String stubName) {
 		this.ast = cu;
 		this.packageName = cu.getPackage().getName().toString();
 		this.stubName = stubName;
@@ -27,7 +27,7 @@ public class Stub {
 		return stubName;
 	}
 
-	public void setStubName(final String stubName) {
+	public void setStubName(String stubName) {
 		this.stubName = stubName;
 	}
 
@@ -35,11 +35,11 @@ public class Stub {
 		return ast;
 	}
 
-	public void setAst(final CompilationUnit ast) {
+	public void setAst(CompilationUnit ast) {
 		this.ast = ast;
 	}
 	
-	public void dumpStub(final String directory) {
+	public void dumpStub(String directory) {
 		String dir = IOUtils.concatFilePath(directory, IOUtils.fromCanonicalToPath(packageName));
 		try {
 			File file = new File(dir);

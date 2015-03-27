@@ -40,7 +40,7 @@ public class ClasspathUtils {
 		}
 	}
 	
-	public static String getCompilerClasspath(final String stubDirectory) {
+	public static String getCompilerClasspath(String stubDirectory) {
 		String classPath =	Options.I().getClassesPath() + File.pathSeparatorChar + 
 				Options.I().getJunitPath() + File.pathSeparatorChar +
 				Options.I().getEvosuitePath() + File.pathSeparatorChar +

@@ -9,7 +9,7 @@ public class FirstStageGeneratorFactory {
 
 	private FirstStageGeneratorFactory() {}
 	
-	public static FirstStageGeneratorStub createGenerator(final List<TestScenario> scenarios) {
+	public static FirstStageGeneratorStub createGenerator(List<TestScenario> scenarios) {
 		boolean generics = false;
 		for (TestScenario testScenario : scenarios) {
 			if (testScenario instanceof TestScenarioWithGenerics) {

@@ -36,7 +36,7 @@ public class ASTUtils {
 
 	private ASTUtils() {}
 	
-	public static Type getReturnType(final Method method) {
+	public static Type getReturnType(Method method) {
 		if (method.getReturnType().isArray()) {
 			return ASTHelper.createReferenceType(method.getReturnType().getComponentType().getCanonicalName(), 
 												 ReflectionUtils.getArrayDimensionCount(method.getReturnType()));
@@ -46,7 +46,7 @@ public class ASTUtils {
 		}
 	}
 	
-	public static Type getReturnConcreteType(final TypeVariable<?>[] generics, final Map<TypeVariable<?>, String> genericToConcreteClasses, final Method method) {
+	public static Type getReturnConcreteType(TypeVariable<?>[] generics, Map<TypeVariable<?>, String> genericToConcreteClasses, Method method) {
 		String canonicalName = "";
 		int arrayDimension = 0;
 		
@@ -74,7 +74,7 @@ public class ASTUtils {
 		return ASTHelper.createReferenceType(canonicalName, arrayDimension);
 	}
 	
-	public static Type getReturnTypeAsArray(final Method method) {
+	public static Type getReturnTypeAsArray(Method method) {
 		Class<?> returnType = method.getReturnType();
 		
 		if (returnType.getSimpleName().equals("void")) {
@@ -85,7 +85,7 @@ public class ASTUtils {
 		}
 	}
 	
-	public static Type getReturnConcreteTypeAsArray(final TypeVariable<?>[] generics, final Map<TypeVariable<?>, String> genericToConcreteClasses, final Method method) {
+	public static Type getReturnConcreteTypeAsArray(TypeVariable<?>[] generics, Map<TypeVariable<?>, String> genericToConcreteClasses, Method method) {
 		Class<?> returnType = method.getReturnType();
 		
 		if (returnType.getSimpleName().equals("void")) {
@@ -104,22 +104,22 @@ public class ASTUtils {
 		return arraysDimension;
 	}
 	
-	public static VariableDeclarator createDeclarator(final String id, final Expression expression) {
+	public static VariableDeclarator createDeclarator(String id, Expression expression) {
 		return new VariableDeclarator(new VariableDeclaratorId(id), expression);
 	}
 	
-	public static Expression createArrayAccess(final String arrayId, final String indexId) {
+	public static Expression createArrayAccess(String arrayId, String indexId) {
 		return new ArrayAccessExpr(ASTHelper.createNameExpr(arrayId), ASTHelper.createNameExpr(indexId));
 	}
 	
-	public static BodyDeclaration createStubHelperArray(final String classType, final String varId) {
+	public static BodyDeclaration createStubHelperArray(String classType, String varId) {
 		ArrayCreationExpr es_ace = new ArrayCreationExpr(ASTHelper.createReferenceType(classType, 0), ASTUtils.getArraysDimension(), 0);
 		VariableDeclarator expected_states = ASTUtils.createDeclarator(varId, es_ace);
 		BodyDeclaration es_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL, ASTHelper.createReferenceType(classType, 1), expected_states);
 		return es_bd;
 	}
 	
-	public static BodyDeclaration createGenericStubHelperArray(final String classType, final Map<TypeVariable<?>, String> genericToConcreteClasses, final String varId) {
+	public static BodyDeclaration createGenericStubHelperArray(String classType, Map<TypeVariable<?>, String> genericToConcreteClasses, String varId) {
 		ArrayCreationExpr es_ace = new ArrayCreationExpr(ASTHelper.createReferenceType(classType, 0), ASTUtils.getArraysDimension(), 0);
 		VariableDeclarator expected_states = ASTUtils.createDeclarator(varId, es_ace);
 		String referenceType = classType + "<" + GenericsUtils.toGenericsString(genericToConcreteClasses) + ">";
@@ -127,7 +127,7 @@ public class ASTUtils {
 		return es_bd;
 	}
 	
-	public static List<Expression> createParameters(final List<Parameter> parameters) {
+	public static List<Expression> createParameters(List<Parameter> parameters) {
 		List<Expression> astParameters = new ArrayList<Expression>();
 		if (!parameters.isEmpty()) {
 			for (Parameter p : parameters) {
@@ -137,7 +137,7 @@ public class ASTUtils {
 		return astParameters;
 	}
 	
-	public static List<Expression> createParameters(final List<Parameter> parameters, final String[] paramNames, final boolean manyScenarios) {
+	public static List<Expression> createParameters(List<Parameter> parameters, String[] paramNames, boolean manyScenarios) {
 		List<Expression> astParameters = new ArrayList<Expression>();
 		if (!parameters.isEmpty()) {
 			for (int i = 0; i < parameters.size(); i++) {
@@ -154,7 +154,7 @@ public class ASTUtils {
 		return astParameters;
 	}
 	
-	public static List<Expression> createForInit(final String varId, final Type varType, final Expression varInit, final Operator operator) {
+	public static List<Expression> createForInit(String varId, Type varType, Expression varInit, Operator operator) {
 		List<Expression> init = new ArrayList<Expression>();
 		List<VariableDeclarator> decls = new ArrayList<VariableDeclarator>();
 		decls.add(new VariableDeclarator(new VariableDeclaratorId(varId)));
@@ -162,23 +162,23 @@ public class ASTUtils {
 		return init;
 	}
 	
-	public static Expression createForCondition(final String varIdLeft, final String varIdRight, final BinaryExpr.Operator operator) {
+	public static Expression createForCondition(String varIdLeft, String varIdRight, japa.parser.ast.expr.BinaryExpr.Operator operator) {
 		return new BinaryExpr(ASTHelper.createNameExpr(varIdLeft), ASTHelper.createNameExpr(varIdRight), operator);
 	}
 	
-	public static List<Expression> createForIncrement(final String varId, final UnaryExpr.Operator operator) {
+	public static List<Expression> createForIncrement(String varId, japa.parser.ast.expr.UnaryExpr.Operator operator) {
 		List<Expression> increment = new ArrayList<Expression>();
 		increment.add(new UnaryExpr(ASTHelper.createNameExpr(varId), operator));
 		return increment;
 	}
 	
-	public static MethodCallExpr createSystemOut(final String message) {
+	public static MethodCallExpr createSystemOut(String message) {
 		List<Expression> args = new ArrayList<Expression>();
 		args.add(new StringLiteralExpr(message));
 		return new MethodCallExpr(new FieldAccessExpr(ASTHelper.createNameExpr("System"), "out"), "println", args);
 	}
 	
-	public static String getName(final Expression exp) {
+	public static String getName(Expression exp) {
 		if (exp instanceof NameExpr) {
 			return getName((NameExpr) exp);
 		}
@@ -199,7 +199,7 @@ public class ASTUtils {
 		return null;
 	}
 	
-	private static String getName(final NameExpr ne) {
+	private static String getName(NameExpr ne) {
 		return ne.getName();
 	}
 }

@@ -37,15 +37,15 @@ public class TestScenarioRepository {
 		return all;
 	}
 
-	public void addScenario(final TestScenario testScenario) {
+	public void addScenario(TestScenario testScenario) {
 		scenarios.add(testScenario);
 	}
 	
-	public void addScenarios(final List<TestScenario> initialScenarios) {
+	public void addScenarios(List<TestScenario> initialScenarios) {
 		scenarios.addAll(initialScenarios);
 	}
 	
-	public void addCounterexample(final TestScenario counterexampleScenario) {
+	public void addCounterexample(TestScenario counterexampleScenario) {
 		counterexamples.add(counterexampleScenario);
 	}
 	

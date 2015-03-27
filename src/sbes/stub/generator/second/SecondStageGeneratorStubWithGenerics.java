@@ -61,7 +61,7 @@ public class SecondStageGeneratorStubWithGenerics extends SecondStageGeneratorSt
 	}
 
 	@Override
-	protected TypeDeclaration getClassDeclaration(final String className) {
+	protected TypeDeclaration getClassDeclaration(String className) {
 		stubName = className + STUB_EXTENSION + "_2";
 
 		// extends base class
@@ -76,7 +76,7 @@ public class SecondStageGeneratorStubWithGenerics extends SecondStageGeneratorSt
 	}
 
 	@Override
-	protected MethodDeclaration getMethodUnderTest(final Method targetMethod) {
+	protected MethodDeclaration getMethodUnderTest(Method targetMethod) {
 		logger.debug("Adding method_under_test method with generics");
 		MethodDeclaration method_under_test = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "method_under_test");
 
@@ -137,7 +137,7 @@ public class SecondStageGeneratorStubWithGenerics extends SecondStageGeneratorSt
 		return method_under_test;
 	}
 
-	protected ExpressionStmt createCloneObj(final Method targetMethod) {
+	protected ExpressionStmt createCloneObj(Method targetMethod) {
 		List<Expression> methodParameters = new ArrayList<Expression>();
 		methodParameters.add(new ThisExpr());
 		Expression right = new MethodCallExpr(ASTHelper.createNameExpr("c"), "deepClone", methodParameters);
@@ -194,7 +194,7 @@ public class SecondStageGeneratorStubWithGenerics extends SecondStageGeneratorSt
 		return new ExpressionStmt(right);
 	}
 
-	protected String getActualResultType(final Method targetMethod) {
+	protected String getActualResultType(Method targetMethod) {
 		String className = targetMethod.getGenericReturnType().toString();
 		Set<TypeVariable<?>> types = genericToConcreteClasses.keySet();
 		for (TypeVariable<?> typeVariable : types) {
@@ -206,7 +206,7 @@ public class SecondStageGeneratorStubWithGenerics extends SecondStageGeneratorSt
 		return className;
 	}
 
-	private List<Parameter> getGenericParameterType(final Method targetMethod, final Type[] genericParams, final Class<?>[] concreteParams) {
+	private List<Parameter> getGenericParameterType(Method targetMethod, Type[] genericParams, Class<?>[] concreteParams) {
 		List<Parameter> toReturn = new ArrayList<Parameter>();
 		for (int i = 0; i < genericParams.length; i++) {
 			Type type = genericParams[i];

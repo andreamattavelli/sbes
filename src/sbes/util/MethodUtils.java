@@ -16,7 +16,7 @@ public class MethodUtils {
 		excluded.add("clone");
 	}
 	
-	public static boolean methodFilter(final Method method) {
+	public static boolean methodFilter(Method method) {
 		if (excluded.contains(method.getName())) {
 			return true;
 		}

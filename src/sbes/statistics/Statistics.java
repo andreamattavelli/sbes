@@ -44,7 +44,7 @@ public class Statistics {
 		counterexamples = new ArrayList<Long>();
 	}
 	
-	private void addIteration(final long time, final List<Long> holder) {
+	private void addIteration(long time, List<Long> holder) {
 		holder.add(time);
 	}
 	

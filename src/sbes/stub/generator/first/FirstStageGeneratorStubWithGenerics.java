@@ -63,7 +63,7 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 	}
 
 	@Override
-	protected List<BodyDeclaration> getClassFields(final Method targetMethod, final Class<?> c) {
+	protected List<BodyDeclaration> getClassFields(Method targetMethod, Class<?> c) {
 		logger.debug("Adding class fields");
 		List<BodyDeclaration> declarations = new ArrayList<BodyDeclaration>();
 		
@@ -96,7 +96,7 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 	}
 	
 	@Override
-	protected List<BodyDeclaration> getAdditionalMethods(final Method targetMethod, Method[] methods) {
+	protected List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods) {
 		logger.debug("Adding original class method wrappers");
 		
 		boolean collectionReturn = false;
@@ -232,7 +232,7 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 		return members;
 	}
 	
-	protected List<Parameter> getParameterType(final Method method, final String paramNames[]) {
+	protected List<Parameter> getParameterType(Method method, String paramNames[]) {
 		Class<?>[] parameterTypes = method.getParameterTypes();
 		java.lang.reflect.Type[] genericParameterTypes = method.getGenericParameterTypes(); 
 		List<Parameter> toReturn = new ArrayList<Parameter>();
@@ -271,7 +271,7 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 	}
 	
 	@Override
-	protected MethodDeclaration getSetResultsMethod(final Method targetMethod) {
+	protected MethodDeclaration getSetResultsMethod(Method targetMethod) {
 		logger.debug("Adding set_results method");
 		Type returnType = ASTUtils.getReturnType(targetMethod);
 		if (returnType.toString().equals("void")) {

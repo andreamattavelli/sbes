@@ -286,7 +286,7 @@ public class ArrayUtils {
         return INDEX_NOT_FOUND;
     }
 
-	public static String[] toArrayString(final TypeVariable<?>[] generics) {
+	public static String[] toArrayString(TypeVariable<?>[] generics) {
 		String[] toReturn = new String[generics.length];
 		for (int i = 0; i < toReturn.length; i++) {
 			toReturn[i] = generics[i].getName();
