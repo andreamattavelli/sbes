@@ -327,8 +327,8 @@ public class TestScenarioGeneralizerTest {
 		
 		BlockStmt body = JavaParser.parseBlock(
 				"{"+
-						"ArrayListMultimap<Integer, String> arrayListMultimap0 = ArrayListMultimap.create();" +
-						"}");
+				"ArrayListMultimap<Integer, String> arrayListMultimap0 = ArrayListMultimap.create();" +
+				"}");
 		
 		CarvingResult cr = new CarvingResult(body, imports);
 		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
