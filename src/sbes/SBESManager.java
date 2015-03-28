@@ -66,6 +66,7 @@ public class SBESManager {
 				generateEquivalencesForMethod();
 			} catch (Throwable t) {
 				logger.fatal(t.getMessage());
+				t.printStackTrace();
 			} finally {
 				// cleanup
 				cleanup(method);

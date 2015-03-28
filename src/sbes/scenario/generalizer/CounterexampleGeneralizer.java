@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import sbes.ast.VariableUseVisitor;
 import sbes.ast.inliner.FieldVariablesToInline;
 import sbes.ast.inliner.Inliner;
+import sbes.ast.inliner.PrimitiveFlattener;
 import sbes.ast.inliner.PrimitiveVariablesToInline;
 import sbes.ast.inliner.StringVariablesToInline;
 import sbes.ast.renamer.ClassOrInterfaceRenamer;
@@ -71,6 +72,8 @@ public class CounterexampleGeneralizer extends AbstractGeneralizer {
 		for (VariableDeclarator vd : fvi.getToInline()) {
 			new Inliner().visit(counterexample.getBody(), vd);
 		}
+		
+		new PrimitiveFlattener().visit(counterexample.getBody(), null);
 		
 		for (int i = 0; i < counterexample.getBody().getStmts().size(); i++) {
 			Statement stmt = counterexample.getBody().getStmts().get(i);
