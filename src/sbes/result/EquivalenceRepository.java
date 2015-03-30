@@ -144,4 +144,16 @@ public class EquivalenceRepository {
 		}
 	}
 	
+	public static void printEquivalence(EquivalentSequence eqSeq) {
+		String equivalence = eqSeq.toString();
+		
+		String lines[] = StringUtils.split(equivalence, '\n');
+		for (int i = 0; i < lines.length; i++) {
+			String string = lines[i];
+			System.out.println("\t" + (i+1) + ". " + string);
+		}
+		
+		System.out.println();
+	}
+	
 }
