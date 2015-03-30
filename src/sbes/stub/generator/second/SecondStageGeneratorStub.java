@@ -24,6 +24,7 @@ import japa.parser.ast.expr.EnclosedExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.FieldAccessExpr;
 import japa.parser.ast.expr.IntegerLiteralExpr;
+import japa.parser.ast.expr.LiteralExpr;
 import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.NullLiteralExpr;
@@ -510,36 +511,60 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 			cloned.getStmts().add(new ExpressionStmt(actualResult));
 			return;
 		}
-
-		if (name != null) {
-			VariableDeclarationVisitor visitor = new VariableDeclarationVisitor(name);
-			visitor.visit(cloned, null);
-			vde = visitor.getVariable();
+		else if (arg instanceof LiteralExpr) {
+			LiteralExpr le = (LiteralExpr) arg;
+			List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+			VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+			vd.setInit(le);
+			vars.add(vd);
+			VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+			cloned.getStmts().add(new ExpressionStmt(actualResult));
+			return;
 		}
-
-		if (vde != null) {
-			String varName = vde.getVars().get(0).getId().getName();
-			Expression init = vde.getVars().get(0).getInit();
-			if (init instanceof EnclosedExpr) {
-				init = ((EnclosedExpr) init).getInner();
+		else {
+			if (name != null) {
+				VariableDeclarationVisitor visitor = new VariableDeclarationVisitor(name);
+				visitor.visit(cloned, null);
+				vde = visitor.getVariable();
 			}
 
-			if (init instanceof ArrayCreationExpr) {
-				// we should check what is inside the array
-				ArrayCellDeclarationVisitor acdv = new ArrayCellDeclarationVisitor(name, Integer.toString(0));
-				acdv.visit(cloned, null);
-				Expression e = acdv.getValue();
-				if (e instanceof NameExpr) {
-					String internalName = ASTUtils.getName(e);
-					if (internalName != null) {
-						VariableDeclarationVisitor visitor = new VariableDeclarationVisitor(internalName);
-						visitor.visit(cloned, null);
-						VariableDeclarationExpr internalVde = visitor.getVariable();
-						Expression internalInit = internalVde.getVars().get(0).getInit();
-						if (internalInit instanceof NameExpr) {
-							NameExpr valueName = (NameExpr) internalInit;
-							for (Parameter parameter : param) {
-								if(parameter.getId().getName().equals(valueName.getName())) {
+			if (vde != null) {
+				String varName = vde.getVars().get(0).getId().getName();
+				Expression init = vde.getVars().get(0).getInit();
+				if (init instanceof EnclosedExpr) {
+					init = ((EnclosedExpr) init).getInner();
+				}
+
+				if (init instanceof ArrayCreationExpr) {
+					// we should check what is inside the array
+					ArrayCellDeclarationVisitor acdv = new ArrayCellDeclarationVisitor(name, Integer.toString(0));
+					acdv.visit(cloned, null);
+					Expression e = acdv.getValue();
+					if (e instanceof NameExpr) {
+						String internalName = ASTUtils.getName(e);
+						if (internalName != null) {
+							VariableDeclarationVisitor visitor = new VariableDeclarationVisitor(internalName);
+							visitor.visit(cloned, null);
+							VariableDeclarationExpr internalVde = visitor.getVariable();
+							Expression internalInit = internalVde.getVars().get(0).getInit();
+							if (internalInit instanceof NameExpr) {
+								NameExpr valueName = (NameExpr) internalInit;
+								for (Parameter parameter : param) {
+									if(parameter.getId().getName().equals(valueName.getName())) {
+										// it is an input
+										List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+										VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+										vd.setInit(new NameExpr(param.get(0).getId().getName()));
+										vars.add(vd);
+										VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+										cloned.getStmts().add(new ExpressionStmt(actualResult));
+										break;
+									}
+								}
+							}
+							else if (internalInit instanceof FieldAccessExpr) {
+								FieldAccessExpr fae = (FieldAccessExpr) internalInit;
+								if (fae.getField().startsWith("ELEMENT_")) {
 									// it is an input
 									List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
 									VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
@@ -547,44 +572,39 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 									vars.add(vd);
 									VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
 									cloned.getStmts().add(new ExpressionStmt(actualResult));
-									break;
 								}
 							}
-						}
-						else if (internalInit instanceof FieldAccessExpr) {
-							FieldAccessExpr fae = (FieldAccessExpr) internalInit;
-							if (fae.getField().startsWith("ELEMENT_")) {
-								// it is an input
+							else if (internalInit instanceof ObjectCreationExpr) {
+								ObjectCreationExpr oce = (ObjectCreationExpr) internalInit;
 								List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
 								VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
-								vd.setInit(new NameExpr(param.get(0).getId().getName()));
+								vd.setInit(oce);
+								vars.add(vd);
+								VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+								cloned.getStmts().add(new ExpressionStmt(actualResult));
+							}
+							else if (internalInit instanceof MethodCallExpr) {
+								List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+								VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+								vd.setInit(internalInit);
 								vars.add(vd);
 								VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
 								cloned.getStmts().add(new ExpressionStmt(actualResult));
 							}
 						}
-						else if (internalInit instanceof ObjectCreationExpr) {
-							ObjectCreationExpr oce = (ObjectCreationExpr) internalInit;
+					}
+					else if (e instanceof CastExpr) {
+						Expression exp = ((CastExpr) e).getExpr();
+						if (exp instanceof IntegerLiteralExpr) {
 							List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
 							VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
-							vd.setInit(oce);
-							vars.add(vd);
-							VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
-							cloned.getStmts().add(new ExpressionStmt(actualResult));
-						}
-						else if (internalInit instanceof MethodCallExpr) {
-							List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
-							VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
-							vd.setInit(internalInit);
+							vd.setInit(e);
 							vars.add(vd);
 							VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
 							cloned.getStmts().add(new ExpressionStmt(actualResult));
 						}
 					}
-				}
-				else if (e instanceof CastExpr) {
-					Expression exp = ((CastExpr) e).getExpr();
-					if (exp instanceof IntegerLiteralExpr) {
+					else if (e instanceof NullLiteralExpr) {
 						List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
 						VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
 						vd.setInit(e);
@@ -593,24 +613,69 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 						cloned.getStmts().add(new ExpressionStmt(actualResult));
 					}
 				}
-				else if (e instanceof NullLiteralExpr) {
+				else if (init instanceof MethodCallExpr) {
+					// the actual_result is the return value
+					vde.setType(ASTHelper.createReferenceType(resultType, arrayDimension));
+					vde.getVars().get(0).getId().setName("actual_result");
+				}
+				else if (init instanceof NameExpr) {
+					NameExpr valueName = (NameExpr) init;
+					for (Parameter parameter : param) {
+						if(parameter.getId().getName().equals(valueName.getName())) {
+							// it is an input
+							List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+							VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+							vd.setInit(new NameExpr(param.get(0).getId().getName()));
+							vars.add(vd);
+							VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+							cloned.getStmts().add(new ExpressionStmt(actualResult));
+							break;
+						}
+					}
+				}
+				else if (init instanceof CastExpr) {
 					List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
 					VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
-					vd.setInit(e);
+					vd.setInit(((CastExpr) init).getExpr());
 					vars.add(vd);
 					VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
 					cloned.getStmts().add(new ExpressionStmt(actualResult));
 				}
-			}
-			else if (init instanceof MethodCallExpr) {
-				// the actual_result is the return value
-				vde.setType(ASTHelper.createReferenceType(resultType, arrayDimension));
-				vde.getVars().get(0).getId().setName("actual_result");
-			}
-			else if (init instanceof NameExpr) {
-				NameExpr valueName = (NameExpr) init;
-				for (Parameter parameter : param) {
-					if(parameter.getId().getName().equals(valueName.getName())) {
+				else if (init instanceof BooleanLiteralExpr) {
+					List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+					VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+					vd.setInit(init);
+					vars.add(vd);
+					VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+					cloned.getStmts().add(new ExpressionStmt(actualResult));
+				}
+				else if (init instanceof IntegerLiteralExpr) {
+					List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+					VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+					vd.setInit(init);
+					vars.add(vd);
+					VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+					cloned.getStmts().add(new ExpressionStmt(actualResult));
+				}
+				else if (init instanceof DoubleLiteralExpr) {
+					List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+					VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+					vd.setInit(init);
+					vars.add(vd);
+					VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+					cloned.getStmts().add(new ExpressionStmt(actualResult));
+				}
+				else if (init instanceof StringLiteralExpr) {
+					List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+					VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+					vd.setInit(init);
+					vars.add(vd);
+					VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+					cloned.getStmts().add(new ExpressionStmt(actualResult));
+				}
+				else if (init instanceof FieldAccessExpr) {
+					FieldAccessExpr fae = (FieldAccessExpr) init;
+					if (fae.getField().startsWith("ELEMENT_")) {
 						// it is an input
 						List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
 						VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
@@ -618,93 +683,40 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 						vars.add(vd);
 						VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
 						cloned.getStmts().add(new ExpressionStmt(actualResult));
-						break;
+					}
+					else {
+						List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
+						VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
+						vd.setInit(fae);
+						vars.add(vd);
+						VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
+						cloned.getStmts().add(new ExpressionStmt(actualResult));
 					}
 				}
-			}
-			else if (init instanceof CastExpr) {
-				List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
-				VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
-				vd.setInit(((CastExpr) init).getExpr());
-				vars.add(vd);
-				VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
-				cloned.getStmts().add(new ExpressionStmt(actualResult));
-			}
-			else if (init instanceof BooleanLiteralExpr) {
-				List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
-				VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
-				vd.setInit(init);
-				vars.add(vd);
-				VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
-				cloned.getStmts().add(new ExpressionStmt(actualResult));
-			}
-			else if (init instanceof IntegerLiteralExpr) {
-				List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
-				VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
-				vd.setInit(init);
-				vars.add(vd);
-				VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
-				cloned.getStmts().add(new ExpressionStmt(actualResult));
-			}
-			else if (init instanceof DoubleLiteralExpr) {
-				List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
-				VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
-				vd.setInit(init);
-				vars.add(vd);
-				VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
-				cloned.getStmts().add(new ExpressionStmt(actualResult));
-			}
-			else if (init instanceof StringLiteralExpr) {
-				List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
-				VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
-				vd.setInit(init);
-				vars.add(vd);
-				VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
-				cloned.getStmts().add(new ExpressionStmt(actualResult));
-			}
-			else if (init instanceof FieldAccessExpr) {
-				FieldAccessExpr fae = (FieldAccessExpr) init;
-				if (fae.getField().startsWith("ELEMENT_")) {
-					// it is an input
+				else if (init instanceof ObjectCreationExpr) {
+					ObjectCreationExpr oce = (ObjectCreationExpr) init;
 					List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
 					VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
-					vd.setInit(new NameExpr(param.get(0).getId().getName()));
+					vd.setInit(oce);
 					vars.add(vd);
 					VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
 					cloned.getStmts().add(new ExpressionStmt(actualResult));
+					return;
 				}
-				else {
+				else if (init instanceof UnaryExpr) {
+					UnaryExpr ue = (UnaryExpr) init;
 					List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
 					VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
-					vd.setInit(fae);
+					vd.setInit(ue);
 					vars.add(vd);
 					VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
 					cloned.getStmts().add(new ExpressionStmt(actualResult));
-				}
-			}
-			else if (init instanceof ObjectCreationExpr) {
-				ObjectCreationExpr oce = (ObjectCreationExpr) init;
-				List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
-				VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
-				vd.setInit(oce);
-				vars.add(vd);
-				VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
-				cloned.getStmts().add(new ExpressionStmt(actualResult));
-				return;
-			}
-			else if (init instanceof UnaryExpr) {
-				UnaryExpr ue = (UnaryExpr) init;
-				List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
-				VariableDeclarator vd = new VariableDeclarator(new VariableDeclaratorId("actual_result"));
-				vd.setInit(ue);
-				vars.add(vd);
-				VariableDeclarationExpr actualResult = new VariableDeclarationExpr(ASTHelper.createReferenceType(resultType, arrayDimension), vars);
-				cloned.getStmts().add(new ExpressionStmt(actualResult));
-				return;
+					return;
 
+				}
+				NameExprRenamer conv = new NameExprRenamer(varName, "actual_result");
+				conv.visit(cloned, null);
 			}
-			NameExprRenamer conv = new NameExprRenamer(varName, "actual_result");
-			conv.visit(cloned, null);
 		}
 	}
 

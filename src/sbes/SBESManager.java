@@ -148,7 +148,7 @@ public class SBESManager {
 							}
 							else {
 								// counterexample found: generate the corresponding test scenario and add it to the stub
-								stub = generateFirstStageStubWithCounterexample(counterexample);
+								stub = generateFirstStageStubFromCounterexample(counterexample);
 							}
 						}
 
@@ -246,6 +246,7 @@ public class SBESManager {
 		else {
 			logger.info("Successfully synthesized a valid candidate");
 		}
+		
 		return candidates.get(0);
 	}
 
@@ -334,8 +335,8 @@ public class SBESManager {
 		logger.info("Generating counterexample - done");
 		return toReturn;
 	}
-
-	private Stub generateFirstStageStubWithCounterexample(final CarvingResult counterexample) {
+	
+	private Stub generateFirstStageStubFromCounterexample(final CarvingResult counterexample) {
 		DirectoryUtils directory = DirectoryUtils.I();
 		CounterexampleGeneralizer cg = new CounterexampleGeneralizer();
 		TestScenario counterexampleScenario = cg.counterexampleToTestScenario(counterexample);
