@@ -135,6 +135,7 @@ public class EquivalenceRepository {
 				}
 				System.out.println("================================================================================");
 			}
+			System.out.println();
 		}
 		else {
 			logger.fatal("Unable to synthesize any equivalent sequence");
