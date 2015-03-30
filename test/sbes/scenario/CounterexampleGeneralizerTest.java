@@ -109,5 +109,54 @@ public class CounterexampleGeneralizerTest {
 		List<FieldDeclaration> actualFields = ts.getInputAsFields();
 		assertFieldsAndPrint(actualFields, new String[] {"public static final Object ELEMENT_1_0 = null;"});
 	}
+	
+	@Test
+	public void test2() throws ParseException {
+		setUp("./test/resources/guava-12.0.1.jar", "com.google.common.collect.ArrayListMultimap.containsEntry(Object,Object)");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"ArrayListMultimap_Stub_2 arrayListMultimap_Stub_2_0 = new ArrayListMultimap_Stub_2();"+
+				"int int0 = 0;"+
+				"Integer integer0 = new Integer(int0);"+
+				"Integer integer1 = new Integer((int) integer0);"+
+				"Integer integer2 = new Integer((int) integer1);"+
+				"Integer integer3 = new Integer(int0);"+
+				"ArrayListMultimap<Integer, String> arrayListMultimap0 = ArrayListMultimap.create((int) integer2, (int) integer3);"+
+				"Integer integer4 = new Integer((int) integer2);"+
+				"Integer integer5 = new Integer((int) integer4);"+
+				"arrayListMultimap_Stub_2_0.method_under_test((Object) arrayListMultimap0, (Object) integer5);"+
+				"arrayListMultimap_Stub_2_0.trimToSize();"+
+				"Object object0 = new Object();"+
+				"}");
+		
+		CarvingResult cr = new CarvingResult(body, new ArrayList<ImportDeclaration>());
+		CounterexampleGeneralizer cg = new CounterexampleGeneralizer();
+		TestScenario ts = cg.counterexampleToTestScenario(cr);
+		
+		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
+		assertEquals(2, tswg.getGenericToConcreteClasses().size());
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("String"));
+		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
+		assertEquals("Integer", values.get(0));
+		assertEquals("String", values.get(1));
+		
+		String actualScenario = ts.getScenario().toString();
+		String expectedScenario = 
+				"{"+
+				"ArrayListMultimap arrayListMultimap_Stub_2_0_0 = new ArrayListMultimap();"+
+				"expected_results[0] = expected_states[0].containsEntry((Object) ELEMENT_0_1, ELEMENT_0_0);" +
+				"}";
+		
+		assertScenarioAndPrint(actualScenario, expectedScenario);
+		
+		List<FieldDeclaration> actualFields = ts.getInputAsFields();
+		assertFieldsAndPrint(actualFields, new String[] {
+			"public static final Integer ELEMENT_0_0 = 0;", 
+			"public static final ArrayListMultimap<Integer, String> ELEMENT_0_1 = ArrayListMultimap.create((int) new Integer(0), (int) new Integer(0));"
+		});
+	}
 
 }
