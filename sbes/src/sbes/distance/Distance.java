@@ -69,11 +69,27 @@ public class Distance {
 			//========================================CORNER CASES========================================
 			//------------------NULL-------------------
 			if (obj1 == null && obj2 == null) {
+				logger.debug("Both objects are null");
 				continue;
 			}
 			else if (obj1 == null ^ obj2 == null) {
-				distance += ObjectDistance.getNullDistance(obj1, obj2);
-				continue;
+				logger.debug("One of the two objects is null");
+				String name = "";
+				if (obj1 != null) {
+					name = obj1.getClass().getName(); 
+				}
+				else {
+					name = obj2.getClass().getName();
+				}
+				
+				if (name.contains("$")) {
+					logger.debug("The concrete object is an anonymous class, lazy init?");
+					continue; // lazy-init trick
+				}
+				else {
+					distance += ObjectDistance.getNullDistance(obj1, obj2);
+					continue;
+				}
 			}
 			
 			//------------DIFFERENT CLASSES------------
@@ -161,6 +177,7 @@ public class Distance {
 				} catch (Exception e) {
 					logger.error("Error during distance calculation", e);
 				}
+				logger.debug("Distance: " + distance);
 			}
 		}
 		
