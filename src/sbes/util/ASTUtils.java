@@ -127,6 +127,14 @@ public class ASTUtils {
 		return es_bd;
 	}
 	
+	public static BodyDeclaration createGenericStubHelperArray(String classType, String varId) {
+		ArrayCreationExpr es_ace = new ArrayCreationExpr(ASTHelper.createReferenceType(classType.substring(0, classType.indexOf('<')), 0), ASTUtils.getArraysDimension(), 0);
+		VariableDeclarator expected_states = ASTUtils.createDeclarator(varId, es_ace);
+		String referenceType = classType;
+		BodyDeclaration es_bd = new FieldDeclaration(Modifier.PRIVATE | Modifier.FINAL, ASTHelper.createReferenceType(referenceType, 1), expected_states);
+		return es_bd;
+	}
+	
 	public static List<Expression> createParameters(List<Parameter> parameters) {
 		List<Expression> astParameters = new ArrayList<Expression>();
 		if (!parameters.isEmpty()) {

@@ -75,8 +75,14 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 		if (!targetMethod.getReturnType().equals(void.class)) {
 			Type returnType = ASTUtils.getReturnConcreteType(generics, genericToConcreteClasses, targetMethod);
 			if (returnType.toString().contains("<")) {
-				declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), genericToConcreteClasses, EXPECTED_RESULT));
-				declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), genericToConcreteClasses, ACTUAL_RESULT));
+				if (returnType.toString().contains(c.getSimpleName())) {
+					declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), genericToConcreteClasses, EXPECTED_RESULT));
+					declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), genericToConcreteClasses, ACTUAL_RESULT));
+				}
+				else {
+					declarations.add(ASTUtils.createGenericStubHelperArray(returnType.toString(), EXPECTED_RESULT));
+					declarations.add(ASTUtils.createGenericStubHelperArray(returnType.toString(), ACTUAL_RESULT));
+				}
 			}
 			else {
 				declarations.add(ASTUtils.createStubHelperArray(returnType.toString(), EXPECTED_RESULT));
