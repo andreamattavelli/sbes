@@ -169,4 +169,49 @@ public class FirstStageStubGeneratorTest {
 		assertThatCompiles("com/google/common/collect", first.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
 	}
 	
+	@Test
+	public void test03() throws ParseException {
+		setUp("./test/resources/guava-12.0.1.jar", "com.google.common.collect.ArrayListMultimap.replaceValues(Object,Iterable)", "ArrayListMultimap_Stub");
+		
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.List"), false, false));
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.ArrayList"), false, false));
+		
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"ArrayListMultimap<Integer, String> arrayListMultimap0 = ArrayListMultimap.create();"+
+				"boolean boolean1 = arrayListMultimap0.put(-1698, \"pluto\");"+
+				"boolean boolean2 = arrayListMultimap0.put(123, \"asd\");"+
+				"boolean boolean3 = arrayListMultimap0.put(18, \"ginger\");"+
+				"List<String> list1 = new ArrayList<String>();"+
+				"list1.add(\"adhs8haf8shf8\");"+
+				"List<String> list0 = arrayListMultimap0.replaceValues(123, list1);"+
+				"}");
+		
+		CarvingResult carvedScenario = new CarvingResult(body, imports);
+		
+		List<TestScenario> scenarios = new ArrayList<>();
+		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
+		TestScenario ts = tsg.testToTestScenario(carvedScenario);
+		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		assertEquals(2, ts.getInputAsFields().size());
+		
+		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
+		assertEquals(2, tswg.getGenericToConcreteClasses().size());
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("String"));
+		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
+		assertEquals("Integer", values.get(0));
+		assertEquals("String", values.get(1));
+		
+		scenarios.add(tswg);
+		
+		// preconditions ok
+		
+		FirstStageGeneratorStubWithGenerics fssg = new FirstStageGeneratorStubWithGenerics(scenarios);
+		Stub first = fssg.generateStub();
+		first.dumpStub("./test/resources/compilation");
+		assertThatCompiles("com/google/common/collect", first.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+	}
+	
 }

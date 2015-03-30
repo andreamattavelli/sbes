@@ -58,7 +58,7 @@ public class Distance {
 	
 	private static double calculate(Object o1, Object o2) {
 		double distance = 0.0d;
-		int fieldCount = 0;
+		double lazyInitDistance = 0.0d;
 		
 		worklist.add(new DistancePair(o1, o2));
 
@@ -83,12 +83,20 @@ public class Distance {
 					name = obj2.getClass().getName();
 				}
 				
-				if (name.contains("$") && StringUtils.isNumeric(name.subSequence(name.indexOf('$'), name.length()))) {
-					logger.debug("The concrete object is an anonymous class, lazy init?");
+				if (name.contains("$") && StringUtils.isNumeric(name.subSequence(name.indexOf('$') + 1, name.length()))) {
+					logger.debug("One object is an anonymous class, lazy init?");
+					lazyInitDistance += ObjectDistance.getNullDistance(o1, o2);
 					continue; // lazy-init trick
+				}
+				else if (name.contains("$")) {
+					logger.debug("One object is a private class, lazy init?");
+					lazyInitDistance += ObjectDistance.getNullDistance(o1, o2);
+					logger.debug("Distance: " + distance);
+					continue;
 				}
 				else {
 					distance += ObjectDistance.getNullDistance(obj1, obj2);
+					logger.debug("Distance: " + distance);
 					continue;
 				}
 			}
@@ -97,6 +105,7 @@ public class Distance {
 			else if (!obj1.getClass().equals(obj2.getClass())) {
 				logger.debug("different classes: " + obj1.getClass() + " vs " + obj2.getClass());
 				distance += DIFFERENT_CLASSES_WEIGHT;
+				logger.debug("Distance: " + distance);
 				continue;
 			}
 			
@@ -105,18 +114,23 @@ public class Distance {
 			// primitive classes (e.g. Integer)
 			else if (ReflectionUtils.isPrimitive(obj1)) {
 				distance += PrimitiveDistance.distance(obj1, obj2);
+				logger.debug("Distance: " + distance);
 				continue;
 			}
 			
 			//------------------STRING-----------------
 			else if (ReflectionUtils.isString(obj1)) {
+				logger.debug("Strings");
 				distance += LevenshteinDistance.calculateDistance((String) obj1, (String) obj2);
+				logger.debug("Distance: " + distance);
 				continue;
 			}
 			
 			//-----------------ARRAYS------------------
 			else if (ReflectionUtils.isArray(obj1)) {
+				logger.debug("Arrays");
 				distance += handleArray(obj1, obj2);
+				logger.debug("Distance: " + distance);
 				continue;
 			}
 			
@@ -182,8 +196,8 @@ public class Distance {
 			}
 		}
 		
-		if (fieldCount > 0) {
-			return distance / (double) fieldCount; 
+		if (lazyInitDistance > 0.0d && distance > 0.0d) {
+			return distance + lazyInitDistance;
 		}
 		else {
 			return distance;
