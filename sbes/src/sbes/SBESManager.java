@@ -66,7 +66,6 @@ public class SBESManager {
 				generateEquivalencesForMethod();
 			} catch (Throwable t) {
 				logger.fatal(t.getMessage());
-				t.printStackTrace();
 			} finally {
 				// cleanup
 				cleanup(method);
@@ -367,13 +366,13 @@ public class SBESManager {
 	private List<String> computeTargets() {
 		List<String> targetMethods = new ArrayList<>();
 		if (Options.I().getTargetMethod() != null) {
-			logger.info("Target: single method");
+			logger.info("Target: METHOD");
 			logger.info("Target methods:");
 			logger.info("  " + Options.I().getTargetMethod());
 			targetMethods.add(Options.I().getTargetMethod());
 		}
 		else {
-			logger.info("Target: class " + Options.I().getTargetClass());
+			logger.info("Target: CLASS " + Options.I().getTargetClass());
 			logger.info("Target methods:");
 			Class<?> clazz = ClassUtils.getClass(Options.I().getTargetClass());
 			Method[] methods = ClassUtils.getClassMethods(clazz);
