@@ -33,12 +33,15 @@ public class SBES {
 		}
 
 		try {
+			logger.info("SBES started");
 			final SBESShutdownInterceptor shutdown = new SBESShutdownInterceptor();
 			Signal.handle(new Signal("INT"), shutdown);
 			
 			final SBESManager generator = new SBESManager();
 			generator.generate();
-		} catch (SBESException | GenerationException | WorkerException e) {
+			
+			logger.info("SBES ended successfully");
+		} catch (SBESException | GenerationException | WorkerException e) { // we should have already intercepted all exceptions but SBESException
 			logger.fatal("Execution aborted due: " + e.getMessage());
 		}
 	}

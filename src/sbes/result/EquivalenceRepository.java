@@ -123,6 +123,7 @@ public class EquivalenceRepository {
 	}
 
 	public void printEquivalences() {
+		logger.info("Statistics: ");
 		if (equivalences.size() > 0) {
 			logger.info("Equivalent sequences synthesized:");
 			for (Entry<String, List<EquivalentSequence>> e : equivalences.entrySet()) {

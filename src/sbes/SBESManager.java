@@ -367,11 +367,13 @@ public class SBESManager {
 	private List<String> computeTargets() {
 		List<String> targetMethods = new ArrayList<>();
 		if (Options.I().getTargetMethod() != null) {
-			logger.info("Single target mode. Target method: " + Options.I().getTargetMethod());
+			logger.info("Target: single method");
+			logger.info("Target methods:");
+			logger.info("  " + Options.I().getTargetMethod());
 			targetMethods.add(Options.I().getTargetMethod());
 		}
 		else {
-			logger.info("Class target mode. Target class: " + Options.I().getTargetClass());
+			logger.info("Target: class " + Options.I().getTargetClass());
 			logger.info("Target methods:");
 			Class<?> clazz = ClassUtils.getClass(Options.I().getTargetClass());
 			Method[] methods = ClassUtils.getClassMethods(clazz);
