@@ -3,6 +3,7 @@ package sbes.scenario.generalizer;
 import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.body.VariableDeclarator;
 import japa.parser.ast.expr.Expression;
+import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.stmt.BlockStmt;
 import japa.parser.ast.stmt.ExpressionStmt;
@@ -75,7 +76,13 @@ public class CounterexampleGeneralizer extends AbstractGeneralizer {
 		
 		new PrimitiveFlattener().visit(counterexample.getBody(), null);
 		
+		boolean foundMethodUnderTest = false;
 		for (int i = 0; i < counterexample.getBody().getStmts().size(); i++) {
+			if (foundMethodUnderTest) {
+				counterexample.getBody().getStmts().remove(i);
+				i--;
+			}
+			
 			Statement stmt = counterexample.getBody().getStmts().get(i);
 			if (stmt instanceof ExpressionStmt) {
 				Expression e = ((ExpressionStmt) stmt).getExpression();
@@ -88,6 +95,19 @@ public class CounterexampleGeneralizer extends AbstractGeneralizer {
 					if (!vuv.isUsed()) {
 						counterexample.getBody().getStmts().remove(i);
 						i--;
+					}
+					
+					if (var.getInit() instanceof MethodCallExpr) {
+						MethodCallExpr mce = (MethodCallExpr) var.getInit();
+						if (mce.getName().equals("method_under_test")) {
+							foundMethodUnderTest = true;
+						}
+					}
+				}
+				else if (e instanceof MethodCallExpr) {
+					MethodCallExpr mce = (MethodCallExpr) e;
+					if (mce.getName().equals("method_under_test")) {
+						foundMethodUnderTest = true;
 					}
 				}
 			}
