@@ -21,6 +21,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import sbes.util.ReflectionUtils;
+
 public class ExtractValuesFromTargetMethodVisitor extends VoidVisitorAdapter<String> {
 	private int index;
 	private Method targetMethod;
@@ -76,6 +78,14 @@ public class ExtractValuesFromTargetMethodVisitor extends VoidVisitorAdapter<Str
 			VariableDeclarator variable = new VariableDeclarator(new VariableDeclaratorId("ELEMENT_" + index + "_" + fields.size()), init);
 			FieldDeclaration fd = new FieldDeclaration(Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, string, variable);
 			fields.add(fd);
+		} else if (arg instanceof ObjectCreationExpr) { 
+			ObjectCreationExpr oce = (ObjectCreationExpr) arg;
+			if (ReflectionUtils.primitivesStringRepresentation.contains(oce.getType().toString())) {
+				handleArgument(n, oce.getArgs().get(0), i);
+			}
+			else {
+				// we need to check its arguments, let's put it in the TODOLIST
+			}
 		} else if (arg instanceof CastExpr) {
 			CastExpr ce = (CastExpr) arg;
 			handleArgument(n, ce.getExpr(), i);
