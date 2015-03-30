@@ -10,6 +10,7 @@ import java.util.Map;
 
 import sbes.logging.Logger;
 import sbes.util.ReflectionUtils;
+import sbes.util.StringUtils;
 
 public class Distance {
 
@@ -82,7 +83,7 @@ public class Distance {
 					name = obj2.getClass().getName();
 				}
 				
-				if (name.contains("$")) {
+				if (name.contains("$") && StringUtils.isNumeric(name.subSequence(name.indexOf('$'), name.length()))) {
 					logger.debug("The concrete object is an anonymous class, lazy init?");
 					continue; // lazy-init trick
 				}
