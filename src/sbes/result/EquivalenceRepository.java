@@ -16,6 +16,7 @@ import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.util.ClassUtils;
+import sbes.util.StringUtils;
 
 public class EquivalenceRepository {
 
@@ -131,7 +132,7 @@ public class EquivalenceRepository {
 				int i = 1;
 				for (EquivalentSequence eqSeq : e.getValue()) {
 					System.out.println("EqSeq" + i++);
-					System.out.println(eqSeq.toString());
+					System.out.println(StringUtils.chomp(eqSeq.toString()));
 				}
 				System.out.println("================================================================================");
 			}
