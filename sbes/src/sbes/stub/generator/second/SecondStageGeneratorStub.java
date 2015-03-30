@@ -60,6 +60,7 @@ import sbes.ast.MethodCallVisitor;
 import sbes.ast.VariableDeclarationVisitor;
 import sbes.ast.VariableUseVisitor;
 import sbes.ast.renamer.NameExprRenamer;
+import sbes.ast.renamer.StubRenamer;
 import sbes.exceptions.GenerationException;
 import sbes.logging.Logger;
 import sbes.option.Options;
@@ -341,11 +342,9 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 			throw new GenerationException("Stub object not found!");
 		}
 
-		NameExprRenamer visitor = new NameExprRenamer(stubObjectName, "clone");
-		visitor.visit(cloned, null);
-
-		ArrayStubRemoverVisitor msv = new ArrayStubRemoverVisitor();
-		msv.visit(cloned, null);
+		new NameExprRenamer(stubObjectName, "clone").visit(cloned, null);
+		new StubRenamer(stubName, stubName.substring(0, stubName.indexOf('_'))).visit(cloned, null);
+		new ArrayStubRemoverVisitor().visit(cloned, null);
 	}
 
 	/*
