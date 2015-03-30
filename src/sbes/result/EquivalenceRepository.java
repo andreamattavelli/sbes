@@ -133,6 +133,7 @@ public class EquivalenceRepository {
 				for (EquivalentSequence eqSeq : e.getValue()) {
 					System.out.println("EqSeq" + i++);
 					System.out.println(StringUtils.chomp(eqSeq.toString()));
+					System.out.println();
 				}
 				System.out.println("================================================================================");
 			}
