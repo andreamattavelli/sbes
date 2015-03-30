@@ -43,7 +43,6 @@ import sbes.util.ClasspathUtils;
 import sbes.util.DirectoryUtils;
 import sbes.util.EvosuiteUtils;
 import sbes.util.IOUtils;
-import sbes.util.StringUtils;
 
 public class SBESManager {
 
@@ -319,7 +318,8 @@ public class SBESManager {
 				logger.debug("Spurious result, iterating");
 			}
 			else {
-				logger.info("Equivalence synthesized: " + System.lineSeparator() + StringUtils.chomp(cStub.getEquivalence().toString()));
+				logger.info("Equivalence synthesized: ");
+				EquivalenceRepository.printEquivalence(cStub.getEquivalence());
 				EquivalenceRepository.getInstance().addEquivalence(cStub.getEquivalence());
 			}
 		}
