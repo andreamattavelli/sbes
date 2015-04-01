@@ -1,25 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project basedir="." default="build" name="sbes">
-	<property name="debuglevel" value="source,lines,vars"/>
-	<property name="target" value="1.7"/>
-	<property name="source" value="1.7"/>
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="target" value="1.7" />
+	<property name="source" value="1.7" />
+
 	<path id="sbes.classpath">
-		<pathelement location="bin"/>
-		<pathelement location="lib/args4j-2.0.21.jar"/>
-		<pathelement location="lib/asm-4.2.jar"/>
-		<pathelement location="lib/javaparser-1.0.10.jar"/>
+		<pathelement location="bin" />
+		<pathelement location="lib/args4j-2.0.21.jar" />
+		<pathelement location="lib/asm-4.2.jar" />
+		<pathelement location="lib/javaparser-1.0.10.jar" />
 	</path>
+
 	<target name="init">
-		<mkdir dir="bin"/>
+		<mkdir dir="bin" />
 	</target>
+
 	<target name="clean">
-		<delete dir="bin"/>
+		<delete dir="bin" />
 	</target>
-	<target depends="clean" name="cleanall"/>
+
+	<target depends="clean" name="cleanall" />
+
 	<target depends="init" name="build">
 		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
-			<src path="src"/>
-			<classpath refid="sbes.classpath"/>
+			<src path="src" />
+			<classpath refid="sbes.classpath" />
 		</javac>
 	</target>
+
+	<target name="test" depends="build">
+		<junit fork="no" printsummary="yes">
+			<classpath refid="sbes.classpath" />
+			<test name="sbes.AllTests" haltonfailure="no" />
+		</junit>
+	</target>
+
 </project>
