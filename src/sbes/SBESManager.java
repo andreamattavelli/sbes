@@ -66,6 +66,7 @@ public class SBESManager {
 				generateEquivalencesForMethod();
 			} catch (Throwable t) {
 				logger.fatal(t.getMessage());
+				t.printStackTrace();
 			} finally {
 				// cleanup
 				cleanup(method);
@@ -358,6 +359,7 @@ public class SBESManager {
 	private void cleanup(String method) {
 		DirectoryUtils.reset();
 		TestScenarioRepository.reset();
+		EquivalenceRepository.reset();
 		
 		logger.info("Finished generation of equivalences");
 		IOUtils.formatEndMessage(logger, method);
