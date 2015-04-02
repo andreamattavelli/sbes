@@ -116,7 +116,11 @@ public class ClassUtils {
 	}
 	
 	public static String getSimpleClassnameFromCanonical(final String canonical) {
-		return canonical.substring(canonical.lastIndexOf('.') + 1);
+		String toReturn = canonical.substring(canonical.lastIndexOf('.') + 1); 
+		if (toReturn.contains("<")) {
+			toReturn = toReturn.substring(0, toReturn.indexOf('<'));
+		}
+		return toReturn;
 	}
 	
 	public static String getPackage(final String signature) {
