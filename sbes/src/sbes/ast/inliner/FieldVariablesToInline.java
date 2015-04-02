@@ -3,6 +3,7 @@ package sbes.ast.inliner;
 import japa.parser.ast.body.VariableDeclarator;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.FieldAccessExpr;
+import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.type.ReferenceType;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
@@ -10,6 +11,7 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+import sbes.util.ASTUtils;
 import sbes.util.ReflectionUtils;
 
 public class FieldVariablesToInline extends VoidVisitorAdapter<Void> {
@@ -38,6 +40,11 @@ public class FieldVariablesToInline extends VoidVisitorAdapter<Void> {
 	private boolean isValid(Expression expr) {
 		if (expr instanceof FieldAccessExpr) {
 			return true;
+		}
+		else if (expr instanceof NameExpr) {
+			if (ASTUtils.getName(expr).startsWith("p")) {
+				return true;
+			}
 		}
 		return false;
 	}
