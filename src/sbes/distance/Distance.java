@@ -268,7 +268,26 @@ public class Distance {
 				for (int i = 0; i < length; i++) {
 					worklist.add(new DistancePair(castedF1[i], castedF2[i]));
 				}
-				distance += (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length) * Distance.ARRAY_CELL_FACTOR;
+				// trick: if two arrays have different length, but that
+				// difference is not used (that is, it is null), then they are equivalent
+				boolean nonNull = false;
+				if (Array.getLength(castedF1) > Array.getLength(castedF2)) {
+					for (int i = length; i < castedF1.length; i++) {
+						if (castedF1[i] != null) {
+							nonNull = true;
+						}
+					}
+				}
+				else if (Array.getLength(castedF1) < Array.getLength(castedF2)) {
+					for (int i = length; i < castedF2.length; i++) {
+						if (castedF2[i] != null) {
+							nonNull = true;
+						}
+					}
+				}
+				if (nonNull) {
+					distance += (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length) * Distance.ARRAY_CELL_FACTOR;
+				}
 			}
 			catch (IllegalArgumentException | IllegalAccessException e) {
 				logger.error("Error during cast", e);
