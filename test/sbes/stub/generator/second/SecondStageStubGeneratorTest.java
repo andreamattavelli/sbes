@@ -58,8 +58,8 @@ public class SecondStageStubGeneratorTest {
 	}
 	
 	protected void assertAndPrint(String actual, String expected) {
-		assertEquals(expected.replaceAll("\\s|\t|\n", ""), actual.replaceAll("\\s|\t|\n", ""));
 		System.out.println(actual);
+		assertEquals(expected.replaceAll("\\s|\t|\n", ""), actual.replaceAll("\\s|\t|\n", ""));
 		System.out.println("====================================================");
 	}
 	
@@ -489,7 +489,6 @@ public class SecondStageStubGeneratorTest {
 				"Cloner c = new Cloner();"+
 				"Stack<Integer> clone = c.deepClone(this);"+
 				"Integer expected_result = this.peek();"+
-				"Integer integer0 = Integer.getInteger(\"1I21yRrt\");"+
 				"Integer actual_result = null;"+
 				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
 				"System.out.println(\"Executed\");"+
@@ -532,7 +531,6 @@ public class SecondStageStubGeneratorTest {
 				"Cloner c = new Cloner();"+
 				"Stack<Integer> clone = c.deepClone(this);"+
 				"Integer expected_result = this.peek();"+
-				"Integer integer0 = Integer.valueOf(0);"+
 				"Integer actual_result = Integer.valueOf(0);"+
 				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
 				"System.out.println(\"Executed\");"+
@@ -748,7 +746,6 @@ public class SecondStageStubGeneratorTest {
 				"Cloner c = new Cloner();"+
 				"Stack<Integer> clone = c.deepClone(this);"+
 				"this.clear();"+
-				"int int0 = Integer.rotateRight(1, (-1));"+
 				"clone.removeElementAt(2);"+
 				"clone.add((Integer) 2);"+
 				"clone.elementAt(2);"+
@@ -1169,7 +1166,6 @@ public class SecondStageStubGeneratorTest {
 				"clone.add((Edge) abstractEdge0);"+
 				"SingleNode singleNode0 = (SingleNode) clone.popNode();"+
 				"clone.add((Edge) abstractEdge0);"+
-				"short short0 = ObjectStreamConstants.STREAM_VERSION;"+
 				"int actual_result = ObjectStreamConstants.STREAM_VERSION;"+
 				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
 				"System.out.println(\"Executed\");"+
@@ -1925,6 +1921,59 @@ public class SecondStageStubGeneratorTest {
 				"List<String> list0 = arrayListMultimap_Stub1.removeAll(object0);"+
 				"clone.replaceValues(p0, (Iterable<? extends String>) list0);"+
 				"boolean actual_result = true;"+
+				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
+				"System.out.println(\"Executed\");"+
+				"}"+
+				"}";
+		assertAndPrint(actual, expected);
+	}
+	
+	@Test
+	public void test40() throws ParseException {
+		setUp("./test/resources/guava-12.0.1.jar", "com.google.common.collect.ArrayListMultimap.create(Multimap)", "ArrayListMultimap_Stub");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"ArrayListMultimap_Stub arrayListMultimap_Stub0 = new ArrayListMultimap_Stub();"+
+				"ArrayListMultimap<Integer, String> arrayListMultimap0 = arrayListMultimap_Stub0.create();"+
+				"LinkedListMultimap<Integer, String> linkedListMultimap0 = ArrayListMultimap_Stub.ELEMENT_0_0;"+
+				"boolean boolean0 = arrayListMultimap0.putAll((Multimap) linkedListMultimap0);"+
+				"arrayListMultimap_Stub0.set_results(arrayListMultimap0);"+
+				"arrayListMultimap_Stub0.method_under_test();"+
+				"}");
+		
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.List"), false, false));
+
+		CarvingResult candidateES = new CarvingResult(body, imports);
+		Map<TypeVariable<?>, String> genericToConcrete = new LinkedHashMap<>();
+		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "K", null, null);
+		TypeVariable<?> v = TypeVariableImpl.<GenericDeclaration>make(Object.class, "V", null, null);
+		genericToConcrete.put(k, "Integer");
+		genericToConcrete.put(v, "String");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(
+				new ArrayList<TestScenario>(), stub, candidateES,
+				new ArrayList<FieldDeclaration>(), genericToConcrete);
+		Stub second = sssg.generateStub();
+		
+		second.dumpStub("./test/resources/compilation");
+		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+		
+		String actual = second.getAst().toString();
+		String expected = 
+				"package com.google.common.collect;"+
+				"import sbes.distance.Distance;"+
+				"import sbes.cloning.Cloner;"+
+				"import java.util.List;"+
+				"public class ArrayListMultimap_Stub_2 extends ArrayListMultimap<Integer, String> {"+
+				"protected ArrayListMultimap_Stub_2() {"+
+				"super();"+
+				"}"+
+				"public void method_under_test(com.google.common.collect.Multimap<? extends Integer, ? extends String> p0) {"+
+				"Cloner c = new Cloner();"+
+				"ArrayListMultimap<Integer, String> clone = c.deepClone(this);"+
+				"com.google.common.collect.ArrayListMultimap<Integer, String> expected_result = this.create(p0);"+
+				"com.google.common.collect.ArrayListMultimap<Integer, String> actual_result = clone.create();"+
+				"boolean boolean0 = actual_result.putAll((Multimap) p0);"+
 				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
 				"System.out.println(\"Executed\");"+
 				"}"+

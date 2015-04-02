@@ -59,6 +59,10 @@ import sbes.ast.EquivalentSequenceCallVisitor;
 import sbes.ast.MethodCallVisitor;
 import sbes.ast.VariableDeclarationVisitor;
 import sbes.ast.VariableUseVisitor;
+import sbes.ast.inliner.FieldVariablesToInline;
+import sbes.ast.inliner.Inliner;
+import sbes.ast.inliner.PrimitiveVariablesToInline;
+import sbes.ast.inliner.StringVariablesToInline;
 import sbes.ast.renamer.NameExprRenamer;
 import sbes.ast.renamer.StubRenamer;
 import sbes.exceptions.GenerationException;
@@ -289,10 +293,70 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		pruneArrayParameters(cloned, targetMethod);
 		//PHASE 5: remove dead code
 		deadCodeElimination(cloned);
+		
+		PrimitiveVariablesToInline pvi = new PrimitiveVariablesToInline();
+		pvi.visit(cloned, null);
+		
+		StringVariablesToInline svi = new StringVariablesToInline();
+		svi.visit(cloned, null);
+		
+		FieldVariablesToInline fvi = new FieldVariablesToInline();
+		fvi.visit(cloned, null);
+		
+		for (VariableDeclarator vd : fvi.getToInline()) {
+			new Inliner().visit(cloned, vd);
+		}
+
+		boolean modified = true;
+		while (modified) {
+			modified = false;
+			for (int i = 0; i < cloned.getStmts().size(); i++) {
+				Statement stmt = cloned.getStmts().get(i);
+				if (stmt instanceof ExpressionStmt) {
+					Expression e = ((ExpressionStmt) stmt).getExpression();
+					if (e instanceof VariableDeclarationExpr) {
+						VariableDeclarationExpr vde = (VariableDeclarationExpr) e;
+						VariableDeclarator var = vde.getVars().get(0); // safe
+
+						if (var.getId().getName().contains("_result")) {
+							continue;
+						}
+
+						VariableUseVisitor vuv = new VariableUseVisitor(var.getId().getName());
+						vuv.visit(cloned, null);
+						if (!vuv.isUsed() && 
+								(!var.getInit().toString().contains("clone") &&!var.getInit().toString().contains("_result")) &&
+								unusedObject(var, cloned)) {
+							cloned.getStmts().remove(i);
+							i--;
+							modified = true;
+						}
+					}
+				}
+			}
+		}
 
 		stmts.addAll(cloned.getStmts());
 
 		return stmts;
+	}
+
+	private boolean unusedObject(VariableDeclarator var, BlockStmt cloned) {
+		if (var.getInit() instanceof MethodCallExpr) {
+			MethodCallExpr mce = (MethodCallExpr) var.getInit();
+			if (Character.isUpperCase(mce.getScope().toString().charAt(0))) {
+				return true; // static call
+			}
+			else {
+				VariableUseVisitor vuv = new VariableUseVisitor(mce.getScope().toString());
+				vuv.visit(cloned, null);
+				if (!vuv.isUsed()) {
+					return true;
+				}
+			}
+			return false;
+		}
+		return true;
 	}
 
 	/*
