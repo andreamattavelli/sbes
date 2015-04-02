@@ -307,7 +307,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 					MethodCallExpr mce = (MethodCallExpr) estmt.getExpression();
 					if (mce.getNameExpr().getName().equals("method_under_test")) {
 						cloned.getStmts().remove(i);
-						break;
+//						break;
 					}
 				}
 			}
@@ -366,7 +366,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 				if (fae.getField().startsWith("ELEMENT_")) {
 					// it is an input
 					for (Parameter p : param) {
-						if (p.getType().equals(vde.getType())) {
+						if (vde.getType().toString().contains(ClassUtils.getSimpleClassnameFromCanonical(p.getType().toString()))) {
 							vde.getVars().get(0).setInit(ASTHelper.createNameExpr(p.getId().getName()));
 							break;
 						}
