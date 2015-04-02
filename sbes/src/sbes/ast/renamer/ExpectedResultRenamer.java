@@ -59,7 +59,8 @@ public class ExpectedResultRenamer extends VoidVisitorAdapter<String> {
 	}
 	
 	private void handleMethodCall(final VariableDeclarationExpr n, final String methodName, final MethodCallExpr mce) {
-		if (mce.getName().equals(methodName) && (parameters == 0 || mce.getArgs().size() == parameters)) {
+		if (mce != null && mce.getName() != null &&
+				mce.getName().equals(methodName) && (parameters == 0 || (mce.getArgs() != null && mce.getArgs().size() == parameters))) {
 			found = true;
 			// found class constructor, switch to EXPECTED_STATES
 			Expression target = new ArrayAccessExpr(ASTHelper.createNameExpr(FirstStageGeneratorStub.EXPECTED_RESULT),
