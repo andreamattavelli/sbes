@@ -55,6 +55,11 @@ public class EquivalenceRepository {
 		return instance;
 	}
 	
+	public static void reset() {
+		getInstance().excluded.clear();
+		getInstance().initTargetMethods();
+	}
+	
 	public void addEquivalence(EquivalentSequence eqSeq) {
 		if (!equivalences.containsKey(Options.I().getTargetMethod())) {
 			equivalences.put(Options.I().getTargetMethod(), new ArrayList<EquivalentSequence>());
