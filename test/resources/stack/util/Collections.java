@@ -154,6 +154,7 @@ public class Collections {
      *         list-iterator does not support the <tt>set</tt> operation.
      * @see Comparable
      */
+    @SuppressWarnings("unchecked")
     public static <T extends Comparable<? super T>> void sort(List<T> list) {
         Object[] a = list.toArray();
         Arrays.sort(a);
@@ -196,6 +197,7 @@ public class Collections {
      *         list-iterator does not support the <tt>set</tt> operation.
      * @see Comparator
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> void sort(List<T> list, Comparator<? super T> c) {
         Object[] a = list.toArray();
         Arrays.sort(a, (Comparator)c);
@@ -341,6 +343,7 @@ public class Collections {
      *         or the search key is not mutually comparable with the
      *         elements of the list using this comparator.
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> int binarySearch(List<? extends T> list, T key, Comparator<? super T> c) {
         if (c==null)
             return binarySearch((List) list, key);
@@ -402,6 +405,7 @@ public class Collections {
      * @throws UnsupportedOperationException if the specified list or
      *         its list-iterator does not support the <tt>set</tt> operation.
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void reverse(List<?> list) {
         int size = list.size();
         if (size < REVERSE_THRESHOLD || list instanceof RandomAccess) {
@@ -477,6 +481,7 @@ public class Collections {
      * @throws UnsupportedOperationException if the specified list or its
      *         list-iterator does not support the <tt>set</tt> operation.
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void shuffle(List<?> list, Random rnd) {
         int size = list.size();
         if (size < SHUFFLE_THRESHOLD || list instanceof RandomAccess) {
@@ -511,6 +516,7 @@ public class Collections {
      *         || j &lt; 0 || j &gt;= list.size()).
      * @since 1.4
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void swap(List<?> list, int i, int j) {
         final List l = list;
         l.set(i, l.set(j, l.get(i)));
@@ -641,6 +647,7 @@ public class Collections {
      * @throws NoSuchElementException if the collection is empty.
      * @see Comparable
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> T min(Collection<? extends T> coll, Comparator<? super T> comp) {
         if (comp==null)
             return (T)min((Collection<SelfComparable>) (Collection) coll);
@@ -711,6 +718,7 @@ public class Collections {
      * @throws NoSuchElementException if the collection is empty.
      * @see Comparable
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> T max(Collection<? extends T> coll, Comparator<? super T> comp) {
         if (comp==null)
             return (T)max((Collection<SelfComparable>) (Collection) coll);
@@ -1369,6 +1377,7 @@ public class Collections {
          *
          * @serial include
          */
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         static class UnmodifiableEntrySet<K,V>
             extends UnmodifiableSet<Map.Entry<K,V>> {
             private static final long serialVersionUID = 7854390611657943733L;
@@ -3073,7 +3082,7 @@ public class Collections {
      *
      * @see #emptySet()
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes" })
     public static final Set EMPTY_SET = new EmptySet<Object>();
 
     /**
@@ -3133,7 +3142,7 @@ public class Collections {
      *
      * @see #emptyList()
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public static final List EMPTY_LIST = new EmptyList<Object>();
 
     /**
@@ -3207,7 +3216,7 @@ public class Collections {
      * @see #emptyMap()
      * @since 1.3
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public static final Map EMPTY_MAP = new EmptyMap<Object,Object>();
 
     /**
@@ -3436,6 +3445,7 @@ public class Collections {
     /**
      * @serial include
      */
+    @SuppressWarnings({ "unchecked" })
     private static class CopiesList<E>
         extends AbstractList<E>
         implements RandomAccess, Serializable
@@ -3527,6 +3537,7 @@ public class Collections {
      *         the <tt>Comparable</tt> interface.
      * @see Comparable
      */
+    @SuppressWarnings({ "unchecked" })
     public static <T> Comparator<T> reverseOrder() {
         return (Comparator<T>) ReverseComparator.REVERSE_ORDER;
     }
@@ -3576,6 +3587,7 @@ public class Collections {
     /**
      * @serial include
      */
+    @SuppressWarnings({ "rawtypes" })
     private static class ReverseComparator2<T> implements Comparator<T>,
         Serializable
     {
@@ -3757,6 +3769,7 @@ public class Collections {
      * @see Collection#addAll(Collection)
      * @since 1.5
      */
+    @SuppressWarnings({ "unchecked" })
     public static <T> boolean addAll(Collection<? super T> c, T... elements) {
         boolean result = false;
         for (T element : elements)

@@ -520,6 +520,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * @param o the object to be compared for equality with this list
      * @return {@code true} if the specified object is equal to this list
      */
+    @SuppressWarnings("rawtypes")
     public boolean equals(Object o) {
         if (o == this)
             return true;

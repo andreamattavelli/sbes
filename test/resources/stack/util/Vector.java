@@ -247,6 +247,7 @@ public class Vector<E>
      *
      * @see #ensureCapacity(int)
      */
+    @SuppressWarnings("unused")
     private void ensureCapacityHelper(int minCapacity) {
         int oldCapacity = elementData.length;
         if (minCapacity > oldCapacity) {
