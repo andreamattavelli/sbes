@@ -88,12 +88,15 @@ public class Distance {
 					lazyInitDistance += ObjectDistance.getNullDistance(o1, o2);
 					continue; // lazy-init trick
 				}
-				else if (name.contains("$")) {
-					logger.debug("One object is a private class, lazy init?");
-					lazyInitDistance += ObjectDistance.getNullDistance(o1, o2);
-					logger.debug("Distance: " + distance);
-					continue;
-				}
+				// FIXME maialata per lazyinit, disattivata
+//				else if (name.contains("$") && (name.substring(name.indexOf('$') + 1, name.length()).contains("Map") ||
+//						name.substring(name.indexOf('$') + 1, name.length()).contains("map"))) {
+//					logger.debug("One object is a private class, lazy init?");
+//					distance += ObjectDistance.getNullDistance(o1, o2);
+//					lazyInitDistance += ObjectDistance.getNullDistance(o1, o2);
+//					logger.debug("Distance: " + distance);
+//					continue;
+//				}
 				else {
 					distance += ObjectDistance.getNullDistance(obj1, obj2);
 					logger.debug("Distance: " + distance);
