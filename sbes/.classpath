@@ -6,7 +6,6 @@
 	<classpathentry kind="lib" path="lib/args4j-2.0.21.jar"/>
 	<classpathentry kind="lib" path="lib/javaparser-1.0.10.jar"/>
 	<classpathentry kind="lib" path="lib/asm-4.2.jar"/>
-	<classpathentry kind="lib" path="test/resources/gs-core-1.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/Java SE 7 [1.7.0_51]"/>
 	<classpathentry kind="output" path="bin"/>
