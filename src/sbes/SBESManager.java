@@ -43,6 +43,7 @@ import sbes.util.ClasspathUtils;
 import sbes.util.DirectoryUtils;
 import sbes.util.EvosuiteUtils;
 import sbes.util.IOUtils;
+import sbes.util.ReflectionUtils;
 
 public class SBESManager {
 
@@ -378,8 +379,8 @@ public class SBESManager {
 		else {
 			logger.info("Target: CLASS " + Options.I().getTargetClass());
 			logger.info("Target methods:");
-			Class<?> clazz = ClassUtils.getClass(Options.I().getTargetClass());
-			Method[] methods = ClassUtils.getClassMethods(clazz);
+			Class<?> clazz = ReflectionUtils.getClass(Options.I().getTargetClass());
+			Method[] methods = ReflectionUtils.getClassMethods(clazz);
 			for (Method method : methods) {
 				if (method.getName().equals("toString") 	|| 
 						method.getName().equals("hashCode") ||
