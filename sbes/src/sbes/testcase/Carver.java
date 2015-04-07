@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import sbes.ast.MethodCallVisitor;
 import sbes.ast.EvoSuiteTestCaseVisitor;
+import sbes.ast.MethodCallVisitor;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.result.CarvingResult;

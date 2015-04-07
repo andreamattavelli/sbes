@@ -16,6 +16,7 @@ import sbes.execution.InternalClassloader;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.util.ClassUtils;
+import sbes.util.ReflectionUtils;
 import sbes.util.StringUtils;
 
 public class EquivalenceRepository {
@@ -45,7 +46,7 @@ public class EquivalenceRepository {
 			throw new SBESException("Target class not found");
 		}
 		// get class methods
-		methods = ClassUtils.getClassMethods(c);
+		methods = ReflectionUtils.getClassMethods(c);
 	}
 
 	public static EquivalenceRepository getInstance() {

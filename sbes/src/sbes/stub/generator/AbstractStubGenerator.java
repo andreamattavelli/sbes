@@ -22,6 +22,7 @@ import sbes.option.Options;
 import sbes.scenario.TestScenario;
 import sbes.stub.Stub;
 import sbes.util.ClassUtils;
+import sbes.util.ReflectionUtils;
 
 public abstract class AbstractStubGenerator {
 
@@ -53,11 +54,11 @@ public abstract class AbstractStubGenerator {
 		generics = c.getTypeParameters();
 		
 		// get class' methods
-		Method[] methods = ClassUtils.getClassMethods(c);
+		Method[] methods = ReflectionUtils.getClassMethods(c);
 		// get method signature
 		String methodSignature = ClassUtils.getMethodname(Options.I().getTargetMethod());
 		// get target method from the list of class' methods
-		Method targetMethod = ClassUtils.findTargetMethod(methods, methodSignature);
+		Method targetMethod = ReflectionUtils.findTargetMethod(methods, methodSignature);
 		
 		logger.debug("Found " + methods.length + " methods for class " + c.getCanonicalName());
 		logger.debug("Generating stub for target method " + targetMethod.toGenericString());

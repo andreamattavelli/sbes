@@ -75,6 +75,7 @@ import sbes.stub.Stub;
 import sbes.stub.generator.AbstractStubGenerator;
 import sbes.util.ASTUtils;
 import sbes.util.ClassUtils;
+import sbes.util.ReflectionUtils;
 
 public class SecondStageGeneratorStub extends AbstractStubGenerator {
 
@@ -143,8 +144,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		List<BodyDeclaration> toReturn = new ArrayList<BodyDeclaration>(); 
 		Constructor<?> constructors[] = c.getDeclaredConstructors();
 		for (Constructor<?> constructor : constructors) {
-			if (!constructor.isSynthetic() && 
-					(Modifier.isPublic(constructor.getModifiers()) || Modifier.isProtected(constructor.getModifiers()))) {
+			if (ReflectionUtils.canUse(constructor)) {
 				ConstructorDeclaration cons = new ConstructorDeclaration(constructor.getModifiers(), stubName);
 				cons.setParameters(getParameterType(constructor.getParameterTypes()));
 				List<Expression> methodParameters = ASTUtils.createParameters(cons.getParameters());
@@ -371,7 +371,6 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 					MethodCallExpr mce = (MethodCallExpr) estmt.getExpression();
 					if (mce.getNameExpr().getName().equals("method_under_test")) {
 						cloned.getStmts().remove(i);
-//						break;
 					}
 				}
 			}

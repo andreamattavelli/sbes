@@ -40,6 +40,7 @@ import sbes.scenario.TestScenarioRepository;
 import sbes.scenario.TestScenarioWithGenerics;
 import sbes.stub.generator.first.FirstStageGeneratorStub;
 import sbes.util.ClassUtils;
+import sbes.util.ReflectionUtils;
 
 public abstract class AbstractGeneralizer {
 
@@ -62,11 +63,11 @@ public abstract class AbstractGeneralizer {
 		}
 
 		// get class' methods
-		Method[] methods = ClassUtils.getClassMethods(c);
+		Method[] methods = ReflectionUtils.getClassMethods(c);
 		// get method signature
 		String methodSignature = ClassUtils.getMethodname(Options.I().getTargetMethod());
 		// get target method from the list of class' methods
-		Method targetMethod = ClassUtils.findTargetMethod(methods, methodSignature);
+		Method targetMethod = ReflectionUtils.findTargetMethod(methods, methodSignature);
 		// get generic types defined
 		TypeVariable<?>[] genericTypes = c.getTypeParameters();
 
