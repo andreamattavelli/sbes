@@ -214,4 +214,37 @@ public class FirstStageStubGeneratorTest {
 		assertThatCompiles("com/google/common/collect", first.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
 	}
 	
+	@Test
+	public void test04() throws ParseException {
+		setUp("./test/resources/guava-12.0.1.jar", "com.google.common.collect.TreeMultiset.create()", "TreeMultiset_Stub");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"TreeMultiset<Integer> treeMultiset0 = TreeMultiset.create();"+
+				"}");
+		
+		CarvingResult carvedScenario = new CarvingResult(body, imports);
+		
+		List<TestScenario> scenarios = new ArrayList<>();
+		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
+		TestScenario ts = tsg.testToTestScenario(carvedScenario);
+		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		assertEquals(0, ts.getInputAsFields().size());
+		
+		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
+		assertEquals(1, tswg.getGenericToConcreteClasses().size());
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
+		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
+		assertEquals("Integer", values.get(0));
+		
+		scenarios.add(tswg);
+		
+		// preconditions ok
+		
+		FirstStageGeneratorStubWithGenerics fssg = new FirstStageGeneratorStubWithGenerics(scenarios);
+		Stub first = fssg.generateStub();
+		first.dumpStub("./test/resources/compilation");
+		assertThatCompiles("com/google/common/collect", first.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+	}
+	
 }

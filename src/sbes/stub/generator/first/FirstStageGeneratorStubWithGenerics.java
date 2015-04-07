@@ -125,8 +125,9 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 			if (Collection.class.isAssignableFrom(method.getReturnType())) {
 				collectionReturn = true;
 			}
-			else if (method.getName().equals("size")) {
+			else if (method.getName().equals("size") ) {
 				isSizePresent = true;
+				System.out.println();
 			}
 			
 			String paramsNames[] = AsmParameterNames.getParameterNames(method);
