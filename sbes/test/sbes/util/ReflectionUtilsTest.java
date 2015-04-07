@@ -23,6 +23,7 @@ public class ReflectionUtilsTest {
 			
 			assertEquals(2, constructors.length);
 			assertTrue(ReflectionUtils.isDefault(constructors[0].getModifiers()));
+			assertTrue(ReflectionUtils.canUse(constructors[0]));
 			assertFalse(ReflectionUtils.isDefault(constructors[1].getModifiers()));
 			
 		} catch (ClassNotFoundException e) {
@@ -44,6 +45,24 @@ public class ReflectionUtilsTest {
 		assertTrue(interfaces.contains(java.util.Collection.class));
 		assertTrue(interfaces.contains(java.util.RandomAccess.class));
 		assertTrue(interfaces.contains(java.util.List.class));
+	}
+	
+	@Test
+	public void test4() {
+		InternalClassloader ic = new InternalClassloader("./test/resources/guava-12.0.1.jar");
+		try {
+			Class<?> c = Class.forName("com.google.common.collect.TreeMultiset", false, ic.getClassLoader());
+			Constructor<?> constructors[] = c.getDeclaredConstructors();
+			
+			assertEquals(2, constructors.length);
+			
+			assertFalse(ReflectionUtils.isDefault(constructors[0].getModifiers()));
+			assertTrue(ReflectionUtils.canUse(constructors[0]));
+			assertFalse(ReflectionUtils.isDefault(constructors[1].getModifiers()));
+			
+		} catch (ClassNotFoundException e) {
+			fail();
+		}
 	}
 
 }
