@@ -20,6 +20,7 @@ import japa.parser.ast.expr.FieldAccessExpr;
 import japa.parser.ast.expr.IntegerLiteralExpr;
 import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.NameExpr;
+import japa.parser.ast.expr.NullLiteralExpr;
 import japa.parser.ast.expr.StringLiteralExpr;
 import japa.parser.ast.expr.UnaryExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
@@ -214,31 +215,31 @@ public class ASTUtils {
 
 	// see https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html
 	public static Expression getDefaultPrimitiveValue(Class<?> returnType) {
-		if (returnType.equals(boolean.class)) {
+		if (returnType.equals(boolean.class) || returnType.equals(Boolean.class)) {
 			return new BooleanLiteralExpr(false);
 		}
-		else if (returnType.equals(byte.class)) {
+		else if (returnType.equals(byte.class)|| returnType.equals(Byte.class)) {
 			return new IntegerLiteralExpr("0");
 		}
-		else if (returnType.equals(char.class)) {
+		else if (returnType.equals(char.class) || returnType.equals(Character.class)) {
 			return new CharLiteralExpr(Character.toString('\u0000'));
 		}
-		else if (returnType.equals(double.class)) {
+		else if (returnType.equals(double.class) || returnType.equals(Double.class)) {
 			return new DoubleLiteralExpr("0.0d");
 		}
-		else if (returnType.equals(float.class)) {
+		else if (returnType.equals(float.class) || returnType.equals(Float.class)) {
 			return new DoubleLiteralExpr("0.0f");
 		}
-		else if (returnType.equals(int.class)) {
+		else if (returnType.equals(int.class) || returnType.equals(Integer.class)) {
 			return new IntegerLiteralExpr("0");
 		}
-		else if (returnType.equals(long.class)) {
+		else if (returnType.equals(long.class) || returnType.equals(Long.class)) {
 			return new IntegerLiteralExpr("0L");
 		}
-		else if (returnType.equals(short.class)) {
+		else if (returnType.equals(short.class) || returnType.equals(Short.class)) {
 			return new IntegerLiteralExpr("0");
 		}
 		
-		return null;
+		return new NullLiteralExpr();
 	}
 }
