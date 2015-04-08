@@ -5,7 +5,10 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ ReflectionUtilsTest.class })
+@SuiteClasses({ 
+	ReflectionUtilsTest.class,
+	ASTUtilsTest.class
+})
 public class AllUtilsTests {
 
 }
