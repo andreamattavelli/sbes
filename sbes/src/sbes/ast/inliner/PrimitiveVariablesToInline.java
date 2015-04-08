@@ -11,6 +11,7 @@ import japa.parser.ast.expr.IntegerLiteralMinValueExpr;
 import japa.parser.ast.expr.LiteralExpr;
 import japa.parser.ast.expr.LongLiteralExpr;
 import japa.parser.ast.expr.LongLiteralMinValueExpr;
+import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.NullLiteralExpr;
 import japa.parser.ast.expr.ObjectCreationExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
@@ -62,7 +63,8 @@ public class PrimitiveVariablesToInline extends VoidVisitorAdapter<Void> {
 			expr instanceof LongLiteralExpr ||
 			expr instanceof LongLiteralMinValueExpr ||
 			expr instanceof NullLiteralExpr ||
-			expr instanceof ObjectCreationExpr) {
+			expr instanceof ObjectCreationExpr ||
+			expr instanceof NameExpr) {
 			return true;
 		}
 		return false;

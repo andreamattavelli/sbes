@@ -886,8 +886,7 @@ public class SecondStageStubGeneratorTest {
 				"Cloner c = new Cloner();"+
 				"Stack<Integer> clone = c.deepClone(this);"+
 				"Integer expected_result = this.elementAt(p0);"+
-				"Integer integer0 = new Integer(55);"+
-				"Integer actual_result = clone.push(integer0);"+
+				"Integer actual_result = clone.push(new Integer(55));"+
 				"clone.pop();"+
 				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
 				"System.out.println(\"Executed\");"+
@@ -1067,9 +1066,8 @@ public class SecondStageStubGeneratorTest {
 				"Cloner c = new Cloner();"+
 				"Stack<Integer> clone = c.deepClone(this);"+
 				"this.add(p0, p1);"+
-				"Integer integer0 = p1;"+
 				"LinkedList<Object> linkedList0 = new LinkedList<Object>();"+
-				"boolean boolean0 = linkedList0.offerLast((Object) integer0);"+
+				"boolean boolean0 = linkedList0.offerLast((Object) p1);"+
 				"clone.addAll(p0, (Collection) linkedList0);"+
 				"if (Distance.distance(this, clone) > 0.0d)"+
 				"System.out.println(\"Executed\");"+
@@ -1319,8 +1317,7 @@ public class SecondStageStubGeneratorTest {
 				"Stack<Integer> clone = c.deepClone(this);"+
 				"Integer expected_result = this.remove(p0);"+
 				"Integer integer0 = clone.get(p0);"+
-				"Integer integer1 = new Integer((int) integer0);"+
-				"clone.addElement(integer1);"+
+				"clone.addElement(new Integer((int) integer0));"+
 				"clone.pop();"+
 				"clone.removeElementAt(p0);"+
 				"Integer actual_result = new Integer((int) integer0);"+
@@ -1739,9 +1736,8 @@ public class SecondStageStubGeneratorTest {
 				"Cloner c = new Cloner();"+
 				"ArrayListMultimap<Integer, String> clone = c.deepClone(this);"+
 				"boolean expected_result = this.put(p0, p1);"+
-				"Integer integer0 = p0;"+
 				"String string0 = p1;"+
-				"SingletonImmutableSet<String> singletonImmutableSet0 = new SingletonImmutableSet<String>(string0, (int) integer0);"+
+				"SingletonImmutableSet<String> singletonImmutableSet0 = new SingletonImmutableSet<String>(string0, (int) p0);"+
 				"clone.replaceValues(p0, (Iterable<? extends String>) singletonImmutableSet0);"+
 				"boolean actual_result = true;"+
 				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
@@ -1806,8 +1802,7 @@ public class SecondStageStubGeneratorTest {
 				"boolean expected_result = this.putAll(p0, p1);"+
 				"String string0 = \"Lwtep\\\\V&\";"+
 				"String string1 = \"RK\";"+
-				"Integer integer1 = p0;"+
-				"StackTraceElement stackTraceElement0 = new StackTraceElement(string0, string0, string1, (int) integer1);"+
+				"StackTraceElement stackTraceElement0 = new StackTraceElement(string0, string0, string1, (int) p0);"+
 				"String string2 = stackTraceElement0.getMethodName();"+
 				"clone.replaceValues(p0, p1);"+
 				"ArrayListMultimap<Integer, String> arrayListMultimap0 = clone.create();"+
@@ -1979,6 +1974,68 @@ public class SecondStageStubGeneratorTest {
 				"}"+
 				"}";
 		assertAndPrint(actual, expected);
+	}
+	
+	@Test
+	public void test41() throws ParseException {
+		setUp("./test/resources/guava-12.0.1.jar", "com.google.common.collect.HashMultimap.removeAll(Object)", "HashMultimap_Stub");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"HashMultimap_Stub hashMultimap_Stub0 = new HashMultimap_Stub();"+
+				"Integer integer0 = HashMultimap_Stub.ELEMENT_0_0;"+
+				"Ordering<Object> ordering0 = Ordering.arbitrary();"+
+				"TreeMultimap<String, String> treeMultimap0 = new TreeMultimap<String, String>(ordering0, ordering0);"+
+				"SortedSet<String> sortedSet0 = treeMultimap0.keySet();"+
+				"Integer integer1 = new Integer((int) integer0);"+
+				"Set<String> set0 = hashMultimap_Stub0.replaceValues(integer1, (Iterable<? extends String>) sortedSet0);"+
+				"hashMultimap_Stub0.set_results(set0);"+
+				"hashMultimap_Stub0.method_under_test();"+
+				"}");
+		
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("com.google.common.collect.HashMultimap_Stub"), false, false));
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("com.google.common.collect.Ordering"), false, false));
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("com.google.common.collect.TreeMultimap"), false, false));
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.Set"), false, false));
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.SortedSet"), false, false));
+
+		CarvingResult candidateES = new CarvingResult(body, imports);
+		Map<TypeVariable<?>, String> genericToConcrete = new LinkedHashMap<>();
+		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "K", null, null);
+		TypeVariable<?> v = TypeVariableImpl.<GenericDeclaration>make(Object.class, "V", null, null);
+		genericToConcrete.put(k, "Integer");
+		genericToConcrete.put(v, "String");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(
+				new ArrayList<TestScenario>(), stub, candidateES,
+				new ArrayList<FieldDeclaration>(), genericToConcrete);
+		Stub second = sssg.generateStub();
+		
+		System.out.println(second.getAst().toString());
+		
+		second.dumpStub("./test/resources/compilation");
+		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+//		
+//		String actual = second.getAst().toString();
+//		String expected = 
+//				"package com.google.common.collect;"+
+//				"import sbes.distance.Distance;"+
+//				"import sbes.cloning.Cloner;"+
+//				"import java.util.List;"+
+//				"public class ArrayListMultimap_Stub_2 extends ArrayListMultimap<Integer, String> {"+
+//				"protected ArrayListMultimap_Stub_2() {"+
+//				"super();"+
+//				"}"+
+//				"public void method_under_test(com.google.common.collect.Multimap<? extends Integer, ? extends String> p0) {"+
+//				"Cloner c = new Cloner();"+
+//				"ArrayListMultimap<Integer, String> clone = c.deepClone(this);"+
+//				"com.google.common.collect.ArrayListMultimap<Integer, String> expected_result = this.create(p0);"+
+//				"com.google.common.collect.ArrayListMultimap<Integer, String> actual_result = clone.create();"+
+//				"boolean boolean0 = actual_result.putAll((Multimap) p0);"+
+//				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
+//				"System.out.println(\"Executed\");"+
+//				"}"+
+//				"}";
+//		assertAndPrint(actual, expected);
 	}
 	
 }
