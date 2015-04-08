@@ -32,7 +32,9 @@ public class GenericClassVisitor extends VoidVisitorAdapter<Void> {
 				if (coit.getName().startsWith(className)) {
 					if (coit.getTypeArgs() != null) {
 						for (Type t : coit.getTypeArgs()) {
-							generics.add(t.toString());
+							if (!generics.contains(t.toString())) {
+								generics.add(t.toString());
+							}
 						}
 					}
 				}

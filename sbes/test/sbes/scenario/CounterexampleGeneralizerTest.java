@@ -158,5 +158,55 @@ public class CounterexampleGeneralizerTest {
 			"public static final ArrayListMultimap<Integer, String> ELEMENT_0_1 = ArrayListMultimap.create((int) new Integer(0), (int) new Integer(0));"
 		});
 	}
+	
+	@Test
+	public void test3() throws ParseException {
+		setUp("./test/resources/guava-12.0.1.jar", "com.google.common.collect.LinkedHashMultimap.put(Object,Object)");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"LinkedHashMultimap_Stub_2 linkedHashMultimap_Stub_2_0 = new LinkedHashMultimap_Stub_2();"+
+				"LinkedHashMultimap<String, Integer> linkedHashMultimap0 = LinkedHashMultimap.create();"+
+				"int int0 = 1;"+
+				"Integer integer0 = new Integer(int0);"+
+				"LinkedHashMultimap<String, Integer> linkedHashMultimap1 = LinkedHashMultimap.create((Multimap<? extends String, ? extends Integer>) linkedHashMultimap0);"+
+				"Integer integer1 = new Integer((int) integer0);"+
+				"String string0 = linkedHashMultimap1.toString();"+
+				"linkedHashMultimap_Stub_2_0.method_under_test(integer0, string0);"+
+				"linkedHashMultimap_Stub_2_0.method_under_test(integer1, string0);"+
+				"String string1 = \"E*4\";"+
+				"linkedHashMultimap_Stub_2_0.method_under_test(integer0, string1);"+
+				"}");
+		
+		CarvingResult cr = new CarvingResult(body, new ArrayList<ImportDeclaration>());
+		CounterexampleGeneralizer cg = new CounterexampleGeneralizer();
+		TestScenario ts = cg.counterexampleToTestScenario(cr);
+		
+		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
+		assertEquals(2, tswg.getGenericToConcreteClasses().size());
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("String"));
+		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
+		assertEquals("String", values.get(0));
+		assertEquals("Integer", values.get(1));
+		
+		String actualScenario = ts.getScenario().toString();
+		String expectedScenario = 
+				"{"+
+				"LinkedHashMultimap linkedHashMultimap_Stub_2_0_0 = new LinkedHashMultimap();"+
+				"expected_results[0] = expected_states[0].put(ELEMENT_0_0, ELEMENT_0_3);" +
+				"}";
+		
+		assertScenarioAndPrint(actualScenario, expectedScenario);
+		
+		List<FieldDeclaration> actualFields = ts.getInputAsFields();
+		assertFieldsAndPrint(actualFields, new String[] {
+				"public static final Integer ELEMENT_0_0 = 1;",
+				"public static final LinkedHashMultimap<String, Integer> ELEMENT_0_1 = LinkedHashMultimap.create();",
+				"public static final LinkedHashMultimap<String, Integer> ELEMENT_0_2 = LinkedHashMultimap.create((Multimap<? extends String, ? extends Integer>) ELEMENT_0_1);",
+				"public static final String ELEMENT_0_3 = ELEMENT_0_2.toString();"
+		});
+	}
 
 }
