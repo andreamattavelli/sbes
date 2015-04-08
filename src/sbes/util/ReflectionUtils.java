@@ -213,11 +213,14 @@ public class ReflectionUtils {
 
 	public static List<Field> getInheritedPrivateFields(final Class<?> type) {
 		List<Field> result = new ArrayList<Field>();
-
+		
 		Class<?> i = type;
 		while (i != null && i != Object.class) {
 			for (Field field : i.getDeclaredFields()) {
-				if (!field.isSynthetic()) {
+				// theoretically, excluding synthetic fields is the right thing to do
+				// in practice, lazy initialization heavily relies on anonymous and inner 
+				// 				classes that do use and access fields in the enclosing class
+				if (i.isAnonymousClass() || !field.isSynthetic()) {
 					result.add(field);
 				}
 			}
