@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry excluding="resources/" kind="src" path="test"/>
-	<classpathentry excluding="InitialScenario.java|InitialScenarioGuava.java" kind="src" path="test/resources"/>
+	<classpathentry excluding="InitialScenario.java|InitialScenarioGuava.java|InitialScenarioGuava2.java" kind="src" path="test/resources"/>
 	<classpathentry kind="lib" path="lib/args4j-2.0.21.jar"/>
 	<classpathentry kind="lib" path="lib/javaparser-1.0.10.jar"/>
 	<classpathentry kind="lib" path="lib/asm-4.2.jar"/>
