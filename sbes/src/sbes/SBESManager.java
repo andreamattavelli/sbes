@@ -320,7 +320,7 @@ public class SBESManager {
 			}
 			else {
 				logger.info("Equivalence synthesized: ");
-				EquivalenceRepository.printEquivalence(cStub.getEquivalence());
+				IOUtils.printEquivalence(cStub.getEquivalence());
 				EquivalenceRepository.getInstance().addEquivalence(cStub.getEquivalence());
 			}
 		}
