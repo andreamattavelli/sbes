@@ -13,10 +13,11 @@ import sbes.util.AllUtilsTests;
 @RunWith(Suite.class)
 @SuiteClasses({ 
 	AllDistanceTests.class,
+	AllResultTests.class,
 	AllScenarioTests.class,
 	AllGeneratorTests.class,
 	AllUtilsTests.class,
-	AllResultTests.class
+	
 })
 public class AllTests {
 
