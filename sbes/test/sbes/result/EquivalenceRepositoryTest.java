@@ -18,6 +18,7 @@ public class EquivalenceRepositoryTest {
 		Options.I().setLogLevel(Level.FATAL);
 		Options.I().setTargetMethod("com.google.common.collect.LinkedListMultimap.create()");
 		Options.I().setClassesPath("./test/resources/guava-12.0.1.jar");
+		EquivalenceRepository.reset();
 	}
 
 	@Test
