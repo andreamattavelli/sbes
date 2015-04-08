@@ -2010,32 +2010,86 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		
-		System.out.println(second.getAst().toString());
+		second.dumpStub("./test/resources/compilation");
+		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+		
+		String actual = second.getAst().toString();
+		String expected = 
+				"package com.google.common.collect;"+
+				"import sbes.distance.Distance;"+
+				"import sbes.cloning.Cloner;"+
+				"import com.google.common.collect.Ordering;"+
+				"import com.google.common.collect.TreeMultimap;"+
+				"import java.util.Set;"+
+				"import java.util.SortedSet;"+
+				"public class HashMultimap_Stub_2 extends HashMultimap<Integer, String> {"+
+				"protected HashMultimap_Stub_2() {"+
+				"super();"+
+				"}"+
+				"public void method_under_test(java.lang.Object p0) {"+
+				"Cloner c = new Cloner();"+
+				"HashMultimap<Integer, String> clone = c.deepClone(this);"+
+				"java.util.Set<String> expected_result = this.removeAll(p0);"+
+				"Ordering<Object> ordering0 = Ordering.arbitrary();"+
+				"TreeMultimap<String, String> treeMultimap0 = new TreeMultimap<String, String>(ordering0, ordering0);"+
+				"SortedSet<String> sortedSet0 = treeMultimap0.keySet();"+
+				"java.util.Set<String> actual_result = clone.replaceValues(new Integer((int) p0), (Iterable<? extends String>) sortedSet0);"+
+				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
+				"System.out.println(\"Executed\");"+
+				"}"+
+				"}";
+		assertAndPrint(actual, expected);
+	}
+	
+	@Test
+	public void test42() throws ParseException {
+		setUp("./test/resources/guava-12.0.1.jar", "com.google.common.collect.ConcurrentHashMultiset.add(Object,int)", "ConcurrentHashMultiset_Stub");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"ConcurrentHashMultiset_Stub concurrentHashMultiset_Stub0 = new ConcurrentHashMultiset_Stub();"+
+				"int int0 = ConcurrentHashMultiset_Stub.ELEMENT_0_0;"+
+				"Integer integer0 = ConcurrentHashMultiset_Stub.ELEMENT_0_1;"+
+				"Integer integer1 = new Integer((int) integer0);"+
+				"int int1 = concurrentHashMultiset_Stub0.setCount(integer1, int0);"+
+				"concurrentHashMultiset_Stub0.method_under_test();"+
+				"}");
+		
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.List"), false, false));
+
+		CarvingResult candidateES = new CarvingResult(body, imports);
+		Map<TypeVariable<?>, String> genericToConcrete = new LinkedHashMap<>();
+		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
+		genericToConcrete.put(k, "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(
+				new ArrayList<TestScenario>(), stub, candidateES,
+				new ArrayList<FieldDeclaration>(), genericToConcrete);
+		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
 		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
-//		
-//		String actual = second.getAst().toString();
-//		String expected = 
-//				"package com.google.common.collect;"+
-//				"import sbes.distance.Distance;"+
-//				"import sbes.cloning.Cloner;"+
-//				"import java.util.List;"+
-//				"public class ArrayListMultimap_Stub_2 extends ArrayListMultimap<Integer, String> {"+
-//				"protected ArrayListMultimap_Stub_2() {"+
-//				"super();"+
-//				"}"+
-//				"public void method_under_test(com.google.common.collect.Multimap<? extends Integer, ? extends String> p0) {"+
-//				"Cloner c = new Cloner();"+
-//				"ArrayListMultimap<Integer, String> clone = c.deepClone(this);"+
-//				"com.google.common.collect.ArrayListMultimap<Integer, String> expected_result = this.create(p0);"+
-//				"com.google.common.collect.ArrayListMultimap<Integer, String> actual_result = clone.create();"+
-//				"boolean boolean0 = actual_result.putAll((Multimap) p0);"+
-//				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
-//				"System.out.println(\"Executed\");"+
-//				"}"+
-//				"}";
-//		assertAndPrint(actual, expected);
+		
+		String actual = second.getAst().toString();
+		String expected = 
+				"package com.google.common.collect;"+
+				"import sbes.distance.Distance;"+
+				"import sbes.cloning.Cloner;"+
+				"import java.util.List;"+
+				"public class ConcurrentHashMultiset_Stub_2 extends ConcurrentHashMultiset<Integer> {"+
+				"ConcurrentHashMultiset_Stub_2(java.util.concurrent.ConcurrentMap p0) {"+
+				"super(p0);"+
+				"}"+
+				"public void method_under_test(Integer p0, int p1) {"+
+				"Cloner c = new Cloner();"+
+				"ConcurrentHashMultiset<Integer> clone = c.deepClone(this);"+
+				"int expected_result = this.add(p0, p1);"+
+				"clone.setCount(new Integer((int) p0), p1);"+
+				"int actual_result = 0;"+
+				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
+				"System.out.println(\"Executed\");"+
+				"}"+
+				"}";
+		assertAndPrint(actual, expected);
 	}
 	
 }

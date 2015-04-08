@@ -46,7 +46,7 @@ import sbes.stub.Stub;
 import sbes.stub.generator.AbstractStubGenerator;
 import sbes.util.ASTUtils;
 import sbes.util.AsmParameterNames;
-import sbes.util.MethodUtils;
+import sbes.util.ReflectionUtils;
 
 public class FirstStageGeneratorStub extends AbstractStubGenerator {
 
@@ -147,7 +147,7 @@ public class FirstStageGeneratorStub extends AbstractStubGenerator {
 		List<BodyDeclaration> members = new ArrayList<BodyDeclaration>();
 		methods = preventMethodBloat(targetMethod, methods);
 		for (Method method : methods) {
-			if (MethodUtils.methodFilter(method)) {
+			if (ReflectionUtils.methodFilter(method)) {
 				continue;
 			}
 			else if (method.equals(targetMethod)) {

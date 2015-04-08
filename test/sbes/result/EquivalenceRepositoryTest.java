@@ -8,12 +8,14 @@ import japa.parser.ast.stmt.BlockStmt;
 import org.junit.Before;
 import org.junit.Test;
 
+import sbes.logging.Level;
 import sbes.option.Options;
 
 public class EquivalenceRepositoryTest {
 
 	@Before
 	public void setUp() throws Exception {
+		Options.I().setLogLevel(Level.FATAL);
 		Options.I().setTargetMethod("com.google.common.collect.LinkedListMultimap.create()");
 		Options.I().setClassesPath("./test/resources/guava-12.0.1.jar");
 	}

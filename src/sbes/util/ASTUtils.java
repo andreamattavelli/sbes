@@ -11,9 +11,13 @@ import japa.parser.ast.expr.ArrayCreationExpr;
 import japa.parser.ast.expr.AssignExpr;
 import japa.parser.ast.expr.AssignExpr.Operator;
 import japa.parser.ast.expr.BinaryExpr;
+import japa.parser.ast.expr.BooleanLiteralExpr;
 import japa.parser.ast.expr.CastExpr;
+import japa.parser.ast.expr.CharLiteralExpr;
+import japa.parser.ast.expr.DoubleLiteralExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.FieldAccessExpr;
+import japa.parser.ast.expr.IntegerLiteralExpr;
 import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.StringLiteralExpr;
@@ -206,5 +210,35 @@ public class ASTUtils {
 	
 	private static String getName(NameExpr ne) {
 		return ne.getName();
+	}
+
+	// see https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html
+	public static Expression getDefaultPrimitiveValue(Class<?> returnType) {
+		if (returnType.equals(boolean.class)) {
+			return new BooleanLiteralExpr(false);
+		}
+		else if (returnType.equals(byte.class)) {
+			return new IntegerLiteralExpr("0");
+		}
+		else if (returnType.equals(char.class)) {
+			return new CharLiteralExpr(Character.toString('\u0000'));
+		}
+		else if (returnType.equals(double.class)) {
+			return new DoubleLiteralExpr("0.0d");
+		}
+		else if (returnType.equals(float.class)) {
+			return new DoubleLiteralExpr("0.0f");
+		}
+		else if (returnType.equals(int.class)) {
+			return new IntegerLiteralExpr("0");
+		}
+		else if (returnType.equals(long.class)) {
+			return new IntegerLiteralExpr("0L");
+		}
+		else if (returnType.equals(short.class)) {
+			return new IntegerLiteralExpr("0");
+		}
+		
+		return null;
 	}
 }

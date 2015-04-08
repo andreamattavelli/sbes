@@ -39,7 +39,7 @@ import sbes.scenario.TestScenario;
 import sbes.scenario.TestScenarioWithGenerics;
 import sbes.util.ASTUtils;
 import sbes.util.AsmParameterNames;
-import sbes.util.MethodUtils;
+import sbes.util.ReflectionUtils;
 
 public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub {
 
@@ -111,7 +111,7 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 		List<BodyDeclaration> members = new ArrayList<BodyDeclaration>();
 		methods = preventMethodBloat(targetMethod, methods);
 		for (Method method : methods) {
-			if (MethodUtils.methodFilter(method)) {
+			if (ReflectionUtils.methodFilter(method)) {
 				continue;
 			}
 			else if (method.equals(targetMethod)) {
