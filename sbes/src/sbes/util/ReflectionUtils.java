@@ -21,6 +21,7 @@ import sbes.option.Options;
 public class ReflectionUtils {
 
 	private final static Map<Class<?>, Method[]> classToMethodsCache;
+	private final static Set<String> excluded;
 	public  final static Set<Class<?>> primitives;
 	public  final static Set<String> primitivesStringRepresentation;
 	
@@ -46,6 +47,14 @@ public class ReflectionUtils {
 		primitivesStringRepresentation.add("Double");
 		primitivesStringRepresentation.add("Float");
 		primitivesStringRepresentation.add("Byte");
+		
+		
+		excluded = new HashSet<String>();
+		excluded.add("equals");
+		excluded.add("hashCode");
+		excluded.add("toString");
+		excluded.add("clone");
+		
 	}
 	
 	public static boolean canUse(Constructor<?> constructor) {
@@ -260,16 +269,25 @@ public class ReflectionUtils {
 		return !Modifier.isPrivate(mod) && !Modifier.isProtected(mod) && !Modifier.isPublic(mod);
 	}
 
+	public static boolean isPrimitive(final Class<?> clazz) {
+		if (clazz == null) {
+			return false;
+		}
+		
+		if (clazz.isPrimitive() || primitives.contains(clazz)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public static boolean isPrimitive(final Object o) {
 		if (o == null || o.getClass() == null) {
 			return false;
 		}
 		
 		Class<?> clazz = o.getClass().getComponentType() == null ? o.getClass() : o.getClass().getComponentType();
-		if (clazz.isPrimitive() || primitives.contains(clazz)) {
-			return true;
-		}
-		return false;
+		return isPrimitive(clazz);
 	}
 
 	public static boolean isString(final Object o) {
@@ -289,4 +307,11 @@ public class ReflectionUtils {
 		return false;
 	}
 
+	public static boolean methodFilter(Method method) {
+		if (excluded.contains(method.getName())) {
+			return true;
+		}
+		return false;
+	}
+	
 }
