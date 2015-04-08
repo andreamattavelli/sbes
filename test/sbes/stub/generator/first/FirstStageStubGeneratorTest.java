@@ -176,7 +176,6 @@ public class FirstStageStubGeneratorTest {
 		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.List"), false, false));
 		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.ArrayList"), false, false));
 		
-		
 		BlockStmt body = JavaParser.parseBlock(
 				"{"+
 				"ArrayListMultimap<Integer, String> arrayListMultimap0 = ArrayListMultimap.create();"+
@@ -230,6 +229,52 @@ public class FirstStageStubGeneratorTest {
 		TestScenario ts = tsg.testToTestScenario(carvedScenario);
 		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
 		assertEquals(0, ts.getInputAsFields().size());
+		
+		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
+		assertEquals(1, tswg.getGenericToConcreteClasses().size());
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
+		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
+		assertEquals("Integer", values.get(0));
+		
+		scenarios.add(tswg);
+		
+		// preconditions ok
+		
+		FirstStageGeneratorStubWithGenerics fssg = new FirstStageGeneratorStubWithGenerics(scenarios);
+		Stub first = fssg.generateStub();
+		first.dumpStub("./test/resources/compilation");
+		assertThatCompiles("com/google/common/collect", first.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+	}
+	
+	@Test
+	public void test05() throws ParseException {
+		setUp("./test/resources/guava-12.0.1.jar", "com.google.common.collect.ConcurrentHashMultiset.containsAll(Collection)", "ConcurrentHashMultiset_Stub");
+		
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.List"), false, false));
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.ArrayList"), false, false));
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"ConcurrentHashMultiset<Integer> hashMultiset0 = ConcurrentHashMultiset.create();"+
+				"Integer integer0 = new Integer(-18247);"+
+				"Integer integer1 = new Integer(34);"+
+				"Integer integer2 = new Integer(0);"+
+				"boolean boolean0 = hashMultiset0.add(integer0);"+
+				"boolean boolean1 = hashMultiset0.add(integer1);"+
+				"boolean boolean2 = hashMultiset0.add(integer2);"+
+				"List<Integer> arrayList0 = new ArrayList();"+
+				"arrayList0.add(0);"+
+				"arrayList0.add(34);"+
+				"boolean boolean3 = hashMultiset0.containsAll(arrayList0);"+
+				"}");
+		
+		CarvingResult carvedScenario = new CarvingResult(body, imports);
+		
+		List<TestScenario> scenarios = new ArrayList<>();
+		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
+		TestScenario ts = tsg.testToTestScenario(carvedScenario);
+		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		assertEquals(1, ts.getInputAsFields().size());
 		
 		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
 		assertEquals(1, tswg.getGenericToConcreteClasses().size());

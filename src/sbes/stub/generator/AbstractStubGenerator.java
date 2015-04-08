@@ -65,7 +65,7 @@ public abstract class AbstractStubGenerator {
 		
 		// GENERATE STUB
 		CompilationUnit cu = new CompilationUnit();
-		cu.setPackage(new PackageDeclaration(ASTHelper.createNameExpr(targetMethod.getDeclaringClass().getPackage().getName())));
+		cu.setPackage(new PackageDeclaration(ASTHelper.createNameExpr(c.getPackage().getName())));
 		cu.setImports(getImports());
 		
 		// class name
