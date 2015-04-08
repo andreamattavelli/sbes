@@ -1,7 +1,6 @@
 package sbes.result;
 
 import japa.parser.ast.expr.MethodCallExpr;
-import japa.parser.ast.stmt.BlockStmt;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -68,9 +67,8 @@ public class EquivalenceRepository {
 		equivalences.get(Options.I().getTargetMethod()).add(eqSeq);
 		
 		// find methods to exclude
-		BlockStmt body = eqSeq.getBody();
 		CloneMethodCallsVisitor cov = new CloneMethodCallsVisitor();
-		cov.visit(body, null);
+		cov.visit(eqSeq.getBody(), null);
 		for (MethodCallExpr mce : cov.getMethods()) {
 			String methodName = mce.getName();
 			List<Method> eligible = new ArrayList<Method>();
@@ -79,10 +77,7 @@ public class EquivalenceRepository {
 					eligible.add(method);
 				}
 			}
-			if (eligible.isEmpty()) {
-				throw new SBESException("Unable to remove synthesized method. Terminating to avoid deadlock");
-			}
-			else if (eligible.size() == 0) {
+			if (eligible.size() == 1) {
 				logger.info("Excluded method " + eligible.get(0).toString());
 				excluded.add(eligible.get(0));
 			}
@@ -95,7 +90,7 @@ public class EquivalenceRepository {
 					args = mce.getArgs().size();
 				}
 				for (Method method : eligible) {
-					if (method.getParameterTypes().length == args) {
+					if (method.getParameterTypes().length == args && !excluded.contains(method)) {
 						logger.info("Excluded method " + method.toString());
 						excluded.add(method);
 						break;
@@ -103,6 +98,10 @@ public class EquivalenceRepository {
 				}
 			}
 		}
+	}
+	
+	public List<Method> getExcluded() {
+		return excluded;
 	}
 	
 	public boolean isExcluded(Method method) {
@@ -148,18 +147,6 @@ public class EquivalenceRepository {
 		else {
 			logger.fatal("Unable to synthesize any equivalent sequence");
 		}
-	}
-	
-	public static void printEquivalence(EquivalentSequence eqSeq) {
-		String equivalence = eqSeq.toString();
-		String lines[] = StringUtils.split(equivalence, '\n');
-		
-		System.out.println();
-		for (int i = 0; i < lines.length; i++) {
-			String string = lines[i];
-			System.out.println(StringUtils.repeat(' ', 30) + (i+1) + ". " + string);
-		}
-		System.out.println();
 	}
 	
 }
