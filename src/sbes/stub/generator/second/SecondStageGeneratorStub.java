@@ -62,7 +62,6 @@ import sbes.ast.VariableUseVisitor;
 import sbes.ast.inliner.FieldVariablesToInline;
 import sbes.ast.inliner.Inliner;
 import sbes.ast.inliner.PrimitiveVariablesToInline;
-import sbes.ast.inliner.StringVariablesToInline;
 import sbes.ast.renamer.NameExprRenamer;
 import sbes.ast.renamer.StubRenamer;
 import sbes.exceptions.GenerationException;
@@ -297,11 +296,12 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		PrimitiveVariablesToInline pvi = new PrimitiveVariablesToInline();
 		pvi.visit(cloned, null);
 		
-		StringVariablesToInline svi = new StringVariablesToInline();
-		svi.visit(cloned, null);
-		
 		FieldVariablesToInline fvi = new FieldVariablesToInline();
 		fvi.visit(cloned, null);
+		
+		for (VariableDeclarator vd : pvi.getToInline()) {
+			new Inliner().visit(cloned, vd);
+		}
 		
 		for (VariableDeclarator vd : fvi.getToInline()) {
 			new Inliner().visit(cloned, vd);
@@ -428,11 +428,16 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 				FieldAccessExpr fae = (FieldAccessExpr) init;
 				if (fae.getField().startsWith("ELEMENT_")) {
 					// it is an input
+					boolean modified = false;
 					for (Parameter p : param) {
 						if (vde.getType().toString().contains(ClassUtils.getSimpleClassnameFromCanonical(p.getType().toString()))) {
 							vde.getVars().get(0).setInit(ASTHelper.createNameExpr(p.getId().getName()));
+							modified = true;
 							break;
 						}
+					}
+					if (!modified && param.size() == 1) {
+						vde.getVars().get(0).setInit(ASTHelper.createNameExpr(param.get(0).getId().getName()));
 					}
 				}
 			}

@@ -46,7 +46,7 @@ public class Distance {
 			return ReflectionUtils.classDistance(c1.getClass(), c2.getClass()) * DIFFERENT_CLASSES_WEIGHT;
 		}
 		if (c1.isArray() ^ c2.isArray()) {
-			System.out.println("one of the two is an array");
+			logger.debug("one of the two is an array");
 			return ARRAY_CELL_FACTOR * 10;
 		}
 		
