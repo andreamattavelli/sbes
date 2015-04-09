@@ -104,5 +104,17 @@ public class ReflectionUtilsTest {
 			fail();
 		}
 	}
+	
+	@Test
+	public void test8()  throws Throwable  {
+		Class<?> clazz = Object.class;
+		assertEquals(0, ReflectionUtils.arrayCardinality(clazz));
+		Class<?> clazz1 = Object[].class;
+		assertEquals(1, ReflectionUtils.arrayCardinality(clazz1));
+		Class<?> clazz2 = Object[][].class;
+		assertEquals(2, ReflectionUtils.arrayCardinality(clazz2));
+		Class<?> clazz3 = Object[][][].class;
+		assertEquals(3, ReflectionUtils.arrayCardinality(clazz3));
+	}
 
 }

@@ -314,4 +314,16 @@ public class ReflectionUtils {
 		return false;
 	}
 	
+	public static int arrayCardinality(final Class<?> clazz) {
+		int toReturn = 0;
+		
+		Class<?> c = clazz;
+		while (c.isArray() && c != null) {
+			toReturn++;
+			c = c.getComponentType();
+		}
+		
+		return toReturn;
+	}
+	
 }
