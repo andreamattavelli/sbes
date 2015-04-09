@@ -1032,8 +1032,8 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 			if (targetMethod.isVarArgs() && i == parameters.length - 1) {
 				typeClass = typeClass.replace("[]", "");
 			}
-			//FIXME: check cardinality array
-			Parameter p = new Parameter(ASTHelper.createReferenceType(typeClass, 0), id);
+			int cardinality = ReflectionUtils.arrayCardinality(type);
+			Parameter p = new Parameter(ASTHelper.createReferenceType(typeClass, cardinality), id);
 			toReturn.add(p);
 		}
 

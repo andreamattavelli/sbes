@@ -653,7 +653,7 @@ public class SecondStageStubGeneratorTest {
 				"protected AbstractEdge_Stub_2(java.lang.String p0, org.graphstream.graph.implementations.AbstractNode p1, org.graphstream.graph.implementations.AbstractNode p2, boolean p3) {"+
 				"super(p0, p1, p2, p3);"+
 				"}"+
-				"public void method_under_test(java.lang.String p0, java.lang.Object p1) {"+
+				"public void method_under_test(java.lang.String p0, java.lang.Object[] p1) {"+
 				"Cloner c = new Cloner();"+
 				"AbstractEdge clone = c.deepClone(this);"+
 				"this.addAttribute(p0, p1);"+
@@ -968,7 +968,7 @@ public class SecondStageStubGeneratorTest {
 				"protected AbstractEdge_Stub_2(java.lang.String p0, org.graphstream.graph.implementations.AbstractNode p1, org.graphstream.graph.implementations.AbstractNode p2, boolean p3) {"+
 				"super(p0, p1, p2, p3);"+
 				"}"+
-				"public void method_under_test(java.lang.String p0, Object[] p1) {"+
+				"public void method_under_test(java.lang.String p0, java.lang.Object[] p1) {"+
 				"Cloner c = new Cloner();"+
 				"AbstractEdge clone = c.deepClone(this);"+
 				"this.addAttribute(p0, p1);"+
@@ -1300,7 +1300,7 @@ public class SecondStageStubGeneratorTest {
 				"protected AbstractEdge_Stub_2(java.lang.String p0, org.graphstream.graph.implementations.AbstractNode p1, org.graphstream.graph.implementations.AbstractNode p2, boolean p3) {"+
 				"super(p0, p1, p2, p3);"+
 				"}"+
-				"public void method_under_test(java.lang.String p0, java.lang.Object p1) {"+
+				"public void method_under_test(java.lang.String p0, java.lang.Object[] p1) {"+
 				"Cloner c = new Cloner();"+
 				"AbstractEdge clone = c.deepClone(this);"+
 				"this.addAttribute(p0, p1);"+
@@ -1337,7 +1337,7 @@ public class SecondStageStubGeneratorTest {
 				"protected AbstractEdge_Stub_2(java.lang.String p0, org.graphstream.graph.implementations.AbstractNode p1, org.graphstream.graph.implementations.AbstractNode p2, boolean p3) {"+
 				"super(p0, p1, p2, p3);"+
 				"}"+
-				"public void method_under_test(java.lang.String p0, java.lang.Object p1) {"+
+				"public void method_under_test(java.lang.String p0, java.lang.Object[] p1) {"+
 				"Cloner c = new Cloner();"+
 				"AbstractEdge clone = c.deepClone(this);"+
 				"this.addAttribute(p0, p1);"+
@@ -2089,6 +2089,72 @@ public class SecondStageStubGeneratorTest {
 				"Map<Integer, Map<String, Character>> map0 = clone.rowMap();"+
 				"map0.clear();"+
 				"if (Distance.distance(this, clone) > 0.0d)"+
+				"System.out.println(\"Executed\");"+
+				"}"+
+				"}";
+		assertAndPrint(actual, expected);
+	}
+	
+	@Test
+	public void test44() throws ParseException {
+		setUp("./test/resources/guava-12.0.1.jar", "com.google.common.collect.Lists.newArrayList(Object)", "Lists_Stub");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"Lists_Stub lists_Stub0 = new Lists_Stub();"+
+				"Integer[] integerArray0 = Lists_Stub.ELEMENT_0_0;"+
+				"int int0 = 2;"+
+				"Integer integer0 = new Integer(int0);"+
+				"Integer integer1 = new Integer((int) integer0);"+
+				"Integer integer2 = new Integer((int) integer1);"+
+				"int int1 = 0;"+
+				"Integer integer3 = new Integer(int1);"+
+				"Integer integer4 = new Integer((int) integer3);"+
+				"Integer integer5 = new Integer((int) integer4);"+
+				"RegularImmutableSet<BoundType> regularImmutableSet0 = new RegularImmutableSet<BoundType>(integerArray0, (int) integer2, integerArray0, (int) integer5);"+
+				"UnmodifiableIterator<BoundType> unmodifiableIterator0 = regularImmutableSet0.iterator();"+
+				"ArrayList arrayList0 = lists_Stub0.newArrayList((Iterator) unmodifiableIterator0);"+
+				"lists_Stub0.set_results(arrayList0);"+
+				"lists_Stub0.method_under_test();"+
+				"}");
+		
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("com.google.common.collect.BoundType"), false, false));
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("com.google.common.collect.RegularImmutableSet"), false, false));
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("com.google.common.collect.UnmodifiableIterator"), false, false));
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.ArrayList"), false, false));
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.Iterator"), false, false));
+
+		CarvingResult candidateES = new CarvingResult(body, imports);
+		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
+				new ArrayList<TestScenario>(), stub, candidateES,
+				new ArrayList<FieldDeclaration>());
+		Stub second = sssg.generateStub();
+		
+		second.dumpStub("./test/resources/compilation");
+		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+		
+		String actual = second.getAst().toString();
+		String expected = 
+				"package com.google.common.collect;"+
+				"import sbes.distance.Distance;"+
+				"import sbes.cloning.Cloner;"+
+				"import com.google.common.collect.BoundType;"+
+				"import com.google.common.collect.RegularImmutableSet;"+
+				"import com.google.common.collect.UnmodifiableIterator;"+
+				"import java.util.ArrayList;"+
+				"import java.util.Iterator;"+
+				"public class Lists_Stub_2 extends Lists {"+
+				"protected Lists_Stub_2() {"+
+				"super();"+
+				"}"+
+				"public void method_under_test(java.lang.Object[] p0) {"+
+				"Cloner c = new Cloner();"+
+				"Lists clone = c.deepClone(this);"+
+				"java.util.ArrayList expected_result = this.newArrayList(p0);"+
+				"RegularImmutableSet<BoundType> regularImmutableSet0 = new RegularImmutableSet<BoundType>(p0, (int) new Integer((int) new Integer((int) new Integer(2))), p0, (int) new Integer((int) new Integer((int) new Integer(0))));"+
+				"UnmodifiableIterator<BoundType> unmodifiableIterator0 = regularImmutableSet0.iterator();"+
+				"java.util.ArrayList actual_result = clone.newArrayList((Iterator) unmodifiableIterator0);"+
+				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
