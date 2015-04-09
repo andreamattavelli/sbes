@@ -1224,59 +1224,6 @@ public class SecondStageStubGeneratorTest {
 		assertAndPrint(actual, expected);
 	}
 	
-//	@Test
-//	public void test26() throws ParseException {
-//		setUp("./test/resources/gs-core-1.2.jar", "org.graphstream.ui.geom.Vector2.x()", "Vector2_Stub");
-//		
-//		BlockStmt body = JavaParser.parseBlock("{Vector2_Stub vector2_Stub0 = new Vector2_Stub();"+
-//				"Point2 point2_0 = new Point2();"+
-//				"Vector2 vector2_0 = new Vector2(point2_0.x, point2_0.x);"+
-//				"vector2_0.scalarDiv(point2_0.y);"+
-//				"vector2_Stub0.set_results(vector2_0.data);"+
-//				"vector2_Stub0.method_under_test();}");
-//
-//		CarvingResult candidateES = new CarvingResult(body, imports);
-//		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
-//		Stub second = sssg.generateStub();
-//		second.dumpStub("./test/resources/compilation");
-//		assertThatCompiles("org/graphstream/ui/geom", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
-//		
-//		String actual = second.getAst().toString();
-//		String expected = 
-//				"package org.graphstream.ui.geom;"+
-//				"import sbes.distance.Distance;"+
-//				"import sbes.cloning.Cloner;"+
-//				"public class Vector2_Stub_2 extends Vector2 {"+
-//				"public Vector2_Stub_2(org.graphstream.ui.geom.Point2 p0, org.graphstream.ui.geom.Point2 p1) {"+
-//				"super(p0, p1);"+
-//				"}"+
-//				"public Vector2_Stub_2(org.graphstream.ui.geom.Point2 p0) {"+
-//				"super(p0);"+
-//				"}"+
-//				"public Vector2_Stub_2(org.graphstream.ui.geom.Vector2 p0) {"+
-//				"super(p0);"+
-//				"}"+
-//				"public Vector2_Stub_2(double p0, double p1) {"+
-//				"super(p0, p1);"+
-//				"}"+
-//				"public Vector2_Stub_2() {"+
-//				"super();"+
-//				"}"+
-//				"public void method_under_test() {"+
-//				"Cloner c = new Cloner();"+
-//				"Vector2 clone = c.deepClone(this);"+
-//				"double expected_result = this.x();"+
-//				"Point2 point2_0 = new Point2();"+
-//				"Vector2 vector2_0 = new Vector2(point2_0.x, point2_0.x);"+
-//				"vector2_0.scalarDiv(point2_0.y);"+
-//				"double[] actual_result = vector2_0.data;"+
-//				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
-//				"System.out.println(\"Executed\");"+
-//				"}"+
-//				"}";
-//		assertAndPrint(actual, expected);
-//	}
-	
 	@Test
 	public void test27() throws ParseException {
 		setUp("./bin", "stack.util.Stack.remove(int)", "Stack_Stub");
@@ -2086,6 +2033,62 @@ public class SecondStageStubGeneratorTest {
 				"clone.setCount(new Integer((int) p0), p1);"+
 				"int actual_result = 0;"+
 				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
+				"System.out.println(\"Executed\");"+
+				"}"+
+				"}";
+		assertAndPrint(actual, expected);
+	}
+	
+	@Test
+	public void test43() throws ParseException {
+		setUp("./test/resources/guava-12.0.1.jar", "com.google.common.collect.HashBasedTable.clear()", "HashBasedTable_Stub");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"HashBasedTable_Stub hashBasedTable_Stub0 = new HashBasedTable_Stub();"+
+				"Map<Integer, Map<String, Character>> map0 = hashBasedTable_Stub0.rowMap();"+
+				"map0.clear();"+
+				"BoundType boundType0 = BoundType.CLOSED;"+
+				"hashBasedTable_Stub0.method_under_test();"+
+				"}");
+		
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("com.google.common.collect.BoundType"), false, false));
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.Map"), false, false));
+
+		CarvingResult candidateES = new CarvingResult(body, imports);
+		Map<TypeVariable<?>, String> genericToConcrete = new LinkedHashMap<>();
+		TypeVariable<?> r = TypeVariableImpl.<GenericDeclaration>make(Object.class, "R", null, null);
+		TypeVariable<?> c = TypeVariableImpl.<GenericDeclaration>make(Object.class, "C", null, null);
+		TypeVariable<?> v = TypeVariableImpl.<GenericDeclaration>make(Object.class, "V", null, null);
+		genericToConcrete.put(r, "Integer");
+		genericToConcrete.put(c, "String");
+		genericToConcrete.put(v, "Character");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(
+				new ArrayList<TestScenario>(), stub, candidateES,
+				new ArrayList<FieldDeclaration>(), genericToConcrete);
+		Stub second = sssg.generateStub();
+		
+		second.dumpStub("./test/resources/compilation");
+		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+		
+		String actual = second.getAst().toString();
+		String expected = 
+				"package com.google.common.collect;"+
+				"import sbes.distance.Distance;"+
+				"import sbes.cloning.Cloner;"+
+				"import com.google.common.collect.BoundType;"+
+				"import java.util.Map;"+
+				"public class HashBasedTable_Stub_2 extends HashBasedTable<Integer, String, Character> {"+
+				"HashBasedTable_Stub_2(java.util.Map p0, com.google.common.collect.HashBasedTable.Factory p1) {"+
+				"super(p0, p1);"+
+				"}"+
+				"public void method_under_test() {"+
+				"Cloner c = new Cloner();"+
+				"HashBasedTable<Integer, String, Character> clone = c.deepClone(this);"+
+				"this.clear();"+
+				"Map<Integer, Map<String, Character>> map0 = clone.rowMap();"+
+				"map0.clear();"+
+				"if (Distance.distance(this, clone) > 0.0d)"+
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
