@@ -29,6 +29,9 @@ public class GenericsUtils {
 			else if (toReturn.contains(", " + typeVariable.toString())) {
 				toReturn = toReturn.replaceAll(", " + typeVariable.toString(), ", " + genericToConcreteClasses.get(typeVariable));
 			}
+			else if (toReturn.equals(typeVariable.toString())) {
+				toReturn = genericToConcreteClasses.get(typeVariable);
+			}
 		}
 		return toReturn;
 	}
