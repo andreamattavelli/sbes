@@ -57,13 +57,11 @@ public class SecondStageStubGeneratorTest {
 		stub = new Stub(new CompilationUnit(new PackageDeclaration(new NameExpr("foo")), imports, decls, comments), stubName);
 	}
 	
-	protected void assertAndPrint(String actual, String expected) {
-		System.out.println(actual);
+	protected void assertASTEquals(String actual, String expected) {
 		assertEquals(expected.replaceAll("\\s|\t|\n", ""), actual.replaceAll("\\s|\t|\n", ""));
-		System.out.println("====================================================");
 	}
 	
-	protected void assertThatCompiles(String packagename, String filename, String classesPath) {
+	protected void assertCompiles(String packagename, String filename, String classesPath) {
 		CompilationContext compilationContext = new CompilationContext(
 				"./test/resources/compilation/" + packagename, 
 				filename + ".java", 
@@ -71,8 +69,6 @@ public class SecondStageStubGeneratorTest {
 				classesPath);
 		
 		boolean compilationSucceeded = Compilation.compile(compilationContext);
-		System.out.println("Compiles? " + compilationSucceeded);
-		System.out.println();
 		assertTrue(compilationSucceeded);
 	}
 	
@@ -126,7 +122,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = "package stack.util;"+
@@ -146,7 +142,7 @@ public class SecondStageStubGeneratorTest {
 		"System.out.println(\"Executed\");"+
 		"}"+
 		"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 
 	@Test
@@ -173,7 +169,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = "package stack.util;"+
@@ -193,7 +189,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 
 	@Test
@@ -220,7 +216,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = "package stack.util;"+
@@ -240,7 +236,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -265,7 +261,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = "package stack.util;"+
@@ -285,7 +281,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -302,7 +298,7 @@ public class SecondStageStubGeneratorTest {
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("org/graphstream/graph/implementations", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin:./bin");
+		assertCompiles("org/graphstream/graph/implementations", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin:./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = "package org.graphstream.graph.implementations;"+
@@ -322,7 +318,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -348,7 +344,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = "package stack.util;"+
@@ -370,7 +366,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -392,7 +388,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = "package stack.util;"+
@@ -411,7 +407,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -433,7 +429,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = "package stack.util;"+
@@ -452,7 +448,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -475,7 +471,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = "package stack.util;"+
@@ -494,7 +490,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -517,7 +513,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = "package stack.util;"+
@@ -536,7 +532,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -559,7 +555,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = "package stack.util;"+
@@ -579,7 +575,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -603,7 +599,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = "package stack.util;"+
@@ -625,7 +621,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -643,7 +639,7 @@ public class SecondStageStubGeneratorTest {
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("org/graphstream/graph/implementations", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
+		assertCompiles("org/graphstream/graph/implementations", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = "package org.graphstream.graph.implementations;"+
@@ -663,7 +659,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -685,7 +681,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = "package stack.util;"+
@@ -706,7 +702,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -732,7 +728,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = "package stack.util;"+
@@ -753,7 +749,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 
 	@Test
@@ -776,7 +772,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = "package stack.util;"+
@@ -797,7 +793,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -824,7 +820,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = "package stack.util;"+
@@ -845,7 +841,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -871,7 +867,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -892,7 +888,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -918,7 +914,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -938,7 +934,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -957,7 +953,7 @@ public class SecondStageStubGeneratorTest {
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("org/graphstream/graph/implementations", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
+		assertCompiles("org/graphstream/graph/implementations", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -977,8 +973,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		System.out.println(actual);
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -1002,7 +997,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1023,7 +1018,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -1049,7 +1044,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1073,7 +1068,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -1098,7 +1093,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1119,7 +1114,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -1142,7 +1137,7 @@ public class SecondStageStubGeneratorTest {
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("org/graphstream/graph", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
+		assertCompiles("org/graphstream/graph", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1169,7 +1164,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -1187,7 +1182,7 @@ public class SecondStageStubGeneratorTest {
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("org/graphstream/ui/geom", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
+		assertCompiles("org/graphstream/ui/geom", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1221,7 +1216,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -1248,7 +1243,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1272,7 +1267,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -1289,7 +1284,7 @@ public class SecondStageStubGeneratorTest {
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("org/graphstream/graph/implementations", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
+		assertCompiles("org/graphstream/graph/implementations", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1309,7 +1304,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -1326,7 +1321,7 @@ public class SecondStageStubGeneratorTest {
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("org/graphstream/graph/implementations", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
+		assertCompiles("org/graphstream/graph/implementations", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1346,7 +1341,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -1369,7 +1364,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1390,7 +1385,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -1417,7 +1412,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1441,7 +1436,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 
 	@Test
@@ -1463,7 +1458,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1484,7 +1479,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -1508,7 +1503,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1528,7 +1523,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -1555,7 +1550,7 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("stack/util", second.getStubName(), "./bin");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1577,7 +1572,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -1613,7 +1608,7 @@ public class SecondStageStubGeneratorTest {
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+		assertCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
 
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1639,7 +1634,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -1670,7 +1665,7 @@ public class SecondStageStubGeneratorTest {
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+		assertCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1691,7 +1686,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -1732,7 +1727,7 @@ public class SecondStageStubGeneratorTest {
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+		assertCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1761,7 +1756,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -1788,7 +1783,7 @@ public class SecondStageStubGeneratorTest {
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+		assertCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1808,7 +1803,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -1842,7 +1837,7 @@ public class SecondStageStubGeneratorTest {
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+		assertCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1867,7 +1862,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -1898,7 +1893,7 @@ public class SecondStageStubGeneratorTest {
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+		assertCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1920,7 +1915,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -1958,7 +1953,7 @@ public class SecondStageStubGeneratorTest {
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+		assertCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -1985,7 +1980,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -2014,7 +2009,7 @@ public class SecondStageStubGeneratorTest {
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+		assertCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -2036,7 +2031,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -2069,7 +2064,7 @@ public class SecondStageStubGeneratorTest {
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+		assertCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -2092,7 +2087,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 	@Test
@@ -2131,7 +2126,7 @@ public class SecondStageStubGeneratorTest {
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
-		assertThatCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+		assertCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
 		
 		String actual = second.getAst().toString();
 		String expected = 
@@ -2158,7 +2153,7 @@ public class SecondStageStubGeneratorTest {
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
-		assertAndPrint(actual, expected);
+		assertASTEquals(actual, expected);
 	}
 	
 }
