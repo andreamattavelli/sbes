@@ -65,10 +65,16 @@ public class ASTUtils {
 		}
 		else {
 			canonicalName = GenericsUtils.resolveGenericType(method.getGenericReturnType());
-			generic = canonicalName.substring(canonicalName.indexOf('<'));
-			canonicalName = canonicalName.substring(0, canonicalName.indexOf('<'));
-			if (canonicalName.contains("$")) {
-				canonicalName = method.getReturnType().getCanonicalName();
+			if (canonicalName.contains("<")) {
+				generic = canonicalName.substring(canonicalName.indexOf('<'));
+				canonicalName = canonicalName.substring(0, canonicalName.indexOf('<'));
+				if (canonicalName.contains("$")) {
+					canonicalName = method.getReturnType().getCanonicalName();
+				}
+			}
+			else if (canonicalName.length() == 1) {
+				generic = canonicalName;
+				canonicalName = "";
 			}
 			generic = GenericsUtils.replaceGenericWithConcreteType(generic, genericToConcreteClasses);
 		}
