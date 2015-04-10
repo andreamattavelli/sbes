@@ -54,7 +54,7 @@ public class ReflectionUtils {
 		excluded.add("hashCode");
 		excluded.add("toString");
 		excluded.add("clone");
-		
+		excluded.add("immutableEnumSet");
 	}
 	
 	public static boolean canUse(Constructor<?> constructor) {

@@ -70,6 +70,9 @@ public abstract class AbstractGeneralizer {
 		Method targetMethod = ReflectionUtils.findTargetMethod(methods, methodSignature);
 		// get generic types defined
 		TypeVariable<?>[] genericTypes = c.getTypeParameters();
+		if ((genericTypes == null || genericTypes.length == 0) && Modifier.isStatic(targetMethod.getModifiers())) {
+			genericTypes = targetMethod.getReturnType().getTypeParameters();
+		}
 
 		// PHASE 0: transform variable names to avoid collisions among different scenarios
 		new VariableNamesRenamer(index).visit(cloned, null);

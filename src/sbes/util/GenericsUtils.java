@@ -1,5 +1,6 @@
 package sbes.util;
 
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -13,81 +14,69 @@ public class GenericsUtils {
 		return genericToConcreteClasses.values().toString().replace("[", "").replace("]", "");
 	}
 	
-	public static String replaceGenericWithConcreteType(String generic, Map<TypeVariable<?>, String> genericToConcreteClasses) {
-		String toReturn = generic;
+	public static String resolveGenericType(Type t, Map<TypeVariable<?>, String> genericToConcreteClasses) {
+		if (t instanceof ParameterizedType) {
+			return resolveParameterizedType((ParameterizedType) t, genericToConcreteClasses);
+		}
+		else if (t instanceof TypeVariable<?>) {
+			return resolveTypeVariable((TypeVariable<?>) t, genericToConcreteClasses);
+		}
+		else if (t instanceof WildcardType) {
+			return resolveWildcardType((WildcardType) t, genericToConcreteClasses);
+		}
+		else if (t instanceof GenericArrayType) {
+			return resolveGenericArrayType((GenericArrayType) t, genericToConcreteClasses);
+		}
+		return resolveClass((Class<?>) t);
+	}
+
+	protected static String resolveWildcardType(WildcardType t, Map<TypeVariable<?>, String> genericToConcreteClasses) {
+		String toReturn = t.toString();
 		Set<TypeVariable<?>> types = genericToConcreteClasses.keySet();
 		for (TypeVariable<?> typeVariable : types) {
-			if (toReturn.contains('<' + typeVariable.toString() + '>')) {
-				toReturn = toReturn.replaceAll('<' + typeVariable.toString() + '>', '<' + genericToConcreteClasses.get(typeVariable) + '>');
-			}
-			else if (toReturn.contains('<' + typeVariable.toString())) {
-				toReturn = toReturn.replaceAll('<' + typeVariable.toString(), '<' + genericToConcreteClasses.get(typeVariable));
-			}
-			else if (toReturn.contains(typeVariable.toString() + '>')) {
-				toReturn = toReturn.replaceAll(typeVariable.toString() + '>', genericToConcreteClasses.get(typeVariable) + '>');
-			}
-			else if (toReturn.contains(", " + typeVariable.toString())) {
-				toReturn = toReturn.replaceAll(", " + typeVariable.toString(), ", " + genericToConcreteClasses.get(typeVariable));
-			}
-			else if (toReturn.contains("super " + typeVariable.toString())) {
-				toReturn = toReturn.replaceAll("super " + typeVariable.toString(), "super " + genericToConcreteClasses.get(typeVariable));
-			}
-			else if (toReturn.contains("extends " + typeVariable.toString())) {
-				toReturn = toReturn.replaceAll("extends " + typeVariable.toString(), "extends " + genericToConcreteClasses.get(typeVariable));
-			}
-			else if (toReturn.equals(typeVariable.toString())) {
-				toReturn = genericToConcreteClasses.get(typeVariable);
+			if (toReturn.contains(typeVariable.toString())) {
+				toReturn = toReturn.replaceAll(typeVariable.toString(), genericToConcreteClasses.get(typeVariable));
 			}
 		}
 		return toReturn;
 	}
 
-	public static String resolveGenericType(Type t) {
-		if (t instanceof ParameterizedType) {
-			return resolveParameterizedType((ParameterizedType) t);
+	protected static String resolveTypeVariable(TypeVariable<?> t, Map<TypeVariable<?>, String> genericToConcreteClasses) {
+		String toReturn = t.getName();
+		Set<TypeVariable<?>> types = genericToConcreteClasses.keySet();
+		for (TypeVariable<?> typeVariable : types) {
+			if (toReturn.contains(typeVariable.toString())) {
+				toReturn = toReturn.replaceAll(typeVariable.toString(), genericToConcreteClasses.get(typeVariable));
+			}
 		}
-		else if (t instanceof TypeVariable<?>) {
-			return resolveTypeVariable((TypeVariable<?>) t);
-		}
-		else if (t instanceof WildcardType) {
-			return resolveWildcardType((WildcardType) t);
-		}
-		else if (t instanceof Class<?>) {
-			return resolveClass((Class<?>) t);
-		}
-		// GenericArrayType?
-		return "";
-	}
-	
-	private static String resolveClass(Class<?> t) {
-		if (t.getCanonicalName() != null) {
-			return t.getCanonicalName();
-		}
-		else { 
-			return t.getName();
-		}
+		return toReturn;
 	}
 
-	private static String resolveWildcardType(WildcardType t) {
-		return t.toString();
-	}
-
-	private static String resolveTypeVariable(TypeVariable<?> t) {
-		return t.getName();
-	}
-
-	private static String resolveParameterizedType(ParameterizedType pt) {
+	protected static String resolveParameterizedType(ParameterizedType pt, Map<TypeVariable<?>, String> genericToConcreteClasses) {
 		StringBuilder toReturn = new StringBuilder();
-		toReturn.append(resolveGenericType(pt.getRawType()));
+		toReturn.append(resolveGenericType(pt.getRawType(), genericToConcreteClasses));
 		toReturn.append("<");
 		for (int i = 0; i < pt.getActualTypeArguments().length; i++) {
-			toReturn.append(resolveGenericType(pt.getActualTypeArguments()[i]));
+			toReturn.append(resolveGenericType(pt.getActualTypeArguments()[i], genericToConcreteClasses));
 			if ((i+1) < pt.getActualTypeArguments().length) {
 				toReturn.append(", ");
 			}
 		}
 		toReturn.append(">");
 		return toReturn.toString();
+	}
+	
+	protected static String resolveGenericArrayType(GenericArrayType t, Map<TypeVariable<?>, String> genericToConcreteClasses) {
+		return resolveGenericType(t.getGenericComponentType(), genericToConcreteClasses) + "[]";
+	}
+	
+	protected static String resolveClass(Class<?> t) {
+		if (t.getCanonicalName() != null) {
+			return t.getCanonicalName();
+		}
+		else { 
+			return t.getName();
+		}
 	}
 	
 }

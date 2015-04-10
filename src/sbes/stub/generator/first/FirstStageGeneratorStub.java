@@ -105,8 +105,10 @@ public class FirstStageGeneratorStub extends AbstractStubGenerator {
 			declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnType(targetMethod).toString(), EXPECTED_RESULT));
 			declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnType(targetMethod).toString(), ACTUAL_RESULT));
 		}
-		declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), EXPECTED_STATE));
-		declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), ACTUAL_STATE));
+		if (!Modifier.isStatic(targetMethod.getModifiers())) {
+			declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), EXPECTED_STATE));
+			declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), ACTUAL_STATE));
+		}
 		
 		for (TestScenario scenario : scenarios) {
 			declarations.addAll(scenario.getInputAsFields());
@@ -138,7 +140,7 @@ public class FirstStageGeneratorStub extends AbstractStubGenerator {
 	}
 	
 	@Override
-	protected List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods) {
+	protected List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods, Class<?> c) {
 		logger.debug("Adding original class method wrappers");
 		
 		boolean collectionReturn = false;
@@ -196,11 +198,16 @@ public class FirstStageGeneratorStub extends AbstractStubGenerator {
 			// for loop body
 			List<Expression> methodParameters = ASTUtils.createParameters(parameters, paramsNames, scenarios.size() > 1);
 			Expression right;
-			if (scenarios.size() > 1) {
-				right = new MethodCallExpr(ASTUtils.createArrayAccess(ACTUAL_STATE, "i_"), method.getName(), methodParameters);
+			if (!Modifier.isStatic(targetMethod.getModifiers())) {
+				if (scenarios.size() > 1) {
+					right = new MethodCallExpr(ASTUtils.createArrayAccess(ACTUAL_STATE, "i_"), method.getName(), methodParameters);
+				}
+				else {
+					right = new MethodCallExpr(ASTUtils.createArrayAccess(ACTUAL_STATE, "0"), method.getName(), methodParameters);
+				}
 			}
 			else {
-				right = new MethodCallExpr(ASTUtils.createArrayAccess(ACTUAL_STATE, "0"), method.getName(), methodParameters);
+				right = new MethodCallExpr(ASTHelper.createNameExpr(c.getCanonicalName()), method.getName(), methodParameters);
 			}
 			
 			BlockStmt body = new BlockStmt();
@@ -532,11 +539,15 @@ public class FirstStageGeneratorStub extends AbstractStubGenerator {
 			String distanceMethod = "distance";
 			
 			// Distance.distance(expected_states[0], actual_states[0]) == 0.0d
-			List<Expression> distanceStateArgs = new ArrayList<Expression>();
-			distanceStateArgs.add(ASTUtils.createArrayAccess(EXPECTED_STATE, Integer.toString(i)));
-			distanceStateArgs.add(ASTUtils.createArrayAccess(ACTUAL_STATE, Integer.toString(i)));
-			Expression state = new MethodCallExpr(distanceClass, distanceMethod, distanceStateArgs);
-			BinaryExpr stateCondition = new BinaryExpr(state, zeroDouble, japa.parser.ast.expr.BinaryExpr.Operator.equals);
+			Expression state = null;
+			BinaryExpr stateCondition = null;
+			if (!Modifier.isStatic(targetMethod.getModifiers())) {
+				List<Expression> distanceStateArgs = new ArrayList<Expression>();
+				distanceStateArgs.add(ASTUtils.createArrayAccess(EXPECTED_STATE, Integer.toString(i)));
+				distanceStateArgs.add(ASTUtils.createArrayAccess(ACTUAL_STATE, Integer.toString(i)));
+				state = new MethodCallExpr(distanceClass, distanceMethod, distanceStateArgs);
+				stateCondition = new BinaryExpr(state, zeroDouble, japa.parser.ast.expr.BinaryExpr.Operator.equals);
+			}
 			
 			// Distance.distance(expected_results[0], actual_results[0]) == 0.0d
 			if (!targetMethod.getReturnType().equals(void.class)) {
@@ -545,8 +556,15 @@ public class FirstStageGeneratorStub extends AbstractStubGenerator {
 				distanceResultArgs.add(ASTUtils.createArrayAccess(ACTUAL_RESULT, Integer.toString(i)));
 				Expression result = new MethodCallExpr(distanceClass, distanceMethod, distanceResultArgs);
 				BinaryExpr resultCondition = new BinaryExpr(result, zeroDouble, japa.parser.ast.expr.BinaryExpr.Operator.equals);
+				
 				// concatenate conditions
-				BinaryExpr newCondition = new BinaryExpr(resultCondition, stateCondition, japa.parser.ast.expr.BinaryExpr.Operator.and);
+				BinaryExpr newCondition;
+				if (stateCondition == null) {
+					newCondition = resultCondition;
+				}
+				else {
+					newCondition = new BinaryExpr(resultCondition, stateCondition, japa.parser.ast.expr.BinaryExpr.Operator.and);
+				}
 				if (condition != null) {
 					condition = new BinaryExpr(condition, newCondition, japa.parser.ast.expr.BinaryExpr.Operator.and);
 				}
@@ -563,8 +581,6 @@ public class FirstStageGeneratorStub extends AbstractStubGenerator {
 					condition = stateCondition;
 				}
 			}
-			
-			
 		}
 		
 		IfStmt ifStmt = new IfStmt(condition, new ExpressionStmt(ASTUtils.createSystemOut("Executed")), null);

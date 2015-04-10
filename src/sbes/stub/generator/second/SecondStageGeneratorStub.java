@@ -160,7 +160,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	}
 
 	@Override
-	protected List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods) {
+	protected List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods, Class<?> c) {
 		return new ArrayList<BodyDeclaration>();
 	}
 
