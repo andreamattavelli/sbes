@@ -44,10 +44,8 @@ public class FirstStageStubGeneratorTest {
 		Options.I().setLogLevel(Level.ERROR);
 	}
 	
-	protected void assertAndPrint(String actual, String expected) {
+	protected void assertASTEquals(String actual, String expected) {
 		assertEquals(expected.replaceAll("\\s|\t|\n", ""), actual.replaceAll("\\s|\t|\n", ""));
-		System.out.println(actual);
-		System.out.println("====================================================");
 	}
 	
 	protected void assertThatCompiles(String packagename, String filename, String classesPath) {
@@ -58,8 +56,6 @@ public class FirstStageStubGeneratorTest {
 				classesPath);
 		
 		boolean compilationSucceeded = Compilation.compile(compilationContext);
-		System.out.println("Compiles? " + compilationSucceeded);
-		System.out.println();
 		assertTrue(compilationSucceeded);
 	}
 	
@@ -318,8 +314,55 @@ public class FirstStageStubGeneratorTest {
 		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
 		assertEquals(3, tswg.getGenericToConcreteClasses().size());
 		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("String"));
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Character"));
 		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
 		assertEquals("Integer", values.get(0));
+		assertEquals("String", values.get(1));
+		assertEquals("Character", values.get(2));
+		
+		scenarios.add(tswg);
+		
+		// preconditions ok
+		
+		FirstStageGeneratorStubWithGenerics fssg = new FirstStageGeneratorStubWithGenerics(scenarios);
+		Stub first = fssg.generateStub();
+		first.dumpStub("./test/resources/compilation");
+		assertThatCompiles("com/google/common/collect", first.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+	}
+	
+	@Test
+	public void test07() throws ParseException {
+		setUp("./test/resources/guava-12.0.1.jar", "com.google.common.collect.TreeBasedTable.clear()", "TreeBasedTable_Stub");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"TreeBasedTable<Integer, String, Character> hashBasedTable0 = TreeBasedTable.create();"+
+				"hashBasedTable0.put(0, \"0\", 'a');"+
+				"hashBasedTable0.put(1, \"0\", 'b');"+
+				"hashBasedTable0.put(0, \"1\", 'c');"+
+				"hashBasedTable0.put(2, \"2\", 'd');"+
+				"hashBasedTable0.put(2, \"1\", 'e');"+
+				"hashBasedTable0.clear();"+
+				"}");
+		
+		CarvingResult carvedScenario = new CarvingResult(body, imports);
+		
+		List<TestScenario> scenarios = new ArrayList<>();
+		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
+		TestScenario ts = tsg.testToTestScenario(carvedScenario);
+		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		assertEquals(0, ts.getInputAsFields().size());
+		
+		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
+		assertEquals(3, tswg.getGenericToConcreteClasses().size());
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("String"));
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Character"));
+		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
+		assertEquals("Integer", values.get(0));
+		assertEquals("String", values.get(1));
+		assertEquals("Character", values.get(2));
 		
 		scenarios.add(tswg);
 		
