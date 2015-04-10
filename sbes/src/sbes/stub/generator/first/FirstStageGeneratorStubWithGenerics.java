@@ -31,7 +31,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import sbes.logging.Logger;
 import sbes.result.EquivalenceRepository;
@@ -39,6 +38,7 @@ import sbes.scenario.TestScenario;
 import sbes.scenario.TestScenarioWithGenerics;
 import sbes.util.ASTUtils;
 import sbes.util.AsmParameterNames;
+import sbes.util.GenericsUtils;
 import sbes.util.ReflectionUtils;
 
 public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub {
@@ -252,13 +252,21 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 			}
 			String typeClass;
 			if (i < genericParameterTypes.length && !genericParameterTypes[i].getClass().equals(Class.class)) {
-				typeClass = genericParameterTypes[i].toString();
-				Set<TypeVariable<?>> types = genericToConcreteClasses.keySet();
-				for (TypeVariable<?> typeVariable : types) {
-					if (typeClass.contains(typeVariable.getName())) {
-						typeClass = typeClass.replaceAll(typeVariable.getName(), genericToConcreteClasses.get(typeVariable));
+				String canonicalName = GenericsUtils.resolveGenericType(genericParameterTypes[i]);
+				String generic = "";
+				if (canonicalName.contains("<")) {
+					generic = canonicalName.substring(canonicalName.indexOf('<'));
+					canonicalName = canonicalName.substring(0, canonicalName.indexOf('<'));
+					if (canonicalName.contains("$")) {
+						canonicalName = method.getReturnType().getCanonicalName();
 					}
 				}
+				else if (canonicalName.length() == 1) {
+					generic = canonicalName;
+					canonicalName = "";
+				}
+				generic = GenericsUtils.replaceGenericWithConcreteType(generic, genericToConcreteClasses);
+				typeClass = canonicalName + generic;
 			}
 			else {
 				typeClass = parameterTypes[i].getCanonicalName();

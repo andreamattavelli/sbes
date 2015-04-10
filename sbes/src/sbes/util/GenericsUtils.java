@@ -29,6 +29,12 @@ public class GenericsUtils {
 			else if (toReturn.contains(", " + typeVariable.toString())) {
 				toReturn = toReturn.replaceAll(", " + typeVariable.toString(), ", " + genericToConcreteClasses.get(typeVariable));
 			}
+			else if (toReturn.contains("super " + typeVariable.toString())) {
+				toReturn = toReturn.replaceAll("super " + typeVariable.toString(), "super " + genericToConcreteClasses.get(typeVariable));
+			}
+			else if (toReturn.contains("extends " + typeVariable.toString())) {
+				toReturn = toReturn.replaceAll("extends " + typeVariable.toString(), "extends " + genericToConcreteClasses.get(typeVariable));
+			}
 			else if (toReturn.equals(typeVariable.toString())) {
 				toReturn = genericToConcreteClasses.get(typeVariable);
 			}
