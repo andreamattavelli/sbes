@@ -89,8 +89,13 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 				declarations.add(ASTUtils.createStubHelperArray(returnType.toString(), ACTUAL_RESULT));
 			}
 		}
-		declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), genericToConcreteClasses, EXPECTED_STATE));
-		declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), genericToConcreteClasses, ACTUAL_STATE));
+		if (c.getTypeParameters().length == 0) {
+			declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), EXPECTED_STATE));
+			declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), ACTUAL_STATE));
+		} else {
+			declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), genericToConcreteClasses, EXPECTED_STATE));
+			declarations.add(ASTUtils.createGenericStubHelperArray(c.getCanonicalName(), genericToConcreteClasses, ACTUAL_STATE));
+		}
 		
 		for (TestScenario scenario : scenarios) {
 			declarations.addAll(scenario.getInputAsFields());
@@ -102,7 +107,7 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 	}
 	
 	@Override
-	protected List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods) {
+	protected List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods, Class<?> c) {
 		logger.debug("Adding original class method wrappers");
 		
 		boolean collectionReturn = false;
@@ -111,14 +116,47 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 		List<BodyDeclaration> members = new ArrayList<BodyDeclaration>();
 		methods = preventMethodBloat(targetMethod, methods);
 		for (Method method : methods) {
+			boolean excluded = false;
+			
+			// check generics and exclude all the methods that contains generics
+			// other than the ones specified in the class
+			int found = 0;
+			TypeVariable<?>[] types = method.getTypeParameters();
+			for (int i = 0; i < types.length; i++) {
+				TypeVariable<?>[] generics = genericToConcreteClasses.keySet().toArray(new TypeVariable<?>[0]);
+				for (int j = 0; j < generics.length; j++) {
+					if (types[i].getName().equals(generics[j].getName())) {
+						found++;
+					}
+				}
+			}
+			if (found != types.length) {
+				excluded = true;
+			}
+			
+			// problems resolving type!
+			if (method.getGenericReturnType().toString().contains("Enum")) {
+				excluded = true;
+			}
+			Class<?> ps[] = method.getParameterTypes();
+			for (int i = 0; i < ps.length; i++) {
+				if (ps.equals(Enum.class) || ps.equals(Enum[].class)) {
+					excluded = true;
+					break;
+				}
+			}
+			
 			if (ReflectionUtils.methodFilter(method)) {
-				continue;
+				excluded = true;
 			}
 			else if (method.equals(targetMethod)) {
-				continue;
+				excluded = true;
 			}
 			else if (EquivalenceRepository.getInstance().isExcluded(method)) {
 				logger.debug("Excluded from stub: " + method.toString());
+				excluded = true;
+			}
+			if (excluded) {
 				continue;
 			}
 			
@@ -160,12 +198,17 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 			// for loop body
 			List<Expression> methodParameters = ASTUtils.createParameters(parameters, paramsNames, scenarios.size() > 1);
 			Expression right;
-			if (scenarios.size() > 1) {
-				right = new MethodCallExpr(ASTUtils.createArrayAccess(ACTUAL_STATE, "i_"), method.getName(), methodParameters);
-			}
-			else {
-				right = new MethodCallExpr(ASTUtils.createArrayAccess(ACTUAL_STATE, "0"), method.getName(), methodParameters);
-			}
+//			if (!Modifier.isStatic(targetMethod.getModifiers())) {
+				if (scenarios.size() > 1) {
+					right = new MethodCallExpr(ASTUtils.createArrayAccess(ACTUAL_STATE, "i_"), method.getName(), methodParameters);
+				}
+				else {
+					right = new MethodCallExpr(ASTUtils.createArrayAccess(ACTUAL_STATE, "0"), method.getName(), methodParameters);
+				}
+//			}
+//			else {
+//				right = new MethodCallExpr(ASTHelper.createNameExpr(c.getCanonicalName()), method.getName(), methodParameters);
+//			}
 			
 			BlockStmt body = new BlockStmt();
 			if (returnStubType.toString().equals("void")) {
@@ -252,21 +295,7 @@ public class FirstStageGeneratorStubWithGenerics extends FirstStageGeneratorStub
 			}
 			String typeClass;
 			if (i < genericParameterTypes.length && !genericParameterTypes[i].getClass().equals(Class.class)) {
-				String canonicalName = GenericsUtils.resolveGenericType(genericParameterTypes[i]);
-				String generic = "";
-				if (canonicalName.contains("<")) {
-					generic = canonicalName.substring(canonicalName.indexOf('<'));
-					canonicalName = canonicalName.substring(0, canonicalName.indexOf('<'));
-					if (canonicalName.contains("$")) {
-						canonicalName = method.getReturnType().getCanonicalName();
-					}
-				}
-				else if (canonicalName.length() == 1) {
-					generic = canonicalName;
-					canonicalName = "";
-				}
-				generic = GenericsUtils.replaceGenericWithConcreteType(generic, genericToConcreteClasses);
-				typeClass = canonicalName + generic;
+				typeClass = GenericsUtils.resolveGenericType(genericParameterTypes[i], genericToConcreteClasses);
 			}
 			else {
 				typeClass = parameterTypes[i].getCanonicalName();

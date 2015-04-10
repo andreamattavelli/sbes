@@ -52,7 +52,6 @@ public class ASTUtils {
 	
 	public static Type getReturnConcreteType(TypeVariable<?>[] generics, Map<TypeVariable<?>, String> genericToConcreteClasses, Method method) {
 		String canonicalName = "";
-		String generic = "";
 		int arrayDimension = 0;
 		
 		if (method.getReturnType().isArray()) {
@@ -64,22 +63,10 @@ public class ASTUtils {
 			canonicalName = method.getReturnType().getCanonicalName();
 		}
 		else {
-			canonicalName = GenericsUtils.resolveGenericType(method.getGenericReturnType());
-			if (canonicalName.contains("<")) {
-				generic = canonicalName.substring(canonicalName.indexOf('<'));
-				canonicalName = canonicalName.substring(0, canonicalName.indexOf('<'));
-				if (canonicalName.contains("$")) {
-					canonicalName = method.getReturnType().getCanonicalName();
-				}
-			}
-			else if (canonicalName.length() == 1) {
-				generic = canonicalName;
-				canonicalName = "";
-			}
-			generic = GenericsUtils.replaceGenericWithConcreteType(generic, genericToConcreteClasses);
+			canonicalName = GenericsUtils.resolveGenericType(method.getGenericReturnType(), genericToConcreteClasses);
 		}
 
-		return ASTHelper.createReferenceType(canonicalName + generic, arrayDimension);
+		return ASTHelper.createReferenceType(canonicalName, arrayDimension);
 	}
 	
 	public static Type getReturnTypeAsArray(Method method) {

@@ -82,7 +82,7 @@ public abstract class AbstractStubGenerator {
 		members.addAll(getStubConstructor(targetMethod, c));
 		
 		// original methods (only phase 1)
-		members.addAll(getAdditionalMethods(targetMethod, methods));
+		members.addAll(getAdditionalMethods(targetMethod, methods, c));
 		
 		// artificial methods
 		BodyDeclaration setResult = getSetResultsMethod(targetMethod); 
@@ -104,7 +104,7 @@ public abstract class AbstractStubGenerator {
 	protected abstract TypeDeclaration getClassDeclaration(String className);
 	protected abstract List<BodyDeclaration> getClassFields(Method targetMethod, Class<?> c);
 	protected abstract List<BodyDeclaration> getStubConstructor(Method targetMethod, Class<?> c);
-	protected abstract List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods);
+	protected abstract List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods, Class<?> c);
 	protected abstract MethodDeclaration getSetResultsMethod(Method targetMethod);
 	protected abstract MethodDeclaration getMethodUnderTest(Method targetMethod);
 	

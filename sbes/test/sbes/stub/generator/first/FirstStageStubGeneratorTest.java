@@ -18,6 +18,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -27,6 +28,7 @@ import sbes.logging.Level;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
 import sbes.scenario.TestScenario;
+import sbes.scenario.TestScenarioRepository;
 import sbes.scenario.TestScenarioWithGenerics;
 import sbes.scenario.generalizer.TestScenarioGeneralizer;
 import sbes.stub.Stub;
@@ -59,8 +61,13 @@ public class FirstStageStubGeneratorTest {
 		assertTrue(compilationSucceeded);
 	}
 	
+	@After
+	public void tearDown() {
+		TestScenarioRepository.reset();
+	}
+	
 	@AfterClass
-	public static void tearDown() {
+	public static void tearDownClass() {
 		try {
 			Path directory = Paths.get("./test/resources/compilation");
 			if (!directory.toFile().exists()) {
@@ -363,6 +370,46 @@ public class FirstStageStubGeneratorTest {
 		assertEquals("Integer", values.get(0));
 		assertEquals("String", values.get(1));
 		assertEquals("Character", values.get(2));
+		
+		scenarios.add(tswg);
+		
+		// preconditions ok
+		
+		FirstStageGeneratorStubWithGenerics fssg = new FirstStageGeneratorStubWithGenerics(scenarios);
+		Stub first = fssg.generateStub();
+		first.dumpStub("./test/resources/compilation");
+		assertThatCompiles("com/google/common/collect", first.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+	}
+	
+	@Test
+	public void test08() throws ParseException {
+		setUp("./test/resources/guava-12.0.1.jar", "com.google.common.collect.Sets.newHashSet(Iterable)", "Sets_Stub");
+
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.List"), false, false));
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.ArrayList"), false, false));
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"List<Integer> other = new ArrayList<Integer>();"+
+				"other.add(0);"+
+				"other.add(13123);"+
+				"other.add(-14);"+
+				"HashSet<Integer> set = Sets.newHashSet(other);"+
+				"}");
+		
+		CarvingResult carvedScenario = new CarvingResult(body, imports);
+		
+		List<TestScenario> scenarios = new ArrayList<>();
+		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
+		TestScenario ts = tsg.testToTestScenario(carvedScenario);
+		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		assertEquals(1, ts.getInputAsFields().size());
+		
+		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
+		assertEquals(1, tswg.getGenericToConcreteClasses().size());
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
+		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
+		assertEquals("Integer", values.get(0));
 		
 		scenarios.add(tswg);
 		
