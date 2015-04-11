@@ -52,6 +52,7 @@ public class SecondStageStubGeneratorTest {
 		Options.I().setClassesPath(classesPath);
 		Options.I().setTargetMethod(methodSignature);
 		Options.I().setLogLevel(Level.ERROR);
+		Options.I().setResolveGenerics(true);
 		List<TypeDeclaration> decls = new ArrayList<TypeDeclaration>(); 
 		List<Comment> comments = new ArrayList<Comment>();
 		stub = new Stub(new CompilationUnit(new PackageDeclaration(new NameExpr("foo")), imports, decls, comments), stubName);
@@ -2180,8 +2181,6 @@ public class SecondStageStubGeneratorTest {
 				new ArrayList<TestScenario>(), stub, candidateES,
 				new ArrayList<FieldDeclaration>(), genericToConcrete);
 		Stub second = sssg.generateStub();
-		
-		System.out.println(second.getAst().toString());
 		
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
