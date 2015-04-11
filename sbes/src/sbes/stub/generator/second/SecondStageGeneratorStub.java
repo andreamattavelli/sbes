@@ -114,11 +114,11 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	}
 
 	@Override
-	protected TypeDeclaration getClassDeclaration(String className) {
-		stubName = className + STUB_EXTENSION + "_2";
+	protected TypeDeclaration getClassDeclaration(Class<?> c) {
+		stubName = c.getSimpleName() + STUB_EXTENSION + "_2";
 
 		// extends base class
-		ClassOrInterfaceType extendClassDecl = new ClassOrInterfaceType(className);
+		ClassOrInterfaceType extendClassDecl = new ClassOrInterfaceType(c.getSimpleName());
 		List<ClassOrInterfaceType> extendClasses = new ArrayList<ClassOrInterfaceType>();
 		extendClasses.add(extendClassDecl);
 

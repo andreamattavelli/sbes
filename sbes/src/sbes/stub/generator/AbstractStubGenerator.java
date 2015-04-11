@@ -69,7 +69,7 @@ public abstract class AbstractStubGenerator {
 		cu.setImports(getImports());
 		
 		// class name
-		TypeDeclaration stubClass = getClassDeclaration(c.getSimpleName());
+		TypeDeclaration stubClass = getClassDeclaration(c);
 		ASTHelper.addTypeDeclaration(cu, stubClass);
 		
 		// class members
@@ -101,7 +101,7 @@ public abstract class AbstractStubGenerator {
 
 	// ---------- ABSTRACT STRATEGY METHODS ----------
 	protected abstract List<ImportDeclaration> getImports();
-	protected abstract TypeDeclaration getClassDeclaration(String className);
+	protected abstract TypeDeclaration getClassDeclaration(Class<?> c);
 	protected abstract List<BodyDeclaration> getClassFields(Method targetMethod, Class<?> c);
 	protected abstract List<BodyDeclaration> getStubConstructor(Method targetMethod, Class<?> c);
 	protected abstract List<BodyDeclaration> getAdditionalMethods(Method targetMethod, Method[] methods, Class<?> c);
