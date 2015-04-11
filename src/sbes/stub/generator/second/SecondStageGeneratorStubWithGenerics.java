@@ -61,11 +61,16 @@ public class SecondStageGeneratorStubWithGenerics extends SecondStageGeneratorSt
 	}
 
 	@Override
-	protected TypeDeclaration getClassDeclaration(String className) {
-		stubName = className + STUB_EXTENSION + "_2";
+	protected TypeDeclaration getClassDeclaration(Class<?> c) {
+		stubName = c.getSimpleName() + STUB_EXTENSION + "_2";
 
 		// extends base class
-		ClassOrInterfaceType extendClassDecl = new ClassOrInterfaceType(className + "<" + GenericsUtils.toGenericsString(genericToConcreteClasses) + ">");
+		ClassOrInterfaceType extendClassDecl;
+		if (c.getTypeParameters().length == 0) {
+			extendClassDecl = new ClassOrInterfaceType(c.getSimpleName());
+		} else {
+			extendClassDecl = new ClassOrInterfaceType(c.getSimpleName() + "<" + GenericsUtils.toGenericsString(genericToConcreteClasses) + ">");
+		}
 		List<ClassOrInterfaceType> extendClasses = new ArrayList<ClassOrInterfaceType>();
 		extendClasses.add(extendClassDecl);
 
@@ -144,7 +149,12 @@ public class SecondStageGeneratorStubWithGenerics extends SecondStageGeneratorSt
 		List<VariableDeclarator> vars = new ArrayList<VariableDeclarator>();
 		vars.add(new VariableDeclarator(new VariableDeclaratorId("clone")));
 		String className = ClassUtils.getSimpleClassname(Options.I().getTargetMethod());
-		Expression left = new VariableDeclarationExpr(ASTHelper.createReferenceType(className + "<" + GenericsUtils.toGenericsString(genericToConcreteClasses) + ">", 0), vars);
+		Expression left;
+		if (targetMethod.getDeclaringClass().getTypeParameters().length == 0) {
+			left = new VariableDeclarationExpr(ASTHelper.createReferenceType(className, 0), vars);
+		} else {
+			left = new VariableDeclarationExpr(ASTHelper.createReferenceType(className + "<" + GenericsUtils.toGenericsString(genericToConcreteClasses) + ">", 0), vars);
+		}
 		AssignExpr assignment = new AssignExpr(left, right, Operator.assign);
 		return new ExpressionStmt(assignment);
 	}

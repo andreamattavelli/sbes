@@ -2156,4 +2156,58 @@ public class SecondStageStubGeneratorTest {
 		assertASTEquals(actual, expected);
 	}
 	
+	@Test
+	public void test45() throws ParseException {
+		setUp("./test/resources/guava-12.0.1.jar", "com.google.common.collect.Sets.newHashSet()", "Sets_Stub");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"Sets_Stub sets_Stub0 = new Sets_Stub();"+
+				"Set<Integer> set0 = sets_Stub0.newIdentityHashSet();"+
+				"HashSet<Integer> hashSet0 = sets_Stub0.newHashSet((Iterable<? extends Integer>) set0);"+
+				"sets_Stub0.set_results(hashSet0);"+
+				"sets_Stub0.method_under_test();"+
+				"}");
+		
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.HashSet"), false, false));
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.Set"), false, false));
+
+		CarvingResult candidateES = new CarvingResult(body, imports);
+		Map<TypeVariable<?>, String> genericToConcrete = new LinkedHashMap<>();
+		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
+		genericToConcrete.put(k, "Integer");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(
+				new ArrayList<TestScenario>(), stub, candidateES,
+				new ArrayList<FieldDeclaration>(), genericToConcrete);
+		Stub second = sssg.generateStub();
+		
+		System.out.println(second.getAst().toString());
+		
+		second.dumpStub("./test/resources/compilation");
+		assertCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+		
+		String actual = second.getAst().toString();
+		String expected = 
+				"package com.google.common.collect;"+
+				"import sbes.distance.Distance;"+
+				"import sbes.cloning.Cloner;"+
+				"import java.util.HashSet;"+
+				"import java.util.Set;"+
+				"public class Sets_Stub_2 extends Sets {"+
+				"protected Sets_Stub_2() {"+
+				"super();"+
+				"}"+
+				"public void method_under_test() {"+
+				"Cloner c = new Cloner();"+
+				"Sets clone = c.deepClone(this);"+
+				"java.util.HashSet<Integer> expected_result = this.newHashSet();"+
+				"Set<Integer> set0 = clone.newIdentityHashSet();"+
+				"java.util.HashSet<Integer> actual_result = clone.newHashSet((Iterable<? extends Integer>) set0);"+
+				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
+				"System.out.println(\"Executed\");"+
+				"}"+
+				"}";
+		assertASTEquals(actual, expected);
+	}
+	
 }

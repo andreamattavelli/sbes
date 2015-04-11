@@ -86,8 +86,8 @@ public class FirstStageGeneratorStub extends AbstractStubGenerator {
 	}
 	
 	@Override
-	protected TypeDeclaration getClassDeclaration(String className) {
-		stubName = className + STUB_EXTENSION;
+	protected TypeDeclaration getClassDeclaration(Class<?> c) {
+		stubName = c.getSimpleName() + STUB_EXTENSION;
 		return new ClassOrInterfaceDeclaration(Modifier.PUBLIC, false, stubName);
 	}
 
