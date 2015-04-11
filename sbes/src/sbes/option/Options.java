@@ -70,7 +70,7 @@ public class Options {
 	
 	@Option(name = "-dont_resolve_generics",
 			usage = "Force SBES to use Object instead of resolving generic types")
-	private boolean resolveGenerics = true;
+	private boolean dontResolveGenerics = false;
 	
 	@Option(name = "-scenario_budget",
 			usage = "Search budget for test case generation. Default: 30s")
@@ -143,8 +143,8 @@ public class Options {
 		return methodBloatFactor;
 	}
 	
-	public boolean resolveGenerics() {
-		return resolveGenerics;
+	public boolean dontResolveGenerics() {
+		return dontResolveGenerics;
 	}
 
 	public int getSearchBudget() {
@@ -199,8 +199,8 @@ public class Options {
 		this.heuristicPruningScenarios = heuristicPruningScenarios;
 	}
 	
-	public void setResolveGenerics(boolean resolveGenerics) {
-		this.resolveGenerics = resolveGenerics;
+	public void setDontResolveGenerics(boolean resolveGenerics) {
+		this.dontResolveGenerics = resolveGenerics;
 	}
 	
 	public void setScenarioTestPath(final File scenarioTestPath) {

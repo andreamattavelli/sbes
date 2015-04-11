@@ -52,7 +52,7 @@ public class SecondStageStubGeneratorTest {
 		Options.I().setClassesPath(classesPath);
 		Options.I().setTargetMethod(methodSignature);
 		Options.I().setLogLevel(Level.ERROR);
-		Options.I().setResolveGenerics(true);
+		Options.I().setDontResolveGenerics(false);
 		List<TypeDeclaration> decls = new ArrayList<TypeDeclaration>(); 
 		List<Comment> comments = new ArrayList<Comment>();
 		stub = new Stub(new CompilationUnit(new PackageDeclaration(new NameExpr("foo")), imports, decls, comments), stubName);
