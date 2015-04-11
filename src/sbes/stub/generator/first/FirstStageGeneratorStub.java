@@ -105,10 +105,8 @@ public class FirstStageGeneratorStub extends AbstractStubGenerator {
 			declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnType(targetMethod).toString(), EXPECTED_RESULT));
 			declarations.add(ASTUtils.createStubHelperArray(ASTUtils.getReturnType(targetMethod).toString(), ACTUAL_RESULT));
 		}
-		if (!Modifier.isStatic(targetMethod.getModifiers())) {
-			declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), EXPECTED_STATE));
-			declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), ACTUAL_STATE));
-		}
+		declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), EXPECTED_STATE));
+		declarations.add(ASTUtils.createStubHelperArray(c.getCanonicalName(), ACTUAL_STATE));
 		
 		for (TestScenario scenario : scenarios) {
 			declarations.addAll(scenario.getInputAsFields());
@@ -198,17 +196,13 @@ public class FirstStageGeneratorStub extends AbstractStubGenerator {
 			// for loop body
 			List<Expression> methodParameters = ASTUtils.createParameters(parameters, paramsNames, scenarios.size() > 1);
 			Expression right;
-			if (!Modifier.isStatic(targetMethod.getModifiers())) {
-				if (scenarios.size() > 1) {
-					right = new MethodCallExpr(ASTUtils.createArrayAccess(ACTUAL_STATE, "i_"), method.getName(), methodParameters);
-				}
-				else {
-					right = new MethodCallExpr(ASTUtils.createArrayAccess(ACTUAL_STATE, "0"), method.getName(), methodParameters);
-				}
+			if (scenarios.size() > 1) {
+				right = new MethodCallExpr(ASTUtils.createArrayAccess(ACTUAL_STATE, "i_"), method.getName(), methodParameters);
 			}
 			else {
-				right = new MethodCallExpr(ASTHelper.createNameExpr(c.getCanonicalName()), method.getName(), methodParameters);
+				right = new MethodCallExpr(ASTUtils.createArrayAccess(ACTUAL_STATE, "0"), method.getName(), methodParameters);
 			}
+
 			
 			BlockStmt body = new BlockStmt();
 			if (returnStubType.toString().equals("void")) {

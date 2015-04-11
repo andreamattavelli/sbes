@@ -102,7 +102,7 @@ public abstract class AbstractGeneralizer {
 
 		cloned.getStmts().addAll(actualStatements);
 
-		if (concreteClasses != null && concreteClasses.size() > 0) {
+		if (Options.I().resolveGenerics() && concreteClasses != null && concreteClasses.size() > 0) {
 			return new TestScenarioWithGenerics(carvedTest, cloned, inputs, genericToConcrete);
 		} else {
 			return new TestScenario(carvedTest, cloned, inputs);

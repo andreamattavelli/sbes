@@ -129,5 +129,36 @@ public class TestScenarioLoaderTest {
 		assertEquals(firstExpected.replaceAll("\\s|\t|\n", ""), firstActual.replaceAll("\\s|\t|\n", ""));
 		TestScenarioRepository.I().addScenario(scenarios.get(0));
 	}
+	
+	@Test
+	public void test4() {
+		Options.I().setClassesPath("./test/resources/guava-12.0.1.jar");
+		Options.I().setScenarioTestPath(Paths.get("./test/resources/InitialScenarioGuava2.java").toFile());
+		Options.I().setTargetMethod("com.google.common.collect.ConcurrentHashMultiset.containsAll(Collection)");
+		Options.I().setResolveGenerics(false);
+		
+		List<TestScenario> scenarios = TestScenarioLoader.loadTestScenarios();
+		assertNotNull(scenarios);
+		assertEquals(1, scenarios.size());
+		
+		assertEquals(TestScenario.class, scenarios.get(0).getClass());
+		String firstActual = scenarios.get(0).toString();
+		String firstExpected = 
+				"{"+
+				"ConcurrentHashMultiset<Integer> hashMultiset0 = ConcurrentHashMultiset.create();"+
+				"Integer integer0 = new Integer(-18247);"+
+				"Integer integer1 = new Integer(34);"+
+				"Integer integer2 = new Integer(0);"+
+				"boolean boolean0 = hashMultiset0.add(integer0);"+
+				"boolean boolean1 = hashMultiset0.add(integer1);"+
+				"boolean boolean2 = hashMultiset0.add(integer2);"+
+				"List<Integer> arrayList0 = new ArrayList();"+
+				"arrayList0.add(0);"+
+				"arrayList0.add(34);"+
+				"boolean boolean3 = hashMultiset0.containsAll(arrayList0);"+
+				"}";
+		assertEquals(firstExpected.replaceAll("\\s|\t|\n", ""), firstActual.replaceAll("\\s|\t|\n", ""));
+		TestScenarioRepository.I().addScenario(scenarios.get(0));
+	}
 
 }

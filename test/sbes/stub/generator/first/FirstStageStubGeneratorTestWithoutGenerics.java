@@ -29,14 +29,13 @@ import sbes.option.Options;
 import sbes.result.CarvingResult;
 import sbes.scenario.TestScenario;
 import sbes.scenario.TestScenarioRepository;
-import sbes.scenario.TestScenarioWithGenerics;
 import sbes.scenario.generalizer.TestScenarioGeneralizer;
 import sbes.stub.Stub;
 import sbes.testcase.Compilation;
 import sbes.testcase.CompilationContext;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class FirstStageStubGeneratorTest {
+public class FirstStageStubGeneratorTestWithoutGenerics {
 	
 	private List<ImportDeclaration> imports = new ArrayList<ImportDeclaration>();
 	
@@ -44,7 +43,7 @@ public class FirstStageStubGeneratorTest {
 		Options.I().setClassesPath(classesPath);
 		Options.I().setTargetMethod(methodSignature);
 		Options.I().setLogLevel(Level.ERROR);
-		Options.I().setResolveGenerics(true);
+		Options.I().setResolveGenerics(false);
 	}
 	
 	protected void assertASTEquals(String actual, String expected) {
@@ -117,22 +116,14 @@ public class FirstStageStubGeneratorTest {
 		List<TestScenario> scenarios = new ArrayList<>();
 		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
 		TestScenario ts = tsg.testToTestScenario(carvedScenario);
-		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		assertEquals(TestScenario.class, ts.getClass());
 		assertEquals(2, ts.getInputAsFields().size());
 		
-		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
-		assertEquals(2, tswg.getGenericToConcreteClasses().size());
-		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
-		assertTrue(tswg.getGenericToConcreteClasses().containsValue("String"));
-		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
-		assertEquals("Integer", values.get(0));
-		assertEquals("String", values.get(1));
-		
-		scenarios.add(tswg);
+		scenarios.add(ts);
 		
 		// preconditions ok
 		
-		FirstStageGeneratorStubWithGenerics fssg = new FirstStageGeneratorStubWithGenerics(scenarios);
+		FirstStageGeneratorStub fssg = new FirstStageGeneratorStub(scenarios);
 		Stub first = fssg.generateStub();
 		first.dumpStub("./test/resources/compilation");
 		assertThatCompiles("com/google/common/collect", first.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
@@ -152,23 +143,16 @@ public class FirstStageStubGeneratorTest {
 		List<TestScenario> scenarios = new ArrayList<>();
 		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
 		TestScenario ts = tsg.testToTestScenario(carvedScenario);
-		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		assertEquals(TestScenario.class, ts.getClass());
 		assertEquals(0, ts.getInputAsFields().size());
 		
-		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
-		assertEquals(2, tswg.getGenericToConcreteClasses().size());
-		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
-		assertTrue(tswg.getGenericToConcreteClasses().containsValue("String"));
-		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
-		assertEquals("Integer", values.get(0));
-		assertEquals("String", values.get(1));
-		
-		scenarios.add(tswg);
+		scenarios.add(ts);
 		
 		// preconditions ok
 		
-		FirstStageGeneratorStubWithGenerics fssg = new FirstStageGeneratorStubWithGenerics(scenarios);
+		FirstStageGeneratorStub fssg = new FirstStageGeneratorStub(scenarios);
 		Stub first = fssg.generateStub();
+		System.out.println(first.getAst().toString());
 		first.dumpStub("./test/resources/compilation");
 		assertThatCompiles("com/google/common/collect", first.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
 	}
@@ -196,22 +180,14 @@ public class FirstStageStubGeneratorTest {
 		List<TestScenario> scenarios = new ArrayList<>();
 		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
 		TestScenario ts = tsg.testToTestScenario(carvedScenario);
-		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		assertEquals(TestScenario.class, ts.getClass());
 		assertEquals(2, ts.getInputAsFields().size());
 		
-		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
-		assertEquals(2, tswg.getGenericToConcreteClasses().size());
-		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
-		assertTrue(tswg.getGenericToConcreteClasses().containsValue("String"));
-		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
-		assertEquals("Integer", values.get(0));
-		assertEquals("String", values.get(1));
-		
-		scenarios.add(tswg);
+		scenarios.add(ts);
 		
 		// preconditions ok
 		
-		FirstStageGeneratorStubWithGenerics fssg = new FirstStageGeneratorStubWithGenerics(scenarios);
+		FirstStageGeneratorStub fssg = new FirstStageGeneratorStub(scenarios);
 		Stub first = fssg.generateStub();
 		first.dumpStub("./test/resources/compilation");
 		assertThatCompiles("com/google/common/collect", first.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
@@ -231,20 +207,14 @@ public class FirstStageStubGeneratorTest {
 		List<TestScenario> scenarios = new ArrayList<>();
 		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
 		TestScenario ts = tsg.testToTestScenario(carvedScenario);
-		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		assertEquals(TestScenario.class, ts.getClass());
 		assertEquals(0, ts.getInputAsFields().size());
 		
-		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
-		assertEquals(1, tswg.getGenericToConcreteClasses().size());
-		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
-		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
-		assertEquals("Integer", values.get(0));
-		
-		scenarios.add(tswg);
+		scenarios.add(ts);
 		
 		// preconditions ok
 		
-		FirstStageGeneratorStubWithGenerics fssg = new FirstStageGeneratorStubWithGenerics(scenarios);
+		FirstStageGeneratorStub fssg = new FirstStageGeneratorStub(scenarios);
 		Stub first = fssg.generateStub();
 		first.dumpStub("./test/resources/compilation");
 		assertThatCompiles("com/google/common/collect", first.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
@@ -277,20 +247,14 @@ public class FirstStageStubGeneratorTest {
 		List<TestScenario> scenarios = new ArrayList<>();
 		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
 		TestScenario ts = tsg.testToTestScenario(carvedScenario);
-		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		assertEquals(TestScenario.class, ts.getClass());
 		assertEquals(1, ts.getInputAsFields().size());
 		
-		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
-		assertEquals(1, tswg.getGenericToConcreteClasses().size());
-		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
-		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
-		assertEquals("Integer", values.get(0));
-		
-		scenarios.add(tswg);
+		scenarios.add(ts);
 		
 		// preconditions ok
 		
-		FirstStageGeneratorStubWithGenerics fssg = new FirstStageGeneratorStubWithGenerics(scenarios);
+		FirstStageGeneratorStub fssg = new FirstStageGeneratorStub(scenarios);
 		Stub first = fssg.generateStub();
 		first.dumpStub("./test/resources/compilation");
 		assertThatCompiles("com/google/common/collect", first.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
@@ -316,24 +280,14 @@ public class FirstStageStubGeneratorTest {
 		List<TestScenario> scenarios = new ArrayList<>();
 		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
 		TestScenario ts = tsg.testToTestScenario(carvedScenario);
-		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		assertEquals(TestScenario.class, ts.getClass());
 		assertEquals(0, ts.getInputAsFields().size());
 		
-		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
-		assertEquals(3, tswg.getGenericToConcreteClasses().size());
-		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
-		assertTrue(tswg.getGenericToConcreteClasses().containsValue("String"));
-		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Character"));
-		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
-		assertEquals("Integer", values.get(0));
-		assertEquals("String", values.get(1));
-		assertEquals("Character", values.get(2));
-		
-		scenarios.add(tswg);
+		scenarios.add(ts);
 		
 		// preconditions ok
 		
-		FirstStageGeneratorStubWithGenerics fssg = new FirstStageGeneratorStubWithGenerics(scenarios);
+		FirstStageGeneratorStub fssg = new FirstStageGeneratorStub(scenarios);
 		Stub first = fssg.generateStub();
 		first.dumpStub("./test/resources/compilation");
 		assertThatCompiles("com/google/common/collect", first.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
@@ -359,24 +313,14 @@ public class FirstStageStubGeneratorTest {
 		List<TestScenario> scenarios = new ArrayList<>();
 		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
 		TestScenario ts = tsg.testToTestScenario(carvedScenario);
-		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		assertEquals(TestScenario.class, ts.getClass());
 		assertEquals(0, ts.getInputAsFields().size());
 		
-		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
-		assertEquals(3, tswg.getGenericToConcreteClasses().size());
-		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
-		assertTrue(tswg.getGenericToConcreteClasses().containsValue("String"));
-		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Character"));
-		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
-		assertEquals("Integer", values.get(0));
-		assertEquals("String", values.get(1));
-		assertEquals("Character", values.get(2));
-		
-		scenarios.add(tswg);
+		scenarios.add(ts);
 		
 		// preconditions ok
 		
-		FirstStageGeneratorStubWithGenerics fssg = new FirstStageGeneratorStubWithGenerics(scenarios);
+		FirstStageGeneratorStub fssg = new FirstStageGeneratorStub(scenarios);
 		Stub first = fssg.generateStub();
 		first.dumpStub("./test/resources/compilation");
 		assertThatCompiles("com/google/common/collect", first.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
@@ -403,20 +347,14 @@ public class FirstStageStubGeneratorTest {
 		List<TestScenario> scenarios = new ArrayList<>();
 		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
 		TestScenario ts = tsg.testToTestScenario(carvedScenario);
-		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		assertEquals(TestScenario.class, ts.getClass());
 		assertEquals(1, ts.getInputAsFields().size());
 		
-		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
-		assertEquals(1, tswg.getGenericToConcreteClasses().size());
-		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
-		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
-		assertEquals("Integer", values.get(0));
-		
-		scenarios.add(tswg);
+		scenarios.add(ts);
 		
 		// preconditions ok
 		
-		FirstStageGeneratorStubWithGenerics fssg = new FirstStageGeneratorStubWithGenerics(scenarios);
+		FirstStageGeneratorStub fssg = new FirstStageGeneratorStub(scenarios);
 		Stub first = fssg.generateStub();
 		first.dumpStub("./test/resources/compilation");
 		assertThatCompiles("com/google/common/collect", first.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
@@ -443,24 +381,14 @@ public class FirstStageStubGeneratorTest {
 		List<TestScenario> scenarios = new ArrayList<>();
 		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
 		TestScenario ts = tsg.testToTestScenario(carvedScenario);
-		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		assertEquals(TestScenario.class, ts.getClass());
 		assertEquals(3, ts.getInputAsFields().size());
 		
-		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
-		assertEquals(3, tswg.getGenericToConcreteClasses().size());
-		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
-		assertTrue(tswg.getGenericToConcreteClasses().containsValue("String"));
-		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Character"));
-		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
-		assertEquals("Integer", values.get(0));
-		assertEquals("String", values.get(1));
-		assertEquals("Character", values.get(2));
-		
-		scenarios.add(tswg);
+		scenarios.add(ts);
 		
 		// preconditions ok
 		
-		FirstStageGeneratorStubWithGenerics fssg = new FirstStageGeneratorStubWithGenerics(scenarios);
+		FirstStageGeneratorStub fssg = new FirstStageGeneratorStub(scenarios);
 		Stub first = fssg.generateStub();
 		first.dumpStub("./test/resources/compilation");
 		assertThatCompiles("com/google/common/collect", first.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");

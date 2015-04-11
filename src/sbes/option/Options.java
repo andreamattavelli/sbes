@@ -68,6 +68,10 @@ public class Options {
 			usage = "Java-like method signature under investigation")
 	private String methodSignature = null;
 	
+	@Option(name = "-dont_resolve_generics",
+			usage = "Force SBES to use Object instead of resolving generic types")
+	private boolean resolveGenerics = true;
+	
 	@Option(name = "-scenario_budget",
 			usage = "Search budget for test case generation. Default: 30s")
 	private int scenarioBudget = 30;
@@ -138,6 +142,10 @@ public class Options {
 	public int getMethodBloatFactor() {
 		return methodBloatFactor;
 	}
+	
+	public boolean resolveGenerics() {
+		return resolveGenerics;
+	}
 
 	public int getSearchBudget() {
 		return synthesisBudget;
@@ -189,6 +197,10 @@ public class Options {
 	
 	public void setHeuristicPruningScenarios(final boolean heuristicPruningScenarios) {
 		this.heuristicPruningScenarios = heuristicPruningScenarios;
+	}
+	
+	public void setResolveGenerics(boolean resolveGenerics) {
+		this.resolveGenerics = resolveGenerics;
 	}
 	
 	public void setScenarioTestPath(final File scenarioTestPath) {
