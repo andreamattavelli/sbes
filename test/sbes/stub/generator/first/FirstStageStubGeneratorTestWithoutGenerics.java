@@ -43,7 +43,7 @@ public class FirstStageStubGeneratorTestWithoutGenerics {
 		Options.I().setClassesPath(classesPath);
 		Options.I().setTargetMethod(methodSignature);
 		Options.I().setLogLevel(Level.ERROR);
-		Options.I().setResolveGenerics(false);
+		Options.I().setDontResolveGenerics(true);
 	}
 	
 	protected void assertASTEquals(String actual, String expected) {

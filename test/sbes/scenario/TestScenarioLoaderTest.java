@@ -135,7 +135,7 @@ public class TestScenarioLoaderTest {
 		Options.I().setClassesPath("./test/resources/guava-12.0.1.jar");
 		Options.I().setScenarioTestPath(Paths.get("./test/resources/InitialScenarioGuava2.java").toFile());
 		Options.I().setTargetMethod("com.google.common.collect.ConcurrentHashMultiset.containsAll(Collection)");
-		Options.I().setResolveGenerics(false);
+		Options.I().setDontResolveGenerics(true);
 		
 		List<TestScenario> scenarios = TestScenarioLoader.loadTestScenarios();
 		assertNotNull(scenarios);
