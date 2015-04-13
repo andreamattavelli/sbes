@@ -2209,4 +2209,66 @@ public class SecondStageStubGeneratorTest {
 		assertASTEquals(actual, expected);
 	}
 	
+	@Test
+	public void test46() throws ParseException {
+		setUp("./test/resources/guava-12.0.1.jar", "com.google.common.collect.HashBasedTable.get(Object,Object)", "HashBasedTable_Stub");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"HashBasedTable_Stub hashBasedTable_Stub0 = new HashBasedTable_Stub();"+
+				"char char0 = '&';"+
+				"Integer integer0 = HashBasedTable_Stub.ELEMENT_0_0;"+
+				"String string0 = HashBasedTable_Stub.ELEMENT_0_1;"+
+				"Character character0 = hashBasedTable_Stub0.put(integer0, string0, (Character) char0);"+
+				"Character character1 = new Character((char) character0);"+
+				"String string1 = HashBasedTable_Stub.ELEMENT_0_1;"+
+				"Character character2 = hashBasedTable_Stub0.put(integer0, string1, character0);"+
+				"hashBasedTable_Stub0.set_results(character1);"+
+				"hashBasedTable_Stub0.method_under_test();"+
+				"}");
+		
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.Collection"), false, false));
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.Map"), false, false));
+
+		CarvingResult candidateES = new CarvingResult(body, imports);
+		Map<TypeVariable<?>, String> genericToConcrete = new LinkedHashMap<>();
+		TypeVariable<?> r = TypeVariableImpl.<GenericDeclaration>make(Object.class, "R", null, null);
+		TypeVariable<?> v = TypeVariableImpl.<GenericDeclaration>make(Object.class, "V", null, null);
+		TypeVariable<?> c = TypeVariableImpl.<GenericDeclaration>make(Object.class, "C", null, null);
+		genericToConcrete.put(r, "Integer");
+		genericToConcrete.put(c, "String");
+		genericToConcrete.put(v, "Character");
+		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(
+				new ArrayList<TestScenario>(), stub, candidateES,
+				new ArrayList<FieldDeclaration>(), genericToConcrete);
+		Stub second = sssg.generateStub();
+		
+		second.dumpStub("./test/resources/compilation");
+		assertCompiles("com/google/common/collect", second.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+		
+		String actual = second.getAst().toString();
+		String expected = 
+				"package com.google.common.collect;"+
+				"import sbes.distance.Distance;"+
+				"import sbes.cloning.Cloner;"+
+				"import java.util.Collection;"+
+				"import java.util.Map;"+
+				"public class HashBasedTable_Stub_2 extends HashBasedTable<Integer, String, Character> {"+
+				"HashBasedTable_Stub_2(java.util.Map p0, com.google.common.collect.HashBasedTable.Factory p1) {"+
+				"super(p0, p1);"+
+				"}"+
+				"public void method_under_test(Integer p0, String p1) {"+
+				"Cloner c = new Cloner();"+
+				"HashBasedTable<Integer, String, Character> clone = c.deepClone(this);"+
+				"Character expected_result = this.get(p0, p1);"+
+				"Character character0 = clone.put(p0, p1, (Character) '&');"+
+				"clone.put(p0, p1, character0);"+
+				"Character actual_result = new Character((char) character0);"+
+				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
+				"System.out.println(\"Executed\");"+
+				"}"+
+				"}";
+		assertASTEquals(actual, expected);
+	}
+	
 }
