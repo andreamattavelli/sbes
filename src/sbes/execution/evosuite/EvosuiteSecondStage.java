@@ -8,8 +8,8 @@ import java.util.Collection;
 import sbes.exceptions.SBESException;
 import sbes.execution.InternalClassloader;
 import sbes.option.Options;
-import sbes.util.ClassUtils;
 import sbes.util.DirectoryUtils;
+import sbes.util.ReflectionUtils;
 
 public class EvosuiteSecondStage extends Evosuite {
 	
@@ -54,7 +54,7 @@ public class EvosuiteSecondStage extends Evosuite {
 			for (Method m : c.getMethods()) {
 				// Simple case, we define only a method in the stub
 				if (m.getName().equals(method)) {
-					toReturn = ClassUtils.getBytecodeSignature(m);
+					toReturn = ReflectionUtils.getBytecodeSignature(m);
 					break;
 				}
 			}
