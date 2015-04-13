@@ -466,4 +466,43 @@ public class FirstStageStubGeneratorTest {
 		assertThatCompiles("com/google/common/collect", first.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
 	}
 	
+	@Test
+	public void test10() throws ParseException {
+		setUp("./test/resources/guava-12.0.1.jar", "com.google.common.collect.Maps.newHashMap()", "Maps_Stub");
+
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.Collection"), false, false));
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.Map"), false, false));
+		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.Map.Entry"), false, false));
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"HashMap<Integer, String> map = Maps.newHashMap();"+
+				"}");
+		
+		CarvingResult carvedScenario = new CarvingResult(body, imports);
+		
+		List<TestScenario> scenarios = new ArrayList<>();
+		TestScenarioGeneralizer tsg = new TestScenarioGeneralizer();
+		TestScenario ts = tsg.testToTestScenario(carvedScenario);
+		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
+		assertEquals(0, ts.getInputAsFields().size());
+		
+		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
+		assertEquals(2, tswg.getGenericToConcreteClasses().size());
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
+		assertTrue(tswg.getGenericToConcreteClasses().containsValue("String"));
+		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
+		assertEquals("Integer", values.get(0));
+		assertEquals("String", values.get(1));
+		
+		scenarios.add(tswg);
+		
+		// preconditions ok
+		
+		FirstStageGeneratorStubWithGenerics fssg = new FirstStageGeneratorStubWithGenerics(scenarios);
+		Stub first = fssg.generateStub();
+		first.dumpStub("./test/resources/compilation");
+		assertThatCompiles("com/google/common/collect", first.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
+	}
+	
 }

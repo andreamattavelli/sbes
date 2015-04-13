@@ -152,7 +152,6 @@ public class FirstStageStubGeneratorTestWithoutGenerics {
 		
 		FirstStageGeneratorStub fssg = new FirstStageGeneratorStub(scenarios);
 		Stub first = fssg.generateStub();
-		System.out.println(first.getAst().toString());
 		first.dumpStub("./test/resources/compilation");
 		assertThatCompiles("com/google/common/collect", first.getStubName(), "./test/resources/guava-12.0.1.jar:./bin");
 	}

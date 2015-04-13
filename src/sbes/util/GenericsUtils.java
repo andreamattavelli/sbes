@@ -30,15 +30,29 @@ public class GenericsUtils {
 		return resolveClass((Class<?>) t);
 	}
 
-	protected static String resolveWildcardType(WildcardType t, Map<TypeVariable<?>, String> genericToConcreteClasses) {
-		String toReturn = t.toString();
-		Set<TypeVariable<?>> types = genericToConcreteClasses.keySet();
-		for (TypeVariable<?> typeVariable : types) {
-			if (toReturn.contains(typeVariable.toString())) {
-				toReturn = toReturn.replaceAll(typeVariable.toString(), genericToConcreteClasses.get(typeVariable));
-			}
+	protected static String resolveClass(Class<?> t) {
+		if (t.getCanonicalName() != null) {
+			return t.getCanonicalName();
 		}
-		return toReturn;
+		else {
+			return t.getName();
+		}
+	}
+
+	protected static String resolveWildcardType(WildcardType t, Map<TypeVariable<?>, String> genericToConcreteClasses) {
+		StringBuilder toReturn = new StringBuilder();
+		if (t.getLowerBounds().length > 0) {
+			toReturn.append("? super ");
+			toReturn.append(resolveGenericType(t.getLowerBounds()[0], genericToConcreteClasses));
+		}
+		else if (t.getUpperBounds().length > 0) {
+			toReturn.append("? extends ");
+			toReturn.append(resolveGenericType(t.getUpperBounds()[0], genericToConcreteClasses));
+		}
+		else {
+			toReturn.append("?");
+		}
+		return toReturn.toString();
 	}
 
 	protected static String resolveTypeVariable(TypeVariable<?> t, Map<TypeVariable<?>, String> genericToConcreteClasses) {
@@ -68,15 +82,6 @@ public class GenericsUtils {
 	
 	protected static String resolveGenericArrayType(GenericArrayType t, Map<TypeVariable<?>, String> genericToConcreteClasses) {
 		return resolveGenericType(t.getGenericComponentType(), genericToConcreteClasses) + "[]";
-	}
-	
-	protected static String resolveClass(Class<?> t) {
-		if (t.getCanonicalName() != null) {
-			return t.getCanonicalName();
-		}
-		else { 
-			return t.getName();
-		}
 	}
 	
 }

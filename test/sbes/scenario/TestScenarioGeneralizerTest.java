@@ -39,23 +39,18 @@ public class TestScenarioGeneralizerTest {
 	
 	protected void assertScenarioAndPrint(String actual, String expected) {
 		assertEquals(expected.replaceAll("\\s|\t|\n", ""), actual.replaceAll("\\s|\t|\n", ""));
-		System.out.println(actual);
-		System.out.println();
 	}
 	
 	protected void assertFieldsAndPrint(List<FieldDeclaration> actual, String[] expected) {
 		if (expected == null) {
 			assertEquals(0, actual.size());
-			System.out.println("No input fields");
 		}
 		else {
 			assertEquals(expected.length, actual.size());
 			for (int i = 0; i < expected.length; i++) {
 				assertEquals(actual.get(i).toString().replaceAll("\\s|\t|\n", ""), expected[i].replaceAll("\\s|\t|\n", ""));
-				System.out.println("Field #" + i + " " + actual.get(i));
 			}
 		}
-		System.out.println("====================================================");
 	}
 	
 	@Test
