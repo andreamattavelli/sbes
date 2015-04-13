@@ -387,7 +387,7 @@ public class SBESManager {
 						method.getName().equals("toArray")) {
 					continue;
 				}
-				String signature = ClassUtils.getMethodSignature(clazz, method);
+				String signature = ReflectionUtils.getMethodSignature(clazz, method);
 				logger.info("  " + signature);
 				targetMethods.add(signature);
 			}

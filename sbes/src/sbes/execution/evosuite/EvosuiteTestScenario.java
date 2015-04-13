@@ -7,8 +7,8 @@ import java.util.Collection;
 import sbes.exceptions.SBESException;
 import sbes.execution.InternalClassloader;
 import sbes.option.Options;
-import sbes.util.ClassUtils;
 import sbes.util.DirectoryUtils;
+import sbes.util.ReflectionUtils;
 
 public class EvosuiteTestScenario extends Evosuite {
 
@@ -69,7 +69,7 @@ public class EvosuiteTestScenario extends Evosuite {
 						}
 					}
 					if (i == args.length) {
-						toReturn = ClassUtils.getBytecodeSignature(m);
+						toReturn = ReflectionUtils.getBytecodeSignature(m);
 						target = m;
 						break;
 					}
