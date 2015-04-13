@@ -445,6 +445,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	}
 
 	private void analyzeParameters(BlockStmt cloned, final List<Parameter> param, MethodCallExpr methodCall) {
+		int resolved = 0;
 		for (int i = 0; i < methodCall.getArgs().size(); i++) { 
 			Expression arg = methodCall.getArgs().get(i);
 			VariableDeclarationExpr vde = null;
@@ -473,27 +474,40 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 					if (fae.getField().startsWith("ELEMENT_")) {
 						// it is an input
 						int index = 0;
+						boolean match = false;
 						for (int j = 0; j < param.size(); j++) {
 							Parameter p = param.get(j);
 							if (p.getType().toString().contains(vde.getType().toString().replace("[]", ""))) {
 								index = j;
+								match = true;
 								break;
 							}
 							else if (p.getType().toString().contains("java.lang.Iterable") && 
 									(vde.getType().toString().contains("Collection") || vde.getType().toString().contains("List") )) {
 								index = j;
+								match = true;
 								break;
 							}
  						}
-						methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(index).getId().getName()));
+						if (!match)
+							methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(index + resolved).getId().getName()));
+						else 
+							methodCall.getArgs().set(i, ASTHelper.createNameExpr(param.get(index).getId().getName()));
 						// now we have to ensure that the type of the parameter
 						// in method_under_test corresponds to this type
 						Type testType = vde.getType();
-						Type paramType = param.get(index).getType();
+						Type paramType;
+						if (!match)
+						paramType = param.get(index + resolved).getType();
+						else 
+							paramType = param.get(index).getType();
 						if (!paramType.toString().contains(testType.toString())) {
 							if (paramType.toString().contains("Object") || testType.toString().contains("Object")){
 								// mismatch! we rely on the type found in the test
-								param.get(index).setType(testType);
+								if (!match)
+									param.get(index + (resolved++)).setType(testType);
+								else
+									param.get(index).setType(testType);
 							}
 						}
 					}
