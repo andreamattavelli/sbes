@@ -134,6 +134,14 @@ public class ReflectionUtils {
 		return count;
 	}
 	
+	public static Class<?> getUnArrayClass(final Class<?> array) {
+		Class<?> arrayClass = array;
+		while (arrayClass.isArray()) {
+			arrayClass = arrayClass.getComponentType();
+		}
+		return arrayClass;
+	}
+	
 	public static Class<?> getClass(final String className) {
 		Class<?> toReturn = null;
 		try {
