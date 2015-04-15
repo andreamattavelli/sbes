@@ -24,8 +24,6 @@
 	<target depends="init" name="build">
 		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
 			<src path="src" />
-			<src path="test" />
-			<exclude name="resources/**"/>
 			<classpath refid="sbes.classpath" />
 		</javac>
 	</target>
