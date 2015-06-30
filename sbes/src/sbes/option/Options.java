@@ -91,6 +91,10 @@ public class Options {
 			usage = "Value to be applied to the chosen stopping condition.")
 	private int stoppingConditionValue = 0;
 	
+	@Option(name = "-symbexe_counterexample",
+			usage = "Generate counterexample with symbolic execution. Default: false")
+	private boolean symbexeCounterexample = false;
+	
 	@Option(name = "-synthesis_budget",
 			usage = "Search budget for equivalent sequence synthesis. Default: 180s")
 	private int synthesisBudget = 180;
@@ -185,6 +189,10 @@ public class Options {
 	
 	public boolean isVerbose() {
 		return verbose;
+	}
+	
+	public boolean isSymbExeCounterexample() {
+		return symbexeCounterexample;
 	}
 	
 	public void setClassesPath(final String classesPath) {
