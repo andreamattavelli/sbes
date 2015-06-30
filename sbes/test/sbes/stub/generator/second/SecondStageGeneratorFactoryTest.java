@@ -23,6 +23,8 @@ import sbes.scenario.TestScenario;
 import sbes.stub.Stub;
 import sbes.stub.generator.first.FirstStageGeneratorStub;
 import sbes.stub.generator.first.FirstStageGeneratorStubWithGenerics;
+import sbes.stub.generator.second.symbolic.SecondStageGeneratorStubSE;
+import sbes.stub.generator.second.symbolic.SecondStageGeneratorStubWithGenericsSE;
 
 public class SecondStageGeneratorFactoryTest {
 
@@ -33,6 +35,7 @@ public class SecondStageGeneratorFactoryTest {
 	
 	@Test
 	public void test0()  throws Throwable  {
+		Options.I().setSymbexeCounterexample(false);
 		LinkedList<TestScenario> linkedList0 = new LinkedList<TestScenario>();
 		FirstStageGeneratorStub firstStageGeneratorStub0 = new FirstStageGeneratorStub((List<TestScenario>) linkedList0);
 		PackageDeclaration packageDeclaration0 = new PackageDeclaration((List<AnnotationExpr>) null, new NameExpr(""));
@@ -47,6 +50,7 @@ public class SecondStageGeneratorFactoryTest {
 
 	@Test
 	public void test1()  throws Throwable  {
+		Options.I().setSymbexeCounterexample(false);
 		LinkedList<TestScenario> linkedList0 = new LinkedList<TestScenario>();
 		FirstStageGeneratorStubWithGenerics firstStageGeneratorStubWithGenerics0 = new FirstStageGeneratorStubWithGenerics((List<TestScenario>) linkedList0);
 		CarvingResult carvingResult0 = new CarvingResult((BlockStmt) null, (List<ImportDeclaration>) null);
@@ -55,6 +59,34 @@ public class SecondStageGeneratorFactoryTest {
 		SecondStageGeneratorStubWithGenerics secondStageGeneratorStubWithGenerics0 = (SecondStageGeneratorStubWithGenerics)SecondStageGeneratorFactory.createGenerator((FirstStageGeneratorStub) firstStageGeneratorStubWithGenerics0, (Stub) null, (CarvingResult) testScenario0);
 		assertNotNull(secondStageGeneratorStubWithGenerics0);
 		assertEquals(SecondStageGeneratorStubWithGenerics.class, secondStageGeneratorStubWithGenerics0.getClass());
+	}
+	
+	@Test
+	public void test2()  throws Throwable  {
+		Options.I().setSymbexeCounterexample(true);
+		LinkedList<TestScenario> linkedList0 = new LinkedList<TestScenario>();
+		FirstStageGeneratorStub firstStageGeneratorStub0 = new FirstStageGeneratorStub((List<TestScenario>) linkedList0);
+		PackageDeclaration packageDeclaration0 = new PackageDeclaration((List<AnnotationExpr>) null, new NameExpr(""));
+		CarvingResult carvingResult0 = new CarvingResult(new BlockStmt(), (List<ImportDeclaration>) new LinkedList<ImportDeclaration>());
+		CompilationUnit compilationUnit0 = new CompilationUnit(packageDeclaration0, null, null, null);
+		Stub stub0 = new Stub(compilationUnit0, "");
+		TestScenario testScenario0 = new TestScenario(carvingResult0, new BlockStmt(), null);
+		SecondStageGeneratorStubSE secondStageGeneratorStub0 = (SecondStageGeneratorStubSE) SecondStageGeneratorFactory.createGenerator(firstStageGeneratorStub0, stub0, (CarvingResult) testScenario0);
+		assertNotNull(secondStageGeneratorStub0);
+		assertEquals(SecondStageGeneratorStubSE.class, secondStageGeneratorStub0.getClass());
+	}
+
+	@Test
+	public void test3()  throws Throwable  {
+		Options.I().setSymbexeCounterexample(true);
+		LinkedList<TestScenario> linkedList0 = new LinkedList<TestScenario>();
+		FirstStageGeneratorStubWithGenerics firstStageGeneratorStubWithGenerics0 = new FirstStageGeneratorStubWithGenerics((List<TestScenario>) linkedList0);
+		CarvingResult carvingResult0 = new CarvingResult((BlockStmt) null, (List<ImportDeclaration>) null);
+		TestScenario testScenario0 = new TestScenario(carvingResult0, null, new LinkedList<FieldDeclaration>());
+		linkedList0.add(testScenario0);
+		SecondStageGeneratorStubWithGenericsSE secondStageGeneratorStubWithGenerics0 = (SecondStageGeneratorStubWithGenericsSE)SecondStageGeneratorFactory.createGenerator((FirstStageGeneratorStub) firstStageGeneratorStubWithGenerics0, (Stub) null, (CarvingResult) testScenario0);
+		assertNotNull(secondStageGeneratorStubWithGenerics0);
+		assertEquals(SecondStageGeneratorStubWithGenericsSE.class, secondStageGeneratorStubWithGenerics0.getClass());
 	}
 
 }

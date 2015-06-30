@@ -2,7 +2,6 @@ package sbes.stub.generator.second;
 
 import japa.parser.ASTHelper;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
-import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.Parameter;
 import japa.parser.ast.body.TypeDeclaration;
@@ -54,9 +53,8 @@ public class SecondStageGeneratorStubWithGenerics extends SecondStageGeneratorSt
 			final List<TestScenario> scenarios, 
 			final Stub stub,
 			final CarvingResult candidateES,
-			final List<FieldDeclaration> fields,
 			final Map<TypeVariable<?>, String> genericToConcreteClasses) {
-		super(scenarios, stub, candidateES, fields);
+		super(scenarios, stub, candidateES);
 		this.genericToConcreteClasses = genericToConcreteClasses;
 	}
 

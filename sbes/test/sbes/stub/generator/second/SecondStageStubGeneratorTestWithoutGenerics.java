@@ -9,7 +9,6 @@ import japa.parser.ast.Comment;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.PackageDeclaration;
-import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.body.TypeDeclaration;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.stmt.BlockStmt;
@@ -112,8 +111,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");	}
@@ -135,8 +134,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -162,8 +161,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -187,8 +186,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -213,8 +212,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -235,8 +234,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -257,8 +256,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -280,8 +279,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -303,8 +302,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -326,8 +325,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -350,8 +349,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -372,8 +371,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -398,8 +397,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -421,8 +420,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -448,8 +447,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -474,8 +473,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -500,8 +499,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -524,8 +523,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -547,8 +546,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.Collection"), false, false));
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
@@ -573,8 +572,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -597,8 +596,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -620,8 +619,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -647,8 +646,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -669,8 +668,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -693,8 +692,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -720,8 +719,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -750,8 +749,7 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.LinkedList"), false, false));
 		
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), 
-													stub, candidateES, new ArrayList<FieldDeclaration>());
+		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES);
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
@@ -776,8 +774,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
@@ -812,8 +810,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
@@ -834,8 +832,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
@@ -864,8 +862,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 		CarvingResult candidateES = new CarvingResult(body, imports);
 
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
@@ -890,8 +888,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
@@ -923,8 +921,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
@@ -949,8 +947,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
@@ -975,8 +973,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
@@ -1001,8 +999,8 @@ public class SecondStageStubGeneratorTestWithoutGenerics {
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+				new ArrayList<TestScenario>(), stub, candidateES);
+
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");

@@ -9,7 +9,6 @@ import japa.parser.ast.Comment;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.PackageDeclaration;
-import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.body.TypeDeclaration;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.stmt.BlockStmt;
@@ -120,7 +119,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -167,7 +166,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -214,7 +213,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -259,7 +258,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -296,7 +295,7 @@ public class SecondStageStubGeneratorTest {
 
 		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("org.graphstream.graph.implementations.AbstractEdge"), false, false));
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
+		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("org/graphstream/graph/implementations", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin:./bin");
@@ -342,7 +341,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -386,7 +385,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -427,7 +426,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -469,7 +468,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -511,7 +510,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -553,7 +552,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -597,7 +596,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -637,7 +636,7 @@ public class SecondStageStubGeneratorTest {
 				"abstractEdge_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
+		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("org/graphstream/graph/implementations", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
@@ -679,7 +678,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -726,7 +725,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -770,7 +769,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -818,7 +817,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -865,7 +864,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -912,7 +911,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -951,7 +950,7 @@ public class SecondStageStubGeneratorTest {
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
 		
-		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
+		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("org/graphstream/graph/implementations", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
@@ -995,7 +994,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -1042,7 +1041,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -1091,7 +1090,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -1135,7 +1134,7 @@ public class SecondStageStubGeneratorTest {
 		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("org.graphstream.graph.implementations.SingleNode"), false, false));
 		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.io.ObjectStreamConstants"), false, false));
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
+		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("org/graphstream/graph", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
@@ -1180,7 +1179,7 @@ public class SecondStageStubGeneratorTest {
 				"vector2_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
+		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("org/graphstream/ui/geom", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
@@ -1241,7 +1240,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -1282,7 +1281,7 @@ public class SecondStageStubGeneratorTest {
 				"abstractEdge_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
+		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("org/graphstream/graph/implementations", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
@@ -1319,7 +1318,7 @@ public class SecondStageStubGeneratorTest {
 				"abstractEdge_Stub0.method_under_test();}");
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES, new ArrayList<FieldDeclaration>());
+		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("org/graphstream/graph/implementations", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin");
@@ -1362,7 +1361,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -1410,7 +1409,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -1456,7 +1455,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -1501,7 +1500,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -1548,7 +1547,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		second.dumpStub("./test/resources/compilation");
 		assertCompiles("stack/util", second.getStubName(), "./bin");
@@ -1605,7 +1604,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		genericToConcrete.put(v, "String");
 		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(new ArrayList<TestScenario>(), 
-													stub, candidateES, new ArrayList<FieldDeclaration>(), genericToConcrete);
+													stub, candidateES, genericToConcrete);
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
@@ -1662,7 +1661,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(v, "String");
 		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
@@ -1724,7 +1723,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(v, "String");
 		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
@@ -1780,7 +1779,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(v, "String");
 		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
@@ -1834,7 +1833,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(v, "String");
 		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
@@ -1890,7 +1889,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(v, "String");
 		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
@@ -1950,7 +1949,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(v, "String");
 		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
@@ -2006,7 +2005,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
@@ -2061,7 +2060,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(v, "Character");
 		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
@@ -2121,9 +2120,7 @@ public class SecondStageStubGeneratorTest {
 		imports.add(new ImportDeclaration(ASTHelper.createNameExpr("java.util.Iterator"), false, false));
 
 		CarvingResult candidateES = new CarvingResult(body, imports);
-		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(
-				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>());
+		SecondStageGeneratorStub sssg = new SecondStageGeneratorStub(new ArrayList<TestScenario>(), stub, candidateES);
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
@@ -2179,7 +2176,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");
@@ -2240,7 +2237,7 @@ public class SecondStageStubGeneratorTest {
 		genericToConcrete.put(v, "Character");
 		SecondStageGeneratorStubWithGenerics sssg = new SecondStageGeneratorStubWithGenerics(
 				new ArrayList<TestScenario>(), stub, candidateES,
-				new ArrayList<FieldDeclaration>(), genericToConcrete);
+				genericToConcrete);
 		Stub second = sssg.generateStub();
 		
 		second.dumpStub("./test/resources/compilation");

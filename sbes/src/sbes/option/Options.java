@@ -191,7 +191,7 @@ public class Options {
 		return verbose;
 	}
 	
-	public boolean isSymbExeCounterexample() {
+	public boolean isSymbolicExecutionCounterexample() {
 		return symbexeCounterexample;
 	}
 	
@@ -213,6 +213,10 @@ public class Options {
 	
 	public void setScenarioTestPath(final File scenarioTestPath) {
 		this.scenarioTestPath = scenarioTestPath;
+	}
+	
+	public void setSymbexeCounterexample(boolean symbexeCounterexample) {
+		this.symbexeCounterexample = symbexeCounterexample;
 	}
 
 	public void setTargetMethod(final String methodSignature) {

@@ -5,7 +5,6 @@ import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.body.BodyDeclaration;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.ConstructorDeclaration;
-import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.Parameter;
 import japa.parser.ast.body.TypeDeclaration;
@@ -82,10 +81,9 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 
 	protected CarvingResult candidateES;
 	protected List<Statement> equivalence;
-	protected List<FieldDeclaration> fields;
 	protected Stub stub;
 
-	public SecondStageGeneratorStub(final List<TestScenario> scenarios, Stub stub, CarvingResult candidateES, List<FieldDeclaration> fields) {
+	public SecondStageGeneratorStub(final List<TestScenario> scenarios, Stub stub, CarvingResult candidateES) {
 		super(scenarios);
 		this.stub = stub;
 		this.candidateES = candidateES;
