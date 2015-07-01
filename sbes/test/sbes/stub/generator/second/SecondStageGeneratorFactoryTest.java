@@ -35,7 +35,7 @@ public class SecondStageGeneratorFactoryTest {
 	
 	@Test
 	public void test0()  throws Throwable  {
-		Options.I().setSymbexeCounterexample(false);
+		Options.I().setSymbolicExecutionCounterexample(false);
 		LinkedList<TestScenario> linkedList0 = new LinkedList<TestScenario>();
 		FirstStageGeneratorStub firstStageGeneratorStub0 = new FirstStageGeneratorStub((List<TestScenario>) linkedList0);
 		PackageDeclaration packageDeclaration0 = new PackageDeclaration((List<AnnotationExpr>) null, new NameExpr(""));
@@ -50,7 +50,7 @@ public class SecondStageGeneratorFactoryTest {
 
 	@Test
 	public void test1()  throws Throwable  {
-		Options.I().setSymbexeCounterexample(false);
+		Options.I().setSymbolicExecutionCounterexample(false);
 		LinkedList<TestScenario> linkedList0 = new LinkedList<TestScenario>();
 		FirstStageGeneratorStubWithGenerics firstStageGeneratorStubWithGenerics0 = new FirstStageGeneratorStubWithGenerics((List<TestScenario>) linkedList0);
 		CarvingResult carvingResult0 = new CarvingResult((BlockStmt) null, (List<ImportDeclaration>) null);
@@ -63,7 +63,7 @@ public class SecondStageGeneratorFactoryTest {
 	
 	@Test
 	public void test2()  throws Throwable  {
-		Options.I().setSymbexeCounterexample(true);
+		Options.I().setSymbolicExecutionCounterexample(true);
 		LinkedList<TestScenario> linkedList0 = new LinkedList<TestScenario>();
 		FirstStageGeneratorStub firstStageGeneratorStub0 = new FirstStageGeneratorStub((List<TestScenario>) linkedList0);
 		PackageDeclaration packageDeclaration0 = new PackageDeclaration((List<AnnotationExpr>) null, new NameExpr(""));
@@ -78,7 +78,7 @@ public class SecondStageGeneratorFactoryTest {
 
 	@Test
 	public void test3()  throws Throwable  {
-		Options.I().setSymbexeCounterexample(true);
+		Options.I().setSymbolicExecutionCounterexample(true);
 		LinkedList<TestScenario> linkedList0 = new LinkedList<TestScenario>();
 		FirstStageGeneratorStubWithGenerics firstStageGeneratorStubWithGenerics0 = new FirstStageGeneratorStubWithGenerics((List<TestScenario>) linkedList0);
 		CarvingResult carvingResult0 = new CarvingResult((BlockStmt) null, (List<ImportDeclaration>) null);

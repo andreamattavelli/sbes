@@ -30,7 +30,7 @@ public abstract class AbstractStubGenerator {
 	
 	protected static final String STUB_EXTENSION = "_Stub"; 
 	
-	private final ClassLoader classloader;
+	protected final ClassLoader classloader;
 	protected TypeVariable<?>[] generics;
 	protected String stubName;
 	protected final List<TestScenario> scenarios;

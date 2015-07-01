@@ -215,7 +215,7 @@ public class Options {
 		this.scenarioTestPath = scenarioTestPath;
 	}
 	
-	public void setSymbexeCounterexample(boolean symbexeCounterexample) {
+	public void setSymbolicExecutionCounterexample(boolean symbexeCounterexample) {
 		this.symbexeCounterexample = symbexeCounterexample;
 	}
 
