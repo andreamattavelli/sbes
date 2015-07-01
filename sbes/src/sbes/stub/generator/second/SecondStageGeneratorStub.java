@@ -339,7 +339,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		return stmts;
 	}
 
-	private boolean unusedObject(VariableDeclarator var, BlockStmt cloned) {
+	protected boolean unusedObject(VariableDeclarator var, BlockStmt cloned) {
 		if (var.getInit() instanceof MethodCallExpr) {
 			MethodCallExpr mce = (MethodCallExpr) var.getInit();
 			if (Character.isUpperCase(mce.getScope().toString().charAt(0))) {
@@ -360,7 +360,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	/*
 	 * PHASE 0: remove method_under_test
 	 */
-	private void removeMethodUnderTest(BlockStmt cloned) {
+	protected void removeMethodUnderTest(BlockStmt cloned) {
 		for (int i = cloned.getStmts().size() - 1; i > 0; i--) {
 			Statement stmt = cloned.getStmts().get(i);
 			if (stmt instanceof ExpressionStmt) {
@@ -379,7 +379,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	 * PHASE 1: remove stub constructor and rename all occurrences of the
 	 * stub object to the cloned object
 	 */
-	private void stubToClone(BlockStmt cloned) {
+	protected void stubToClone(BlockStmt cloned) {
 		String stubName = stub.getStubName();
 		String stubObjectName = null;
 		for (int i = 0; i < cloned.getStmts().size(); i++) {
@@ -414,7 +414,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	 *  this means that, if they are references to the static inputs in the
 	 *  first stub, we need to match an input in the current stub
 	 */
-	private void identifyEquivalentSequenceParameters(BlockStmt cloned, final List<Parameter> param) {
+	protected void identifyEquivalentSequenceParameters(BlockStmt cloned, final List<Parameter> param) {
 		EquivalentSequenceCallVisitor escv = new EquivalentSequenceCallVisitor();
 		escv.visit(cloned, null);
 		for (MethodCallExpr methodCall : escv.getDependencies()) {
@@ -442,7 +442,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		}
 	}
 
-	private void analyzeParameters(BlockStmt cloned, final List<Parameter> param, MethodCallExpr methodCall) {
+	protected void analyzeParameters(BlockStmt cloned, final List<Parameter> param, MethodCallExpr methodCall) {
 		int resolved = 0;
 		for (int i = 0; i < methodCall.getArgs().size(); i++) { 
 			Expression arg = methodCall.getArgs().get(i);
@@ -566,7 +566,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	 * PHASE 3: search for set_results and then resolve the definition of the
 	 * variable used as input
 	 */
-	private void identifyActualResult(BlockStmt cloned, Method targetMethod, final List<Parameter> param) {
+	protected void identifyActualResult(BlockStmt cloned, Method targetMethod, final List<Parameter> param) {
 		MethodCallVisitor mcv = new MethodCallVisitor("set_results", 1);
 		mcv.visit(cloned, null);
 		MethodCallExpr mce = mcv.getMethodCall();
@@ -830,7 +830,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	/*
 	 * PHASE 4: remove spurious parameters from method calls due to array-based stub
 	 */
-	private void pruneArrayParameters(BlockStmt cloned, Method targetMethod) {
+	protected void pruneArrayParameters(BlockStmt cloned, Method targetMethod) {
 		// get all calls on clone obj, therefore a stub obj
 		CloneMethodCallsVisitor cov = new CloneMethodCallsVisitor();
 		cov.visit(cloned, null);
@@ -886,7 +886,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 	/*
 	 * PHASE 5: dead code elimination: remove everything not necessary
 	 */
-	private void deadCodeElimination(BlockStmt cloned) {
+	protected void deadCodeElimination(BlockStmt cloned) {
 		boolean changed = false;
 		do {
 			changed = false;
@@ -1008,7 +1008,7 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 		} while (changed);
 	}
 
-	private void removeDeadAssignments(BlockStmt cloned, int i, String varName) {
+	protected void removeDeadAssignments(BlockStmt cloned, int i, String varName) {
 		for (int j = i; j < cloned.getStmts().size(); j++) {
 			ExpressionStmt es = (ExpressionStmt) cloned.getStmts().get(j);
 			if (es.getExpression() instanceof AssignExpr) {

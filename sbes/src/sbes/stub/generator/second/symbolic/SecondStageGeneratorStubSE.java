@@ -9,10 +9,12 @@ import japa.parser.ast.body.BodyDeclaration;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.MultiTypeParameter;
+import japa.parser.ast.body.Parameter;
 import japa.parser.ast.body.TypeDeclaration;
 import japa.parser.ast.body.VariableDeclaratorId;
 import japa.parser.ast.expr.AnnotationExpr;
 import japa.parser.ast.expr.AssignExpr;
+import japa.parser.ast.expr.AssignExpr.Operator;
 import japa.parser.ast.expr.BinaryExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.MethodCallExpr;
@@ -34,6 +36,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import sbes.ast.ArrayStubRemoverVisitor;
+import sbes.ast.renamer.NameExprRenamer;
+import sbes.ast.renamer.StubRenamer;
 import sbes.exceptions.GenerationException;
 import sbes.logging.Logger;
 import sbes.result.CarvingResult;
@@ -87,10 +92,12 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 	@Override
 	protected List<BodyDeclaration> getClassFields(Method targetMethod, Class<?> c) {
 		List<BodyDeclaration> fields = new ArrayList<>();
-		String resultType = getActualResultType(targetMethod);
 		// return fields
-		fields.add(ASTHelper.createFieldDeclaration(0, ASTHelper.createReferenceType(resultType, 0), "r1"));
-		fields.add(ASTHelper.createFieldDeclaration(0, ASTHelper.createReferenceType(resultType, 0), "r2"));
+		if (!targetMethod.getReturnType().equals(void.class)) {
+			String resultType = getActualResultType(targetMethod);
+			fields.add(ASTHelper.createFieldDeclaration(0, ASTHelper.createReferenceType(resultType, 0), "expected_result"));
+			fields.add(ASTHelper.createFieldDeclaration(0, ASTHelper.createReferenceType(resultType, 0), "actual_result"));
+		}
 		// exception fields
 		fields.add(ASTHelper.createFieldDeclaration(0, ASTHelper.createReferenceType("Exception", 0), "e1"));
 		fields.add(ASTHelper.createFieldDeclaration(0, ASTHelper.createReferenceType("Exception", 0), "e2"));
@@ -114,71 +121,115 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 
 	@Override
 	protected MethodDeclaration getMethodUnderTest(Method targetMethod) {
-		// add method_under_test
-		MethodDeclaration md = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "method_under_test");
+		logger.debug("Adding method_under_test method");
+		MethodDeclaration method_under_test = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "method_under_test");
+		
+		Class<?>[] parameters = targetMethod.getParameterTypes();
+		List<Parameter> param = getParameterType(parameters, targetMethod);
+		
 		BlockStmt body = new BlockStmt();
-		List<Statement> stmts = new ArrayList<Statement>();
+		
 		// variable init
-		stmts.add(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("r1"), new NullLiteralExpr(), AssignExpr.Operator.assign)));
-		stmts.add(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("r2"), new NullLiteralExpr(), AssignExpr.Operator.assign)));
-		stmts.add(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("e1"), new NullLiteralExpr(), AssignExpr.Operator.assign)));
-		stmts.add(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("e2"), new NullLiteralExpr(), AssignExpr.Operator.assign)));
+		body.setStmts(new ArrayList<Statement>());
+		body.getStmts().addAll(initVariables(targetMethod));
+		
 		//try-catch original method
-		BlockStmt tryBodyOriginal = new BlockStmt();
-		List<Statement> tryBodyOriginalStmts = new ArrayList<>();
-		tryBodyOriginalStmts.add(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("r1"), ASTHelper.createNameExpr("XXXXXXXX"), AssignExpr.Operator.assign)));
-		tryBodyOriginal.setStmts(tryBodyOriginalStmts);
-		BlockStmt catchBodyOriginal = new BlockStmt();
-		List<Statement> catchBodyOriginalStmts = new ArrayList<>();
-		catchBodyOriginalStmts.add(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("e1"), ASTHelper.createNameExpr("e"), AssignExpr.Operator.assign)));
-		catchBodyOriginal.setStmts(catchBodyOriginalStmts);
-		TryStmt tryOriginal = getTry(tryBodyOriginal, catchBodyOriginal);
-		stmts.add(tryOriginal);
+		ASTHelper.addStmt(body, createExpectedResult(targetMethod, param));
 
 		//try-catch candidate equivalence
-		BlockStmt tryBodyCandidate = new BlockStmt();
-		List<Statement> tryBodyCandidateStmts = new ArrayList<>();
-		tryBodyCandidateStmts.add(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("r2"), ASTHelper.createNameExpr("YYYYYYYYY"), AssignExpr.Operator.assign)));
-		tryBodyCandidate.setStmts(tryBodyCandidateStmts);
-		BlockStmt catchBodyCandidate = new BlockStmt();
-		List<Statement> catchBodyCandidateStmts = new ArrayList<>();
-		catchBodyCandidateStmts.add(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("e2"), ASTHelper.createNameExpr("e"), AssignExpr.Operator.assign)));
-		catchBodyCandidate.setStmts(catchBodyCandidateStmts);
-		TryStmt tryCandidate = getTry(tryBodyCandidate, catchBodyCandidate);
-		stmts.add(tryCandidate);
+		ASTHelper.addStmt(body, getTry(new BlockStmt(createActualResult(targetMethod, candidateES, param)), getCatchClause("e2")));
 
 		//assume semi conservative
-		stmts.add(getAnalysisMethod("assume", new MethodCallExpr(null, "listsMirrorEachOtherInitally_semiconservative_onShadowFields")));
-
+		ASTHelper.addStmt(body, getAnalysisMethod("assume", new MethodCallExpr(null, "listsMirrorEachOtherInitally_semiconservative_onShadowFields")));
 		//assert conservative
-		stmts.add(getAnalysisMethod("ass3rt", new MethodCallExpr(null, "listsMirrorEachOtherAtEnd_conservative")));
-
+		ASTHelper.addStmt(body, getAnalysisMethod("ass3rt", new MethodCallExpr(null, "listsMirrorEachOtherAtEnd_conservative")));
 		//assert equal returns
-		stmts.add(getAnalysisMethod("ass3rt", new BinaryExpr(ASTHelper.createNameExpr("r1"), ASTHelper.createNameExpr("r2"), BinaryExpr.Operator.equals)));
-
+		ASTHelper.addStmt(body, getAnalysisMethod("ass3rt", new BinaryExpr(ASTHelper.createNameExpr("expected_result"), ASTHelper.createNameExpr("actual_result"), BinaryExpr.Operator.equals)));
 		//assert equal exceptions
-		stmts.add(getIfException("e1", "e2"));
-		stmts.add(getIfException("e2", "e1"));
+		ASTHelper.addStmt(body, getIfException("e1", "e2"));
+		ASTHelper.addStmt(body, getIfException("e2", "e1"));
 
-		body.setStmts(stmts);
-		md.setBody(body);
-		return md;
+		method_under_test.setBody(body);
+		
+		return method_under_test;
 	}
 	
-	private IfStmt getIfException(String originalVar, String checkVar) {
-		IfStmt ifExceptions = new IfStmt();
-		ifExceptions.setCondition(new BinaryExpr(ASTHelper.createNameExpr(originalVar), new NullLiteralExpr(), BinaryExpr.Operator.equals));
-		ifExceptions.setThenStmt(getAnalysisMethod("ass3rt", new BinaryExpr(ASTHelper.createNameExpr(checkVar), new NullLiteralExpr(), BinaryExpr.Operator.equals)));
-		return ifExceptions;
+	protected List<Statement> initVariables(Method targetMethod) {
+		List<Statement> stmts = new ArrayList<Statement>();
+		if (!targetMethod.getReturnType().isPrimitive()) {
+			stmts.add(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("expected_result"), new NullLiteralExpr(), AssignExpr.Operator.assign)));
+			stmts.add(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("actual_result"), new NullLiteralExpr(), AssignExpr.Operator.assign)));
+		}
+		stmts.add(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("e1"), new NullLiteralExpr(), AssignExpr.Operator.assign)));
+		stmts.add(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("e2"), new NullLiteralExpr(), AssignExpr.Operator.assign)));
+		return stmts;
 	}
-
-	private Statement getAnalysisMethod(String methodName, Expression parameter) {
-		MethodCallExpr mce = new MethodCallExpr(ASTHelper.createNameExpr("Analysis"), methodName);
-		mce.setArgs(Arrays.asList(parameter));
-		return new ExpressionStmt(mce);
+	
+	@Override
+	protected TryStmt createExpectedResult(Method targetMethod, final List<Parameter> parameters) {
+		BlockStmt body = new BlockStmt();
+		body.setStmts(new ArrayList<Statement>());
+		List<Expression> methodParameters = new ArrayList<Expression>();
+		for (Parameter parameter : parameters) {
+			methodParameters.add(ASTHelper.createNameExpr(parameter.getId().getName()));
+		}
+		Expression right = new MethodCallExpr(ASTHelper.createNameExpr("v_Stack1"), targetMethod.getName(), methodParameters);
+		if (!targetMethod.getReturnType().equals(void.class)) {
+			String className = targetMethod.getReturnType().getCanonicalName();
+			int arrayDimension = 0;
+			if (targetMethod.getReturnType().isArray()) {
+				arrayDimension = 1;
+			}
+			Expression left = ASTHelper.createVariableDeclarationExpr(ASTHelper.createReferenceType(className, arrayDimension), "expected_result");
+			AssignExpr assignment = new AssignExpr(left, right, Operator.assign);
+			ASTHelper.addStmt(body, new ExpressionStmt(assignment));
+		}
+		else {
+			ASTHelper.addStmt(body, new ExpressionStmt(right));
+		}
+		
+		return getTry(body, getCatchClause("e1"));
 	}
+	
+	@Override
+	protected void stubToClone(BlockStmt cloned) {
+		String stubName = stub.getStubName();
+		String stubObjectName = null;
+		for (int i = 0; i < cloned.getStmts().size(); i++) {
+			Statement stmt = cloned.getStmts().get(i);
+			if (stmt instanceof ExpressionStmt) {
+				ExpressionStmt estmt = (ExpressionStmt) stmt;
+				if (estmt.getExpression() instanceof VariableDeclarationExpr) {
+					VariableDeclarationExpr vde = (VariableDeclarationExpr) estmt.getExpression();
+					if (vde.getType().toString().equals(stubName)) {
+						// found stub constructor: REMOVE!
+						stubObjectName = vde.getVars().get(0).getId().getName();
+						cloned.getStmts().remove(i);
+						i--;
+						break;
+					}
+				}
+			}
+		}
 
-	private TryStmt getTry(BlockStmt tryBody, BlockStmt catchBody) {
+		if (stubObjectName == null) {
+			throw new GenerationException("Stub object not found!");
+		}
+
+		new NameExprRenamer(stubObjectName, "v_Stack2").visit(cloned, null);
+		new StubRenamer(stubName, stubName.substring(0, stubName.indexOf('_'))).visit(cloned, null);
+		new ArrayStubRemoverVisitor().visit(cloned, null);
+	}
+	
+	protected BlockStmt getCatchClause(String exceptionVar) {
+		BlockStmt catchBodyOriginal = new BlockStmt();
+		List<Statement> catchBodyOriginalStmts = new ArrayList<>();
+		catchBodyOriginalStmts.add(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr(exceptionVar), ASTHelper.createNameExpr("e"), AssignExpr.Operator.assign)));
+		catchBodyOriginal.setStmts(catchBodyOriginalStmts);
+		return catchBodyOriginal;
+	}
+	
+	protected TryStmt getTry(BlockStmt tryBody, BlockStmt catchBody) {
 		TryStmt tryStmt = new TryStmt();
 		
 		// try block
@@ -195,6 +246,19 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		tryStmt.setResources(new ArrayList<VariableDeclarationExpr>());
 		
 		return tryStmt;
+	}
+	
+	protected IfStmt getIfException(String originalVar, String checkVar) {
+		IfStmt ifExceptions = new IfStmt();
+		ifExceptions.setCondition(new BinaryExpr(ASTHelper.createNameExpr(originalVar), new NullLiteralExpr(), BinaryExpr.Operator.equals));
+		ifExceptions.setThenStmt(getAnalysisMethod("ass3rt", new BinaryExpr(ASTHelper.createNameExpr(checkVar), new NullLiteralExpr(), BinaryExpr.Operator.equals)));
+		return ifExceptions;
+	}
+
+	protected Statement getAnalysisMethod(String methodName, Expression parameter) {
+		MethodCallExpr mce = new MethodCallExpr(ASTHelper.createNameExpr("Analysis"), methodName);
+		mce.setArgs(Arrays.asList(parameter));
+		return new ExpressionStmt(mce);
 	}
 
 }
