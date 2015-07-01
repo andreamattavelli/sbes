@@ -9,6 +9,7 @@
 		<pathelement location="lib/args4j-2.0.21.jar" />
 		<pathelement location="lib/asm-4.2.jar" />
 		<pathelement location="lib/javaparser-1.0.10.jar" />
+		<pathelement location="lib/jbse-0.7.jar" />
 	</path>
 
 	<target name="init">
@@ -26,13 +27,6 @@
 			<src path="src" />
 			<classpath refid="sbes.classpath" />
 		</javac>
-	</target>
-
-	<target name="test" depends="build">
-		<junit fork="no" printsummary="yes">
-			<classpath refid="sbes.classpath" />
-			<test name="sbes.AllTests" haltonfailure="no" />
-		</junit>
 	</target>
 
 </project>
