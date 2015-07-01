@@ -999,6 +999,13 @@ public class SecondStageGeneratorStub extends AbstractStubGenerator {
 						}
 					}
 					else if (estmt.getExpression() instanceof AssignExpr) {
+						AssignExpr ae = (AssignExpr) estmt.getExpression();
+						if (ae.getTarget() instanceof NameExpr) {
+							NameExpr ne = (NameExpr) ae.getTarget();
+							if (ne.getName().contains("_result")) {
+								continue;
+							}
+						}
 						cloned.getStmts().remove(i);
 						i = i == cloned.getStmts().size() ? i : i++;
 						changed = true;

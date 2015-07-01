@@ -213,8 +213,8 @@ public class SecondStageGeneratorStubWithGenerics extends SecondStageGeneratorSt
 
 		return className;
 	}
-
-	private List<Parameter> getGenericParameterType(Method targetMethod, Type[] genericParams, Class<?>[] concreteParams) {
+	
+	protected List<Parameter> getGenericParameterType(Method targetMethod, Type[] genericParams, Class<?>[] concreteParams) {
 		List<Parameter> toReturn = new ArrayList<Parameter>();
 		for (int i = 0; i < genericParams.length; i++) {
 			Type type = genericParams[i];

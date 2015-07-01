@@ -117,7 +117,7 @@ public class SecondStageStubGeneratorSETest {
 		Map<TypeVariable<?>, String> genericToConcrete = new LinkedHashMap<>();
 		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
 		genericToConcrete.put(k, "Integer");
-		SecondStageGeneratorStubSE sssg = new SecondStageGeneratorStubSE(new ArrayList<TestScenario>(), stub, candidateES);
+		SecondStageGeneratorStubWithGenericsSE sssg = new SecondStageGeneratorStubWithGenericsSE(new ArrayList<TestScenario>(), stub, candidateES, genericToConcrete);
 		Stub second = sssg.generateStub();
 		
 		System.out.println(second.getAst().toString());

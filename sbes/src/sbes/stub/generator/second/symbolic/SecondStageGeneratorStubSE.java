@@ -13,12 +13,24 @@ import japa.parser.ast.body.Parameter;
 import japa.parser.ast.body.TypeDeclaration;
 import japa.parser.ast.body.VariableDeclaratorId;
 import japa.parser.ast.expr.AnnotationExpr;
+import japa.parser.ast.expr.ArrayCreationExpr;
 import japa.parser.ast.expr.AssignExpr;
 import japa.parser.ast.expr.AssignExpr.Operator;
 import japa.parser.ast.expr.BinaryExpr;
+import japa.parser.ast.expr.BooleanLiteralExpr;
+import japa.parser.ast.expr.CastExpr;
+import japa.parser.ast.expr.DoubleLiteralExpr;
+import japa.parser.ast.expr.EnclosedExpr;
 import japa.parser.ast.expr.Expression;
+import japa.parser.ast.expr.FieldAccessExpr;
+import japa.parser.ast.expr.IntegerLiteralExpr;
+import japa.parser.ast.expr.LiteralExpr;
 import japa.parser.ast.expr.MethodCallExpr;
+import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.NullLiteralExpr;
+import japa.parser.ast.expr.ObjectCreationExpr;
+import japa.parser.ast.expr.StringLiteralExpr;
+import japa.parser.ast.expr.UnaryExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.stmt.BlockStmt;
 import japa.parser.ast.stmt.CatchClause;
@@ -36,6 +48,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import sbes.ast.ArrayCellDeclarationVisitor;
+import sbes.ast.MethodCallVisitor;
+import sbes.ast.VariableDeclarationVisitor;
 import sbes.ast.renamer.NameExprRenamer;
 import sbes.exceptions.GenerationException;
 import sbes.logging.Logger;
@@ -44,18 +59,20 @@ import sbes.scenario.TestScenario;
 import sbes.stub.CounterexampleStub;
 import sbes.stub.Stub;
 import sbes.stub.generator.second.SecondStageGeneratorStub;
+import sbes.util.ASTUtils;
+import sbes.util.ReflectionUtils;
 
 public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 
 	private static final Logger logger = new Logger(SecondStageGeneratorStub.class);
 	
-	private static final String ACT_RES	= "actual_result";
-	private static final String EXP_RES	= "expected_result";
-	private static final String V_STACK1 = "v_Stack1";
-	private static final String V_STACK2 = "v_Stack2";
-	private static final String MIRROR_SEMICONSERVATIVE = "listsMirrorEachOtherInitally_semiconservative_onShadowFields";
-	private static final String MIRROR_CONSERVATIVE = "listsMirrorEachOtherAtEnd_conservative";
-	private static final NullLiteralExpr NULL_EXPR = new NullLiteralExpr();
+	protected static final String ACT_RES	= "actual_result";
+	protected static final String EXP_RES	= "expected_result";
+	protected static final String V_STACK1 = "v_Stack1";
+	protected static final String V_STACK2 = "v_Stack2";
+	protected static final String MIRROR_SEMICONSERVATIVE = "listsMirrorEachOtherInitally_semiconservative_onShadowFields";
+	protected static final String MIRROR_CONSERVATIVE = "listsMirrorEachOtherAtEnd_conservative";
+	protected static final NullLiteralExpr NULL_EXPR = new NullLiteralExpr();
 
 	protected CarvingResult candidateES;
 	protected List<Statement> equivalence;
@@ -149,7 +166,12 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		ASTHelper.addStmt(body, createExpectedResult(targetMethod, param));
 
 		//try-catch candidate equivalence
-		ASTHelper.addStmt(body, getTry(new BlockStmt(createActualResult(targetMethod, candidateES, param)), getCatchClause("e2")));
+		List<Statement> stmts = createActualResult(targetMethod, candidateES, param);
+		if (stmts.isEmpty()) {
+			throw new GenerationException("Unable to carve candidate: no statements!");
+		}
+		equivalence = stmts;
+		ASTHelper.addStmt(body, getTry(new BlockStmt(stmts), getCatchClause("e2")));
 
 		//assume semi conservative
 		ASTHelper.addStmt(body, getAnalysisMethod("assume", new MethodCallExpr(null, MIRROR_SEMICONSERVATIVE)));
@@ -188,13 +210,7 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		}
 		Expression right = new MethodCallExpr(ASTHelper.createNameExpr(V_STACK1), targetMethod.getName(), methodParameters);
 		if (!targetMethod.getReturnType().equals(void.class)) {
-			String className = targetMethod.getReturnType().getCanonicalName();
-			int arrayDimension = 0;
-			if (targetMethod.getReturnType().isArray()) {
-				arrayDimension = 1;
-			}
-			Expression left = ASTHelper.createVariableDeclarationExpr(ASTHelper.createReferenceType(className, arrayDimension), EXP_RES);
-			AssignExpr assignment = new AssignExpr(left, right, Operator.assign);
+			AssignExpr assignment = new AssignExpr(ASTHelper.createNameExpr(EXP_RES), right, Operator.assign);
 			ASTHelper.addStmt(body, new ExpressionStmt(assignment));
 		}
 		else {
@@ -202,6 +218,183 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		}
 		
 		return getTry(body, getCatchClause("e1"));
+	}
+	
+	@Override
+	protected void identifyActualResult(BlockStmt cloned, Method targetMethod, final List<Parameter> param) {
+		MethodCallVisitor mcv = new MethodCallVisitor("set_results", 1);
+		mcv.visit(cloned, null);
+		MethodCallExpr mce = mcv.getMethodCall();
+
+		String resultType = getActualResultType(targetMethod);
+		int arrayDimension = 0;
+		if (targetMethod.getReturnType().isArray()) {
+			arrayDimension = 1;
+		}
+		
+		if (mce == null) {
+			logger.debug("There is no set_results method, thus it MUST be a default value");
+			Class<?> returnType = targetMethod.getReturnType();
+			Expression defaultValue;
+			if (ReflectionUtils.isPrimitive(returnType)) {
+				defaultValue = ASTUtils.getDefaultPrimitiveValue(returnType);
+			}
+			else {
+				// it is an object
+				defaultValue = new NullLiteralExpr();
+			}
+			AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), defaultValue, Operator.assign);
+			cloned.getStmts().add(new ExpressionStmt(actualResult));
+			return;
+		}
+
+		VariableDeclarationExpr vde = null;
+		Expression arg = mce.getArgs().get(0);
+		if (arg instanceof FieldAccessExpr) {
+			FieldAccessExpr fae = (FieldAccessExpr) arg;
+			AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), fae, Operator.assign);
+			cloned.getStmts().add(new ExpressionStmt(actualResult));
+			return;
+		}
+		else if (arg instanceof LiteralExpr) {
+			LiteralExpr le = (LiteralExpr) arg;
+			AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), le, Operator.assign);
+			cloned.getStmts().add(new ExpressionStmt(actualResult));
+			return;
+		}
+		else {
+			String name = ASTUtils.getName(arg);
+			if (name != null) {
+				VariableDeclarationVisitor visitor = new VariableDeclarationVisitor(name);
+				visitor.visit(cloned, null);
+				vde = visitor.getVariable();
+			}
+
+			if (vde != null) {
+				String varName = vde.getVars().get(0).getId().getName();
+				Expression init = vde.getVars().get(0).getInit();
+				if (init instanceof EnclosedExpr) {
+					init = ((EnclosedExpr) init).getInner();
+				}
+
+				if (init instanceof ArrayCreationExpr) {
+					// we should check what is inside the array
+					ArrayCellDeclarationVisitor acdv = new ArrayCellDeclarationVisitor(name, Integer.toString(0));
+					acdv.visit(cloned, null);
+					Expression e = acdv.getValue();
+					if (e instanceof NameExpr) {
+						String internalName = ASTUtils.getName(e);
+						if (internalName != null) {
+							VariableDeclarationVisitor visitor = new VariableDeclarationVisitor(internalName);
+							visitor.visit(cloned, null);
+							VariableDeclarationExpr internalVde = visitor.getVariable();
+							Expression internalInit = internalVde.getVars().get(0).getInit();
+							if (internalInit instanceof NameExpr) {
+								NameExpr valueName = (NameExpr) internalInit;
+								for (Parameter parameter : param) {
+									if(parameter.getId().getName().equals(valueName.getName())) {
+										// it is an input
+										AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), new NameExpr(param.get(0).getId().getName()), Operator.assign);
+										cloned.getStmts().add(new ExpressionStmt(actualResult));
+										break;
+									}
+								}
+							}
+							else if (internalInit instanceof FieldAccessExpr) {
+								FieldAccessExpr fae = (FieldAccessExpr) internalInit;
+								if (fae.getField().startsWith("ELEMENT_")) {
+									// it is an input
+									AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), new NameExpr(param.get(0).getId().getName()), Operator.assign);
+									cloned.getStmts().add(new ExpressionStmt(actualResult));
+								}
+							}
+							else if (internalInit instanceof ObjectCreationExpr) {
+								ObjectCreationExpr oce = (ObjectCreationExpr) internalInit;
+								AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), oce, Operator.assign);
+								cloned.getStmts().add(new ExpressionStmt(actualResult));
+							}
+							else if (internalInit instanceof MethodCallExpr) {
+								AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), internalInit, Operator.assign);
+								cloned.getStmts().add(new ExpressionStmt(actualResult));
+							}
+						}
+					}
+					else if (e instanceof CastExpr) {
+						Expression exp = ((CastExpr) e).getExpr();
+						if (exp instanceof IntegerLiteralExpr) {
+							AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), e, Operator.assign);
+							cloned.getStmts().add(new ExpressionStmt(actualResult));
+						}
+					}
+					else if (e instanceof NullLiteralExpr) {
+						AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), e, Operator.assign);
+						cloned.getStmts().add(new ExpressionStmt(actualResult));
+					}
+				}
+				else if (init instanceof MethodCallExpr) {
+					// the actual_result is the return value
+					vde.setType(ASTHelper.createReferenceType(resultType, arrayDimension));
+					vde.getVars().get(0).getId().setName("actual_result");
+				}
+				else if (init instanceof NameExpr) {
+					NameExpr valueName = (NameExpr) init;
+					for (Parameter parameter : param) {
+						if(parameter.getId().getName().equals(valueName.getName())) {
+							// it is an input
+							AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), new NameExpr(param.get(0).getId().getName()), Operator.assign);
+							cloned.getStmts().add(new ExpressionStmt(actualResult));
+							break;
+						}
+					}
+				}
+				else if (init instanceof CastExpr) {
+					AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), ((CastExpr) init).getExpr(), Operator.assign);
+					cloned.getStmts().add(new ExpressionStmt(actualResult));
+				}
+				else if (init instanceof BooleanLiteralExpr) {
+					AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), init, Operator.assign);
+					cloned.getStmts().add(new ExpressionStmt(actualResult));
+				}
+				else if (init instanceof IntegerLiteralExpr) {
+					AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), init, Operator.assign);
+					cloned.getStmts().add(new ExpressionStmt(actualResult));
+				}
+				else if (init instanceof DoubleLiteralExpr) {
+					AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), init, Operator.assign);
+					cloned.getStmts().add(new ExpressionStmt(actualResult));
+				}
+				else if (init instanceof StringLiteralExpr) {
+					AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), init, Operator.assign);
+					cloned.getStmts().add(new ExpressionStmt(actualResult));
+				}
+				else if (init instanceof FieldAccessExpr) {
+					FieldAccessExpr fae = (FieldAccessExpr) init;
+					if (fae.getField().startsWith("ELEMENT_")) {
+						// it is an input
+						AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), new NameExpr(param.get(0).getId().getName()), Operator.assign);
+						cloned.getStmts().add(new ExpressionStmt(actualResult));
+					}
+					else {
+						AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), fae, Operator.assign);
+						cloned.getStmts().add(new ExpressionStmt(actualResult));
+					}
+				}
+				else if (init instanceof ObjectCreationExpr) {
+					ObjectCreationExpr oce = (ObjectCreationExpr) init;
+					AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), oce, Operator.assign);
+					cloned.getStmts().add(new ExpressionStmt(actualResult));
+					return;
+				}
+				else if (init instanceof UnaryExpr) {
+					UnaryExpr ue = (UnaryExpr) init;
+					AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), ue, Operator.assign);
+					cloned.getStmts().add(new ExpressionStmt(actualResult));
+					return;
+				}
+				NameExprRenamer conv = new NameExprRenamer(varName, "actual_result");
+				conv.visit(cloned, null);
+			}
+		}
 	}
 	
 	@Override
