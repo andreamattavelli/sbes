@@ -10,9 +10,15 @@ import jbse.apps.run.RunParameters.StateFormatMode;
 import jbse.apps.run.RunParameters.StepShowMode;
 import jbse.apps.settings.ParseException;
 import jbse.apps.settings.SettingsReader;
+import sbes.exceptions.GenerationException;
+import sbes.execution.Tool;
+import sbes.logging.Logger;
+import sbes.util.DirectoryUtils;
 
-public class JBSE {
+public class JBSE implements Tool {
 
+	private static final Logger logger = new Logger(JBSE.class);
+	
 	//Classpath and sourcepath for code under analysis
 	public static final String					HOME								= "./";
 	public static final String					CLASSPATH_JRE						= HOME + "data/jre/rt.jar";
@@ -27,7 +33,6 @@ public class JBSE {
 	//Input/output directories
 	public static final String   				SETTINGS_FILES_PATH					= HOME + "jbse_hex/";
 	public static final String 					SETTINGS_FILENAME 					= SETTINGS_FILES_PATH + "stack_hex.jbse";
-	public static final String   				OUTPUT_PATH							= HOME + "out/";
 
 	public static final String					SICSTUS_PATH						= "/usr/local/bin/";
 	public static final String					Z3_PATH								= "/Users/andrea/bin/bin/";
@@ -59,18 +64,15 @@ public class JBSE {
 	public static final String   			  	NODE_CLASS_DLL        		      	= "doubly_linked_list/DoubleLinkedList_LICS$Entry";
 	public static final int                   	HEAP_SCOPE                          = 8;
 
-
-
-	public static RunParameters getRunParameters(String[] methodSignature) {
-		RunParameters p = new RunParameters();
+	public void runAnalysis() {
+		String[] methodSignature = new String[] { "", "", "" };
+		final RunParameters p = new RunParameters();
 		try {
 			new SettingsReader(SETTINGS_FILENAME).fillRunParameters(p);
 		} catch (FileNotFoundException e) {
-			System.err.println("ERROR: settings file " + SETTINGS_FILENAME + " not found.");
-			return p;
+			logger.error("ERROR: settings file " + SETTINGS_FILENAME + " not found.", e);
 		} catch (ParseException e) {
-			System.err.println("ERROR: settings file " + SETTINGS_FILENAME + " ill-formed. " + e.getMessage());
-			return p;
+			logger.error("ERROR: settings file " + SETTINGS_FILENAME + " ill-formed. " + e.getMessage(), e);
 		}
 		p.addClasspath(CLASSPATH);
 		p.addSourcePath(SOURCEPATH);
@@ -97,7 +99,7 @@ public class JBSE {
 		p.setShowDecisionProcedureInteraction(SHOW_DECISION_PROCEDURE_INTERACTION);
 
 		//output file
-		p.setOutputFileName(OUTPUT_PATH + "TestSuite_" + methodSignature[1] + ".java");
+		p.setOutputFileName(DirectoryUtils.I().getSecondStubJBSEDir() + "TestSuite_" + methodSignature[1] + ".java");
 
 		// scope
 		p.setTimeout(TIMEOUT, TIMEOUT_TIME_UNIT);
@@ -106,14 +108,13 @@ public class JBSE {
 		p.setCountScope(COUNT_SCOPE);
 		p.setConcretizationDepthScope(CONCR_DEPTH_SCOPE);
 		p.setConcretizationCountScope(CONCR_COUNT_SCOPE);
-
-		return p;
-	}
-
-	public void runAnalysis(String[] testMethodSignature) {
-		final RunParameters p = getRunParameters(testMethodSignature);
-		final Run r = new Run(p);
-		r.run();
+		
+		try {
+			final Run r = new Run(p);
+			r.run();
+		} catch (Throwable t) {
+			throw new GenerationException("Error during JBSE execution", t);
+		}
 	}
 
 }

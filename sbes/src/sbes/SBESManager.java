@@ -15,6 +15,7 @@ import sbes.exceptions.GenerationException;
 import sbes.exceptions.SBESException;
 import sbes.execution.ExecutionManager;
 import sbes.execution.ExecutionResult;
+import sbes.execution.Tool;
 import sbes.execution.evosuite.Evosuite;
 import sbes.execution.evosuite.EvosuiteFirstStage;
 import sbes.execution.evosuite.EvosuiteSecondStage;
@@ -210,7 +211,7 @@ public class SBESManager {
 			return null;
 		}
 		
-		dumpEvosuiteLog(result, directory.getFirstStubEvosuiteDir());
+		dumpLog(result, directory.getFirstStubEvosuiteDir());
 		
 		if (Options.I().isVerbose()) {
 			logger.info(result.getStdout());
@@ -285,19 +286,19 @@ public class SBESManager {
 		
 		// run evosuite
 		String stubSignature = ClassUtils.getPackage(Options.I().getTargetMethod()) + '.' + secondStub.getStubName();
-		Evosuite evosuite = new EvosuiteSecondStage(stubSignature, 
+		Tool tool = new EvosuiteSecondStage(stubSignature, 
 													ClassUtils.getMethodname(Options.I().getTargetMethod()), 
 													classPath);
 		
 		logger.info("Generating counterexample");
 		
-		ExecutionResult result = ExecutionManager.execute(evosuite);
+		ExecutionResult result = ExecutionManager.execute(tool);
 		
 		if (SBESShutdownInterceptor.isInterrupted()) {
 			return null;
 		}
 		
-		dumpEvosuiteLog(result, directory.getSecondStubEvosuiteDir());
+		dumpLog(result, directory.getSecondStubEvosuiteDir());
 		
 		if (Options.I().isVerbose()) {
 			logger.info("EvoSuite Stdout:" + '\n' + result.getStdout());
@@ -396,7 +397,7 @@ public class SBESManager {
 		return targetMethods;
 	}
 	
-	private void dumpEvosuiteLog(final ExecutionResult result, final String directory) {
+	private void dumpLog(final ExecutionResult result, final String directory) {
 		try {
 			Files.write(Paths.get(directory + "/evosuite-out.txt"), Arrays.toString(result.getCommand()).getBytes());
 			Files.write(Paths.get(directory + "/evosuite-out.txt"), System.getProperty("line.separator").getBytes(), StandardOpenOption.APPEND);

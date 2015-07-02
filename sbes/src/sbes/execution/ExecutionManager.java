@@ -7,7 +7,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import sbes.exceptions.WorkerException;
-import sbes.execution.evosuite.Evosuite;
 import sbes.execution.evosuite.EvosuiteFirstStage;
 import sbes.logging.Logger;
 import sbes.option.Options;
@@ -16,31 +15,30 @@ public class ExecutionManager {
 
 	private static final Logger logger = new Logger(ExecutionManager.class);
 
-	public static ExecutionResult execute(Evosuite evosuite) {
+	public static ExecutionResult execute(Tool tool) {
 		ExecutorService executor = Executors.newFixedThreadPool(1);
-		Worker worker = new Worker(evosuite);
-		
-		Future<ExecutionResult> firstResult = executor.submit(worker);
+		Worker worker = WorkerFactory.getWorker(tool);
+
+		Future<ExecutionResult> executorResult = executor.submit(worker);
 		executor.shutdown();
 
-		boolean result = false;
+		boolean terminated = false;
 		try {
-			result = executor.awaitTermination(calculateTimeout(evosuite), TimeUnit.SECONDS);
+			terminated = executor.awaitTermination(calculateTimeout(tool), TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			logger.fatal("Timeout during test case generation");
 			throw new WorkerException("Timeout during test case generation");
 		}
 
-		if (!result) {
+		if (!terminated) {
 			executor.shutdownNow();
-			// should be infeasible
 			logger.fatal("Timeout during test case generation");
 			throw new WorkerException("Timeout during test case generation");
 		}
 
 		ExecutionResult toReturn = null;
 		try {
-			toReturn = firstResult.get();
+			toReturn = executorResult.get();
 		} catch (InterruptedException | ExecutionException e) {
 			throw new WorkerException("Error occurred during test case generation: " + e.getMessage(), e);
 		}
@@ -48,17 +46,23 @@ public class ExecutionManager {
 		return toReturn;
 	}
 
-	private static long calculateTimeout(Evosuite evosuite) {
-		int searchBudget = evosuite instanceof EvosuiteFirstStage ? Options.I().getSearchBudget() : Options.I().getCounterexampleBudget();
+	private static long calculateTimeout(Tool tool) {
+		int searchBudget;
+		if (tool instanceof EvosuiteFirstStage) {
+			searchBudget = Options.I().getSearchBudget();
+		} else {
+			// this includes both EvosuiteSecondStage and JBSE
+			searchBudget = Options.I().getCounterexampleBudget();
+		}
+		
+		// increase time limit to avoid problems
 		if (searchBudget <= 60) {
 			return searchBudget * 3;
-		}
-		else if (searchBudget <= 120){
-			return (long)(searchBudget * 2);			
-		}
-		else {
+		} else if (searchBudget <= 120) {
+			return searchBudget * 2;
+		} else {
 			return searchBudget + 60;
 		}
-	}	
+	}
 	
 }

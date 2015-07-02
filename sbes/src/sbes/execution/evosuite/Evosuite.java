@@ -5,11 +5,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import sbes.execution.Tool;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.util.ClassUtils;
 
-public abstract class Evosuite {
+public abstract class Evosuite implements Tool {
 
 	protected static final Logger logger = new Logger(Evosuite.class);
 	
