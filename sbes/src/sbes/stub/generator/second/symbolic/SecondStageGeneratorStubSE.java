@@ -70,8 +70,8 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 	protected static final String EXP_RES	= "expected_result";
 	protected static final String V_STACK1 = "v_Stack1";
 	protected static final String V_STACK2 = "v_Stack2";
-	protected static final String MIRROR_SEMICONSERVATIVE = "listsMirrorEachOtherInitally_semiconservative_onShadowFields";
-	protected static final String MIRROR_CONSERVATIVE = "listsMirrorEachOtherAtEnd_conservative";
+	protected static final String MIRROR_SEMICONSERVATIVE = "mirrorInitialSemiConservative";
+	protected static final String MIRROR_CONSERVATIVE = "mirrorFinalConservative";
 	protected static final NullLiteralExpr NULL_EXPR = new NullLiteralExpr();
 
 	protected CarvingResult candidateES;

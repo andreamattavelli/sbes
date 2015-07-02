@@ -122,7 +122,7 @@ public class Stack<E> extends CorrespondenceHandler {
 	}
 
 
-	public static boolean mirrorEachOtherInitially_conservative(Stack<?> stack1, Stack<?> stack2) {
+	public static boolean mirrorInitialConservative(Stack<?> stack1, Stack<?> stack2) {
 		boolean ok = CorrespondenceHandler.doOrMayCorrespond(stack1, stack2);
 		if(!ok) return false;			
 
@@ -146,7 +146,7 @@ public class Stack<E> extends CorrespondenceHandler {
 		return true;
 	}
 	
-	public static boolean mirrorEachOtherInitially_semiconservative_onShadowFields(Stack<?> stack1, Stack<?> stack2) {
+	public static boolean mirrorInitialSemiConservative(Stack<?> stack1, Stack<?> stack2) {
 		boolean ok = CorrespondenceHandler.doOrMayCorrespond(stack1, stack2);
 		if(!ok) return false;			
 
@@ -170,7 +170,7 @@ public class Stack<E> extends CorrespondenceHandler {
 		return true;
 	}
 
-	public boolean mirrorCorrespondingAtEnd_conservative() {
+	public boolean mirrorFinalConservative() {
 		boolean ok = this.hasCorrespondingObject();
 		if(!ok) return false;
 

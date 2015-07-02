@@ -11,7 +11,7 @@ public class Symbolic_Stub_Template {
 	Stack<IntegerMock> v_Stack2;
 
 	@ConservativeRepOk
-	boolean listsMirrorEachOtherInitally_conservative() {
+	boolean mirrorInitialConservative() {
 		boolean ok = true;
 		if (Analysis.isResolved(this, "v_Stack1") && Analysis.isResolved(this, "v_Stack2")) {
 			if (v_Stack1 == null) {
@@ -19,7 +19,7 @@ public class Symbolic_Stub_Template {
 			} else if (v_Stack2 == null) {
 				ok = false;
 			} else {
-				ok = Stack.mirrorEachOtherInitially_conservative(v_Stack1, v_Stack2);
+				ok = Stack.mirrorInitialConservative(v_Stack1, v_Stack2);
 			}
 			if (!ok) {
 				return false;
@@ -28,7 +28,7 @@ public class Symbolic_Stub_Template {
 		return true;
 	}
 
-	boolean listsMirrorEachOtherInitally_semiconservative_onShadowFields(){
+	boolean mirrorInitialSemiConservative(){
 		boolean ok = true;
 		if (Analysis.isResolved(this, "v_Stack1") || Analysis.isResolved(this, "v_Stack2")) {
 			if (this.v_Stack1 == null) {
@@ -36,7 +36,7 @@ public class Symbolic_Stub_Template {
 			} else if (this.v_Stack2 == null) {
 				ok = false;
 			} else {
-				ok = Stack.mirrorEachOtherInitially_semiconservative_onShadowFields(v_Stack1, v_Stack2);
+				ok = Stack.mirrorInitialSemiConservative(v_Stack1, v_Stack2);
 			}
 			if (!ok) {
 				return false;
@@ -45,7 +45,7 @@ public class Symbolic_Stub_Template {
 		return true;
 	}
 
-	boolean listsMirrorEachOtherAtEnd_conservative(){
+	boolean mirrorFinalConservative(){
 		boolean ok = true;
 		if (Analysis.isResolved(this, "v_Stack1") && Analysis.isResolved(this, "v_Stack2")) {
 			if (this.v_Stack1 == null) {
@@ -53,11 +53,11 @@ public class Symbolic_Stub_Template {
 			} else if (this.v_Stack2 == null) {
 				ok = false;
 			} else {
-				ok = v_Stack1.mirrorCorrespondingAtEnd_conservative();
+				ok = v_Stack1.mirrorFinalConservative();
 				if (!ok) {
 					return false;
 				}
-				ok = v_Stack2.mirrorCorrespondingAtEnd_conservative();
+				ok = v_Stack2.mirrorFinalConservative();
 			}
 			if (!ok) {
 				return false;

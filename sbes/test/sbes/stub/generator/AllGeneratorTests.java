@@ -10,6 +10,7 @@ import sbes.stub.generator.first.FirstStageStubGeneratorTestWithoutGenerics;
 import sbes.stub.generator.second.SecondStageGeneratorFactoryTest;
 import sbes.stub.generator.second.SecondStageStubGeneratorTest;
 import sbes.stub.generator.second.SecondStageStubGeneratorTestWithoutGenerics;
+import sbes.stub.generator.second.symbolic.SecondStageStubGeneratorSETest;
 
 @RunWith(Suite.class)
 @SuiteClasses({
@@ -18,7 +19,8 @@ import sbes.stub.generator.second.SecondStageStubGeneratorTestWithoutGenerics;
 	FirstStageStubGeneratorTestWithoutGenerics.class,
 	SecondStageGeneratorFactoryTest.class,
 	SecondStageStubGeneratorTest.class,
-	SecondStageStubGeneratorTestWithoutGenerics.class
+	SecondStageStubGeneratorTestWithoutGenerics.class,
+	SecondStageStubGeneratorSETest.class
 })
 public class AllGeneratorTests {
 
