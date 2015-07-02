@@ -119,31 +119,103 @@ public class SecondStageStubGeneratorSETest {
 		genericToConcrete.put(k, "Integer");
 		SecondStageGeneratorStubWithGenericsSE sssg = new SecondStageGeneratorStubWithGenericsSE(new ArrayList<TestScenario>(), stub, candidateES, genericToConcrete);
 		Stub second = sssg.generateStub();
+		second.dumpStub("./test/resources/compilation");
+		assertCompiles("stack/util", second.getStubName(), "./bin:./lib/jbse-0.7.jar");
 		
-		System.out.println(second.getAst().toString());
-		
-//		second.dumpStub("./test/resources/compilation");
-//		assertCompiles("stack/util", second.getStubName(), "./bin");
-//		
-//		String actual = second.getAst().toString();
-//		String expected = "package stack.util;"+
-//		"import sbes.distance.Distance;"+
-//		"import sbes.cloning.Cloner;"+
-//		"public class Stack_Stub_2 extends Stack<Integer> {"+
-//		"public Stack_Stub_2() {"+
-//		"super();"+
-//		"}"+
-//		"public void method_under_test(Integer p0) {"+
-//		"Cloner c = new Cloner();"+
-//		"Stack<Integer> clone = c.deepClone(this);"+
-//		"Integer expected_result = this.push(p0);"+
-//		"clone.addElement(p0);"+
-//		"Integer actual_result = p0;"+
-//		"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
-//		"System.out.println(\"Executed\");"+
-//		"}"+
-//		"}";
-//		assertASTEquals(actual, expected);
+		String actual = second.getAst().toString();
+		String expected = "package stack.util;"+
+				"import jbse.meta.Analysis;"+
+				"import jbse.meta.annotations.ConservativeRepOk;"+
+				"import sbes.symbolic.mock.IntegerMock;"+
+				"import sbes.symbolic.mock.Stack;"+
+				"public class Stack_Stub_2 {"+
+				"IntegerMock expected_result;"+
+				"IntegerMock actual_result;"+
+				"Exception e1;"+
+				"Exception e2;"+
+				"IntegerMock p0;"+
+				"Stack<IntegerMock> v_Stack1;"+
+				"Stack<IntegerMock> v_Stack2;"+
+				"@ConservativeRepOk"+
+				"boolean listsMirrorEachOtherInitally_conservative() {"+
+				"boolean ok = true;"+
+				"if (Analysis.isResolved(this, \"v_Stack1\") && Analysis.isResolved(this, \"v_Stack2\")) {"+
+				"if (v_Stack1 == null) {"+
+				"ok = v_Stack2 == null;"+
+				"} else if (v_Stack2 == null) {"+
+				"ok = false;"+
+				"} else {"+
+				"ok = Stack.mirrorEachOtherInitially_conservative(v_Stack1, v_Stack2);"+
+				"}"+
+				"if (!ok) {"+
+				"return false;"+
+				"}"+
+				"}"+
+				"return true;"+
+				"}"+
+				"boolean listsMirrorEachOtherInitally_semiconservative_onShadowFields() {"+
+				"boolean ok = true;"+
+				"if (Analysis.isResolved(this, \"v_Stack1\") || Analysis.isResolved(this, \"v_Stack2\")) {"+
+				"if (this.v_Stack1 == null) {"+
+				"ok = this.v_Stack2 == null;"+
+				"} else if (this.v_Stack2 == null) {"+
+				"ok = false;"+
+				"} else {"+
+				"ok = Stack.mirrorEachOtherInitially_semiconservative_onShadowFields(v_Stack1, v_Stack2);"+
+				"}"+
+				"if (!ok) {"+
+				"return false;"+
+				"}"+
+				"}"+
+				"return true;"+
+				"}"+
+				"boolean listsMirrorEachOtherAtEnd_conservative() {"+
+				"boolean ok = true;"+
+				"if (Analysis.isResolved(this, \"v_Stack1\") && Analysis.isResolved(this, \"v_Stack2\")) {"+
+				"if (this.v_Stack1 == null) {"+
+				"ok = this.v_Stack2 == null;"+
+				"} else if (this.v_Stack2 == null) {"+
+				"ok = false;"+
+				"} else {"+
+				"ok = v_Stack1.mirrorCorrespondingAtEnd_conservative();"+
+				"if (!ok) {"+
+				"return false;"+
+				"}"+
+				"ok = v_Stack2.mirrorCorrespondingAtEnd_conservative();"+
+				"}"+
+				"if (!ok) {"+
+				"return false;"+
+				"}"+
+				"}"+
+				"return true;"+
+				"}"+
+				"public void method_under_test() {"+
+				"expected_result = null;"+
+				"actual_result = null;"+
+				"e1 = null;"+
+				"e2 = null;"+
+				"try {"+
+				"expected_result = v_Stack1.push(p0);"+
+				"} catch (Exception e) {"+
+				"e1 = e;"+
+				"}"+
+				"try {"+
+				"v_Stack2.addElement(p0);"+
+				"actual_result = p0;"+
+				"} catch (Exception e) {"+
+				"e2 = e;"+
+				"}"+
+				"Analysis.assume(listsMirrorEachOtherInitally_semiconservative_onShadowFields());"+
+				"Analysis.ass3rt(listsMirrorEachOtherAtEnd_conservative());"+
+				"Analysis.ass3rt(expected_result == actual_result);"+
+				"if (e1 == null)"+
+				"Analysis.ass3rt(e2 == null);"+
+				"if (e2 == null)"+
+				"Analysis.ass3rt(e1 == null);"+
+				"}"+
+				"}";
+
+		assertASTEquals(actual, expected);
 	}
 	
 }
