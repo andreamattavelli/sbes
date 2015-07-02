@@ -13,101 +13,68 @@ import jbse.apps.settings.SettingsReader;
 import sbes.exceptions.GenerationException;
 import sbes.execution.Tool;
 import sbes.logging.Logger;
+import sbes.option.Options;
+import sbes.util.ClassUtils;
 import sbes.util.DirectoryUtils;
 
-public class JBSE implements Tool {
+public class JBSE extends Tool {
 
 	private static final Logger logger = new Logger(JBSE.class);
 	
-	//Classpath and sourcepath for code under analysis
-	public static final String					HOME								= "./";
-	public static final String					CLASSPATH_JRE						= HOME + "data/jre/rt.jar";
-	public static final String					CLASSPATH_TARGET					= HOME + "bin/";
-	public static final String					SOURCEPATH_JRE						= HOME + "data/jre/src.zip";
-	public static final String					SOURCEPATH_TARGET					= HOME + "subjects/";
-
-	//Full classpath and sourcepath
-	public static final String[] 				CLASSPATH	= { CLASSPATH_JRE,  CLASSPATH_TARGET };
-	public static final String[] 				SOURCEPATH	= { SOURCEPATH_JRE, SOURCEPATH_TARGET };
-
-	//Input/output directories
-	public static final String   				SETTINGS_FILES_PATH					= HOME + "jbse_hex/";
-	public static final String 					SETTINGS_FILENAME 					= SETTINGS_FILES_PATH + "stack_hex.jbse";
-
-	public static final String					SICSTUS_PATH						= "/usr/local/bin/";
-	public static final String					Z3_PATH								= "/Users/andrea/bin/bin/";
-	public static final DecisionProcedureType	DECISION_PROCEDURE_TYPE				= DecisionProcedureType.Z3;
-	public static final String					DECISION_PROCEDURE_PATH				= Z3_PATH;
-
-	public static final boolean 				USE_CONSERVATIVE_REP_OKS			= true;
-
-	//What to show on the log files
-	public static final StepShowMode			STEP_SHOW_MODE                      = StepShowMode.LEAVES;
-	public static final StateFormatMode			STATE_FORMAT_MODE                   = StateFormatMode.JUNIT_TEST;
-	public static final boolean					SHOW_SAFE                           = false;
-	public static final boolean					SHOW_UNSAFE                         = true;
-	public static final boolean					SHOW_OUT_OF_SCOPE                   = false;
-	public static final boolean					SHOW_CONTRADICTORY                  = false;
-	public static final boolean					SHOW_WARNINGS                       = false;
-	public static final boolean					SHOW_DECISION_PROCEDURE_INTERACTION = false;
-
-	//Concretization
-	public static final boolean					DO_CONCRETIZATION					= false;
-
-	public static final long                  	TIMEOUT 							= 2;
-	public static final TimeUnit              	TIMEOUT_TIME_UNIT                   = TimeUnit.HOURS;
-	public static final int                   	DEPTH_SCOPE                         = 500;
-	public static final int                   	COUNT_SCOPE							= 2000;
-	public static final int                   	CONCR_DEPTH_SCOPE                   = 1000;
-	public static final int                   	CONCR_COUNT_SCOPE                   = 10000;
-
-	public static final String   			  	NODE_CLASS_DLL        		      	= "doubly_linked_list/DoubleLinkedList_LICS$Entry";
-	public static final int                   	HEAP_SCOPE                          = 8;
+	private String additionalClasspath;
+	
+	public JBSE(String classSignature, String methodSignature, String additionalClasspath) {
+		super(classSignature, methodSignature);
+		this.additionalClasspath = additionalClasspath;
+	}
+	
+	// Classpath and sourcepath for code under analysis
+	private final String HOME = "./";
+	private final String CLASSPATH_JRE = HOME + "data/jre/rt.jar";
 
 	public void runAnalysis() {
-		String[] methodSignature = new String[] { "", "", "" };
+		String[] methodSignature = new String[] { "stack/util/" + classSignature.replace('.', '/'), "()V", "method_under_test" };
 		final RunParameters p = new RunParameters();
 		try {
-			new SettingsReader(SETTINGS_FILENAME).fillRunParameters(p);
+			new SettingsReader(Options.I().getHexPath()).fillRunParameters(p);
 		} catch (FileNotFoundException e) {
-			logger.error("ERROR: settings file " + SETTINGS_FILENAME + " not found.", e);
+			logger.error("ERROR: settings file " + Options.I().getHexPath() + " not found.", e);
 		} catch (ParseException e) {
-			logger.error("ERROR: settings file " + SETTINGS_FILENAME + " ill-formed. " + e.getMessage(), e);
+			logger.error("ERROR: settings file " + Options.I().getHexPath() + " ill-formed. " + e.getMessage(), e);
 		}
-		p.addClasspath(CLASSPATH);
-		p.addSourcePath(SOURCEPATH);
+		p.addClasspath(new String[] { CLASSPATH_JRE, additionalClasspath });
 		p.setMethodSignature(methodSignature[0], methodSignature[2], methodSignature[1]);
 
 		// use conservative rep oks
-		p.setUseConservativeRepOks(USE_CONSERVATIVE_REP_OKS);
+		p.setUseConservativeRepOks(true);
 
 		// decision procedure
-		p.setDecisionProcedureType(DECISION_PROCEDURE_TYPE);
-		p.setExternalDecisionProcedurePath(DECISION_PROCEDURE_PATH);
+		p.setDecisionProcedureType(DecisionProcedureType.Z3);
+		p.setExternalDecisionProcedurePath(Options.I().getZ3Path());
 
 		// concretization
-		p.setDoConcretization(DO_CONCRETIZATION);
+		p.setDoConcretization(false);
 
 		// what to show
-		p.setStepShowMode(STEP_SHOW_MODE);
-		p.setStateFormatMode(STATE_FORMAT_MODE);
-		p.setShowSafe(SHOW_SAFE);
-		p.setShowUnsafe(SHOW_UNSAFE);
-		p.setShowOutOfScope(SHOW_OUT_OF_SCOPE);
-		p.setShowContradictory(SHOW_CONTRADICTORY);
-		p.setShowWarnings(SHOW_WARNINGS);
-		p.setShowDecisionProcedureInteraction(SHOW_DECISION_PROCEDURE_INTERACTION);
+		p.setStepShowMode(StepShowMode.LEAVES);
+		p.setStateFormatMode(StateFormatMode.JUNIT_TEST);
+		p.setShowSafe(false);
+		p.setShowUnsafe(true);
+		p.setShowOutOfScope(false);
+		p.setShowContradictory(false);
+		p.setShowWarnings(false);
+		p.setShowDecisionProcedureInteraction(false);
 
 		//output file
-		p.setOutputFileName(DirectoryUtils.I().getSecondStubJBSEDir() + "TestSuite_" + methodSignature[1] + ".java");
+		p.setOutputFileName(DirectoryUtils.I().getSecondStubJBSEDir() + "TestSuite_" + ClassUtils.getSimpleClassnameFromCanonical(classSignature) + ".java");
 
 		// scope
-		p.setTimeout(TIMEOUT, TIMEOUT_TIME_UNIT);
-		p.setHeapScope(NODE_CLASS_DLL, HEAP_SCOPE);
-		p.setDepthScope(DEPTH_SCOPE);
-		p.setCountScope(COUNT_SCOPE);
-		p.setConcretizationDepthScope(CONCR_DEPTH_SCOPE);
-		p.setConcretizationCountScope(CONCR_COUNT_SCOPE);
+		p.setTimeout(2, TimeUnit.HOURS);
+		p.setHeapScope("doubly_linked_list/DoubleLinkedList_LICS$Entry", 8);
+		p.setDepthScope(500);
+		p.setCountScope(2000);
+		p.setConcretizationDepthScope(1000);
+		p.setConcretizationCountScope(10000);
 		
 		try {
 			final Run r = new Run(p);
@@ -115,6 +82,22 @@ public class JBSE implements Tool {
 		} catch (Throwable t) {
 			throw new GenerationException("Error during JBSE execution", t);
 		}
+	}
+
+	@Override
+	public String[] getCommand() {
+		return new String[0];
+	}
+
+	@Override
+	public String getTestDirectory() {
+		return DirectoryUtils.I().getSecondStubJBSEDir();
+	}
+
+	@Override
+	public String getTestFilename() {
+		// ClassUtils.getSimpleClassnameFromCanonical(classSignature)
+		return "";
 	}
 
 }

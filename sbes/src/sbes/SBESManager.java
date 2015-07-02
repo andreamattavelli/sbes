@@ -19,6 +19,7 @@ import sbes.execution.Tool;
 import sbes.execution.evosuite.Evosuite;
 import sbes.execution.evosuite.EvosuiteFirstStage;
 import sbes.execution.evosuite.EvosuiteSecondStage;
+import sbes.execution.jbse.JBSE;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
@@ -286,9 +287,12 @@ public class SBESManager {
 		
 		// run evosuite
 		String stubSignature = ClassUtils.getPackage(Options.I().getTargetMethod()) + '.' + secondStub.getStubName();
-		Tool tool = new EvosuiteSecondStage(stubSignature, 
-													ClassUtils.getMethodname(Options.I().getTargetMethod()), 
-													classPath);
+		Tool tool;
+		if (Options.I().isSymbolicExecutionCounterexample()) {
+			 tool = new JBSE(stubSignature, ClassUtils.getMethodname(Options.I().getTargetMethod()), classPath);
+		} else {
+			tool = new EvosuiteSecondStage(stubSignature, ClassUtils.getMethodname(Options.I().getTargetMethod()), classPath);
+		}
 		
 		logger.info("Generating counterexample");
 		
@@ -298,11 +302,13 @@ public class SBESManager {
 			return null;
 		}
 		
-		dumpLog(result, directory.getSecondStubEvosuiteDir());
+		if (!Options.I().isSymbolicExecutionCounterexample()) {
+			dumpLog(result, directory.getSecondStubEvosuiteDir());
+		}
 		
 		if (Options.I().isVerbose()) {
-			logger.info("EvoSuite Stdout:" + '\n' + result.getStdout());
-			logger.info("EvoSuite Stderr:" + '\n' + result.getStderr());
+			logger.info("Tool Stdout:" + '\n' + result.getStdout());
+			logger.info("Tool Stderr:" + '\n' + result.getStderr());
 		}
 		
 		// carve result
@@ -314,9 +320,9 @@ public class SBESManager {
 		if (candidates.isEmpty()) {
 			CounterexampleStub cStub = (CounterexampleStub) secondStub;
 			logger.info("No counterexample found!");
-			CloneMethodCallsVisitor cov = new CloneMethodCallsVisitor();
-			cov.visit(cStub.getEquivalence().getBody(), null);
-			if (cov.getMethods().isEmpty()) {
+			CloneMethodCallsVisitor cmcv = new CloneMethodCallsVisitor();
+			cmcv.visit(cStub.getEquivalence().getBody(), null);
+			if (cmcv.getMethods().isEmpty()) {
 				logger.debug("Spurious result, iterating");
 			}
 			else {

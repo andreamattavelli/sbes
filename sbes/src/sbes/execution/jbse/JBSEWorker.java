@@ -21,17 +21,18 @@ public class JBSEWorker implements Worker {
 		ExecutionResult result = null;
 
 		try {
-
 			logger.debug("Going to execute: " + jbse.toString());
+			
+			jbse.runAnalysis();
 
-			this.exitStatus = 0;
+			exitStatus = 0;
 
-//			result = new ExecutionResult(jbse.getTestDirectory());
-//			result.setCommand(jbse.getCommand());
-//			result.setStdout(getOutStream());
-//			result.setStderr(getErrStream());
-//			result.setFilename(jbse.getTestFilename());
-//			result.setExitStatus(this.exitStatus);
+			result = new ExecutionResult(jbse.getTestDirectory());
+			result.setCommand(jbse.getCommand());
+			result.setStdout("");
+			result.setStderr("");
+			result.setFilename(jbse.getTestFilename());
+			result.setExitStatus(exitStatus);
 		}
 		catch (Throwable e) {
 			logger.error("Unable to execute command", e);
@@ -41,11 +42,11 @@ public class JBSEWorker implements Worker {
 	}
 
 	public int getExitStatus() {
-		return this.exitStatus;
+		return exitStatus;
 	}
 
 	public Tool getCommand() {
-		return this.jbse;
+		return jbse;
 	}
 
 }

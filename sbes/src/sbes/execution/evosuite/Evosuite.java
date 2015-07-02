@@ -10,23 +10,21 @@ import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.util.ClassUtils;
 
-public abstract class Evosuite implements Tool {
+public abstract class Evosuite extends Tool {
 
 	protected static final Logger logger = new Logger(Evosuite.class);
 	
 	public static final String jarName = "evosuite.jar";
 	protected static final String evosuiteTestnameExtension = "EvoSuiteTest.java";
 	
-	protected String classSignature;
-	protected String methodSignature;
 	protected String outputDir;
 	protected String command;
 
 	public Evosuite(final String classSignature, final String methodSignature) {
-		this.classSignature = classSignature;
-		this.methodSignature = methodSignature;
+		super(classSignature, methodSignature);
 	}
 
+	@Override
 	public String[] getCommand() {
 		List<String> evo = new ArrayList<String>();
 		if (Options.I().getJavaPath() != null && !Options.I().getJavaPath().equals("")) {
@@ -56,13 +54,15 @@ public abstract class Evosuite implements Tool {
 	
 	protected abstract String getClassPath();
 	protected abstract String getTargetMethodSignature();
-	protected  abstract int getSearchBudget();
+	protected abstract int getSearchBudget();
 	protected abstract Collection<String> getAdditionalParameters();
 	
+	@Override
 	public String getTestDirectory() {
 		return outputDir;
 	}
 
+	@Override
 	public String getTestFilename() {
 		return ClassUtils.getSimpleClassnameFromCanonical(classSignature) + evosuiteTestnameExtension;
 	}

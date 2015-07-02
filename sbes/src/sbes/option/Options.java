@@ -108,6 +108,14 @@ public class Options {
 			usage = "Verbose output for EvoSuite execution. Default: false")
 	private boolean verbose = false;
 	
+	@Option(name = "-hex",
+			usage = "Path to HEX files")
+	private String hexPath;
+	
+	@Option(name = "-z3",
+			usage = "Path to Z3 binary")
+	private String z3Path;
+	
 	private Options() {}
 	
 	
@@ -137,6 +145,10 @@ public class Options {
 	
 	public String getJunitPath() {
 		return junitPath;
+	}
+	
+	public String getHexPath() {
+		return hexPath;
 	}
 	
 	public int getLocalSearchRate() {
@@ -181,6 +193,10 @@ public class Options {
 
 	public TimeMeasure getTimeMeasure() {
 		return timeMeasure;
+	}
+	
+	public String getZ3Path() {
+		return z3Path;
 	}
 	
 	public boolean isHeuristicPruningScenarios() {
