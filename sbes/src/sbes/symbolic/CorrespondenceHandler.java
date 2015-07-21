@@ -6,6 +6,7 @@ public class CorrespondenceHandler {
 
 	private Object isVisitedDuringAssume;
 	private Object isVisitedDuringAssert;
+	
 	private Object correspondingInInitialState;
 
 	protected static boolean setAsCorrespondingInInitialState(CorrespondenceHandler obj1, CorrespondenceHandler obj2) {
@@ -55,9 +56,7 @@ public class CorrespondenceHandler {
 			return null;
 		}
 	}
-
-
-
+	
 	protected boolean mustVisitDuringAssume() {
 		if (Analysis.isResolved(this, "isVisitedDuringAssume") && isVisitedDuringAssume != null) {
 			return false;
