@@ -1,8 +1,10 @@
 package sbes.symbolic.mock;
 
-public final class IntegerMock {
+import sbes.symbolic.CorrespondenceHandler;
 
-	private final int value;
+public final class IntegerMock extends CorrespondenceHandler  {
+
+	private int value;
 
 	public IntegerMock(int value) {
 		this.value = value;
@@ -21,6 +23,22 @@ public final class IntegerMock {
 			return value == ((IntegerMock) obj).value;
 		}
 		return false;
+	}
+
+	public static boolean mirrorEachOtherAtEnd(IntegerMock i1, IntegerMock i2) {
+		return i1.value == i2.value;
+	}
+
+	public static boolean mirrorEachOtherInitially_conservative(IntegerMock i1,	IntegerMock i2) {
+		boolean ok = CorrespondenceHandler.doOrMayCorrespondInInitialState(i1, i2);
+		if(!ok) return false;			
+		
+		if(!i1.mustVisitDuringAssume()) return true;
+		
+		ok = CorrespondenceHandler.setAsCorrespondingInInitialState(i1, i2);
+		if(!ok) return false;
+		
+ 		return i1.value == i2.value;
 	}
 
 }

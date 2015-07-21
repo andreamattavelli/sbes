@@ -1,6 +1,7 @@
 package sbes.symbolic.mock;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.List;
@@ -10,6 +11,13 @@ import java.util.Vector;
 
 import jbse.meta.Analysis;
 import sbes.symbolic.CorrespondenceHandler;
+/*
+ * @(#)DoubleLinkedList.java	1.46 03/01/23
+ *
+ * Copyright 2003 Sun Microsystems, Inc. All rights reserved.
+ * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ */
+
 
 /**
  * Linked list implementation of the <tt>List</tt> interface. Implements all
@@ -78,18 +86,22 @@ import sbes.symbolic.CorrespondenceHandler;
  * @since 1.2
  */
 
+@SuppressWarnings("rawtypes")
 public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
+	//@invariant repOk();
 
 	protected transient int modCount = 0;
+	//INSTRUMENTATION BEGIN
+	//private transient Entry header = new Entry(null, null, null);
 	private transient Entry header = new Entry(null, null, null, this);
+	//INSTRUMENTATION END
 	private transient int size = 0;
-
+	//INSTRUMENTATION BEGIN
 	/*
 	 * Shadow fields for initial values 
 	 */
-	protected int 	_initialModCount;
-	protected Entry _initialHeader;
 	private int 	_initialSize;
+
 	/*
 	 * Other instrumentation variables
 	 */
@@ -98,26 +110,26 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 	/*
 	 * Triggers
 	 */
+
 	@SuppressWarnings("unused")
 	private static void _got_DoublyLinkedList_LICS(DoubleLinkedList_LICS l) {
-		l._initialModCount = l.modCount;
 		l._initialSize = l.size;
 		//rep invariant for LinkedList.size
 		l._minSize = 0;
 		Analysis.assume(l._initialSize >= l._minSize); 
 	}
+	//INSTRUMENTATION END
 
 	/**
 	 * Constructs an empty list.
 	 */
 	public DoubleLinkedList_LICS() {
 		header.next = header.previous = header;
-		
+		//INSTRUMENTATION BEGIN
 		//initializates instrumentation fields for concrete objects
-		_initialModCount = this.modCount;
 		_initialSize = this.size;
 		_minSize = 0;
-		
+		//INSTRUMENTATION END
 	}
 
 	/**
@@ -380,10 +392,10 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 		Entry successor = (index == size ? header : entry(index));
 		Entry predecessor = successor.previous;
 		for (int i = 0; i < numNew; i++) {
-			
+			//INSTRUMENTATION BEGIN
 			//Entry e = new Entry(a[i], successor, predecessor);
 			Entry e = new Entry(a[i], successor, predecessor, this);
-			
+			//INSTRUMENTATION END
 			predecessor.next = e;
 			predecessor = e;
 		}
@@ -497,12 +509,14 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 		Entry e = header;
 		// if (index < (size >> 1)) { // Kiasan can not handle bit shifting
 		// currently.
-		// if (index < (size/2)) {
+		//		if (index < (size / 2)) {
 		for (int i = 0; i <= index; i++)
 			e = e.next;
-		/*
-		 * } else { for (int i = size; i > index; i--) e = e.previous; }
-		 */
+		//		} else {
+		//			for (int i = size; i > index; i--)
+		//				e = e.previous;
+		//		}
+
 		return e;
 	}
 
@@ -592,12 +606,10 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 	 *             <tt>index &lt; 0 || index &gt; size()</tt>).
 	 * @see List#listIterator(int)
 	 */
-	@SuppressWarnings("rawtypes")
 	public ListIterator listIterator(int index) {
 		return new ListItr(index);
 	}
 
-	@SuppressWarnings("rawtypes")
 	private class ListItr implements ListIterator {
 		private Entry lastReturned = header;
 		private Entry next;
@@ -605,11 +617,23 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 		private int expectedModCount = modCount;
 
 		ListItr(int index) {
+			//STUB BEGIN
 			if (index < 0 || index > size)
+				/*	throw new IndexOutOfBoundsException("Index: "+index+
+				    ", Size: "+size);*/ //JBSE cannot handle concatenation of strings and symbols
 				throw new IndexOutOfBoundsException();
+			//if (index < (size >> 1)) {  //JBSE hardly handles shift operators
 			next = header.next;
-			for (nextIndex = 0; nextIndex < index; nextIndex++)
+			for (nextIndex=0; nextIndex<index; nextIndex++)
 				next = next.next;
+			/*  //see above (JBSE hardly handles shift operators)
+	    } else {
+		next = header;
+		for (nextIndex=size; nextIndex>index; nextIndex--)
+		    next = next.previous;
+	    }*/
+
+			//STUB END
 		}
 
 		public boolean hasNext() {
@@ -689,12 +713,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 		Object element;
 		Entry next;
 		Entry previous;
-		
-		// No shadow fields for triggers: Entry.element/next/previous
-		// are not used by the triggers
-		Object _initialElement;
-		Entry _initialNext;
-		Entry _initialPrevious;
+		//INSTRUMENTATION BEGIN
 
 		/*
 		 * Other instrumentation fields
@@ -709,66 +728,39 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 			++e._owner._minSize;
 			Analysis.assume(e._owner._initialSize >= e._owner._minSize);
 		}
-		@SuppressWarnings("unused")
-		private static void _got_DoubleLinkedList_Entry_LICS_root(DoubleLinkedList_LICS.Entry e) {
-			e._owner._initialHeader = e;
-		}
+
 		@SuppressWarnings("unused")
 		private static void _got_DoubleLinkedList_Entry_LICS_nonroot_previous(DoubleLinkedList_LICS.Entry e) {
 			_got_DoubleLinkedList_Entry_LICS_any(e.previous);
-			e._initialPrevious = e.previous;        	
 		}
 		@SuppressWarnings("unused")
 		private static void _got_DoubleLinkedList_Entry_LICS_nonroot_next(DoubleLinkedList_LICS.Entry e) {
 			_got_DoubleLinkedList_Entry_LICS_any(e.next);
-			e._initialNext = e.next;        	
-		}
-
-		@SuppressWarnings("unused")
-		private static void _handle_alias_nextPrev(DoubleLinkedList_LICS.Entry e) {
-			e._initialPrevious = e.previous;
-		}
-
-		@SuppressWarnings("unused")
-		private static void _handle_alias_prevNext(DoubleLinkedList_LICS.Entry e) {
-			e._initialNext = e.next;
 		}
 
 		@SuppressWarnings("unused")
 		private static void _handleListClosure_next(DoubleLinkedList_LICS.Entry e) {
 			Analysis.assume(e._owner._initialSize == e._owner._minSize);
-			e._initialNext = e.next;
 		}
 
 		@SuppressWarnings("unused")
 		private static void _handleListClosure_previous(DoubleLinkedList_LICS.Entry e) {
 			Analysis.assume(e._owner._initialSize == e._owner._minSize);
-			e._initialPrevious = e.previous;
 		}
 
-		@SuppressWarnings("unused")
-		private static void _got_DoubleLinkedList_Entry_LICS_element(DoubleLinkedList_LICS.Entry e) {
-			e._initialElement = e.element;
-		}
+		//INSTRUMENTATION END
 
-		@SuppressWarnings("unused")
-		private static void _got_DoubleLinkedList_Entry_LICS_nonroot_initial(DoubleLinkedList_LICS.Entry e) {
-			_got_DoubleLinkedList_Entry_LICS_any(e);
-		}
-
-		@SuppressWarnings("unused")
-		private static void _handleListClosure_initial(DoubleLinkedList_LICS.Entry e) {
-			Analysis.assume(e._owner._initialSize == e._owner._minSize);
-		}
-
+		//INSTRUMENTATION BEGIN
+		//Entry(Object element, Entry next, Entry previous) {
 		Entry(Object element, Entry next, Entry previous, DoubleLinkedList_LICS _owner) {
+			//INSTRUMENTATION END
 			this.element = element;
 			this.next = next;
 			this.previous = previous;
-			
+			//INSTRUMENTATION BEGIN
 			//initializates instrumentation fields for concrete objects
 			this._owner = _owner;
-			
+			//INSTRUMENTATION END
 		}
 
 		boolean nonNullPointers() {
@@ -778,59 +770,62 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 			return next.previous == this;
 		}
 
-		public static boolean mirrorEachOtherInitially_semiconservative_onShadowFields(Entry entry1, Entry entry2) {
-			boolean ok = CorrespondenceHandler.doOrMayCorrespond(entry1, entry2);
-			if(!ok) return false;			
+		public static boolean mirrorEachOtherAtEnd(Entry entry1, Entry entry2) {
 
-			if(!entry1.mustVisitDuringAssume()) return true;
+			if(!entry1.mustVisitDuringAssert()) return true;
 
-			ok = CorrespondenceHandler.setAsCorresponding(entry1, entry2);
-			if(!ok) return false;
+			boolean ok;
 
-
-			if (Analysis.isResolved(entry1, "_initialElement") || Analysis.isResolved(entry2, "_initialElement")) {
-				ok = entry1._initialElement == entry2._initialElement; //handle element similarly to a primitive field;
-				if(!ok) return false;
+			if (Analysis.isResolved(entry1, "element") || Analysis.isResolved(entry2, "element")) {
+				if (entry1.element == null ^ entry2.element == null)
+					return false;
+				else if (entry1.element != null && entry2.element != null) {
+					ok = IntegerMock.mirrorEachOtherAtEnd((IntegerMock)entry1.element, (IntegerMock)entry2.element);
+					if(!ok) return false;
+				}
 			}
 
-			if (Analysis.isResolved(entry1, "_initialNext") || Analysis.isResolved(entry2, "_initialNext")) {
-				if (entry1._initialNext == null)  
-					ok = entry2._initialNext == null;
-				else if (entry2._initialNext == null)
-					ok = false;
-				else 
-					ok = Entry.mirrorEachOtherInitially_semiconservative_onShadowFields(entry1._initialNext, entry2._initialNext);
-				if(!ok) return false;
+			if (Analysis.isResolved(entry1, "next") || Analysis.isResolved(entry2, "next")) {
+				if (entry1.next == null ^ entry2.next == null)
+					return false;
+				else if (entry1.next != null && entry2.next != null) {
+					ok = Entry.mirrorEachOtherAtEnd(entry1.next, entry2.next);
+					if(!ok) return false;
+				}
 			}
 
-			if (Analysis.isResolved(entry1, "_initialPrevious") || Analysis.isResolved(entry2, "_initialPrevious")) {
-				if (entry1._initialPrevious == null)  
-					ok = entry2._initialPrevious == null;
-				else if (entry2._initialPrevious == null)
-					ok = false;
-				else 
-					ok = Entry.mirrorEachOtherInitially_semiconservative_onShadowFields(entry1._initialPrevious, entry2._initialPrevious);
-				if(!ok) return false;
+			if (Analysis.isResolved(entry1, "previous") || Analysis.isResolved(entry2, "previous")) {
+				if (entry1.previous == null ^ entry2.previous == null) 
+					return false;
+				else if (entry1.previous != null && entry2.previous != null) {
+					ok = Entry.mirrorEachOtherAtEnd(entry1.previous, entry2.previous);
+					if(!ok) return false;
+				}
 			}
 
 			return true;		
 		}
 
 		public static boolean mirrorEachOtherInitially_conservative(Entry entry1, Entry entry2) {
-			boolean ok = CorrespondenceHandler.doOrMayCorrespond(entry1, entry2);
+			boolean ok = CorrespondenceHandler.doOrMayCorrespondInInitialState(entry1, entry2);
 			if(!ok) return false;			
 
 			if(!entry1.mustVisitDuringAssume()) return true;
 
-			ok = CorrespondenceHandler.setAsCorresponding(entry1, entry2);
+			ok = CorrespondenceHandler.setAsCorrespondingInInitialState(entry1, entry2);
 			if(!ok) return false;
 
-			if (Analysis.isResolved(entry1, "element") && Analysis.isResolved(entry2, "element")) {
-				ok = entry1.element == entry2.element; //handle element similarly to a primitive field;
+			if (Analysis.isResolved(entry1, "element") || Analysis.isResolved(entry2, "element")) {
+				if (entry1.element == null)  
+					ok = entry2.element == null;
+				else if (entry2.element == null)
+					ok = false;
+				else 
+					ok = IntegerMock.mirrorEachOtherInitially_conservative((IntegerMock)entry1.element, (IntegerMock)entry2.element);
 				if(!ok) return false;
 			}
 
-			if (Analysis.isResolved(entry1, "next") && Analysis.isResolved(entry2, "next")) {
+			if (Analysis.isResolved(entry1, "next") || Analysis.isResolved(entry2, "next")) {
 				if (entry1.next == null)  
 					ok = entry2.next == null;
 				else if (entry2.next == null)
@@ -840,7 +835,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 				if(!ok) return false;
 			}
 
-			if (Analysis.isResolved(entry1, "previous") && Analysis.isResolved(entry2, "previous")) {
+			if (Analysis.isResolved(entry1, "previous") || Analysis.isResolved(entry2, "previous")) {
 				if (entry1.previous == null)  
 					ok = entry2.previous == null;
 				else if (entry2.previous == null)
@@ -853,70 +848,14 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 			return true;		
 		}
 
-		public boolean mirrorCorrespondingAtEnd_conservative() {
-			boolean ok = this.hasCorrespondingObject();
-			if(!ok) return false;
-
-			if(!this.mustVisitDuringAssert()) return true;
-
-			Entry corresponding = (Entry) this.getCorrespondingObject();
-
-			if (Analysis.isResolved(this, "element")) {
-				Object correspondingElement = Analysis.isResolved(corresponding, "element") ? 
-						corresponding.element : _initialElement;
-				ok = element ==  correspondingElement;
-				if(!ok) return false;	
-			}
-
-			if (Analysis.isResolved(this, "next")) {
-				Entry correspondingNext;
-				if(!Analysis.isResolved(corresponding, "next")){ 
-					ok = next == _initialNext;
-					if(!ok) return false;	 
-					ok = Analysis.isResolved(corresponding, "_initialNext");
-					if(!ok) return false;	 
-					correspondingNext = corresponding._initialNext;
-				}
-				else{
-					correspondingNext = corresponding.next;
-				}
-				ok = CorrespondenceHandler.setAsCorresponding(next, correspondingNext);
-				if(!ok) return false;	 
-				if(next != null){
-					ok = next.mirrorCorrespondingAtEnd_conservative();
-					if(!ok) return false;	 
-				}
-			}
-
-			if (Analysis.isResolved(this, "previous")) {
-				Entry correspondingPrevious;
-				if(!Analysis.isResolved(corresponding, "previous")){ 
-					ok = previous == _initialPrevious;
-					if(!ok) return false;	 
-					ok = Analysis.isResolved(corresponding, "_initialPrevious");
-					if(!ok) return false;	 
-					correspondingPrevious = corresponding._initialPrevious;
-				}
-				else{
-					correspondingPrevious = corresponding.previous;
-				}
-				ok = CorrespondenceHandler.setAsCorresponding(previous, correspondingPrevious);
-				if(!ok) return false;	 
-				if(previous != null){
-					ok = previous.mirrorCorrespondingAtEnd_conservative();
-					if(!ok) return false;	 
-				}
-			}
-
-			return true;
-		}
-
-
 	}
 
+	//@ requires inList(e);
 	private Entry addBefore(Object o, Entry e) {
+		//INSTRUMENTATION BEGIN
+		//Entry newEntry = new Entry(o, e, e.previous);
 		Entry newEntry = new Entry(o, e, e.previous, this);
-		
+		//INSTRUMENTATION END
 		newEntry.previous.next = newEntry;
 		newEntry.next.previous = newEntry;
 		size++;
@@ -932,6 +871,40 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 		e.next.previous = e.previous;
 		size--;
 		modCount++;
+	}
+
+	/**
+	 * Returns a shallow copy of this <tt>DoubleLinkedList</tt>. (The elements
+	 * themselves are not cloned.)
+	 *
+	 * @return a shallow copy of this <tt>DoubleLinkedList</tt> instance.
+	 */
+	public Object clone() {
+		//STUB BEGIN
+		/*
+        DoubleLinkedList clone = null;
+        try { 
+        	clone = (DoubleLinkedList) super.clone();
+        } catch (CloneNotSupportedException e) { 
+        	throw new InternalError();
+        }*/ //JBSE still does not implement Object.clone
+		DoubleLinkedList_LICS clone = new DoubleLinkedList_LICS();
+		//STUB END
+
+		// Put clone into "virgin" state
+		//INSTRUMENTATION BEGIN
+		//clone.header = new Entry(null, null, null);
+		clone.header = new Entry(null, null, null, clone);
+		//INSTRUMENTATION END
+		clone.header.next = clone.header.previous = clone.header;
+		clone.size = 0;
+		clone.modCount = 0;
+
+		// Initialize clone with our elements
+		for (Entry e = header.next; e != header; e = e.next)
+			clone.add(e.element);
+
+		return clone;
 	}
 
 	/**
@@ -956,25 +929,29 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 
 		Object[] resultBackward = new Object[size];
 		boolean closedBackward = true;
-		int iBackward = 0;
+		int iBackward = size;
 		for (Entry e = header.previous; e != header; e = e.previous) {
 			if (e == null) {
 				closedBackward = false;
 				break;
 			}
-			resultBackward[iBackward++] = e.element;
+			resultBackward[--iBackward] = e.element;
 		}
 
-		if (closedForward) {
+		if (closedForward || (!closedForward && iBackward == size)) {
 			return resultForward;
 		}
-		else if (closedBackward) {
+		else if (closedBackward || (!closedBackward && iForward == 0)) {
 			return resultBackward;
 		}
 		else {
-			Object[] result = new Object[iForward + iBackward];
+			Object[] result = new Object[size];
+			List<?> l = Arrays.asList(resultBackward);
+			Collections.reverse(l);
+			resultBackward = l.toArray();
 			System.arraycopy(resultForward, 0, result, 0, iForward);
-			System.arraycopy(resultBackward, 0, result, iForward, iBackward);
+			if (iForward < size)
+				System.arraycopy(resultBackward, 0, result, iForward, (size - iBackward));
 			return result;
 		}
 	}
@@ -1015,7 +992,11 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 	 */
 	public Object[] toArray(Object a[]) {
 		if (a.length < size)
+			//STUB BEGIN
+			/*a = (Object[])java.lang.reflect.Array.newInstance(
+                                a.getClass().getComponentType(), size);*/
 			a = new Object[size];
+		//STUB END
 		int i = 0;
 		for (Entry e = header.next; e != header; e = e.next)
 			a[i++] = e.element;
@@ -1034,7 +1015,8 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 	 *             emitted (int), followed by all of its elements (each an
 	 *             Object) in the proper order.
 	 */
-	private void writeObject(java.io.ObjectOutputStream s) throws java.io.IOException {
+	private void writeObject(java.io.ObjectOutputStream s)
+			throws java.io.IOException {
 		// Write out any hidden serialization magic
 		s.defaultWriteObject();
 
@@ -1050,7 +1032,8 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 	 * Reconstitute this <tt>DoubleLinkedList</tt> instance from a stream (that
 	 * is deserialize it).
 	 */
-	private void readObject(java.io.ObjectInputStream s) throws java.io.IOException, ClassNotFoundException {
+	private void readObject(java.io.ObjectInputStream s)
+			throws java.io.IOException, ClassNotFoundException {
 		// Read in any hidden serialization magic
 		s.defaultReadObject();
 
@@ -1058,7 +1041,10 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 		int size = s.readInt();
 
 		// Initialize header
+		//INSTRUMENTATION BEGIN
+		//header = new Entry(null, null, null);
 		header = new Entry(null, null, null, this);
+		//INSTRUMENTATION END
 		header.next = header.previous = header;
 
 		// Read in all elements in the proper order.
@@ -1066,45 +1052,19 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 			add(s.readObject());
 	}
 
-
-	public static boolean mirrorEachOtherInitially_semiconservative_onShadowFields(DoubleLinkedList_LICS list1, DoubleLinkedList_LICS list2) {
-		boolean ok = CorrespondenceHandler.doOrMayCorrespond(list1, list2);
-		if(!ok) return false;			
-
-		if(!list1.mustVisitDuringAssume()) return true;
-
-		ok = CorrespondenceHandler.setAsCorresponding(list1, list2);
-		if(!ok) return false;
-
-		ok = list1._initialSize == list2._initialSize;
-		if(!ok) return false;
-
-		if (Analysis.isResolved(list1, "_initialHeader") || Analysis.isResolved(list2, "_initialHeader")) {
-			if (list1._initialHeader == null)  
-				ok = list2._initialHeader == null;
-			else if (list2._initialHeader == null)
-				ok = false;
-			else 
-				ok = Entry.mirrorEachOtherInitially_semiconservative_onShadowFields(list1._initialHeader, list2._initialHeader);
-			if(!ok) return false;
-		}
-
-		return true;
-	}
-
 	public static boolean mirrorEachOtherInitially_conservative(DoubleLinkedList_LICS list1, DoubleLinkedList_LICS list2) {
-		boolean ok = CorrespondenceHandler.doOrMayCorrespond(list1, list2);
+		boolean ok = CorrespondenceHandler.doOrMayCorrespondInInitialState(list1, list2);
 		if(!ok) return false;			
 
 		if(!list1.mustVisitDuringAssume()) return true;
 
-		ok = CorrespondenceHandler.setAsCorresponding(list1, list2);
+		ok = CorrespondenceHandler.setAsCorrespondingInInitialState(list1, list2);
 		if(!ok) return false;
 
 		ok = list1.size == list2.size;
 		if(!ok) return false;
 
-		if (Analysis.isResolved(list1, "header") && Analysis.isResolved(list2, "header")) {
+		if (Analysis.isResolved(list1, "header") || Analysis.isResolved(list2, "header")) {
 			if (list1.header == null)  
 				ok = list2.header == null;
 			else if (list2.header == null)
@@ -1117,34 +1077,18 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 		return true;	
 	}
 
-	public boolean mirrorCorrespondingAtEnd_conservative() {
-		boolean ok = this.hasCorrespondingObject();
+	public static boolean mirrorEachOtherAtEnd(DoubleLinkedList_LICS list1, DoubleLinkedList_LICS list2) {
+		if(!list1.mustVisitDuringAssert()) return true;
+
+		boolean ok = list1.size == list2.size;
 		if(!ok) return false;
 
-		if(!this.mustVisitDuringAssert()) return true;
-
-		DoubleLinkedList_LICS corresponding = (DoubleLinkedList_LICS) this.getCorrespondingObject();
-
-		ok = size == corresponding.size;
-		if(!ok) return false;
-
-		if (Analysis.isResolved(this, "header")) {
-			Entry correspondingHeader;
-			if(!Analysis.isResolved(corresponding, "header")){ 
-				ok = header == _initialHeader;
-				if(!ok) return false;	 
-				ok = Analysis.isResolved(corresponding, "_initialHeader");
-				if(!ok) return false;	 
-				correspondingHeader = corresponding._initialHeader;
-			}
-			else{
-				correspondingHeader = corresponding.header;
-			}
-			ok = CorrespondenceHandler.setAsCorresponding(header, correspondingHeader);
-			if(!ok) return false;	 
-			if(header != null){
-				ok = header.mirrorCorrespondingAtEnd_conservative();
-				if(!ok) return false;	 
+		if (Analysis.isResolved(list1, "header") || Analysis.isResolved(list2, "header")) {
+			if (list1.header == null ^ list2.header == null)
+				return false;
+			else if (list1.header != null && list2.header != null) {
+				ok = Entry.mirrorEachOtherAtEnd(list1.header, list2.header);
+				if(!ok) return false;
 			}
 		}
 

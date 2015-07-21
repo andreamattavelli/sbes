@@ -1,7 +1,5 @@
 package sbes.symbolic.mock;
 
-import sbes.symbolic.CorrespondenceHandler;
-
 import java.util.Collection;
 import java.util.Deque;
 import java.util.EmptyStackException;
@@ -11,8 +9,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import jbse.meta.Analysis;
-import sbes.symbolic.mock.IntegerMock;
-import sbes.symbolic.mock.DoubleLinkedList_LICS;
+import sbes.symbolic.CorrespondenceHandler;
 
 /**
  * The <code>Stack</code> class represents a last-in-first-out
@@ -97,110 +94,45 @@ public class Stack<E> extends CorrespondenceHandler {
 	protected int capacityIncrement;
 
 
-	/*
-	 * Shadow fields for initial values
-	 */
-	protected DoubleLinkedList_LICS _initialElementData;
 
-	/*
-	 * Other instrumentation variables
-	 */
-	private int _minSize;
+	public static boolean mirrorEachOtherInitially_conservative(Stack<?> stack1, Stack<?> stack2) {
+		if (!CorrespondenceHandler.doOrMayCorrespondInInitialState(stack1, stack2))
+			return false;
 
-	/*
-	 * Triggers
-	 */
-	@SuppressWarnings("unused")
-	private static void _got_Stack(Stack<?> s) {
-		//rep invariant for LinkedList.size
-		s._minSize = 0;
-		Analysis.assume(s._initialElementData.size() >= s._minSize); 
-	}
-	@SuppressWarnings("unused")
-	private static void _got_DoubleLinkedList_LICS_elementData(Stack<?> s) {
-		s._initialElementData = s.elementData;
-	}
+		if (!stack1.mustVisitDuringAssume())
+			return true;
 
+		if (!CorrespondenceHandler.setAsCorrespondingInInitialState(stack1, stack2))
+			return false;
 
-	public static boolean mirrorInitialConservative(Stack<?> stack1, Stack<?> stack2) {
-		boolean ok = CorrespondenceHandler.doOrMayCorrespond(stack1, stack2);
-		if(!ok) return false;			
-
-		if(!stack1.mustVisitDuringAssume()) return true;
-
-		ok = CorrespondenceHandler.setAsCorresponding(stack1, stack2);
-		if(!ok) return false;
-
-		if (Analysis.isResolved(stack1, "elementData") && Analysis.isResolved(stack2, "elementData")) {
-			if (stack1.elementData == null)  
-				ok = stack2.elementData == null;
-			else if (stack2.elementData == null)
-				ok = false;
-			else 
-				ok = DoubleLinkedList_LICS.mirrorEachOtherInitially_conservative(
-						(DoubleLinkedList_LICS) stack1.elementData, 
-						(DoubleLinkedList_LICS) stack2.elementData);
-			if(!ok) return false;
-		}
-
-		return true;
-	}
-	
-	public static boolean mirrorInitialSemiConservative(Stack<?> stack1, Stack<?> stack2) {
-		boolean ok = CorrespondenceHandler.doOrMayCorrespond(stack1, stack2);
-		if(!ok) return false;			
-
-		if(!stack1.mustVisitDuringAssume()) return true;
-
-		ok = CorrespondenceHandler.setAsCorresponding(stack1, stack2);
-		if(!ok) return false;
-
-		if (Analysis.isResolved(stack1, "_initialElementData") || Analysis.isResolved(stack2, "_initialElementData")) {
-			if (stack1._initialElementData == null)  
-				ok = stack2._initialElementData == null;
-			else if (stack2._initialElementData == null)
-				ok = false;
-			else 
-				ok = DoubleLinkedList_LICS.mirrorEachOtherInitially_semiconservative_onShadowFields(
-						(DoubleLinkedList_LICS) stack1._initialElementData, 
-						(DoubleLinkedList_LICS) stack2._initialElementData);
-			if(!ok) return false;
-		}
-
-		return true;
-	}
-
-	public boolean mirrorFinalConservative() {
-		boolean ok = this.hasCorrespondingObject();
-		if(!ok) return false;
-
-		if(!this.mustVisitDuringAssert()) return true;
-
-		Stack<?> corresponding = (Stack<?>) this.getCorrespondingObject();
-
-		if (Analysis.isResolved(this, "elementData")) {
-			DoubleLinkedList_LICS correspondingElementData;
-			if(!Analysis.isResolved(corresponding, "elementData")){ 
-				ok = elementData == _initialElementData;
-				if(!ok) return false;
-				ok = Analysis.isResolved(corresponding, "_initialElementData");
-				if(!ok) return false;	 
-				correspondingElementData = (DoubleLinkedList_LICS) corresponding._initialElementData;
+		if (Analysis.isResolved(stack1, "elementData") || Analysis.isResolved(stack2, "elementData")) {
+			if (stack1.elementData == null ^ stack2.elementData == null) {
+				return false;
 			}
-			else{
-				correspondingElementData = (DoubleLinkedList_LICS) corresponding.elementData;
-			}
-			ok = CorrespondenceHandler.setAsCorresponding((DoubleLinkedList_LICS) elementData, correspondingElementData);
-			if(!ok) return false;	 
-			if(elementData != null){
-				ok = ((DoubleLinkedList_LICS) elementData).mirrorCorrespondingAtEnd_conservative();
-				if(!ok) return false;
+			else if (stack1.elementData != null && stack2.elementData != null) {
+				return DoubleLinkedList_LICS.mirrorEachOtherInitially_conservative((DoubleLinkedList_LICS) stack1.elementData, 
+																				   (DoubleLinkedList_LICS) stack2.elementData);
 			}
 		}
 
 		return true;
 	}
-	
+
+	public static boolean mirrorEachOtherAtEnd(Stack<?> stack1, Stack<?> stack2) {
+		if(!stack1.mustVisitDuringAssert()) return true;
+		
+		if (Analysis.isResolved(stack1, "elementData") || Analysis.isResolved(stack2, "elementData")) {
+			if (stack1.elementData == null ^ stack2.elementData == null) {
+				return false;
+			}
+			else if (stack1.elementData != null && stack2.elementData != null) {
+				return DoubleLinkedList_LICS.mirrorEachOtherAtEnd((DoubleLinkedList_LICS) stack1.elementData,
+																  (DoubleLinkedList_LICS) stack2.elementData);
+			}
+		}
+		
+		return true;
+	}
 	
 	
 	
@@ -327,6 +259,35 @@ public class Stack<E> extends CorrespondenceHandler {
 	}
 
 	/**
+	 * Returns the index of the first occurrence of the specified element in
+	 * this vector, searching forwards from {@code index}, or returns -1 if
+	 * the element is not found.
+	 * More formally, returns the lowest index {@code i} such that
+	 * <tt>(i&nbsp;&gt;=&nbsp;index&nbsp;&amp;&amp;&nbsp;(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i))))</tt>,
+	 * or -1 if there is no such index.
+	 *
+	 * @param o element to search for
+	 * @param index index to start searching from
+	 * @return the index of the first occurrence of the element in
+	 *         this vector at position {@code index} or later in the vector;
+	 *         {@code -1} if the element is not found.
+	 * @throws IndexOutOfBoundsException if the specified index is negative
+	 * @see     Object#equals(Object)
+	 */
+//	public synchronized int indexOf(Object o, int index) {
+//		if (o == null) {
+//			for (int i = index ; i < elementCount ; i++)
+//				if (elementData[i]==null)
+//					return i;
+//		} else {
+//			for (int i = index ; i < elementCount ; i++)
+//				if (o.equals(elementData[i]))
+//					return i;
+//		}
+//		return -1;
+//	}
+
+	/**
 	 * Returns the index of the last occurrence of the specified element
 	 * in this vector, or -1 if this vector does not contain the element.
 	 * More formally, returns the highest index {@code i} such that
@@ -340,6 +301,38 @@ public class Stack<E> extends CorrespondenceHandler {
 	public synchronized int lastIndexOf(Object o) {
 		return elementData.lastIndexOf(o);
 	}
+
+	/**
+	 * Returns the index of the last occurrence of the specified element in
+	 * this vector, searching backwards from {@code index}, or returns -1 if
+	 * the element is not found.
+	 * More formally, returns the highest index {@code i} such that
+	 * <tt>(i&nbsp;&lt;=&nbsp;index&nbsp;&amp;&amp;&nbsp;(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i))))</tt>,
+	 * or -1 if there is no such index.
+	 *
+	 * @param o element to search for
+	 * @param index index to start searching backwards from
+	 * @return the index of the last occurrence of the element at position
+	 *         less than or equal to {@code index} in this vector;
+	 *         -1 if the element is not found.
+	 * @throws IndexOutOfBoundsException if the specified index is greater
+	 *         than or equal to the current size of this vector
+	 */
+//	public synchronized int lastIndexOf(Object o, int index) {
+//		if (index >= elementCount)
+//			throw new IndexOutOfBoundsException(index + " >= "+ elementCount);
+//
+//		if (o == null) {
+//			for (int i = index; i >= 0; i--)
+//				if (elementData[i]==null)
+//					return i;
+//		} else {
+//			for (int i = index; i >= 0; i--)
+//				if (o.equals(elementData[i]))
+//					return i;
+//		}
+//		return -1;
+//	}
 
 	/**
 	 * Returns the component at the specified index.
@@ -528,6 +521,27 @@ public class Stack<E> extends CorrespondenceHandler {
 		elementData.clear();
 	}
 
+	/**
+	 * Returns a clone of this vector. The copy will contain a
+	 * reference to a clone of the internal data array, not a reference
+	 * to the original internal data array of this {@code Vector} object.
+	 *
+	 * @return  a clone of this vector
+	 */
+//	public synchronized Object clone() {
+//		try {
+//			@SuppressWarnings("unchecked")
+//			Stack<E> v = (Stack<E>) super.clone();
+//			v.elementData = Arrays.copyOf(elementData, elementCount);
+//			v.modCount = 0;
+//			return v;
+//		} catch (CloneNotSupportedException e) {
+//			// this shouldn't happen, since we are Cloneable
+//			throw new InternalError();
+//		}
+//	}
+
+
 	// Positional Access Operations
 
 	@SuppressWarnings("unchecked")
@@ -703,12 +717,16 @@ public class Stack<E> extends CorrespondenceHandler {
 	 *         elements (optional), or if the specified collection is null
 	 * @since 1.2
 	 */
-	public synchronized boolean removeAll(Collection<?> c) {
+	public synchronized boolean removeAll(DoubleLinkedList_LICS c) {
+//		Objects.requireNonNull(c);
 		boolean modified = false;
-		for (Object object : c) {
-			if (elementData.remove(object)) {
+		for (int i = 0; i < c.size(); i++) {
+			if (elementData.remove(c.get(i))) {
 				modified = true;
 			}
+		}
+		if (elementData.size() == 0) {
+			elementData.clear(); //FIXME: manca una regola LICS per l'allineamento dei puntatori quando si svuota la lista
 		}
 		return modified;
 	}
@@ -730,6 +748,7 @@ public class Stack<E> extends CorrespondenceHandler {
 	 * @since 1.2
 	 */
 	public synchronized boolean retainAll(DoubleLinkedList_LICS c)  {
+//		Objects.requireNonNull(c);
 		boolean modified = false;
 		for (int i = 0; i < elementData.size();) {
 			if (c.contains(elementData.get(i))) {
@@ -828,6 +847,143 @@ public class Stack<E> extends CorrespondenceHandler {
 	}
 
 	/**
+	 * Returns a list iterator over the elements in this list (in proper
+	 * sequence), starting at the specified position in the list.
+	 * The specified index indicates the first element that would be
+	 * returned by an initial call to {@link ListIterator#next next}.
+	 * An initial call to {@link ListIterator#previous previous} would
+	 * return the element with the specified index minus one.
+	 *
+	 * <p>The returned list iterator is <a href="#fail-fast"><i>fail-fast</i></a>.
+	 *
+	 * @throws IndexOutOfBoundsException {@inheritDoc}
+	 */
+//	public synchronized ListIterator<E> listIterator(int index) {
+//		if (index < 0 || index > size())
+//			throw new IndexOutOfBoundsException();
+//		return new ListItr(index);
+//	}
+
+	/**
+	 * Returns a list iterator over the elements in this list (in proper
+	 * sequence).
+	 *
+	 * <p>The returned list iterator is <a href="#fail-fast"><i>fail-fast</i></a>.
+	 *
+	 * @see #listIterator(int)
+	 */
+//	public synchronized ListIterator<E> listIterator() {
+//		return new ListItr(0);
+//	}
+
+	/**
+	 * Returns an iterator over the elements in this list in proper sequence.
+	 *
+	 * <p>The returned iterator is <a href="#fail-fast"><i>fail-fast</i></a>.
+	 *
+	 * @return an iterator over the elements in this list in proper sequence
+	 */
+//	public synchronized Iterator<E> iterator() {
+//		return new Itr();
+//	}
+
+	/**
+	 * An optimized version of AbstractList.Itr
+	 */
+//	private class Itr implements Iterator<E> {
+//		int cursor;       // index of next element to return
+//		int lastRet = -1; // index of last element returned; -1 if no such
+//		int expectedModCount = modCount;
+//
+//		public boolean hasNext() {
+//			// Racy but within spec, since modifications are checked
+//			// within or after synchronization in next/previous
+//			return cursor != size();
+//		}
+//
+//		public E next() {
+//			synchronized (Stack.this) {
+//				checkForComodification();
+//				int i = cursor;
+//				if (i >= size())
+//					throw new NoSuchElementException();
+//				cursor = i + 1;
+//				return elementData(lastRet = i);
+//			}
+//		}
+//
+//		public void remove() {
+//			if (lastRet == -1)
+//				throw new IllegalStateException();
+//			synchronized (Stack.this) {
+//				checkForComodification();
+//				Stack.this.remove(lastRet);
+//				expectedModCount = modCount;
+//			}
+//			cursor = lastRet;
+//			lastRet = -1;
+//		}
+//
+//		final void checkForComodification() {
+//			if (modCount != expectedModCount)
+//				throw new ConcurrentModificationException();
+//		}
+//	}
+
+	/**
+	 * An optimized version of AbstractList.ListItr
+	 */
+//	final class ListItr extends Itr implements ListIterator<E> {
+//		ListItr(int index) {
+//			super();
+//			cursor = index;
+//		}
+//
+//		public boolean hasPrevious() {
+//			return cursor != 0;
+//		}
+//
+//		public int nextIndex() {
+//			return cursor;
+//		}
+//
+//		public int previousIndex() {
+//			return cursor - 1;
+//		}
+//
+//		public E previous() {
+//			synchronized (Stack.this) {
+//				checkForComodification();
+//				int i = cursor - 1;
+//				if (i < 0)
+//					throw new NoSuchElementException();
+//				cursor = i;
+//				return elementData(lastRet = i);
+//			}
+//		}
+//
+//		public void set(E e) {
+//			if (lastRet == -1)
+//				throw new IllegalStateException();
+//			synchronized (Stack.this) {
+//				checkForComodification();
+//				Stack.this.set(lastRet, e);
+//			}
+//		}
+//
+//		public void add(E e) {
+//			int i = cursor;
+//			synchronized (Stack.this) {
+//				checkForComodification();
+//				Stack.this.add(i, e);
+//				expectedModCount = modCount;
+//			}
+//			cursor = i + 1;
+//			lastRet = -1;
+//		}
+//	}
+
+	/**
 	 * Pushes an item onto the top of this stack. This has exactly
 	 * the same effect as:
 	 * <blockquote><pre>
@@ -910,17 +1066,4 @@ public class Stack<E> extends CorrespondenceHandler {
 		return -1;
 	}
 	
-	public String toCode() {
-		String code = "Stack<Integer> s = new Stack<Integer>();";
-		for (Object obj : elementData.toArray()) {
-			if (obj == null) {
-				code += "s.push(DONTCARE);";
-			}
-			else if (obj instanceof IntegerMock) {
-				code += "s.push(" + ((IntegerMock) obj).intValue() + ");";
-			}
-		}
-		return code;
-	}
-
 }

@@ -6,9 +6,9 @@ public class CorrespondenceHandler {
 
 	private Object isVisitedDuringAssume;
 	private Object isVisitedDuringAssert;
-	private Object corresponding;
+	private Object correspondingInInitialState;
 
-	protected static boolean setAsCorresponding(CorrespondenceHandler obj1, CorrespondenceHandler obj2) {
+	protected static boolean setAsCorrespondingInInitialState(CorrespondenceHandler obj1, CorrespondenceHandler obj2) {
 		if (obj1 == null && obj2 == null) {
 			return true; // nothing to be set
 		} else if (obj1 == null || obj2 == null) {
@@ -19,34 +19,44 @@ public class CorrespondenceHandler {
 		if (obj1 == obj2) {
 			return false; // corresponding must be a distinct object
 		}
-		if (!doOrMayCorrespond(obj1, obj2)) {
+		if (!doOrMayCorrespondInInitialState(obj1, obj2)) {
 			return false; // cannot be set as corresponding
 		}
 
-		obj1.corresponding = obj2;
-		obj2.corresponding = obj1;
+		obj1.correspondingInInitialState = obj2;
+		obj2.correspondingInInitialState = obj1;
+
 		return true;
 	}
 
-	protected static boolean doOrMayCorrespond(CorrespondenceHandler obj1, CorrespondenceHandler obj2) {
-		if (!Analysis.isResolved(obj1, "corresponding") && !Analysis.isResolved(obj2, "corresponding"))  {
-			return true; //neither resolved: symbolic objects that may be set to correspond with each other
+	protected static boolean doOrMayCorrespondInInitialState(CorrespondenceHandler obj1, CorrespondenceHandler obj2) {
+		if (obj1 == null || obj2 == null) {
+			throw new RuntimeException("Requires non null inputs");
 		}
-		if (!Analysis.isResolved(obj1, "corresponding") || !Analysis.isResolved(obj2, "corresponding")) { 
-			return false;//only one resolved: cannot correspond anymore
+
+		if (!Analysis.isResolved(obj1, "correspondingInInitialState") && !Analysis.isResolved(obj2, "correspondingInInitialState")) {
+			return true; // neither resolved: symbolic objects that may be set to correspond with each other
 		}
-		/*else: both are solved. */
-		else if (obj1.corresponding == null && obj2.corresponding == null) {
-			return true;//both null: concrete objects that may be set to correspond with each other
-		}
-		else if (obj1.corresponding == null || obj2.corresponding == null) {
-			return false;//only one null: cannot correspond anymore
-		}
-		else {
-			/*else: both resolved, both non-null. */
-			return obj1.corresponding == obj2;
+		if (!Analysis.isResolved(obj1, "correspondingInInitialState") || !Analysis.isResolved(obj2, "correspondingInInitialState")) {
+			return false; // only one resolved: cannot correspond anymore
+		} else {
+			return obj1.correspondingInInitialState == obj2;
 		}
 	}
+
+	protected boolean hasCorrespondingObjectInInitialState() {
+		return Analysis.isResolved(this, "correspondingInInitialState") && correspondingInInitialState != null;
+	}
+
+	protected Object getCorrespondingObjectInInitialState() {
+		if (hasCorrespondingObjectInInitialState()) {
+			return correspondingInInitialState;
+		} else {
+			return null;
+		}
+	}
+
+
 
 	protected boolean mustVisitDuringAssume() {
 		if (Analysis.isResolved(this, "isVisitedDuringAssume") && isVisitedDuringAssume != null) {
@@ -62,18 +72,6 @@ public class CorrespondenceHandler {
 		}
 		isVisitedDuringAssert = new Object();
 		return true;
-	}
-
-	protected boolean hasCorrespondingObject() {
-		return Analysis.isResolved(this, "corresponding") && corresponding != null;
-	}
-
-	protected Object getCorrespondingObject() {
-		if (hasCorrespondingObject()) {
-			return corresponding;
-		} else {
-			return null;
-		}
 	}
 
 }
