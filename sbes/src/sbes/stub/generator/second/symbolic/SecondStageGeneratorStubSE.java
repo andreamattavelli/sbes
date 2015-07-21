@@ -173,17 +173,40 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		equivalence = stmts;
 		ASTHelper.addStmt(body, getTry(new BlockStmt(stmts), getCatchClause("e2")));
 
-		//assume semi conservative
-		ASTHelper.addStmt(body, getAnalysisMethod("assume", new MethodCallExpr(null, MIRROR_SEMICONSERVATIVE)));
 		//assert conservative
-		ASTHelper.addStmt(body, getAnalysisMethod("ass3rt", new MethodCallExpr(null, MIRROR_CONSERVATIVE)));
+		VariableDeclarationExpr okVar = ASTHelper.createVariableDeclarationExpr(ASTHelper.BOOLEAN_TYPE, "ok");
+		okVar.getVars().get(0).setInit(new MethodCallExpr(null, MIRROR_CONSERVATIVE));
+		ASTHelper.addStmt(body, new ExpressionStmt(okVar));
+		VariableDeclarationExpr fakeVar1 = ASTHelper.createVariableDeclarationExpr(ASTHelper.createReferenceType("FakeVariable", 0), "fake");
+		fakeVar1.getVars().get(0).setInit(ASTHelper.createNameExpr("forceConservativeRepOk"));
+		ASTHelper.addStmt(body, new ExpressionStmt(fakeVar1));
+		ASTHelper.addStmt(body, getAnalysisMethod("ass3rt", ASTHelper.createNameExpr("ok")));
 		//assert equal returns
-		BinaryExpr binary = new BinaryExpr(ASTHelper.createNameExpr(EXP_RES), ASTHelper.createNameExpr(ACT_RES), BinaryExpr.Operator.equals);
-		ASTHelper.addStmt(body, getAnalysisMethod("ass3rt", binary));
+		IfStmt ifReturns = new IfStmt();
+		ifReturns.setCondition(new BinaryExpr(ASTHelper.createNameExpr(EXP_RES), NULL_EXPR, BinaryExpr.Operator.notEquals));
+		MethodCallExpr mce = new MethodCallExpr(ASTHelper.createNameExpr(EXP_RES), "equals");
+		BinaryExpr mce2 = new BinaryExpr(ASTHelper.createNameExpr(ACT_RES), NULL_EXPR, BinaryExpr.Operator.equals);
+		List<Expression> args = new ArrayList<>();
+		args.add(ASTHelper.createNameExpr(ACT_RES));
+		mce.setArgs(args);
+		ifReturns.setThenStmt(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("ok"), mce, AssignExpr.Operator.assign)));
+		ifReturns.setElseStmt(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("ok"), mce2, AssignExpr.Operator.assign)));
+		ASTHelper.addStmt(body, ifReturns);
+		VariableDeclarationExpr fakeVar2 = ASTHelper.createVariableDeclarationExpr(ASTHelper.createReferenceType("FakeVariable", 0), "fake2");
+		fakeVar2.getVars().get(0).setInit(ASTHelper.createNameExpr("forceConservativeRepOk2"));
+		ASTHelper.addStmt(body, new ExpressionStmt(fakeVar2));
+		ASTHelper.addStmt(body, getAnalysisMethod("ass3rt", ASTHelper.createNameExpr("ok")));
 		//assert equal exceptions
-		ASTHelper.addStmt(body, getIfException("e1", "e2"));
-		ASTHelper.addStmt(body, getIfException("e2", "e1"));
-
+		IfStmt ifExceptions = new IfStmt();
+		ifExceptions.setCondition(new BinaryExpr(new BinaryExpr(ASTHelper.createNameExpr("e1"), NULL_EXPR, BinaryExpr.Operator.equals), 
+				new BinaryExpr(ASTHelper.createNameExpr("e2"), NULL_EXPR, BinaryExpr.Operator.equals), BinaryExpr.Operator.xor));
+		ifExceptions.setThenStmt(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("ok"), new BooleanLiteralExpr(false), AssignExpr.Operator.assign)));
+		ASTHelper.addStmt(body, ifExceptions);
+		VariableDeclarationExpr fakeVar3 = ASTHelper.createVariableDeclarationExpr(ASTHelper.createReferenceType("FakeVariable", 0), "fake3");
+		fakeVar3.getVars().get(0).setInit(ASTHelper.createNameExpr("forceConservativeRepOk3"));
+		ASTHelper.addStmt(body, new ExpressionStmt(fakeVar3));
+		ASTHelper.addStmt(body, getAnalysisMethod("ass3rt", ASTHelper.createNameExpr("ok")));
+		
 		method_under_test.setBody(body);
 		
 		return method_under_test;

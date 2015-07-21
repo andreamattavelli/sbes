@@ -129,91 +129,69 @@ public class SecondStageStubGeneratorSETest {
 				"import sbes.symbolic.mock.IntegerMock;"+
 				"import sbes.symbolic.mock.Stack;"+
 				"public class Stack_Stub_2 {"+
-				"IntegerMock expected_result;"+
-				"IntegerMock actual_result;"+
-				"Exception e1;"+
-				"Exception e2;"+
-				"IntegerMock p0;"+
-				"Stack<IntegerMock> v_Stack1;"+
-				"Stack<IntegerMock> v_Stack2;"+
-				"@ConservativeRepOk"+
-				"boolean mirrorInitialConservative() {"+
-				"boolean ok = true;"+
-				"if (Analysis.isResolved(this, \"v_Stack1\") && Analysis.isResolved(this, \"v_Stack2\")) {"+
-				"if (v_Stack1 == null) {"+
-				"ok = v_Stack2 == null;"+
-				"} else if (v_Stack2 == null) {"+
-				"ok = false;"+
-				"} else {"+
-				"ok = Stack.mirrorInitialConservative(v_Stack1, v_Stack2);"+
-				"}"+
-				"if (!ok) {"+
-				"return false;"+
-				"}"+
-				"}"+
-				"return true;"+
-				"}"+
-				"boolean mirrorInitialSemiConservative() {"+
-				"boolean ok = true;"+
-				"if (Analysis.isResolved(this, \"v_Stack1\") || Analysis.isResolved(this, \"v_Stack2\")) {"+
-				"if (this.v_Stack1 == null) {"+
-				"ok = this.v_Stack2 == null;"+
-				"} else if (this.v_Stack2 == null) {"+
-				"ok = false;"+
-				"} else {"+
-				"ok = Stack.mirrorInitialSemiConservative(v_Stack1, v_Stack2);"+
-				"}"+
-				"if (!ok) {"+
-				"return false;"+
-				"}"+
-				"}"+
-				"return true;"+
-				"}"+
-				"boolean mirrorFinalConservative() {"+
-				"boolean ok = true;"+
-				"if (Analysis.isResolved(this, \"v_Stack1\") && Analysis.isResolved(this, \"v_Stack2\")) {"+
-				"if (this.v_Stack1 == null) {"+
-				"ok = this.v_Stack2 == null;"+
-				"} else if (this.v_Stack2 == null) {"+
-				"ok = false;"+
-				"} else {"+
-				"ok = v_Stack1.mirrorFinalConservative();"+
-				"if (!ok) {"+
-				"return false;"+
-				"}"+
-				"ok = v_Stack2.mirrorFinalConservative();"+
-				"}"+
-				"if (!ok) {"+
-				"return false;"+
-				"}"+
-				"}"+
-				"return true;"+
-				"}"+
-				"public void method_under_test() {"+
-				"expected_result = null;"+
-				"actual_result = null;"+
-				"e1 = null;"+
-				"e2 = null;"+
-				"try {"+
-				"expected_result = v_Stack1.push(p0);"+
-				"} catch (Exception e) {"+
-				"e1 = e;"+
-				"}"+
-				"try {"+
-				"v_Stack2.addElement(p0);"+
-				"actual_result = p0;"+
-				"} catch (Exception e) {"+
-				"e2 = e;"+
-				"}"+
-				"Analysis.assume(mirrorInitialSemiConservative());"+
-				"Analysis.ass3rt(mirrorFinalConservative());"+
-				"Analysis.ass3rt(expected_result == actual_result);"+
-				"if (e1 == null)"+
-				"Analysis.ass3rt(e2 == null);"+
-				"if (e2 == null)"+
-				"Analysis.ass3rt(e1 == null);"+
-				"}"+
+				"    IntegerMock expected_result;"+
+				"    IntegerMock actual_result;"+
+				"    Exception e1;"+
+				"    Exception e2;"+
+				"    IntegerMock p0;"+
+				"    private interface FakeVariable {"+
+				"    }"+
+				"    Stack<IntegerMock> v_Stack1;"+
+				"    Stack<IntegerMock> v_Stack2;"+
+				"    FakeVariable forceConservativeRepOk;"+
+				"    FakeVariable forceConservativeRepOk2;"+
+				"    FakeVariable forceConservativeRepOk3;"+
+				"    @ConservativeRepOk"+
+				"    boolean mirrorInitialConservative() {"+
+				"        if (Analysis.isResolved(this, \"v_Stack1\") || Analysis.isResolved(this, \"v_Stack2\")) {"+
+				"            if (v_Stack1 == null ^ v_Stack2 == null) {"+
+				"                return false;"+
+				"            } else if (v_Stack1 != null && v_Stack2 != null) {"+
+				"                return Stack.mirrorEachOtherInitially_conservative(v_Stack1, v_Stack2);"+
+				"            }"+
+				"        }"+
+				"        return true;"+
+				"    }"+
+				"    boolean mirrorFinalConservative() {"+
+				"        if (this.v_Stack1 == null ^ v_Stack2 == null) {"+
+				"            return false;"+
+				"        } else if (this.v_Stack1 != null && v_Stack2 != null) {"+
+				"            return Stack.mirrorEachOtherAtEnd(v_Stack1, v_Stack2);"+
+				"        }"+
+				"        return true;"+
+				"    }"+
+				"    public void method_under_test() {"+
+				"        expected_result = null;"+
+				"        actual_result = null;"+
+				"        e1 = null;"+
+				"        e2 = null;"+
+				"        try {"+
+				"            expected_result = v_Stack1.push(p0);"+
+				"        } catch (Exception e) {"+
+				"            e1 = e;"+
+				"        }"+
+				"        try {"+
+				"            v_Stack2.addElement(p0);"+
+				"            actual_result = p0;"+
+				"        } catch (Exception e) {"+
+				"            e2 = e;"+
+				"        }"+
+				"        boolean ok = mirrorFinalConservative();"+
+				"        FakeVariable fake = forceConservativeRepOk;"+
+				"        Analysis.ass3rt(ok);"+
+				"        if (expected_result != null)"+
+				"            ok = expected_result.equals(actual_result);"+
+				"        else"+
+				"            ok = actual_result == null;"+
+				"        FakeVariable fake2 = forceConservativeRepOk2;"+
+				"        Analysis.ass3rt(ok);"+
+				"        if (e1 == null ^ e2 == null)"+
+				"            ok = false;"+
+				"        FakeVariable fake3 = forceConservativeRepOk3;"+
+				"        Analysis.ass3rt(ok);"+
+				"    }"+
 				"}";
+
 
 		assertASTEquals(actual, expected);
 	}

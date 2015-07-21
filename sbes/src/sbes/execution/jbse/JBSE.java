@@ -14,7 +14,6 @@ import sbes.exceptions.GenerationException;
 import sbes.execution.Tool;
 import sbes.logging.Logger;
 import sbes.option.Options;
-import sbes.util.ClassUtils;
 import sbes.util.DirectoryUtils;
 
 public class JBSE extends Tool {
@@ -57,7 +56,7 @@ public class JBSE extends Tool {
 
 		// what to show
 		p.setStepShowMode(StepShowMode.LEAVES);
-		p.setStateFormatMode(StateFormatMode.JUNIT_TEST);
+		p.setStateFormatMode(new StateFormatMode[] { StateFormatMode.JUNIT_TEST });
 		p.setShowSafe(false);
 		p.setShowUnsafe(true);
 		p.setShowOutOfScope(false);
@@ -66,7 +65,7 @@ public class JBSE extends Tool {
 		p.setShowDecisionProcedureInteraction(false);
 
 		//output file
-		p.setOutputFileName(DirectoryUtils.I().getSecondStubJBSEDir() + "TestSuite_" + ClassUtils.getSimpleClassnameFromCanonical(classSignature) + ".java");
+		p.setOutputPath(DirectoryUtils.I().getSecondStubJBSEDir());
 
 		// scope
 		p.setTimeout(2, TimeUnit.HOURS);
@@ -96,7 +95,6 @@ public class JBSE extends Tool {
 
 	@Override
 	public String getTestFilename() {
-		// ClassUtils.getSimpleClassnameFromCanonical(classSignature)
 		return "";
 	}
 

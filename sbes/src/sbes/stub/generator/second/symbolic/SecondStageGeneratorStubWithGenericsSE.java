@@ -62,6 +62,7 @@ public class SecondStageGeneratorStubWithGenericsSE extends SecondStageGenerator
 		return fields;
 	}
 	
+	@Override
 	protected String getActualResultType(Method targetMethod) {
 		String className = targetMethod.getGenericReturnType().toString();
 		Set<TypeVariable<?>> types = genericToConcreteClasses.keySet();
