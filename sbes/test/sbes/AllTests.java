@@ -16,7 +16,7 @@ import sbes.util.AllUtilsTests;
 	AllResultTests.class,
 	AllScenarioTests.class,
 	AllGeneratorTests.class,
-	AllUtilsTests.class,
+	AllUtilsTests.class
 	
 })
 public class AllTests {

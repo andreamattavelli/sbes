@@ -70,7 +70,6 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 	protected static final String EXP_RES	= "expected_result";
 	protected static final String V_STACK1 = "v_Stack1";
 	protected static final String V_STACK2 = "v_Stack2";
-	protected static final String MIRROR_SEMICONSERVATIVE = "mirrorInitialSemiConservative";
 	protected static final String MIRROR_CONSERVATIVE = "mirrorFinalConservative";
 	protected static final NullLiteralExpr NULL_EXPR = new NullLiteralExpr();
 
@@ -174,42 +173,64 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		ASTHelper.addStmt(body, getTry(new BlockStmt(stmts), getCatchClause("e2")));
 
 		//assert conservative
-		VariableDeclarationExpr okVar = ASTHelper.createVariableDeclarationExpr(ASTHelper.BOOLEAN_TYPE, "ok");
-		okVar.getVars().get(0).setInit(new MethodCallExpr(null, MIRROR_CONSERVATIVE));
-		ASTHelper.addStmt(body, new ExpressionStmt(okVar));
-		VariableDeclarationExpr fakeVar1 = ASTHelper.createVariableDeclarationExpr(ASTHelper.createReferenceType("FakeVariable", 0), "fake");
-		fakeVar1.getVars().get(0).setInit(ASTHelper.createNameExpr("forceConservativeRepOk"));
-		ASTHelper.addStmt(body, new ExpressionStmt(fakeVar1));
+		ASTHelper.addStmt(body, new ExpressionStmt(createOkVariable()));
+		ASTHelper.addStmt(body, new ExpressionStmt(createFakeVariable("fake", "forceConservativeRepOk")));
 		ASTHelper.addStmt(body, getAnalysisMethod("ass3rt", ASTHelper.createNameExpr("ok")));
 		//assert equal returns
-		IfStmt ifReturns = new IfStmt();
-		ifReturns.setCondition(new BinaryExpr(ASTHelper.createNameExpr(EXP_RES), NULL_EXPR, BinaryExpr.Operator.notEquals));
-		MethodCallExpr mce = new MethodCallExpr(ASTHelper.createNameExpr(EXP_RES), "equals");
-		BinaryExpr mce2 = new BinaryExpr(ASTHelper.createNameExpr(ACT_RES), NULL_EXPR, BinaryExpr.Operator.equals);
-		List<Expression> args = new ArrayList<>();
-		args.add(ASTHelper.createNameExpr(ACT_RES));
-		mce.setArgs(args);
-		ifReturns.setThenStmt(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("ok"), mce, AssignExpr.Operator.assign)));
-		ifReturns.setElseStmt(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("ok"), mce2, AssignExpr.Operator.assign)));
+		IfStmt ifReturns = createCheckOnReturns(targetMethod);
 		ASTHelper.addStmt(body, ifReturns);
-		VariableDeclarationExpr fakeVar2 = ASTHelper.createVariableDeclarationExpr(ASTHelper.createReferenceType("FakeVariable", 0), "fake2");
-		fakeVar2.getVars().get(0).setInit(ASTHelper.createNameExpr("forceConservativeRepOk2"));
-		ASTHelper.addStmt(body, new ExpressionStmt(fakeVar2));
+		ASTHelper.addStmt(body, new ExpressionStmt(createFakeVariable("fake2", "forceConservativeRepOk2")));
 		ASTHelper.addStmt(body, getAnalysisMethod("ass3rt", ASTHelper.createNameExpr("ok")));
 		//assert equal exceptions
-		IfStmt ifExceptions = new IfStmt();
-		ifExceptions.setCondition(new BinaryExpr(new BinaryExpr(ASTHelper.createNameExpr("e1"), NULL_EXPR, BinaryExpr.Operator.equals), 
-				new BinaryExpr(ASTHelper.createNameExpr("e2"), NULL_EXPR, BinaryExpr.Operator.equals), BinaryExpr.Operator.xor));
-		ifExceptions.setThenStmt(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("ok"), new BooleanLiteralExpr(false), AssignExpr.Operator.assign)));
+		IfStmt ifExceptions = createCheckOnExceptions();
 		ASTHelper.addStmt(body, ifExceptions);
-		VariableDeclarationExpr fakeVar3 = ASTHelper.createVariableDeclarationExpr(ASTHelper.createReferenceType("FakeVariable", 0), "fake3");
-		fakeVar3.getVars().get(0).setInit(ASTHelper.createNameExpr("forceConservativeRepOk3"));
-		ASTHelper.addStmt(body, new ExpressionStmt(fakeVar3));
+		ASTHelper.addStmt(body, new ExpressionStmt(createFakeVariable("fake3", "forceConservativeRepOk3")));
 		ASTHelper.addStmt(body, getAnalysisMethod("ass3rt", ASTHelper.createNameExpr("ok")));
 		
 		method_under_test.setBody(body);
 		
 		return method_under_test;
+	}
+
+	protected VariableDeclarationExpr createOkVariable() {
+		VariableDeclarationExpr okVar = ASTHelper.createVariableDeclarationExpr(ASTHelper.BOOLEAN_TYPE, "ok");
+		okVar.getVars().get(0).setInit(new MethodCallExpr(null, MIRROR_CONSERVATIVE));
+		return okVar;
+	}
+	
+	protected VariableDeclarationExpr createFakeVariable(String varName, String forceName) {
+		VariableDeclarationExpr fakeVar1 = ASTHelper.createVariableDeclarationExpr(ASTHelper.createReferenceType("FakeVariable", 0), varName);
+		fakeVar1.getVars().get(0).setInit(ASTHelper.createNameExpr(forceName));
+		return fakeVar1;
+	}
+	
+	protected IfStmt createCheckOnExceptions() {
+		IfStmt ifExceptions = new IfStmt();
+		ifExceptions.setCondition(new BinaryExpr(
+				new BinaryExpr(ASTHelper.createNameExpr("e1"), NULL_EXPR, BinaryExpr.Operator.equals), 
+				new BinaryExpr(ASTHelper.createNameExpr("e2"), NULL_EXPR, BinaryExpr.Operator.equals), 
+				BinaryExpr.Operator.xor));
+		ifExceptions.setThenStmt(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("ok"), new BooleanLiteralExpr(false), AssignExpr.Operator.assign)));
+		return ifExceptions;
+	}
+
+	protected IfStmt createCheckOnReturns(Method targetMethod) {
+		IfStmt ifReturns = new IfStmt();
+		if (targetMethod.getReturnType().isPrimitive()) {
+			ifReturns.setCondition(new BinaryExpr(ASTHelper.createNameExpr(EXP_RES), ASTHelper.createNameExpr(ACT_RES), BinaryExpr.Operator.notEquals));
+			ifReturns.setThenStmt(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("ok"), new BooleanLiteralExpr(false), AssignExpr.Operator.assign)));
+		}
+		else {
+			ifReturns.setCondition(new BinaryExpr(ASTHelper.createNameExpr(EXP_RES), NULL_EXPR, BinaryExpr.Operator.notEquals));
+			MethodCallExpr mce = new MethodCallExpr(ASTHelper.createNameExpr(EXP_RES), "equals");
+			List<Expression> args = new ArrayList<>();
+			args.add(ASTHelper.createNameExpr(ACT_RES));
+			mce.setArgs(args);
+			ifReturns.setThenStmt(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("ok"), mce, AssignExpr.Operator.assign)));
+			BinaryExpr mce2 = new BinaryExpr(ASTHelper.createNameExpr(ACT_RES), NULL_EXPR, BinaryExpr.Operator.equals);
+			ifReturns.setElseStmt(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr("ok"), mce2, AssignExpr.Operator.assign)));
+		}
+		return ifReturns;
 	}
 	
 	protected List<Statement> initVariables(Method targetMethod) {
