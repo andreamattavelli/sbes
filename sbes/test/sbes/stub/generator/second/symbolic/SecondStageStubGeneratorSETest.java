@@ -124,72 +124,71 @@ public class SecondStageStubGeneratorSETest {
 		
 		String actual = second.getAst().toString();
 		String expected = "package stack.util;"+
+				"import sbes.distance.Distance;"+
+				"import sbes.cloning.Cloner;"+
 				"import jbse.meta.Analysis;"+
 				"import jbse.meta.annotations.ConservativeRepOk;"+
 				"import sbes.symbolic.mock.IntegerMock;"+
 				"import sbes.symbolic.mock.Stack;"+
 				"public class Stack_Stub_2 {"+
-				"    IntegerMock expected_result;"+
-				"    IntegerMock actual_result;"+
-				"    Exception e1;"+
-				"    Exception e2;"+
-				"    IntegerMock p0;"+
-				"    private interface FakeVariable {"+
-				"    }"+
-				"    Stack<IntegerMock> v_Stack1;"+
-				"    Stack<IntegerMock> v_Stack2;"+
-				"    FakeVariable forceConservativeRepOk;"+
-				"    FakeVariable forceConservativeRepOk2;"+
-				"    FakeVariable forceConservativeRepOk3;"+
-				"    @ConservativeRepOk"+
-				"    boolean mirrorInitialConservative() {"+
-				"        if (Analysis.isResolved(this, \"v_Stack1\") || Analysis.isResolved(this, \"v_Stack2\")) {"+
-				"            if (v_Stack1 == null ^ v_Stack2 == null) {"+
-				"                return false;"+
-				"            } else if (v_Stack1 != null && v_Stack2 != null) {"+
-				"                return Stack.mirrorEachOtherInitially_conservative(v_Stack1, v_Stack2);"+
-				"            }"+
-				"        }"+
-				"        return true;"+
-				"    }"+
-				"    boolean mirrorFinalConservative() {"+
-				"        if (this.v_Stack1 == null ^ v_Stack2 == null) {"+
-				"            return false;"+
-				"        } else if (this.v_Stack1 != null && v_Stack2 != null) {"+
-				"            return Stack.mirrorEachOtherAtEnd(v_Stack1, v_Stack2);"+
-				"        }"+
-				"        return true;"+
-				"    }"+
-				"    public void method_under_test() {"+
-				"        expected_result = null;"+
-				"        actual_result = null;"+
-				"        e1 = null;"+
-				"        e2 = null;"+
-				"        try {"+
-				"            expected_result = v_Stack1.push(p0);"+
-				"        } catch (Exception e) {"+
-				"            e1 = e;"+
-				"        }"+
-				"        try {"+
-				"            v_Stack2.addElement(p0);"+
-				"            actual_result = p0;"+
-				"        } catch (Exception e) {"+
-				"            e2 = e;"+
-				"        }"+
-				"        boolean ok = mirrorFinalConservative();"+
-				"        FakeVariable fake = forceConservativeRepOk;"+
-				"        Analysis.ass3rt(ok);"+
-				"        if (expected_result != null)"+
-				"            ok = expected_result.equals(actual_result);"+
-				"        else"+
-				"            ok = actual_result == null;"+
-				"        FakeVariable fake2 = forceConservativeRepOk2;"+
-				"        Analysis.ass3rt(ok);"+
-				"        if (e1 == null ^ e2 == null)"+
-				"            ok = false;"+
-				"        FakeVariable fake3 = forceConservativeRepOk3;"+
-				"        Analysis.ass3rt(ok);"+
-				"    }"+
+				"private interface FakeVariable {"+
+				"}"+
+				"Stack<IntegerMock> v_Stack1;"+
+				"Stack<IntegerMock> v_Stack2;"+
+				"FakeVariable forceConservativeRepOk;"+
+				"FakeVariable forceConservativeRepOk2;"+
+				"FakeVariable forceConservativeRepOk3;"+
+				"IntegerMock expected_result;"+
+				"IntegerMock actual_result;"+
+				"Exception e1;"+
+				"Exception e2;"+
+				"IntegerMock p0;"+
+				"@ConservativeRepOk"+
+				"boolean mirrorInitialConservative() {"+
+				"if (Analysis.isResolved(this, \"v_Stack1\") | Analysis.isResolved(this, \"v_Stack2\"))"+
+				"if (v_Stack1 == null ^ v_Stack2 == null)"+
+				"return false;"+
+				"else if (v_Stack1 != null & v_Stack2 != null)"+
+				"return Stack.mirrorEachOtherInitially_conservative(v_Stack1, v_Stack2);"+
+				"return true;"+
+				"}"+
+				"boolean mirrorFinalConservative() {"+
+				"if (v_Stack1 == null ^ v_Stack2 == null)"+
+				"return false;"+
+				"else if (v_Stack1 != null & v_Stack2 != null)"+
+				"return Stack.mirrorEachOtherAtEnd(v_Stack1, v_Stack2);"+
+				"return true;"+
+				"}"+
+				"public void method_under_test() {"+
+				"expected_result = null;"+
+				"actual_result = null;"+
+				"e1 = null;"+
+				"e2 = null;"+
+				"try {"+
+				"expected_result = v_Stack1.push(p0);"+
+				"} catch (Exception e) {"+
+				"e1 = e;"+
+				"}"+
+				"try {"+
+				"v_Stack2.addElement(p0);"+
+				"actual_result = p0;"+
+				"} catch (Exception e) {"+
+				"e2 = e;"+
+				"}"+
+				"boolean ok = mirrorFinalConservative();"+
+				"FakeVariable fake = forceConservativeRepOk;"+
+				"Analysis.ass3rt(ok);"+
+				"if (expected_result != null)"+
+				"ok = expected_result.equals(actual_result);"+
+				"else"+
+				"ok = actual_result == null;"+
+				"FakeVariable fake2 = forceConservativeRepOk2;"+
+				"Analysis.ass3rt(ok);"+
+				"if (e1 == null ^ e2 == null)"+
+				"ok = false;"+
+				"FakeVariable fake3 = forceConservativeRepOk3;"+
+				"Analysis.ass3rt(ok);"+
+				"}"+
 				"}";
 
 		assertASTEquals(actual, expected);
@@ -219,16 +218,13 @@ public class SecondStageStubGeneratorSETest {
 		
 		String actual = second.getAst().toString();
 		String expected = "package stack.util;"+
+				"import sbes.distance.Distance;"+
+				"import sbes.cloning.Cloner;"+
 				"import jbse.meta.Analysis;"+
 				"import jbse.meta.annotations.ConservativeRepOk;"+
 				"import sbes.symbolic.mock.IntegerMock;"+
 				"import sbes.symbolic.mock.Stack;"+
 				"public class Stack_Stub_2 {"+
-				"int expected_result;"+
-				"int actual_result;"+
-				"Exception e1;"+
-				"Exception e2;"+
-				"java.lang.Object p0;"+
 				"private interface FakeVariable {"+
 				"}"+
 				"Stack<IntegerMock> v_Stack1;"+
@@ -236,23 +232,25 @@ public class SecondStageStubGeneratorSETest {
 				"FakeVariable forceConservativeRepOk;"+
 				"FakeVariable forceConservativeRepOk2;"+
 				"FakeVariable forceConservativeRepOk3;"+
+				"int expected_result;"+
+				"int actual_result;"+
+				"Exception e1;"+
+				"Exception e2;"+
+				"java.lang.Object p0;"+
 				"@ConservativeRepOk"+
 				"boolean mirrorInitialConservative() {"+
-				"if (Analysis.isResolved(this, \"v_Stack1\") || Analysis.isResolved(this, \"v_Stack2\")) {"+
-				"if (v_Stack1 == null ^ v_Stack2 == null) {"+
+				"if (Analysis.isResolved(this, \"v_Stack1\") | Analysis.isResolved(this, \"v_Stack2\"))"+
+				"if (v_Stack1 == null ^ v_Stack2 == null)"+
 				"return false;"+
-				"} else if (v_Stack1 != null && v_Stack2 != null) {"+
+				"else if (v_Stack1 != null & v_Stack2 != null)"+
 				"return Stack.mirrorEachOtherInitially_conservative(v_Stack1, v_Stack2);"+
-				"}"+
-				"}"+
 				"return true;"+
 				"}"+
 				"boolean mirrorFinalConservative() {"+
-				"if (this.v_Stack1 == null ^ v_Stack2 == null) {"+
+				"if (v_Stack1 == null ^ v_Stack2 == null)"+
 				"return false;"+
-				"} else if (this.v_Stack1 != null && v_Stack2 != null) {"+
+				"else if (v_Stack1 != null & v_Stack2 != null)"+
 				"return Stack.mirrorEachOtherAtEnd(v_Stack1, v_Stack2);"+
-				"}"+
 				"return true;"+
 				"}"+
 				"public void method_under_test() {"+

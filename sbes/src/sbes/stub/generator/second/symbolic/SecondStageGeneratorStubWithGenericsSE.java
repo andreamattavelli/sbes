@@ -2,10 +2,12 @@ package sbes.stub.generator.second.symbolic;
 
 import japa.parser.ASTHelper;
 import japa.parser.ast.body.BodyDeclaration;
+import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.Parameter;
 import japa.parser.ast.body.VariableDeclaratorId;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -17,6 +19,7 @@ import java.util.Set;
 import sbes.result.CarvingResult;
 import sbes.scenario.TestScenario;
 import sbes.stub.Stub;
+import sbes.util.GenericsUtils;
 import sbes.util.ReflectionUtils;
 
 public class SecondStageGeneratorStubWithGenericsSE extends SecondStageGeneratorStubSE {
@@ -43,6 +46,17 @@ public class SecondStageGeneratorStubWithGenericsSE extends SecondStageGenerator
 	@Override
 	protected List<BodyDeclaration> getClassFields(Method targetMethod, Class<?> c) {
 		List<BodyDeclaration> fields = new ArrayList<>();
+		fields.add(new ClassOrInterfaceDeclaration(Modifier.PRIVATE, true, "FakeVariable"));
+		
+		// class variables
+		String referenceType = c.getSimpleName() + "<" + GenericsUtils.toGenericsString(genericToConcreteClasses) + ">";
+		fields.add(ASTHelper.createFieldDeclaration(0, ASTHelper.createReferenceType(referenceType, 0), "v_" + c.getSimpleName() + "1"));
+		fields.add(ASTHelper.createFieldDeclaration(0, ASTHelper.createReferenceType(referenceType, 0), "v_" + c.getSimpleName() + "2"));
+		
+		// fake variables
+		fields.add(ASTHelper.createFieldDeclaration(0, ASTHelper.createReferenceType("FakeVariable", 0), "forceConservativeRepOk"));
+		fields.add(ASTHelper.createFieldDeclaration(0, ASTHelper.createReferenceType("FakeVariable", 0), "forceConservativeRepOk2"));
+		fields.add(ASTHelper.createFieldDeclaration(0, ASTHelper.createReferenceType("FakeVariable", 0), "forceConservativeRepOk3"));
 		// return fields
 		if (!targetMethod.getReturnType().equals(void.class)) {
 			String resultType = getActualResultType(targetMethod);
@@ -71,7 +85,6 @@ public class SecondStageGeneratorStubWithGenericsSE extends SecondStageGenerator
 				className = className.replaceAll(typeVariable.toString(), genericToConcreteClasses.get(typeVariable));
 			}
 		}
-
 		return className;
 	}
 	
