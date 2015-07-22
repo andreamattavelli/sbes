@@ -72,7 +72,7 @@ public class Stack<E> extends CorrespondenceHandler {
 	 *
 	 * @serial
 	 */
-	protected DoubleLinkedList_LICS elementData;
+	protected DoubleLinkedList elementData;
 
 	/**
 	 * The number of valid components in this {@code Vector} object.
@@ -110,8 +110,8 @@ public class Stack<E> extends CorrespondenceHandler {
 				return false;
 			}
 			else if (stack1.elementData != null && stack2.elementData != null) {
-				return DoubleLinkedList_LICS.mirrorInitialConservative((DoubleLinkedList_LICS) stack1.elementData, 
-																	   (DoubleLinkedList_LICS) stack2.elementData);
+				return DoubleLinkedList.mirrorInitialConservative((DoubleLinkedList) stack1.elementData, 
+																	   (DoubleLinkedList) stack2.elementData);
 			}
 		}
 
@@ -126,8 +126,8 @@ public class Stack<E> extends CorrespondenceHandler {
 				return false;
 			}
 			else if (stack1.elementData != null && stack2.elementData != null) {
-				return DoubleLinkedList_LICS.mirrorFinalConservative((DoubleLinkedList_LICS) stack1.elementData,
-																  (DoubleLinkedList_LICS) stack2.elementData);
+				return DoubleLinkedList.mirrorFinalConservative((DoubleLinkedList) stack1.elementData,
+																  (DoubleLinkedList) stack2.elementData);
 			}
 		}
 		
@@ -157,7 +157,7 @@ public class Stack<E> extends CorrespondenceHandler {
 	public Stack(int initialCapacity, int capacityIncrement) {
 		if (initialCapacity < 0)
 			throw new IllegalArgumentException();
-		this.elementData = new DoubleLinkedList_LICS();
+		this.elementData = new DoubleLinkedList();
 		this.capacityIncrement = capacityIncrement;
 	}
 
@@ -692,7 +692,7 @@ public class Stack<E> extends CorrespondenceHandler {
 	 * @throws NullPointerException if the specified collection is null
 	 * @since 1.2
 	 */
-	public synchronized boolean addAll(DoubleLinkedList_LICS c) {
+	public synchronized boolean addAll(DoubleLinkedList c) {
 		modCount++;
 		Object[] a = c.toArray();
 		int numNew = a.length;
@@ -717,7 +717,7 @@ public class Stack<E> extends CorrespondenceHandler {
 	 *         elements (optional), or if the specified collection is null
 	 * @since 1.2
 	 */
-	public synchronized boolean removeAll(DoubleLinkedList_LICS c) {
+	public synchronized boolean removeAll(DoubleLinkedList c) {
 //		Objects.requireNonNull(c);
 		boolean modified = false;
 		for (int i = 0; i < c.size(); i++) {
@@ -747,7 +747,7 @@ public class Stack<E> extends CorrespondenceHandler {
 	 *         elements (optional), or if the specified collection is null
 	 * @since 1.2
 	 */
-	public synchronized boolean retainAll(DoubleLinkedList_LICS c)  {
+	public synchronized boolean retainAll(DoubleLinkedList c)  {
 //		Objects.requireNonNull(c);
 		boolean modified = false;
 		for (int i = 0; i < elementData.size();) {

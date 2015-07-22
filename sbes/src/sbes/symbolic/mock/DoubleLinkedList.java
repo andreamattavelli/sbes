@@ -87,7 +87,7 @@ import sbes.symbolic.CorrespondenceHandler;
  */
 
 @SuppressWarnings("rawtypes")
-public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
+public class DoubleLinkedList  extends CorrespondenceHandler {
 	//@invariant repOk();
 
 	protected transient int modCount = 0;
@@ -112,7 +112,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 	 */
 
 	@SuppressWarnings("unused")
-	private static void _got_DoublyLinkedList_LICS(DoubleLinkedList_LICS l) {
+	private static void _got_DoublyLinkedList_LICS(DoubleLinkedList l) {
 		l._initialSize = l.size;
 		//rep invariant for LinkedList.size
 		l._minSize = 0;
@@ -123,7 +123,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 	/**
 	 * Constructs an empty list.
 	 */
-	public DoubleLinkedList_LICS() {
+	public DoubleLinkedList() {
 		header.next = header.previous = header;
 		//INSTRUMENTATION BEGIN
 		//initializates instrumentation fields for concrete objects
@@ -143,7 +143,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 	 */
 	//STUB BEGIN
 	//public DoubleLinkedList_LICS(Collection c) {
-	public DoubleLinkedList_LICS(DoubleLinkedList_LICS c) {
+	public DoubleLinkedList(DoubleLinkedList c) {
 		//STUB END
 		this();
 		addAll(c);
@@ -177,7 +177,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 		return i == size;
 	}
 
-	public boolean test(DoubleLinkedList_LICS dll, Object o) {
+	public boolean test(DoubleLinkedList dll, Object o) {
 		dll.add(o);
 		return dll.getLast() == o;
 	}
@@ -355,7 +355,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 		 */
 	//STUB BEGIN
 	//public boolean addAll(Collection c) {
-	public boolean addAll(DoubleLinkedList_LICS c) {
+	public boolean addAll(DoubleLinkedList c) {
 		//STUB END
 		return addAll(size, c);
 	}
@@ -381,7 +381,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 	 */
 	//STUB BEGIN
 	//public boolean addAll(int index, Collection c) {
-	public boolean addAll(int index, DoubleLinkedList_LICS c) {
+	public boolean addAll(int index, DoubleLinkedList c) {
 		//STUB END
 		Object[] a = c.toArray();
 		int numNew = a.length;
@@ -415,7 +415,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 		size = 0;
 	}
 
-	public void retainAll(DoubleLinkedList_LICS c) {
+	public void retainAll(DoubleLinkedList c) {
 		modCount++;
 		for (int i = 0; i < size();) {
 			if (c.contains(get(i))) {
@@ -676,7 +676,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 		public void remove() {
 			checkForComodification();
 			try {
-				DoubleLinkedList_LICS.this.remove(lastReturned);
+				DoubleLinkedList.this.remove(lastReturned);
 			} catch (NoSuchElementException e) {
 				throw new IllegalStateException();
 			}
@@ -718,33 +718,33 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 		/*
 		 * Other instrumentation fields
 		 */
-		DoubleLinkedList_LICS _owner;
+		DoubleLinkedList _owner;
 
 		/*
 		 * Triggers.
 		 */
-		private static void _got_DoubleLinkedList_Entry_LICS_any(DoubleLinkedList_LICS.Entry e) {
+		private static void _got_DoubleLinkedList_Entry_LICS_any(DoubleLinkedList.Entry e) {
 			//_owner is resolved (always by alias!) by LICS rules upon first access below
 			++e._owner._minSize;
 			Analysis.assume(e._owner._initialSize >= e._owner._minSize);
 		}
 
 		@SuppressWarnings("unused")
-		private static void _got_DoubleLinkedList_Entry_LICS_nonroot_previous(DoubleLinkedList_LICS.Entry e) {
+		private static void _got_DoubleLinkedList_Entry_LICS_nonroot_previous(DoubleLinkedList.Entry e) {
 			_got_DoubleLinkedList_Entry_LICS_any(e.previous);
 		}
 		@SuppressWarnings("unused")
-		private static void _got_DoubleLinkedList_Entry_LICS_nonroot_next(DoubleLinkedList_LICS.Entry e) {
+		private static void _got_DoubleLinkedList_Entry_LICS_nonroot_next(DoubleLinkedList.Entry e) {
 			_got_DoubleLinkedList_Entry_LICS_any(e.next);
 		}
 
 		@SuppressWarnings("unused")
-		private static void _handleListClosure_next(DoubleLinkedList_LICS.Entry e) {
+		private static void _handleListClosure_next(DoubleLinkedList.Entry e) {
 			Analysis.assume(e._owner._initialSize == e._owner._minSize);
 		}
 
 		@SuppressWarnings("unused")
-		private static void _handleListClosure_previous(DoubleLinkedList_LICS.Entry e) {
+		private static void _handleListClosure_previous(DoubleLinkedList.Entry e) {
 			Analysis.assume(e._owner._initialSize == e._owner._minSize);
 		}
 
@@ -752,7 +752,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 
 		//INSTRUMENTATION BEGIN
 		//Entry(Object element, Entry next, Entry previous) {
-		Entry(Object element, Entry next, Entry previous, DoubleLinkedList_LICS _owner) {
+		Entry(Object element, Entry next, Entry previous, DoubleLinkedList _owner) {
 			//INSTRUMENTATION END
 			this.element = element;
 			this.next = next;
@@ -888,7 +888,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
         } catch (CloneNotSupportedException e) { 
         	throw new InternalError();
         }*/ //JBSE still does not implement Object.clone
-		DoubleLinkedList_LICS clone = new DoubleLinkedList_LICS();
+		DoubleLinkedList clone = new DoubleLinkedList();
 		//STUB END
 
 		// Put clone into "virgin" state
@@ -1052,7 +1052,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 			add(s.readObject());
 	}
 
-	public static boolean mirrorInitialConservative(DoubleLinkedList_LICS list1, DoubleLinkedList_LICS list2) {
+	public static boolean mirrorInitialConservative(DoubleLinkedList list1, DoubleLinkedList list2) {
 		boolean ok = CorrespondenceHandler.doOrMayCorrespondInInitialState(list1, list2);
 		if(!ok) return false;			
 
@@ -1077,7 +1077,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 		return true;	
 	}
 
-	public static boolean mirrorFinalConservative(DoubleLinkedList_LICS list1, DoubleLinkedList_LICS list2) {
+	public static boolean mirrorFinalConservative(DoubleLinkedList list1, DoubleLinkedList list2) {
 		if(!list1.mustVisitDuringAssert()) return true;
 
 		boolean ok = list1.size == list2.size;

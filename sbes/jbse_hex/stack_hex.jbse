@@ -1,15 +1,15 @@
 resolve begin
 
-{R_ANY}/v_Stack1 instanceof stack/util/Stack not null,
-{R_ANY}/v_Stack1 instanceof stack/util/Stack aliases nothing,
-{R_ANY}/v_Stack2 instanceof stack/util/Stack not null,
-{R_ANY}/v_Stack2 instanceof stack/util/Stack aliases nothing,
+{R_ANY}/v_Stack1 instanceof sbes/symbolic/mock/Stack not null,
+{R_ANY}/v_Stack1 instanceof sbes/symbolic/mock/Stack aliases nothing,
+{R_ANY}/v_Stack2 instanceof sbes/symbolic/mock/Stack not null,
+{R_ANY}/v_Stack2 instanceof sbes/symbolic/mock/Stack aliases nothing,
 
-{R_ANY}/elementData instanceof doubly_linked_list/IDoubleLinkedList not null,
-{R_ANY}/elementData instanceof doubly_linked_list/IDoubleLinkedList aliases nothing,
-{R_ANY}/elementData instanceof doubly_linked_list/IDoubleLinkedList expands to instanceof doubly_linked_list/DoubleLinkedList_LICS,
+{R_ANY}/elementData instanceof sbes/symbolic/mock/DoubleLinkedList not null,
+{R_ANY}/elementData instanceof sbes/symbolic/mock/DoubleLinkedList aliases nothing,
+{R_ANY}/elementData instanceof sbes/symbolic/mock/DoubleLinkedList expands to instanceof sbes/symbolic/mock/DoubleLinkedList,
 
-instanceof stack/util/Stack expands to instanceof stack/util/Stack triggers stack/util/Stack:(Lstack/util/Stack;)V:_got_Stack:{$REF},
+instanceof sbes/symbolic/mock/Stack expands to instanceof sbes/symbolic/mock/Stack triggers sbes/symbolic/mock/Stack:(Lsbes/symbolic/mock/Stack;)V:_got_Stack:{$REF},
 
 -----------------------------------------
 -- inherited DoubleLinkedList
@@ -19,39 +19,39 @@ instanceof stack/util/Stack expands to instanceof stack/util/Stack triggers stac
 {R_ANY}/header(/next|/previous)+/element instanceof java/lang/Object expands to instanceof stack/lang/IntegerMock,
 
 -- list initialization trigger
-instanceof doubly_linked_list/IDoubleLinkedList expands to instanceof doubly_linked_list/DoubleLinkedList_LICS triggers doubly_linked_list/DoubleLinkedList_LICS:(Ldoubly_linked_list/DoubleLinkedList_LICS;)V:_got_DoublyLinkedList_LICS:{$REF},
+instanceof sbes/symbolic/mock/DoubleLinkedList expands to instanceof sbes/symbolic/mock/DoubleLinkedList triggers sbes/symbolic/mock/DoubleLinkedList:(Lsbes/symbolic/mock/DoubleLinkedList;)V:_got_DoublyLinkedList_LICS:{$REF},
 
 -- defines the Entry._owner instrumentation field necessary to triggers
-{R_ANY}/(header)(/next|/previous)*/_owner instanceof doubly_linked_list/DoubleLinkedList_LICS not null,
-{R_ANY}/(header)(/next|/previous)*/_owner instanceof doubly_linked_list/DoubleLinkedList_LICS expands to nothing,
-{R_ANY}/(header)(/next|/previous)*/_owner instanceof doubly_linked_list/DoubleLinkedList_LICS aliases {$R_ANY},
+{R_ANY}/(header)(/next|/previous)*/_owner instanceof sbes/symbolic/mock/DoubleLinkedList not null,
+{R_ANY}/(header)(/next|/previous)*/_owner instanceof sbes/symbolic/mock/DoubleLinkedList expands to nothing,
+{R_ANY}/(header)(/next|/previous)*/_owner instanceof sbes/symbolic/mock/DoubleLinkedList aliases {$R_ANY},
 
 -- list header must exist and be distinct from other nodes
-{R_ANY}/(header) instanceof doubly_linked_list/DoubleLinkedList_LICS$Entry not null,
-{R_ANY}/(header) instanceof doubly_linked_list/DoubleLinkedList_LICS$Entry aliases nothing,
+{R_ANY}/(header) instanceof sbes/symbolic/mock/DoubleLinkedList$Entry not null,
+{R_ANY}/(header) instanceof sbes/symbolic/mock/DoubleLinkedList$Entry aliases nothing,
 
 -- list header stores no data
 {R_ANY}/header/element instanceof java/lang/Object expands to nothing,
 {R_ANY}/header/element instanceof java/lang/Object aliases nothing,
 
 -- all list entries must have a next and a previous
-{R_ANY}/(header)(/next|/previous)* instanceof doubly_linked_list/DoubleLinkedList_LICS$Entry not null,
+{R_ANY}/(header)(/next|/previous)* instanceof sbes/symbolic/mock/DoubleLinkedList$Entry not null,
 
 -- the size of a list must be greater than the number of list entries (by trigger)
-{R_ANY}/header instanceof doubly_linked_list/DoubleLinkedList_LICS$Entry expands to instanceof doubly_linked_list/DoubleLinkedList_LICS$Entry,
-{R_ANY}/header(/next)+ instanceof doubly_linked_list/DoubleLinkedList_LICS$Entry expands to instanceof doubly_linked_list/DoubleLinkedList_LICS$Entry triggers doubly_linked_list/DoubleLinkedList_LICS$Entry:(Ldoubly_linked_list/DoubleLinkedList_LICS$Entry;)V:_got_DoubleLinkedList_Entry_LICS_nonroot_next:{$REF}/{UP},
-{R_ANY}/header(/previous)+ instanceof doubly_linked_list/DoubleLinkedList_LICS$Entry expands to instanceof doubly_linked_list/DoubleLinkedList_LICS$Entry triggers doubly_linked_list/DoubleLinkedList_LICS$Entry:(Ldoubly_linked_list/DoubleLinkedList_LICS$Entry;)V:_got_DoubleLinkedList_Entry_LICS_nonroot_previous:{$REF}/{UP},
+{R_ANY}/header instanceof sbes/symbolic/mock/DoubleLinkedList$Entry expands to instanceof sbes/symbolic/mock/DoubleLinkedList$Entry,
+{R_ANY}/header(/next)+ instanceof sbes/symbolic/mock/DoubleLinkedList$Entry expands to instanceof sbes/symbolic/mock/DoubleLinkedList$Entry triggers sbes/symbolic/mock/DoubleLinkedList$Entry:(Lsbes/symbolic/mock/DoubleLinkedList$Entry;)V:_got_DoubleLinkedList_Entry_LICS_nonroot_next:{$REF}/{UP},
+{R_ANY}/header(/previous)+ instanceof sbes/symbolic/mock/DoubleLinkedList$Entry expands to instanceof sbes/symbolic/mock/DoubleLinkedList$Entry triggers sbes/symbolic/mock/DoubleLinkedList$Entry:(Lsbes/symbolic/mock/DoubleLinkedList$Entry;)V:_got_DoubleLinkedList_Entry_LICS_nonroot_previous:{$REF}/{UP},
 
 -- the rightmost entry can be resolved by alias to the leftmost one and vice versa;
 -- in this case the size of the list is exactly the number of list entries (by trigger)
 -- (note that these rules include the degenerate empty list case header.next == header.prev == header);
-{R_ANY}/header(/next)+ instanceof doubly_linked_list/DoubleLinkedList_LICS$Entry aliases max {$R_ANY}/header(/previous)* triggers doubly_linked_list/DoubleLinkedList_LICS$Entry:(Ldoubly_linked_list/DoubleLinkedList_LICS$Entry;)V:_handleListClosure_next:{$REF}/{UP},
-{R_ANY}/header(/previous)+ instanceof doubly_linked_list/DoubleLinkedList_LICS$Entry aliases max {$R_ANY}/header(/next)* triggers doubly_linked_list/DoubleLinkedList_LICS$Entry:(Ldoubly_linked_list/DoubleLinkedList_LICS$Entry;)V:_handleListClosure_previous:{$REF}/{UP},
+{R_ANY}/header(/next)+ instanceof sbes/symbolic/mock/DoubleLinkedList$Entry aliases max {$R_ANY}/header(/previous)* triggers sbes/symbolic/mock/DoubleLinkedList$Entry:(Lsbes/symbolic/mock/DoubleLinkedList$Entry;)V:_handleListClosure_next:{$REF}/{UP},
+{R_ANY}/header(/previous)+ instanceof sbes/symbolic/mock/DoubleLinkedList$Entry aliases max {$R_ANY}/header(/next)* triggers sbes/symbolic/mock/DoubleLinkedList$Entry:(Lsbes/symbolic/mock/DoubleLinkedList$Entry;)V:_handleListClosure_previous:{$REF}/{UP},
 
 -- for all the entries e it must be e.next.previous == e and e.previous.next == e
-{R_ANY}/header(/next)+/previous instanceof doubly_linked_list/DoubleLinkedList_LICS$Entry expands to nothing,
-{R_ANY}/header(/next)+/previous instanceof doubly_linked_list/DoubleLinkedList_LICS$Entry aliases {$REF}/{UP}/{UP} triggers doubly_linked_list/DoubleLinkedList_LICS$Entry:(Ldoubly_linked_list/DoubleLinkedList_LICS$Entry;)V:_handle_alias_nextPrev:{$REF}/{UP},
-{R_ANY}/header(/previous)+/next instanceof doubly_linked_list/DoubleLinkedList_LICS$Entry expands to nothing,
-{R_ANY}/header(/previous)+/next instanceof doubly_linked_list/DoubleLinkedList_LICS$Entry aliases {$REF}/{UP}/{UP} triggers doubly_linked_list/DoubleLinkedList_LICS$Entry:(Ldoubly_linked_list/DoubleLinkedList_LICS$Entry;)V:_handle_alias_prevNext:{$REF}/{UP}
+{R_ANY}/header(/next)+/previous instanceof sbes/symbolic/mock/DoubleLinkedList$Entry expands to nothing,
+{R_ANY}/header(/next)+/previous instanceof sbes/symbolic/mock/DoubleLinkedList$Entry aliases {$REF}/{UP}/{UP} triggers sbes/symbolic/mock/DoubleLinkedList$Entry:(Lsbes/symbolic/mock/DoubleLinkedList$Entry;)V:_handle_alias_nextPrev:{$REF}/{UP},
+{R_ANY}/header(/previous)+/next instanceof sbes/symbolic/mock/DoubleLinkedList$Entry expands to nothing,
+{R_ANY}/header(/previous)+/next instanceof sbes/symbolic/mock/DoubleLinkedList$Entry aliases {$REF}/{UP}/{UP} triggers sbes/symbolic/mock/DoubleLinkedList$Entry:(Lsbes/symbolic/mock/DoubleLinkedList$Entry;)V:_handle_alias_prevNext:{$REF}/{UP}
 
 end
