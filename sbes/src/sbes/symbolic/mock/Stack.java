@@ -95,7 +95,7 @@ public class Stack<E> extends CorrespondenceHandler {
 
 
 
-	public static boolean mirrorEachOtherInitially_conservative(Stack<?> stack1, Stack<?> stack2) {
+	public static boolean mirrorInitialConservative(Stack<?> stack1, Stack<?> stack2) {
 		if (!CorrespondenceHandler.doOrMayCorrespondInInitialState(stack1, stack2))
 			return false;
 
@@ -110,15 +110,15 @@ public class Stack<E> extends CorrespondenceHandler {
 				return false;
 			}
 			else if (stack1.elementData != null && stack2.elementData != null) {
-				return DoubleLinkedList_LICS.mirrorEachOtherInitially_conservative((DoubleLinkedList_LICS) stack1.elementData, 
-																				   (DoubleLinkedList_LICS) stack2.elementData);
+				return DoubleLinkedList_LICS.mirrorInitialConservative((DoubleLinkedList_LICS) stack1.elementData, 
+																	   (DoubleLinkedList_LICS) stack2.elementData);
 			}
 		}
 
 		return true;
 	}
 
-	public static boolean mirrorEachOtherAtEnd(Stack<?> stack1, Stack<?> stack2) {
+	public static boolean mirrorFinalConservative(Stack<?> stack1, Stack<?> stack2) {
 		if(!stack1.mustVisitDuringAssert()) return true;
 		
 		if (Analysis.isResolved(stack1, "elementData") || Analysis.isResolved(stack2, "elementData")) {
@@ -126,7 +126,7 @@ public class Stack<E> extends CorrespondenceHandler {
 				return false;
 			}
 			else if (stack1.elementData != null && stack2.elementData != null) {
-				return DoubleLinkedList_LICS.mirrorEachOtherAtEnd((DoubleLinkedList_LICS) stack1.elementData,
+				return DoubleLinkedList_LICS.mirrorFinalConservative((DoubleLinkedList_LICS) stack1.elementData,
 																  (DoubleLinkedList_LICS) stack2.elementData);
 			}
 		}

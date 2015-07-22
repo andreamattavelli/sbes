@@ -123,6 +123,7 @@ public class SecondStageStubGeneratorSETest {
 		assertCompiles("stack/util", second.getStubName(), "./bin:./lib/jbse-0.7.jar");
 		
 		String actual = second.getAst().toString();
+		System.out.println(actual);
 		String expected = "package stack.util;"+
 				"import sbes.distance.Distance;"+
 				"import sbes.cloning.Cloner;"+
@@ -149,14 +150,14 @@ public class SecondStageStubGeneratorSETest {
 				"if (v_Stack1 == null ^ v_Stack2 == null)"+
 				"return false;"+
 				"else if (v_Stack1 != null & v_Stack2 != null)"+
-				"return Stack.mirrorEachOtherInitially_conservative(v_Stack1, v_Stack2);"+
+				"return Stack.mirrorInitialConservative(v_Stack1, v_Stack2);"+
 				"return true;"+
 				"}"+
 				"boolean mirrorFinalConservative() {"+
 				"if (v_Stack1 == null ^ v_Stack2 == null)"+
 				"return false;"+
 				"else if (v_Stack1 != null & v_Stack2 != null)"+
-				"return Stack.mirrorEachOtherAtEnd(v_Stack1, v_Stack2);"+
+				"return Stack.mirrorFinalConservative(v_Stack1, v_Stack2);"+
 				"return true;"+
 				"}"+
 				"public void method_under_test() {"+
@@ -175,7 +176,7 @@ public class SecondStageStubGeneratorSETest {
 				"} catch (Exception e) {"+
 				"e2 = e;"+
 				"}"+
-				"boolean ok = mirrorFinalConservative();"+
+				"boolean ok = mirrorInitialConservative();"+
 				"FakeVariable fake = forceConservativeRepOk;"+
 				"Analysis.ass3rt(ok);"+
 				"if (expected_result != null)"+
@@ -217,6 +218,7 @@ public class SecondStageStubGeneratorSETest {
 		assertCompiles("stack/util", second.getStubName(), "./bin:./lib/jbse-0.7.jar");
 		
 		String actual = second.getAst().toString();
+		System.out.println(actual);
 		String expected = "package stack.util;"+
 				"import sbes.distance.Distance;"+
 				"import sbes.cloning.Cloner;"+
@@ -243,14 +245,14 @@ public class SecondStageStubGeneratorSETest {
 				"if (v_Stack1 == null ^ v_Stack2 == null)"+
 				"return false;"+
 				"else if (v_Stack1 != null & v_Stack2 != null)"+
-				"return Stack.mirrorEachOtherInitially_conservative(v_Stack1, v_Stack2);"+
+				"return Stack.mirrorInitialConservative(v_Stack1, v_Stack2);"+
 				"return true;"+
 				"}"+
 				"boolean mirrorFinalConservative() {"+
 				"if (v_Stack1 == null ^ v_Stack2 == null)"+
 				"return false;"+
 				"else if (v_Stack1 != null & v_Stack2 != null)"+
-				"return Stack.mirrorEachOtherAtEnd(v_Stack1, v_Stack2);"+
+				"return Stack.mirrorFinalConservative(v_Stack1, v_Stack2);"+
 				"return true;"+
 				"}"+
 				"public void method_under_test() {"+
@@ -266,7 +268,7 @@ public class SecondStageStubGeneratorSETest {
 				"} catch (Exception e) {"+
 				"e2 = e;"+
 				"}"+
-				"boolean ok = mirrorFinalConservative();"+
+				"boolean ok = mirrorInitialConservative();"+
 				"FakeVariable fake = forceConservativeRepOk;"+
 				"Analysis.ass3rt(ok);"+
 				"if (expected_result != actual_result)"+

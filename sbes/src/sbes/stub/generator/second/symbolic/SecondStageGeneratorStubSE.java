@@ -64,13 +64,14 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 
 	private static final Logger logger = new Logger(SecondStageGeneratorStub.class);
 	
-	protected static final String ACT_RES	= "actual_result";
-	protected static final String EXP_RES	= "expected_result";
-	protected static final String V_STACK1  = "v_Stack1";
-	protected static final String V_STACK2  = "v_Stack2";
-	protected static final String MIRROR_CONSERVATIVE = "mirrorFinalConservative";
+	protected static final String ACT_RES = "actual_result";
+	protected static final String EXP_RES = "expected_result";
+	protected static final String MIRROR_INITIAL = "mirrorInitialConservative";
+	protected static final String MIRROR_FINAL   = "mirrorFinalConservative";
 	protected static final NullLiteralExpr NULL_EXPR  = new NullLiteralExpr();
 
+	protected String v_1;
+	protected String v_2;
 	protected CarvingResult candidateES;
 	protected List<Statement> equivalence;
 	protected Stub stub;
@@ -111,6 +112,10 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 	protected TypeDeclaration getClassDeclaration(Class<?> c) {
 		stubName = c.getSimpleName() + STUB_EXTENSION + "_2";
 		ClassOrInterfaceDeclaration classDecl = new ClassOrInterfaceDeclaration(Modifier.PUBLIC, false, stubName);
+		
+		v_1 = "v_" + c.getSimpleName() + "1";
+		v_2 = "v_" + c.getSimpleName() + "2";
+		
 		return classDecl;
 	}
 
@@ -118,8 +123,8 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 	protected List<BodyDeclaration> getClassFields(Method targetMethod, Class<?> c) {
 		List<BodyDeclaration> fields = new ArrayList<>();
 		// class variables
-		fields.add(ASTHelper.createFieldDeclaration(0, ASTHelper.createReferenceType(c.getSimpleName(), 0), "v_" + c.getSimpleName() + "1"));
-		fields.add(ASTHelper.createFieldDeclaration(0, ASTHelper.createReferenceType(c.getSimpleName(), 0), "v_" + c.getSimpleName() + "2"));
+		fields.add(ASTHelper.createFieldDeclaration(0, ASTHelper.createReferenceType(c.getSimpleName(), 0), v_1));
+		fields.add(ASTHelper.createFieldDeclaration(0, ASTHelper.createReferenceType(c.getSimpleName(), 0), v_2));
 		// fake variables
 		fields.add(ASTHelper.createFieldDeclaration(0, ASTHelper.createReferenceType("FakeVariable", 0), "forceConservativeRepOk"));
 		fields.add(ASTHelper.createFieldDeclaration(0, ASTHelper.createReferenceType("FakeVariable", 0), "forceConservativeRepOk2"));
@@ -161,7 +166,7 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 	}
 
 	protected MethodDeclaration createInitial() {
-		MethodDeclaration mirrorInitialConservative = new MethodDeclaration(0, ASTHelper.BOOLEAN_TYPE, "mirrorInitialConservative");
+		MethodDeclaration mirrorInitialConservative = new MethodDeclaration(0, ASTHelper.BOOLEAN_TYPE, MIRROR_INITIAL);
 		mirrorInitialConservative.setAnnotations(Arrays.asList((AnnotationExpr) new MarkerAnnotationExpr(ASTHelper.createNameExpr("ConservativeRepOk"))));
 		
 		BlockStmt body = new BlockStmt();
@@ -169,26 +174,26 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		IfStmt outerIf = new IfStmt();
 		MethodCallExpr outerLeft = new MethodCallExpr(ASTHelper.createNameExpr("Analysis"), "isResolved");
 		ASTHelper.addArgument(outerLeft, new ThisExpr());
-		ASTHelper.addArgument(outerLeft, new StringLiteralExpr("v_Stack1"));
+		ASTHelper.addArgument(outerLeft, new StringLiteralExpr(v_1));
 		MethodCallExpr outerRight = new MethodCallExpr(ASTHelper.createNameExpr("Analysis"), "isResolved");
 		ASTHelper.addArgument(outerRight, new ThisExpr());
-		ASTHelper.addArgument(outerRight, new StringLiteralExpr("v_Stack2"));
+		ASTHelper.addArgument(outerRight, new StringLiteralExpr(v_2));
 		outerIf.setCondition(new BinaryExpr(outerLeft, outerRight, BinaryExpr.Operator.binOr));
 		
 		IfStmt thenif = new IfStmt();
-		BinaryExpr innerLeft = new BinaryExpr(ASTHelper.createNameExpr("v_Stack1"), new NullLiteralExpr(), BinaryExpr.Operator.equals);
-		BinaryExpr innerRight = new BinaryExpr(ASTHelper.createNameExpr("v_Stack2"), new NullLiteralExpr(), BinaryExpr.Operator.equals);
+		BinaryExpr innerLeft = new BinaryExpr(ASTHelper.createNameExpr(v_1), new NullLiteralExpr(), BinaryExpr.Operator.equals);
+		BinaryExpr innerRight = new BinaryExpr(ASTHelper.createNameExpr(v_2), new NullLiteralExpr(), BinaryExpr.Operator.equals);
 		thenif.setCondition(new BinaryExpr(innerLeft, innerRight, BinaryExpr.Operator.xor));
 		thenif.setThenStmt(new ReturnStmt(new BooleanLiteralExpr(false)));
 		
 		IfStmt elseif = new IfStmt();
 		elseif.setCondition(new BinaryExpr(
-						new BinaryExpr(ASTHelper.createNameExpr("v_Stack1"), new NullLiteralExpr(), BinaryExpr.Operator.notEquals),
-						new BinaryExpr(ASTHelper.createNameExpr("v_Stack2"), new NullLiteralExpr(), BinaryExpr.Operator.notEquals), 
+						new BinaryExpr(ASTHelper.createNameExpr(v_1), new NullLiteralExpr(), BinaryExpr.Operator.notEquals),
+						new BinaryExpr(ASTHelper.createNameExpr(v_2), new NullLiteralExpr(), BinaryExpr.Operator.notEquals), 
 						BinaryExpr.Operator.binAnd));
-		MethodCallExpr mirrorRecursive =  new MethodCallExpr(ASTHelper.createNameExpr("Stack"), "mirrorEachOtherInitially_conservative");
-		ASTHelper.addArgument(mirrorRecursive, ASTHelper.createNameExpr("v_Stack1"));
-		ASTHelper.addArgument(mirrorRecursive, ASTHelper.createNameExpr("v_Stack2"));
+		MethodCallExpr mirrorRecursive =  new MethodCallExpr(ASTHelper.createNameExpr("Stack"), MIRROR_INITIAL);
+		ASTHelper.addArgument(mirrorRecursive, ASTHelper.createNameExpr(v_1));
+		ASTHelper.addArgument(mirrorRecursive, ASTHelper.createNameExpr(v_2));
 		ReturnStmt returnInner = new ReturnStmt(mirrorRecursive);
 		elseif.setThenStmt(returnInner);
 		
@@ -201,23 +206,23 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 	}
 	
 	protected MethodDeclaration createFinal() {
-		MethodDeclaration mirrorFinalConservative = new MethodDeclaration(0, ASTHelper.BOOLEAN_TYPE, "mirrorFinalConservative");
+		MethodDeclaration mirrorFinalConservative = new MethodDeclaration(0, ASTHelper.BOOLEAN_TYPE, MIRROR_FINAL);
 		BlockStmt body = new BlockStmt();
 		
 		IfStmt outerif = new IfStmt();
-		BinaryExpr innerLeft = new BinaryExpr(ASTHelper.createNameExpr("v_Stack1"), new NullLiteralExpr(), BinaryExpr.Operator.equals);
-		BinaryExpr innerRight = new BinaryExpr(ASTHelper.createNameExpr("v_Stack2"), new NullLiteralExpr(), BinaryExpr.Operator.equals);
+		BinaryExpr innerLeft = new BinaryExpr(ASTHelper.createNameExpr(v_1), new NullLiteralExpr(), BinaryExpr.Operator.equals);
+		BinaryExpr innerRight = new BinaryExpr(ASTHelper.createNameExpr(v_2), new NullLiteralExpr(), BinaryExpr.Operator.equals);
 		outerif.setCondition(new BinaryExpr(innerLeft, innerRight, BinaryExpr.Operator.xor));
 		outerif.setThenStmt(new ReturnStmt(new BooleanLiteralExpr(false)));
 		
 		IfStmt elseif = new IfStmt();
 		elseif.setCondition(new BinaryExpr(
-						new BinaryExpr(ASTHelper.createNameExpr("v_Stack1"), new NullLiteralExpr(), BinaryExpr.Operator.notEquals),
-						new BinaryExpr(ASTHelper.createNameExpr("v_Stack2"), new NullLiteralExpr(), BinaryExpr.Operator.notEquals), 
+						new BinaryExpr(ASTHelper.createNameExpr(v_1), new NullLiteralExpr(), BinaryExpr.Operator.notEquals),
+						new BinaryExpr(ASTHelper.createNameExpr(v_2), new NullLiteralExpr(), BinaryExpr.Operator.notEquals), 
 						BinaryExpr.Operator.binAnd));
-		MethodCallExpr mirrorRecursive =  new MethodCallExpr(ASTHelper.createNameExpr("Stack"), "mirrorEachOtherAtEnd");
-		ASTHelper.addArgument(mirrorRecursive, ASTHelper.createNameExpr("v_Stack1"));
-		ASTHelper.addArgument(mirrorRecursive, ASTHelper.createNameExpr("v_Stack2"));
+		MethodCallExpr mirrorRecursive =  new MethodCallExpr(ASTHelper.createNameExpr("Stack"), MIRROR_FINAL);
+		ASTHelper.addArgument(mirrorRecursive, ASTHelper.createNameExpr(v_1));
+		ASTHelper.addArgument(mirrorRecursive, ASTHelper.createNameExpr(v_2));
 		ReturnStmt returnInner = new ReturnStmt(mirrorRecursive);
 		elseif.setThenStmt(returnInner);
 		
@@ -280,7 +285,7 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 
 	protected VariableDeclarationExpr createOkVariable() {
 		VariableDeclarationExpr okVar = ASTHelper.createVariableDeclarationExpr(ASTHelper.BOOLEAN_TYPE, "ok");
-		okVar.getVars().get(0).setInit(new MethodCallExpr(null, MIRROR_CONSERVATIVE));
+		okVar.getVars().get(0).setInit(new MethodCallExpr(null, MIRROR_INITIAL));
 		return okVar;
 	}
 	
@@ -338,7 +343,7 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		for (Parameter parameter : parameters) {
 			methodParameters.add(ASTHelper.createNameExpr(parameter.getId().getName()));
 		}
-		Expression right = new MethodCallExpr(ASTHelper.createNameExpr(V_STACK1), targetMethod.getName(), methodParameters);
+		Expression right = new MethodCallExpr(ASTHelper.createNameExpr(v_1), targetMethod.getName(), methodParameters);
 		if (!targetMethod.getReturnType().equals(void.class)) {
 			AssignExpr assignment = new AssignExpr(ASTHelper.createNameExpr(EXP_RES), right, Operator.assign);
 			ASTHelper.addStmt(body, new ExpressionStmt(assignment));
@@ -530,7 +535,7 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 	@Override
 	protected void stubToClone(BlockStmt cloned) {
 		super.stubToClone(cloned);
-		new NameExprRenamer("clone", V_STACK2).visit(cloned, null);
+		new NameExprRenamer("clone", v_2).visit(cloned, null);
 	}
 	
 	protected BlockStmt getCatchClause(String exceptionVar) {

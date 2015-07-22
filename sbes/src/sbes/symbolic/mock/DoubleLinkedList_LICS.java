@@ -770,7 +770,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 			return next.previous == this;
 		}
 
-		public static boolean mirrorEachOtherAtEnd(Entry entry1, Entry entry2) {
+		public static boolean mirrorFinalConservative(Entry entry1, Entry entry2) {
 
 			if(!entry1.mustVisitDuringAssert()) return true;
 
@@ -780,7 +780,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 				if (entry1.element == null ^ entry2.element == null)
 					return false;
 				else if (entry1.element != null && entry2.element != null) {
-					ok = IntegerMock.mirrorEachOtherAtEnd((IntegerMock)entry1.element, (IntegerMock)entry2.element);
+					ok = IntegerMock.mirrorFinalConservative((IntegerMock)entry1.element, (IntegerMock)entry2.element);
 					if(!ok) return false;
 				}
 			}
@@ -789,7 +789,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 				if (entry1.next == null ^ entry2.next == null)
 					return false;
 				else if (entry1.next != null && entry2.next != null) {
-					ok = Entry.mirrorEachOtherAtEnd(entry1.next, entry2.next);
+					ok = Entry.mirrorFinalConservative(entry1.next, entry2.next);
 					if(!ok) return false;
 				}
 			}
@@ -798,7 +798,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 				if (entry1.previous == null ^ entry2.previous == null) 
 					return false;
 				else if (entry1.previous != null && entry2.previous != null) {
-					ok = Entry.mirrorEachOtherAtEnd(entry1.previous, entry2.previous);
+					ok = Entry.mirrorFinalConservative(entry1.previous, entry2.previous);
 					if(!ok) return false;
 				}
 			}
@@ -806,7 +806,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 			return true;		
 		}
 
-		public static boolean mirrorEachOtherInitially_conservative(Entry entry1, Entry entry2) {
+		public static boolean mirrorInitialConservative(Entry entry1, Entry entry2) {
 			boolean ok = CorrespondenceHandler.doOrMayCorrespondInInitialState(entry1, entry2);
 			if(!ok) return false;			
 
@@ -821,7 +821,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 				else if (entry2.element == null)
 					ok = false;
 				else 
-					ok = IntegerMock.mirrorEachOtherInitially_conservative((IntegerMock)entry1.element, (IntegerMock)entry2.element);
+					ok = IntegerMock.mirrorInitialConservative((IntegerMock)entry1.element, (IntegerMock)entry2.element);
 				if(!ok) return false;
 			}
 
@@ -831,7 +831,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 				else if (entry2.next == null)
 					ok = false;
 				else 
-					ok = Entry.mirrorEachOtherInitially_conservative(entry1.next, entry2.next);
+					ok = Entry.mirrorInitialConservative(entry1.next, entry2.next);
 				if(!ok) return false;
 			}
 
@@ -841,7 +841,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 				else if (entry2.previous == null)
 					ok = false;
 				else 
-					ok = Entry.mirrorEachOtherInitially_conservative(entry1.previous, entry2.previous);
+					ok = Entry.mirrorInitialConservative(entry1.previous, entry2.previous);
 				if(!ok) return false;
 			}
 
@@ -1052,7 +1052,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 			add(s.readObject());
 	}
 
-	public static boolean mirrorEachOtherInitially_conservative(DoubleLinkedList_LICS list1, DoubleLinkedList_LICS list2) {
+	public static boolean mirrorInitialConservative(DoubleLinkedList_LICS list1, DoubleLinkedList_LICS list2) {
 		boolean ok = CorrespondenceHandler.doOrMayCorrespondInInitialState(list1, list2);
 		if(!ok) return false;			
 
@@ -1070,14 +1070,14 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 			else if (list2.header == null)
 				ok = false;
 			else 
-				ok = Entry.mirrorEachOtherInitially_conservative(list1.header, list2.header);
+				ok = Entry.mirrorInitialConservative(list1.header, list2.header);
 			if(!ok) return false;
 		}
 
 		return true;	
 	}
 
-	public static boolean mirrorEachOtherAtEnd(DoubleLinkedList_LICS list1, DoubleLinkedList_LICS list2) {
+	public static boolean mirrorFinalConservative(DoubleLinkedList_LICS list1, DoubleLinkedList_LICS list2) {
 		if(!list1.mustVisitDuringAssert()) return true;
 
 		boolean ok = list1.size == list2.size;
@@ -1087,7 +1087,7 @@ public class DoubleLinkedList_LICS  extends CorrespondenceHandler {
 			if (list1.header == null ^ list2.header == null)
 				return false;
 			else if (list1.header != null && list2.header != null) {
-				ok = Entry.mirrorEachOtherAtEnd(list1.header, list2.header);
+				ok = Entry.mirrorFinalConservative(list1.header, list2.header);
 				if(!ok) return false;
 			}
 		}
