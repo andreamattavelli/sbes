@@ -107,7 +107,7 @@ public class JBSE extends Tool {
 	
 	@Override
 	public String toString() {
-		return "JBSE";
+		return "JBSE on " + classSignature.replace('.', '/') + "method_under_test()V";
 	}
 
 }

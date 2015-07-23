@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import sbes.ast.EvoSuiteTestCaseVisitor;
+import sbes.ast.TestCaseVisitor;
 import sbes.ast.MethodCallVisitor;
 import sbes.logging.Logger;
 import sbes.option.Options;
@@ -52,7 +52,7 @@ public class Carver {
 			String testPath = IOUtils.concatFilePath(context.getTestDirectory(), testClassname);
 			CompilationUnit cu = JavaParser.parse(new File(testPath));
 			
-			EvoSuiteTestCaseVisitor visitor = new EvoSuiteTestCaseVisitor();
+			TestCaseVisitor visitor = new TestCaseVisitor();
 			visitor.visit(cu, null);
 			for (MethodDeclaration method : visitor.getTests()) {
 				if (isSearchedClass(cu)) {

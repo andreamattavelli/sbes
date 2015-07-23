@@ -35,6 +35,10 @@ public class ClassesToMocksTest {
 				"}");
 		
 		new ClassesToMocksRenamer().visit(stmts, null);
+		Assert.assertTrue(stmts.toString().contains("IntegerMock "));
+		Assert.assertTrue(stmts.toString().contains("IntegerMock("));
+		Assert.assertFalse(stmts.toString().contains("Integer "));
+		Assert.assertFalse(stmts.toString().contains("Integer("));
 	}
 	
 	@Test
@@ -45,65 +49,12 @@ public class ClassesToMocksTest {
 						"}"+
 						"Stack<Integer> v_Stack1;"+
 						"Stack<Integer> v_Stack2;"+
-						"FakeVariable forceConservativeRepOk;"+
-						"FakeVariable forceConservativeRepOk2;"+
-						"FakeVariable forceConservativeRepOk3;"+
-						"IntegerMock expected_result;"+
-						"IntegerMock actual_result;"+
-						"Exception e1;"+
-						"Exception e2;"+
-						"IntegerMock p0;"+
-						"@ConservativeRepOk"+
-						"boolean mirrorInitialConservative() {"+
-						"if (Analysis.isResolved(this, \"v_Stack1\") | Analysis.isResolved(this, \"v_Stack2\"))"+
-						"if (v_Stack1 == null ^ v_Stack2 == null)"+
-						"return false;"+
-						"else if (v_Stack1 != null & v_Stack2 != null)"+
-						"return Stack.mirrorInitialConservative(v_Stack1, v_Stack2);"+
-						"return true;"+
-						"}"+
-						"boolean mirrorFinalConservative() {"+
-						"if (v_Stack1 == null ^ v_Stack2 == null)"+
-						"return false;"+
-						"else if (v_Stack1 != null & v_Stack2 != null)"+
-						"return Stack.mirrorFinalConservative(v_Stack1, v_Stack2);"+
-						"return true;"+
-						"}"+
-						"public void method_under_test() {"+
-						"expected_result = null;"+
-						"actual_result = null;"+
-						"e1 = null;"+
-						"e2 = null;"+
-						"try {"+
-						"expected_result = v_Stack1.push(p0);"+
-						"} catch (Exception e) {"+
-						"e1 = e;"+
-						"}"+
-						"try {"+
-						"v_Stack2.addElement(p0);"+
-						"actual_result = new IntegerMock(p0.intValue());"+
-						"} catch (Exception e) {"+
-						"e2 = e;"+
-						"}"+
-						"boolean ok = mirrorFinalConservative();"+
-						"FakeVariable fake = forceConservativeRepOk;"+
-						"Analysis.ass3rt(ok);"+
-						"if (expected_result != null)"+
-						"ok = expected_result.equals(actual_result);"+
-						"else"+
-						"ok = actual_result == null;"+
-						"FakeVariable fake2 = forceConservativeRepOk2;"+
-						"Analysis.ass3rt(ok);"+
-						"if (e1 == null ^ e2 == null)"+
-						"ok = false;"+
-						"FakeVariable fake3 = forceConservativeRepOk3;"+
-						"Analysis.ass3rt(ok);"+
-						"}"+
 						"}");
 		
 		ClassOrInterfaceDeclaration cid = (ClassOrInterfaceDeclaration) body;
 		new ClassesToMocksRenamer().visit(cid, null);
-		System.out.println(cid);
+		Assert.assertTrue(body.toString().contains("<IntegerMock>"));
+		Assert.assertFalse(body.toString().contains("<Integer>"));
 	}
 	
 }

@@ -6,16 +6,20 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EvoSuiteTestCaseVisitor extends VoidVisitorAdapter<Void> {
+public class TestCaseVisitor extends VoidVisitorAdapter<Void> {
 	private final List<MethodDeclaration> tests;
 	
-	public EvoSuiteTestCaseVisitor() {
+	public TestCaseVisitor() {
 		this.tests = new ArrayList<MethodDeclaration>();
 	}
 	
 	@Override
 	public void visit(final MethodDeclaration n, final Void arg) {
-		if (!n.getName().equals("initEvoSuiteFramework")) {
+		if (!n.getName().equals("initEvoSuiteFramework") &&
+				!n.getName().equals("set") &&
+				!n.getName().equals("get") &&
+				!n.getName().equals("getValue") &&
+				!n.getName().equals("getNewInstance")) {
 			this.tests.add(n);
 		}
 		super.visit(n, arg);

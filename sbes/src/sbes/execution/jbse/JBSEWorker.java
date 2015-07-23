@@ -24,9 +24,9 @@ public class JBSEWorker implements Worker {
 			logger.debug("Going to execute: " + jbse.toString());
 			
 			jbse.runAnalysis();
-
+			
 			exitStatus = 0;
-
+			
 			result = new ExecutionResult(jbse.getTestDirectory());
 			result.setCommand(jbse.getCommand());
 			result.setStdout("");

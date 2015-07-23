@@ -449,11 +449,8 @@ public class SecondStageStubGeneratorSETest {
 				"e1 = e;"+
 				"}"+
 				"try {"+
-				"IntegerMock integer0 = p0;"+
-				"IntegerMock integer1 = new IntegerMock(integer0.intValue());"+
-				"IntegerMock integer2 = new IntegerMock(integer1.intValue());"+
-				"boolean boolean0 = v_Stack2.add(integer2);"+
-				"actual_result = new IntegerMock(integer1.intValue());"+
+				"boolean boolean0 = v_Stack2.add(new IntegerMock(new IntegerMock(p0.intValue()).intValue()));"+
+				"actual_result = new IntegerMock(new IntegerMock(p0.intValue()).intValue());"+
 				"} catch (Exception e) {"+
 				"e2 = e;"+
 				"}"+
