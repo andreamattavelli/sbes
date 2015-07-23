@@ -102,7 +102,7 @@ public class JBSE extends Tool {
 
 	@Override
 	public String getTestFilename() {
-		return "TestSuite_" + methodSignature + ".java";
+		return "TestSuite_method_under_test.java";
 	}
 	
 	@Override

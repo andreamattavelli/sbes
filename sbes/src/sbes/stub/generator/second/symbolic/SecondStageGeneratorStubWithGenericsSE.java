@@ -33,14 +33,6 @@ public class SecondStageGeneratorStubWithGenericsSE extends SecondStageGenerator
 			final Map<TypeVariable<?>, String> genericToConcreteClasses) {
 		super(scenarios, stub, candidateES);
 		this.genericToConcreteClasses = genericToConcreteClasses;
-		if (genericToConcreteClasses.containsValue("Integer")) {
-			for (TypeVariable<?> var : genericToConcreteClasses.keySet()) {
-				if (genericToConcreteClasses.get(var).equals("Integer")) {
-					genericToConcreteClasses.put(var, "IntegerMock");
-					break;
-				}
-			}
-		}
 	}
 	
 	@Override

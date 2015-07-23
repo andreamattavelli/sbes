@@ -85,10 +85,9 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 
 	@Override
 	public Stub generateStub() {
-		logger.info("Generating stub for second phase");
 		Stub stub = super.generateStub();
+		new ClassesToMocksRenamer().visit(stub.getAst(), null);
 		CounterexampleStub counterexampleStub = new CounterexampleStub(stub.getAst(), stub.getStubName(), equivalence);
-		logger.info("Generating stub for second phase - done");
 		return counterexampleStub;
 	}
 
@@ -387,13 +386,6 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		MethodCallExpr mce = new MethodCallExpr(ASTHelper.createNameExpr("Analysis"), methodName);
 		mce.setArgs(Arrays.asList(parameter));
 		return new ExpressionStmt(mce);
-	}
-	
-	@Override
-	protected List<Statement> createActualResult(Method targetMethod, CarvingResult candidateES2, List<Parameter> param) {
-		BlockStmt carved = candidateES2.getBody();
-		new ClassesToMocksRenamer().visit(carved, null);
-		return super.createActualResult(targetMethod, candidateES2, param);
 	}
 	
 	@Override

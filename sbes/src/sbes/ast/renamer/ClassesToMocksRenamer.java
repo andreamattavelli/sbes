@@ -1,5 +1,6 @@
 package sbes.ast.renamer;
 
+import japa.parser.ast.body.FieldDeclaration;
 import japa.parser.ast.expr.CastExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.MethodCallExpr;
@@ -11,16 +12,22 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 
 import java.util.List;
 
-public class ClassesToMocksRenamer extends VoidVisitorAdapter<Void> {
-
+public class ClassesToMocksRenamer extends VoidVisitorAdapter<Void> {	
+	
+	@Override
+	public void visit(FieldDeclaration arg0, Void arg1) {
+		super.visit(arg0, arg1);
+	}
+	
 	@Override
 	public void visit(ReferenceType n, Void arg) {
 		if (n.getType() instanceof ClassOrInterfaceType) {
 			ClassOrInterfaceType coi = (ClassOrInterfaceType) n.getType();
-			switch(coi.getName()) {
-			case "Integer":
+			if (coi.getName().equals("Integer")) {
 				coi.setName("IntegerMock");
-				break;
+			}
+			else if (coi.getName().contains("<Integer>")) {
+				coi.setName(coi.getName().replace("<Integer>", "<IntegerMock>"));
 			}
 		}
 		super.visit(n, arg);
