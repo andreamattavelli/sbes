@@ -285,7 +285,7 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 
 	protected VariableDeclarationExpr createOkVariable() {
 		VariableDeclarationExpr okVar = ASTHelper.createVariableDeclarationExpr(ASTHelper.BOOLEAN_TYPE, "ok");
-		okVar.getVars().get(0).setInit(new MethodCallExpr(null, MIRROR_INITIAL));
+		okVar.getVars().get(0).setInit(new MethodCallExpr(null, MIRROR_FINAL));
 		return okVar;
 	}
 	
@@ -406,7 +406,7 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 			}
 
 			if (vde != null) {
-				String varName = vde.getVars().get(0).getId().getName();
+//				String varName = vde.getVars().get(0).getId().getName();
 				Expression init = vde.getVars().get(0).getInit();
 				if (init instanceof EnclosedExpr) {
 					init = ((EnclosedExpr) init).getInner();
@@ -526,8 +526,8 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 					cloned.getStmts().add(new ExpressionStmt(actualResult));
 					return;
 				}
-				NameExprRenamer conv = new NameExprRenamer(varName, "actual_result");
-				conv.visit(cloned, null);
+//				NameExprRenamer conv = new NameExprRenamer(varName, "actual_result");
+//				conv.visit(cloned, null);
 			}
 		}
 	}

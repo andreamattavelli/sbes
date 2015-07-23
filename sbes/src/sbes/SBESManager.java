@@ -269,6 +269,7 @@ public class SBESManager {
 		
 		String classPath = IOUtils.concatClassPath(	Options.I().getClassesPath(), 
 													Options.I().getJunitPath(),	
+													Options.I().getJbsePath(),
 													Options.I().getEvosuitePath(), 
 													directory.getSecondStubDir(),
 													this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
@@ -288,7 +289,7 @@ public class SBESManager {
 		// run evosuite
 		String stubSignature = ClassUtils.getPackage(Options.I().getTargetMethod()) + '.' + secondStub.getStubName();
 		Tool tool;
-		if (Options.I().isSymbolicExecutionCounterexample()) {
+		if (Options.I().isCounterexampleWithSymbolicExecution()) {
 			 tool = new JBSE(stubSignature, ClassUtils.getMethodname(Options.I().getTargetMethod()), classPath);
 		} else {
 			tool = new EvosuiteSecondStage(stubSignature, ClassUtils.getMethodname(Options.I().getTargetMethod()), classPath);
@@ -302,7 +303,7 @@ public class SBESManager {
 			return null;
 		}
 		
-		if (!Options.I().isSymbolicExecutionCounterexample()) {
+		if (!Options.I().isCounterexampleWithSymbolicExecution()) {
 			dumpLog(result, directory.getSecondStubEvosuiteDir());
 		}
 		

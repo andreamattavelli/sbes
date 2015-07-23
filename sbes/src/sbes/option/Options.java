@@ -38,13 +38,21 @@ public class Options {
 			usage = "Path to EvoSuite jar (included jar name). Default: \"./evosuite.jar\"")
 	private String evosuitePath = "./evosuite.jar";
 	
+	@Option(name = "-jbse",
+			usage = "Path to JBSE jar (included jar name). Default: \"./lib/jbse-0.7.jar\"")
+	private String jbsePath = "./lib/jbse-0.7.jar";
+	
 	@Option(name = "-prune_scenarios",
 			usage = "Heuristically pruning initial test scenarios to one")
 	private boolean heuristicPruningScenarios = true;
 
 	@Option(name = "-java",
-			usage = "Path to Java excutable")
+			usage = "Path to Java executable")
 	private String javaPath = "";
+	
+	@Option(name = "-old_java",
+			usage = "Path to Java 7 executable")
+	private String java7Path = "";
 	
 	@Option(name = "-junit",
 			usage = "Path to JUnit 4 jar",
@@ -91,9 +99,9 @@ public class Options {
 			usage = "Value to be applied to the chosen stopping condition.")
 	private int stoppingConditionValue = 0;
 	
-	@Option(name = "-symbexe_counterexample",
+	@Option(name = "-counterexample_symbolic",
 			usage = "Generate counterexample with symbolic execution. Default: false")
-	private boolean symbexeCounterexample = false;
+	private boolean counterexampleWithSymbolicExecution = false;
 	
 	@Option(name = "-synthesis_budget",
 			usage = "Search budget for equivalent sequence synthesis. Default: 180s")
@@ -112,7 +120,7 @@ public class Options {
 			usage = "Path to HEX files")
 	private String hexPath;
 	
-	@Option(name = "-z3",
+	@Option(name = "-zthree",
 			usage = "Path to Z3 binary")
 	private String z3Path;
 	
@@ -138,9 +146,17 @@ public class Options {
 	public String getEvosuitePath() {
 		return evosuitePath;
 	}
+	
+	public String getJbsePath() {
+		return jbsePath;
+	}
 
 	public String getJavaPath() {
 		return javaPath;
+	}
+	
+	public String getJava7Path() {
+		return java7Path;
 	}
 	
 	public String getJunitPath() {
@@ -207,8 +223,8 @@ public class Options {
 		return verbose;
 	}
 	
-	public boolean isSymbolicExecutionCounterexample() {
-		return symbexeCounterexample;
+	public boolean isCounterexampleWithSymbolicExecution() {
+		return counterexampleWithSymbolicExecution;
 	}
 	
 	public void setClassesPath(final String classesPath) {
@@ -232,7 +248,7 @@ public class Options {
 	}
 	
 	public void setSymbolicExecutionCounterexample(boolean symbexeCounterexample) {
-		this.symbexeCounterexample = symbexeCounterexample;
+		this.counterexampleWithSymbolicExecution = symbexeCounterexample;
 	}
 
 	public void setTargetMethod(final String methodSignature) {

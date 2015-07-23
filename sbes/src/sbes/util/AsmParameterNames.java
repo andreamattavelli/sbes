@@ -92,7 +92,7 @@ class TypeCollector extends ClassVisitor {
 	private List<String> parameterNames;
 	
 	public TypeCollector(ClassVisitor cv, String methodName, Class<?>[] parametersType) {
-		super(Opcodes.ASM4, cv);
+		super(Opcodes.ASM5, cv);
 		this.methodName = methodName;
 		this.parametersType = parametersType;
 	}
@@ -170,7 +170,7 @@ class ParameterVisitor extends MethodVisitor {
 	private List<String> parameterNames;
 	
 	public ParameterVisitor(MethodVisitor mv, int indexLimit) {
-		super(Opcodes.ASM4, mv);
+		super(Opcodes.ASM5, mv);
 		this.indexLimit = indexLimit;
 		this.parameterNames = new ArrayList<String>();
 	}

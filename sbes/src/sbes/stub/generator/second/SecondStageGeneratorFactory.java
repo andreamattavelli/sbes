@@ -13,7 +13,7 @@ public class SecondStageGeneratorFactory {
 	private SecondStageGeneratorFactory() {}
 	
 	public static SecondStageGeneratorStub createGenerator(FirstStageGeneratorStub firstGenerator, Stub stub, CarvingResult candidateES) {
-		if (Options.I().isSymbolicExecutionCounterexample()) {
+		if (Options.I().isCounterexampleWithSymbolicExecution()) {
 			if (firstGenerator instanceof FirstStageGeneratorStubWithGenerics) {
 				FirstStageGeneratorStubWithGenerics fs = (FirstStageGeneratorStubWithGenerics) firstGenerator;
 				return new SecondStageGeneratorStubWithGenericsSE(firstGenerator.getScenarios(), stub, candidateES, fs.getGenericToConcreteClasses());

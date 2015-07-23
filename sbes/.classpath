@@ -5,9 +5,9 @@
 	<classpathentry excluding="InitialScenario.java|InitialScenarioGuava.java|InitialScenarioGuava2.java" kind="src" path="test/resources"/>
 	<classpathentry kind="lib" path="lib/args4j-2.0.21.jar"/>
 	<classpathentry kind="lib" path="lib/javaparser-1.0.10.jar"/>
-	<classpathentry kind="lib" path="lib/asm-4.2.jar"/>
 	<classpathentry kind="lib" path="lib/jbse-0.7.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/Java SE 7 [1.7.0_51]"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/Java8"/>
+	<classpathentry kind="lib" path="lib/asm-5.0.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

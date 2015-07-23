@@ -1,6 +1,8 @@
 package sbes.execution.jbse;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import jbse.apps.run.Run;
@@ -32,7 +34,7 @@ public class JBSE extends Tool {
 	private final String CLASSPATH_JRE = HOME + "data/jre/rt.jar";
 
 	public void runAnalysis() {
-		String[] methodSignature = new String[] { "stack/util/" + classSignature.replace('.', '/'), "()V", "method_under_test" };
+		String[] methodSignature = new String[] { classSignature.replace('.', '/'), "method_under_test", "()V" };
 		final RunParameters p = new RunParameters();
 		try {
 			new SettingsReader(Options.I().getHexPath()).fillRunParameters(p);
@@ -41,7 +43,13 @@ public class JBSE extends Tool {
 		} catch (ParseException e) {
 			logger.error("ERROR: settings file " + Options.I().getHexPath() + " ill-formed. " + e.getMessage(), e);
 		}
-		p.addClasspath(new String[] { CLASSPATH_JRE, additionalClasspath });
+		List<String> classy = new ArrayList<String>();
+		classy.add(CLASSPATH_JRE);
+		for (String string : additionalClasspath.split(":")) {
+			classy.add(string);
+		}
+		p.addClasspath(classy.toArray(new String[0]));
+		System.out.println(classy.toString());
 		p.setMethodSignature(methodSignature[0], methodSignature[2], methodSignature[1]);
 
 		// use conservative rep oks
@@ -61,7 +69,7 @@ public class JBSE extends Tool {
 		p.setShowUnsafe(true);
 		p.setShowOutOfScope(false);
 		p.setShowContradictory(false);
-		p.setShowWarnings(false);
+		p.setShowWarnings(true);
 		p.setShowDecisionProcedureInteraction(false);
 
 		//output file
@@ -96,6 +104,11 @@ public class JBSE extends Tool {
 	@Override
 	public String getTestFilename() {
 		return "";
+	}
+	
+	@Override
+	public String toString() {
+		return "JBSE " + additionalClasspath;
 	}
 
 }
