@@ -80,13 +80,11 @@ public class EquivalenceRepository {
 			if (eligible.size() == 1) {
 				logger.info("Excluded method " + eligible.get(0).toString());
 				excluded.add(eligible.get(0));
-			}
-			else {
+			} else {
 				int args;
 				if (mce.getArgs() == null) {
 					args = 0;
-				}
-				else {
+				} else {
 					args = mce.getArgs().size();
 				}
 				for (Method method : eligible) {

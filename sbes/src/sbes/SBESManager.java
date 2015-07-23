@@ -16,10 +16,9 @@ import sbes.exceptions.SBESException;
 import sbes.execution.ExecutionManager;
 import sbes.execution.ExecutionResult;
 import sbes.execution.Tool;
+import sbes.execution.ToolFactory;
 import sbes.execution.evosuite.Evosuite;
 import sbes.execution.evosuite.EvosuiteFirstStage;
-import sbes.execution.evosuite.EvosuiteSecondStage;
-import sbes.execution.jbse.JBSE;
 import sbes.logging.Logger;
 import sbes.option.Options;
 import sbes.result.CarvingResult;
@@ -288,12 +287,7 @@ public class SBESManager {
 		
 		// run evosuite
 		String stubSignature = ClassUtils.getPackage(Options.I().getTargetMethod()) + '.' + secondStub.getStubName();
-		Tool tool;
-		if (Options.I().isCounterexampleWithSymbolicExecution()) {
-			 tool = new JBSE(stubSignature, ClassUtils.getMethodname(Options.I().getTargetMethod()), classPath);
-		} else {
-			tool = new EvosuiteSecondStage(stubSignature, ClassUtils.getMethodname(Options.I().getTargetMethod()), classPath);
-		}
+		Tool tool = ToolFactory.getTool(stubSignature, ClassUtils.getMethodname(Options.I().getTargetMethod()), classPath);
 		
 		logger.info("Generating counterexample");
 		
@@ -323,16 +317,14 @@ public class SBESManager {
 			logger.info("No counterexample found!");
 			CloneMethodCallsVisitor cmcv = new CloneMethodCallsVisitor();
 			cmcv.visit(cStub.getEquivalence().getBody(), null);
-			if (cmcv.getMethods().isEmpty()) {
+			if (!Options.I().isCounterexampleWithSymbolicExecution() && cmcv.getMethods().isEmpty()) {
 				logger.debug("Spurious result, iterating");
-			}
-			else {
+			} else {
 				logger.info("Equivalence synthesized: ");
 				IOUtils.printEquivalence(cStub.getEquivalence());
 				EquivalenceRepository.getInstance().addEquivalence(cStub.getEquivalence());
 			}
-		}
-		else {
+		} else {
 			logger.info("Counterexample found, refining search space!");
 			if (candidates.size() > 1) {
 				logger.warn("More than one counterexample synthesized");

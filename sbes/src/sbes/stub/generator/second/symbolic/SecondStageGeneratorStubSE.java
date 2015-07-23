@@ -49,6 +49,7 @@ import java.util.List;
 import sbes.ast.ArrayCellDeclarationVisitor;
 import sbes.ast.MethodCallVisitor;
 import sbes.ast.VariableDeclarationVisitor;
+import sbes.ast.renamer.ClassesToMocksRenamer;
 import sbes.ast.renamer.NameExprRenamer;
 import sbes.exceptions.GenerationException;
 import sbes.logging.Logger;
@@ -165,7 +166,7 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		return additionalMembers;
 	}
 
-	protected MethodDeclaration createInitial() {
+	private MethodDeclaration createInitial() {
 		MethodDeclaration mirrorInitialConservative = new MethodDeclaration(0, ASTHelper.BOOLEAN_TYPE, MIRROR_INITIAL);
 		mirrorInitialConservative.setAnnotations(Arrays.asList((AnnotationExpr) new MarkerAnnotationExpr(ASTHelper.createNameExpr("ConservativeRepOk"))));
 		
@@ -205,7 +206,7 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		return mirrorInitialConservative;
 	}
 	
-	protected MethodDeclaration createFinal() {
+	private MethodDeclaration createFinal() {
 		MethodDeclaration mirrorFinalConservative = new MethodDeclaration(0, ASTHelper.BOOLEAN_TYPE, MIRROR_FINAL);
 		BlockStmt body = new BlockStmt();
 		
@@ -283,19 +284,19 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		return method_under_test;
 	}
 
-	protected VariableDeclarationExpr createOkVariable() {
+	private VariableDeclarationExpr createOkVariable() {
 		VariableDeclarationExpr okVar = ASTHelper.createVariableDeclarationExpr(ASTHelper.BOOLEAN_TYPE, "ok");
 		okVar.getVars().get(0).setInit(new MethodCallExpr(null, MIRROR_FINAL));
 		return okVar;
 	}
 	
-	protected VariableDeclarationExpr createFakeVariable(String varName, String forceName) {
+	private VariableDeclarationExpr createFakeVariable(String varName, String forceName) {
 		VariableDeclarationExpr fakeVar1 = ASTHelper.createVariableDeclarationExpr(ASTHelper.createReferenceType("FakeVariable", 0), varName);
 		fakeVar1.getVars().get(0).setInit(ASTHelper.createNameExpr(forceName));
 		return fakeVar1;
 	}
 	
-	protected IfStmt createCheckOnExceptions() {
+	private IfStmt createCheckOnExceptions() {
 		IfStmt ifExceptions = new IfStmt();
 		ifExceptions.setCondition(new BinaryExpr(
 				new BinaryExpr(ASTHelper.createNameExpr("e1"), NULL_EXPR, BinaryExpr.Operator.equals), 
@@ -305,7 +306,7 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		return ifExceptions;
 	}
 
-	protected IfStmt createCheckOnReturns(Method targetMethod) {
+	private IfStmt createCheckOnReturns(Method targetMethod) {
 		IfStmt ifReturns = new IfStmt();
 		if (targetMethod.getReturnType().isPrimitive()) {
 			ifReturns.setCondition(new BinaryExpr(ASTHelper.createNameExpr(EXP_RES), ASTHelper.createNameExpr(ACT_RES), BinaryExpr.Operator.notEquals));
@@ -324,7 +325,7 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		return ifReturns;
 	}
 	
-	protected List<Statement> initVariables(Method targetMethod) {
+	private List<Statement> initVariables(Method targetMethod) {
 		List<Statement> stmts = new ArrayList<Statement>();
 		if (!targetMethod.getReturnType().isPrimitive()) {
 			stmts.add(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr(EXP_RES), NULL_EXPR, AssignExpr.Operator.assign)));
@@ -353,6 +354,46 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		}
 		
 		return getTry(body, getCatchClause("e1"));
+	}
+	
+	private BlockStmt getCatchClause(String exceptionVar) {
+		BlockStmt catchBodyOriginal = new BlockStmt();
+		List<Statement> catchBodyOriginalStmts = new ArrayList<>();
+		catchBodyOriginalStmts.add(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr(exceptionVar), ASTHelper.createNameExpr("e"), AssignExpr.Operator.assign)));
+		catchBodyOriginal.setStmts(catchBodyOriginalStmts);
+		return catchBodyOriginal;
+	}
+	
+	private TryStmt getTry(BlockStmt tryBody, BlockStmt catchBody) {
+		TryStmt tryStmt = new TryStmt();
+		
+		// try block
+		tryStmt.setTryBlock(tryBody);
+		CatchClause cc = new CatchClause();
+		List<AnnotationExpr> annExpr = new ArrayList<>();
+		List<Type> types = new ArrayList<>();
+		types.add(ASTHelper.createReferenceType("Exception", 0));
+		cc.setExcept(new MultiTypeParameter(0, annExpr, types, new VariableDeclaratorId("e")));
+		// catch block
+		cc.setCatchBlock(catchBody);
+		tryStmt.setCatchs(Arrays.asList(cc));
+		// resources used
+		tryStmt.setResources(new ArrayList<VariableDeclarationExpr>());
+		
+		return tryStmt;
+	}
+
+	private Statement getAnalysisMethod(String methodName, Expression parameter) {
+		MethodCallExpr mce = new MethodCallExpr(ASTHelper.createNameExpr("Analysis"), methodName);
+		mce.setArgs(Arrays.asList(parameter));
+		return new ExpressionStmt(mce);
+	}
+	
+	@Override
+	protected List<Statement> createActualResult(Method targetMethod, CarvingResult candidateES2, List<Parameter> param) {
+		BlockStmt carved = candidateES2.getBody();
+		new ClassesToMocksRenamer().visit(carved, null);
+		return super.createActualResult(targetMethod, candidateES2, param);
 	}
 	
 	@Override
@@ -536,46 +577,6 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 	protected void stubToClone(BlockStmt cloned) {
 		super.stubToClone(cloned);
 		new NameExprRenamer("clone", v_2).visit(cloned, null);
-	}
-	
-	protected BlockStmt getCatchClause(String exceptionVar) {
-		BlockStmt catchBodyOriginal = new BlockStmt();
-		List<Statement> catchBodyOriginalStmts = new ArrayList<>();
-		catchBodyOriginalStmts.add(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr(exceptionVar), ASTHelper.createNameExpr("e"), AssignExpr.Operator.assign)));
-		catchBodyOriginal.setStmts(catchBodyOriginalStmts);
-		return catchBodyOriginal;
-	}
-	
-	protected TryStmt getTry(BlockStmt tryBody, BlockStmt catchBody) {
-		TryStmt tryStmt = new TryStmt();
-		
-		// try block
-		tryStmt.setTryBlock(tryBody);
-		CatchClause cc = new CatchClause();
-		List<AnnotationExpr> annExpr = new ArrayList<>();
-		List<Type> types = new ArrayList<>();
-		types.add(ASTHelper.createReferenceType("Exception", 0));
-		cc.setExcept(new MultiTypeParameter(0, annExpr, types, new VariableDeclaratorId("e")));
-		// catch block
-		cc.setCatchBlock(catchBody);
-		tryStmt.setCatchs(Arrays.asList(cc));
-		// resources used
-		tryStmt.setResources(new ArrayList<VariableDeclarationExpr>());
-		
-		return tryStmt;
-	}
-	
-	protected IfStmt getIfException(String originalVar, String checkVar) {
-		IfStmt ifExceptions = new IfStmt();
-		ifExceptions.setCondition(new BinaryExpr(ASTHelper.createNameExpr(originalVar), NULL_EXPR, BinaryExpr.Operator.equals));
-		ifExceptions.setThenStmt(getAnalysisMethod("ass3rt", new BinaryExpr(ASTHelper.createNameExpr(checkVar), NULL_EXPR, BinaryExpr.Operator.equals)));
-		return ifExceptions;
-	}
-
-	protected Statement getAnalysisMethod(String methodName, Expression parameter) {
-		MethodCallExpr mce = new MethodCallExpr(ASTHelper.createNameExpr("Analysis"), methodName);
-		mce.setArgs(Arrays.asList(parameter));
-		return new ExpressionStmt(mce);
 	}
 
 }

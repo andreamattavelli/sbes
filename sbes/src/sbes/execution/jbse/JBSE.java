@@ -49,7 +49,6 @@ public class JBSE extends Tool {
 			classy.add(string);
 		}
 		p.addClasspath(classy.toArray(new String[0]));
-		System.out.println(classy.toString());
 		p.setMethodSignature(methodSignature[0], methodSignature[2], methodSignature[1]);
 
 		// use conservative rep oks
@@ -76,7 +75,7 @@ public class JBSE extends Tool {
 		p.setOutputPath(DirectoryUtils.I().getSecondStubJBSEDir());
 
 		// scope
-		p.setTimeout(2, TimeUnit.HOURS);
+		p.setTimeout(2, TimeUnit.MINUTES);
 		p.setHeapScope("doubly_linked_list/DoubleLinkedList_LICS$Entry", 8);
 		p.setDepthScope(500);
 		p.setCountScope(2000);
@@ -103,12 +102,12 @@ public class JBSE extends Tool {
 
 	@Override
 	public String getTestFilename() {
-		return "";
+		return "TestSuite_" + methodSignature + ".java";
 	}
 	
 	@Override
 	public String toString() {
-		return "JBSE " + additionalClasspath;
+		return "JBSE";
 	}
 
 }
