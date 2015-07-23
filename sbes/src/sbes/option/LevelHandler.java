@@ -36,7 +36,7 @@ public class LevelHandler extends OneArgumentOptionHandler<Level> {
 			return Level.FATAL;
 		}
 
-		throw new CmdLineException(this.owner, "Wrong parameter for the option " + this.option.toString() + ".");
+		throw new CmdLineException(this.owner, null, "Wrong parameter for the option " + this.option.toString() + ".");
 	}
 
 }

@@ -46,11 +46,7 @@ public class Options {
 			usage = "Heuristically pruning initial test scenarios to one")
 	private boolean heuristicPruningScenarios = true;
 
-	@Option(name = "-java",
-			usage = "Path to Java executable")
-	private String javaPath = "";
-	
-	@Option(name = "-old_java",
+	@Option(name = "-java7",
 			usage = "Path to Java 7 executable")
 	private String java7Path = "";
 	
@@ -90,8 +86,7 @@ public class Options {
 	private File scenarioTestPath = null;
 
 	@Option(name = "-stopping_condition",
-			usage = "Stopping condition to apply to the main search:" + 
-					"ITERATIONS, TIME, NOSYNTHESIS, MAXWITHOUTSYNTHESIS. Default: NOSYNTHESIS",
+			usage = "Stopping condition to apply to the main search. Default: NOSYNTHESIS",
 			required = true)
 	private StoppingConditionType stoppingCondition = StoppingConditionType.NOSYNTHESIS;
 
@@ -120,7 +115,7 @@ public class Options {
 			usage = "Path to HEX files")
 	private String hexPath;
 	
-	@Option(name = "-zthree",
+	@Option(name = "-z3",
 			usage = "Path to Z3 binary")
 	private String z3Path;
 	
@@ -130,7 +125,7 @@ public class Options {
 	// check consistency of the options
 	public void checkConsistency() throws CmdLineException {
 		if (methodSignature == null && classSignature == null) {
-			throw new CmdLineException(null, "Select either an input method (-target_method) or an input class (-target_class)");
+			throw new CmdLineException(null, null, "Select either an input method (-target_method) or an input class (-target_class)");
 		}
 	}
 	
@@ -152,10 +147,6 @@ public class Options {
 	}
 
 	public String getJavaPath() {
-		return javaPath;
-	}
-	
-	public String getJava7Path() {
 		return java7Path;
 	}
 	

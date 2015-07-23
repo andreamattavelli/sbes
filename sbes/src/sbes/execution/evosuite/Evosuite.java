@@ -28,7 +28,7 @@ public abstract class Evosuite extends Tool {
 	public String[] getCommand() {
 		List<String> evo = new ArrayList<String>();
 		if (Options.I().getJavaPath() != null && !Options.I().getJavaPath().equals("")) {
-			evo.add(Options.I().getJava7Path() + File.separatorChar + "java");
+			evo.add(Options.I().getJavaPath() + File.separatorChar + "java");
 		}
 		else {
 			evo.add("java");

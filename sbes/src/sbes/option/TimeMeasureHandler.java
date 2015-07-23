@@ -27,7 +27,7 @@ public class TimeMeasureHandler extends OneArgumentOptionHandler<TimeMeasure> {
 			return TimeMeasure.GLOBALTIME;
 		}
 
-		throw new CmdLineException(this.owner, "Wrong parameter for the option " + this.option.toString() + ".");
+		throw new CmdLineException(this.owner, null, "Wrong parameter for the option " + this.option.toString() + ".");
 	}
 
 }

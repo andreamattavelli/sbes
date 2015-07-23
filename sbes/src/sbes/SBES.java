@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.ParserProperties;
 
 import sbes.exceptions.GenerationException;
 import sbes.exceptions.SBESException;
@@ -21,7 +22,7 @@ public class SBES {
 
 	public static void main(final String args[]) {
 		final Options arguments = Options.I();
-		final CmdLineParser parser = new CmdLineParser(arguments);
+		final CmdLineParser parser = new CmdLineParser(arguments, ParserProperties.defaults().withUsageWidth(200));
 
 		try {
 			parser.parseArgument(processArgs(args));
@@ -50,7 +51,6 @@ public class SBES {
 		System.err.println("java Main <options>");
 		System.err.println("<options> are:");
 		// print the list of available options
-		parser.setUsageWidth(140);
 		parser.printUsage(System.err);
 	}
 
