@@ -137,15 +137,17 @@ public class SBESManager {
 						if (candidateES == null) {
 							// not able to carve any candidate, stop iteration
 							terminateIterations = true;
-						}
-						else {
+						} else {
 							// SECOND PHASE: VALIDATION OF CANDIDATE (search for a counterexample)
 							// search for a counterexample
 							CarvingResult counterexample = generateCounterexample(firstPhaseGenerator, stub, candidateES);
 
 							// determine exit condition: counterexample found || timeout
-							if (counterexample == null) {
+							if (counterexample == null || Options.I().isGiveUpWhenSpurious()) {
 								// timeout: found equivalent sequence, stop iteration
+								if (Options.I().isGiveUpWhenSpurious()) {
+									logger.info("Not refining result, giving up");
+								}
 								terminateIterations = true;
 							}
 							else {

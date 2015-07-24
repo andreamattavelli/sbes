@@ -34,6 +34,10 @@ public class Options {
 			usage = "Search budget for counterexample synthesis. Default: 180s")
 	private int counterexampleBudget = 180;
 
+	@Option(name = "-norefinement",
+			usage = "Do not refine results when a counterexample is found")
+	private boolean giveUpWhenSpurious = false;
+	
 	@Option(name = "-evosuite",
 			usage = "Path to EvoSuite jar (included jar name). Default: \"./evosuite.jar\"")
 	private String evosuitePath = "./evosuite.jar";
@@ -216,6 +220,10 @@ public class Options {
 	
 	public boolean isCounterexampleWithSymbolicExecution() {
 		return counterexampleWithSymbolicExecution;
+	}
+	
+	public boolean isGiveUpWhenSpurious() {
+		return giveUpWhenSpurious;
 	}
 	
 	public void setClassesPath(final String classesPath) {
