@@ -39,6 +39,7 @@ import sbes.testcase.Carver;
 import sbes.testcase.CarvingContext;
 import sbes.testcase.Compilation;
 import sbes.testcase.CompilationContext;
+import sbes.testcase.TestCaseExecutor;
 import sbes.util.ClassUtils;
 import sbes.util.ClasspathUtils;
 import sbes.util.DirectoryUtils;
@@ -329,7 +330,12 @@ public class SBESManager {
 			if (candidates.size() > 1) {
 				logger.warn("More than one counterexample synthesized");
 			}
-			toReturn = candidates.get(0);
+			if (Options.I().isCounterexampleWithSymbolicExecution()) {
+				toReturn = executeTestCasesAndCarveResults(result, classPath);
+			}
+			else {
+				toReturn = candidates.get(0);
+			}
 		}
 		
 		statistics.counterexampleFinished();
@@ -337,6 +343,28 @@ public class SBESManager {
 		return toReturn;
 	}
 	
+	private CarvingResult executeTestCasesAndCarveResults(ExecutionResult result, String classPath) {
+		String signature = Options.I().getTargetMethod();
+		String packagename = IOUtils.fromCanonicalToPath(ClassUtils.getPackage(signature));
+		CompilationContext compilationContext = new CompilationContext(
+				IOUtils.concatFilePath(result.getOutputDir(), packagename),
+				result.getFilename(),
+				result.getOutputDir(), 
+				classPath);
+
+		boolean compilationSucceeded = Compilation.compile(compilationContext);
+		if (!compilationSucceeded) {
+			logger.fatal("Unable to compile JBSE test case " + result.getFilename());
+			throw new CompilationException("Unable to compile JBSE test case " + result.getFilename());
+		}
+		
+		classPath = IOUtils.concatClassPath(classPath, result.getOutputDir());
+		
+		TestCaseExecutor junitRunner = new TestCaseExecutor(classPath);
+
+		return junitRunner.executeTests();
+	}
+
 	private Stub generateFirstStageStubFromCounterexample(final CarvingResult counterexample) {
 		DirectoryUtils directory = DirectoryUtils.I();
 		CounterexampleGeneralizer cg = new CounterexampleGeneralizer();
