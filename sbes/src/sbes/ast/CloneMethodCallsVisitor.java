@@ -22,7 +22,7 @@ public class CloneMethodCallsVisitor extends VoidVisitorAdapter<Void> {
 	public void visit(final MethodCallExpr arg0, final Void arg1) {
 		if (arg0.getScope() != null) {
 			String name = ASTUtils.getName(arg0.getScope());
-			if (name != null && name.equals("clone")) {
+			if (name != null && (name.equals("clone") || name.startsWith("v_"))) {
 				methods.add(arg0);
 			}
 		}
