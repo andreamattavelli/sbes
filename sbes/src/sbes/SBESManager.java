@@ -46,6 +46,7 @@ import sbes.util.DirectoryUtils;
 import sbes.util.EvosuiteUtils;
 import sbes.util.IOUtils;
 import sbes.util.ReflectionUtils;
+import sun.font.CStrike;
 
 public class SBESManager {
 
@@ -315,8 +316,8 @@ public class SBESManager {
 		List<CarvingResult> candidates = carver.carveBodyFromTests();
 
 		CarvingResult toReturn = null;
+		CounterexampleStub cStub = (CounterexampleStub) secondStub;
 		if (candidates.isEmpty()) {
-			CounterexampleStub cStub = (CounterexampleStub) secondStub;
 			logger.info("No counterexample found!");
 			CloneMethodCallsVisitor cmcv = new CloneMethodCallsVisitor();
 			cmcv.visit(cStub.getEquivalence().getBody(), null);
@@ -329,6 +330,8 @@ public class SBESManager {
 			}
 		} else {
 			logger.info("Counterexample found, refining search space!");
+			logger.info("Discarded candidate:");
+			IOUtils.printEquivalence(cStub.getEquivalence());
 			if (candidates.size() > 1) {
 				logger.warn("More than one counterexample synthesized");
 			}

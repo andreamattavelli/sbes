@@ -49,6 +49,7 @@ import java.util.List;
 import sbes.ast.ArrayCellDeclarationVisitor;
 import sbes.ast.MethodCallVisitor;
 import sbes.ast.VariableDeclarationVisitor;
+import sbes.ast.inliner.ClassesToMocksInliner;
 import sbes.ast.renamer.ClassesToMocksRenamer;
 import sbes.ast.renamer.NameExprRenamer;
 import sbes.exceptions.GenerationException;
@@ -86,7 +87,16 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 	@Override
 	public Stub generateStub() {
 		Stub stub = super.generateStub();
+		
+		// prepare code
 		new ClassesToMocksRenamer().visit(stub.getAst(), null);
+		ClassesToMocksInliner cmi = new ClassesToMocksInliner();
+		cmi.visit(stub.getAst(), null);
+		 while (cmi.isModified()) {
+			 cmi.reset();
+			 cmi.visit(stub.getAst(), null);
+		}
+		 
 		CounterexampleStub counterexampleStub = new CounterexampleStub(stub.getAst(), stub.getStubName(), equivalence);
 		return counterexampleStub;
 	}

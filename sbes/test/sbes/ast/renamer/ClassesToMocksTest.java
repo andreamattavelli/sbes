@@ -57,4 +57,29 @@ public class ClassesToMocksTest {
 		Assert.assertFalse(body.toString().contains("<Integer>"));
 	}
 	
+	@Test
+	public void test3() throws ParseException {
+		setUp(
+				"{"+
+				"Stack_Stub stack_Stub0 = new Stack_Stub();"+
+				"Integer integer0 = Stack_Stub.ELEMENT_0_0;"+
+				"int int0 = 2;"+
+				"int int1 = 2;"+
+				"Integer integer1 = stack_Stub0.set(int1, integer0);"+
+				"Integer integer2 = new Integer(int0);"+
+				"stack_Stub0.add((int) integer2, (Integer) int0);"+
+				"Integer integer3 = Stack_Stub.ELEMENT_0_0;"+
+				"stack_Stub0.set_results(integer3);"+
+				"stack_Stub0.method_under_test();"+
+				"}");
+		
+		new ClassesToMocksRenamer().visit(stmts, null);
+//		Assert.assertTrue(stmts.toString().contains("IntegerMock "));
+//		Assert.assertTrue(stmts.toString().contains("IntegerMock("));
+//		Assert.assertFalse(stmts.toString().contains("Integer "));
+//		Assert.assertFalse(stmts.toString().contains("Integer("));
+		
+		System.out.println(stmts.toString());
+	}
+	
 }

@@ -75,7 +75,7 @@ public class JBSE extends Tool {
 		p.setOutputPath(DirectoryUtils.I().getSecondStubJBSEDir());
 
 		// scope
-		p.setTimeout(2, TimeUnit.MINUTES);
+		p.setTimeout(Options.I().getCounterexampleBudget(), TimeUnit.SECONDS);
 		p.setHeapScope("doubly_linked_list/DoubleLinkedList_LICS$Entry", 8);
 		p.setDepthScope(500);
 		p.setCountScope(2000);
