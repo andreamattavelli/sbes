@@ -4,6 +4,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import sbes.ast.inliner.AllInlinerTests;
 import sbes.ast.renamer.AllAstRenamerTests;
 import sbes.distance.AllDistanceTests;
 import sbes.result.AllResultTests;
@@ -15,6 +16,7 @@ import sbes.util.AllUtilsTests;
 @RunWith(Suite.class)
 @SuiteClasses({ 
 	AllDistanceTests.class,
+	AllInlinerTests.class,
 	AllAstRenamerTests.class,
 	AllResultTests.class,
 	AllScenarioTests.class,

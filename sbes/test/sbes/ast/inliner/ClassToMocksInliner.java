@@ -23,4 +23,18 @@ public class ClassToMocksInliner {
 		Assert.assertEquals("{new IntegerMock(p0.intValue());}".replaceAll("\\s|\t|\n", ""), block.toString().replaceAll("\\s|\t|\n", ""));
 	}
 	
+	@Test
+	public void test2() throws ParseException {
+		BlockStmt block = JavaParser.parseBlock("{IntegerMock i = new IntegerMock(new IntegerMock(new IntegerMock(p0.intValue()).intValue()).intValue());}");
+		
+		ClassesToMocksInliner cmi = new ClassesToMocksInliner();
+		cmi.visit(block, null);
+		 while (cmi.isModified()) {
+			 cmi.reset();
+			 cmi.visit(block, null);
+		}
+		
+		Assert.assertEquals("{IntegerMock i = p0;}".replaceAll("\\s|\t|\n", ""), block.toString().replaceAll("\\s|\t|\n", ""));
+	}
+	
 }

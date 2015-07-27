@@ -71,6 +71,9 @@ public class EquivalenceRepository {
 		cov.visit(eqSeq.getBody(), null);
 		for (MethodCallExpr mce : cov.getMethods()) {
 			String methodName = mce.getName();
+			if (methodName.equals("size")) {
+				continue;
+			}
 			List<Method> eligible = new ArrayList<Method>();
 			for (Method method : methods) {
 				if (method.getName().equals(methodName)) {

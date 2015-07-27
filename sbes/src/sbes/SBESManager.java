@@ -46,7 +46,6 @@ import sbes.util.DirectoryUtils;
 import sbes.util.EvosuiteUtils;
 import sbes.util.IOUtils;
 import sbes.util.ReflectionUtils;
-import sun.font.CStrike;
 
 public class SBESManager {
 
