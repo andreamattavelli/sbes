@@ -20,7 +20,7 @@ public class ClassToMocksInliner {
 			 cmi.visit(block, null);
 		}
 		
-		Assert.assertEquals("{new IntegerMock(p0.intValue());}".replaceAll("\\s|\t|\n", ""), block.toString().replaceAll("\\s|\t|\n", ""));
+		Assert.assertEquals("{new IntegerMock(p0);}".replaceAll("\\s|\t|\n", ""), block.toString().replaceAll("\\s|\t|\n", ""));
 	}
 	
 	@Test
@@ -37,4 +37,17 @@ public class ClassToMocksInliner {
 		Assert.assertEquals("{IntegerMock i = p0;}".replaceAll("\\s|\t|\n", ""), block.toString().replaceAll("\\s|\t|\n", ""));
 	}
 	
+	@Test
+	public void test3() throws ParseException {
+		BlockStmt block = JavaParser.parseBlock("{boolean boolean0 = v_Stack2.add(new IntegerMock(p0.intValue()));}");
+		
+		ClassesToMocksInliner cmi = new ClassesToMocksInliner();
+		cmi.visit(block, null);
+		 while (cmi.isModified()) {
+			 cmi.reset();
+			 cmi.visit(block, null);
+		}
+		
+		Assert.assertEquals("{boolean boolean0 = v_Stack2.add(p0);}".replaceAll("\\s|\t|\n", ""), block.toString().replaceAll("\\s|\t|\n", ""));
+	}
 }

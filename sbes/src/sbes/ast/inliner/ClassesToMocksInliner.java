@@ -27,6 +27,38 @@ public class ClassesToMocksInliner extends VoidVisitorAdapter<Void> {
 	}
 	
 	@Override
+	public void visit(MethodCallExpr n, Void arg) {
+		List<Expression> args = n.getArgs();
+		if (args == null) {
+			return;
+		}
+		for (int i = 0; i < args.size(); i++) {
+			Expression expression = args.get(i);
+			if (expression instanceof MethodCallExpr) {
+				MethodCallExpr mce = (MethodCallExpr) expression;
+				if (mce.getScope() instanceof ObjectCreationExpr) {
+					ObjectCreationExpr oce = (ObjectCreationExpr) mce.getScope();
+					n.getArgs().set(i, oce.getArgs().get(0));
+					modified = true;
+				} else if (mce.getScope() instanceof NameExpr) {
+					NameExpr ne = (NameExpr) mce.getScope();
+					if (ne.getName().startsWith("p")) {
+						n.getArgs().set(i, ne);
+						modified = true;
+					}
+				}
+			} else if (expression instanceof ObjectCreationExpr) {
+				ObjectCreationExpr oce = (ObjectCreationExpr) expression;
+				if (oce.getType().getName().equals("IntegerMock")) {
+					n.getArgs().set(i, oce.getArgs().get(0));
+					modified = true;
+				}
+			}
+		}
+		super.visit(n, arg);
+	}
+	
+	@Override
 	public void visit(ObjectCreationExpr n, Void arg) {
 		if (n.getType().getName().equals("IntegerMock")) {
 			List<Expression> args = n.getArgs();
@@ -38,9 +70,14 @@ public class ClassesToMocksInliner extends VoidVisitorAdapter<Void> {
 						ObjectCreationExpr oce = (ObjectCreationExpr) mce.getScope();
 						n.getArgs().set(i, oce.getArgs().get(0));
 						modified = true;
+					} else if (mce.getScope() instanceof NameExpr) {
+						NameExpr ne = (NameExpr) mce.getScope();
+						if (ne.getName().startsWith("p")) {
+							n.getArgs().set(i, ne);
+							modified = true;
+						}
 					}
-				}
-				else if (expression instanceof ObjectCreationExpr) {
+				} else if (expression instanceof ObjectCreationExpr) {
 					ObjectCreationExpr oce = (ObjectCreationExpr) expression;
 					n.getArgs().set(i, oce.getArgs().get(0));
 					modified = true;
@@ -60,6 +97,7 @@ public class ClassesToMocksInliner extends VoidVisitorAdapter<Void> {
 					NameExpr ne = (NameExpr) mce.getScope();
 					if (ne.getName().startsWith("p")) {
 						n.setValue(ne);
+						modified = true;
 					}
 				}
 			}
@@ -77,6 +115,7 @@ public class ClassesToMocksInliner extends VoidVisitorAdapter<Void> {
 					NameExpr ne = (NameExpr) mce.getScope();
 					if (ne.getName().startsWith("p")) {
 						n.getVars().get(0).setInit(ne);
+						modified = true;
 					}
 				}
 			}
