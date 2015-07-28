@@ -512,7 +512,8 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 				else if (init instanceof MethodCallExpr) {
 					// the actual_result is the return value
 					vde.setType(ASTHelper.createReferenceType(resultType, arrayDimension));
-					vde.getVars().get(0).getId().setName("actual_result");
+					AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), new NameExpr(vde.getVars().get(0).getId().getName()), Operator.assign);
+					cloned.getStmts().add(new ExpressionStmt(actualResult));
 				}
 				else if (init instanceof NameExpr) {
 					NameExpr valueName = (NameExpr) init;
@@ -569,8 +570,6 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 					cloned.getStmts().add(new ExpressionStmt(actualResult));
 					return;
 				}
-//				NameExprRenamer conv = new NameExprRenamer(varName, "actual_result");
-//				conv.visit(cloned, null);
 			}
 		}
 	}

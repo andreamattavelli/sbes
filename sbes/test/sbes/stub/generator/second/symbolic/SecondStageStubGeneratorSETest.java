@@ -262,7 +262,8 @@ public class SecondStageStubGeneratorSETest {
 				"e1 = e;"+
 				"}"+
 				"try {"+
-				"int actual_result = v_Stack2.indexOf(p0);"+
+				"int int0 = v_Stack2.indexOf(p0);"+
+				"actual_result = int0;"+
 				"} catch (Exception e) {"+
 				"e2 = e;"+
 				"}"+
@@ -470,6 +471,99 @@ public class SecondStageStubGeneratorSETest {
 				"}"+
 				"}"+
 				"";
+
+		assertASTEquals(actual, expected);
+	}
+	
+	@Test
+	public void test05() throws ParseException {
+		setUp("./bin", "stack.util.Stack.elementAt(int)", "Stack_Stub");
+		
+		BlockStmt body = JavaParser.parseBlock(
+				"{"+
+				"Stack_Stub stack_Stub0 = new Stack_Stub();"+
+				"Integer integer0 = stack_Stub0.peek();"+
+				"stack_Stub0.set_results(integer0);"+
+				"stack_Stub0.method_under_test();"+
+				"}");
+
+		CarvingResult candidateES = new CarvingResult(body, imports);
+		Map<TypeVariable<?>, String> genericToConcrete = new LinkedHashMap<>();
+		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
+		genericToConcrete.put(k, "Integer");
+		SecondStageGeneratorStubWithGenericsSE sssg = new SecondStageGeneratorStubWithGenericsSE(new ArrayList<TestScenario>(), stub, candidateES, genericToConcrete);
+		Stub second = sssg.generateStub();
+		second.dumpStub("./test/resources/compilation");
+		assertCompiles("stack/util", second.getStubName(), "./bin:./lib/jbse-0.7.jar");
+		
+		String actual = second.getAst().toString();
+		String expected = "package stack.util;"+
+				"import sbes.distance.Distance;"+
+				"import sbes.cloning.Cloner;"+
+				"import jbse.meta.Analysis;"+
+				"import jbse.meta.annotations.ConservativeRepOk;"+
+				"import sbes.symbolic.mock.IntegerMock;"+
+				"import sbes.symbolic.mock.Stack;"+
+				"public class Stack_Stub_2 {"+
+				"private interface FakeVariable {"+
+				"}"+
+				"Stack<IntegerMock> v_Stack1;"+
+				"Stack<IntegerMock> v_Stack2;"+
+				"FakeVariable forceConservativeRepOk;"+
+				"FakeVariable forceConservativeRepOk2;"+
+				"FakeVariable forceConservativeRepOk3;"+
+				"IntegerMock expected_result;"+
+				"IntegerMock actual_result;"+
+				"Exception e1;"+
+				"Exception e2;"+
+				"int p0;"+
+				"@ConservativeRepOk"+
+				"boolean mirrorInitialConservative() {"+
+				"if (Analysis.isResolved(this, \"v_Stack1\") | Analysis.isResolved(this, \"v_Stack2\"))"+
+				"if (v_Stack1 == null ^ v_Stack2 == null)"+
+				"return false;"+
+				"else if (v_Stack1 != null & v_Stack2 != null)"+
+				"return Stack.mirrorInitialConservative(v_Stack1, v_Stack2);"+
+				"return true;"+
+				"}"+
+				"boolean mirrorFinalConservative() {"+
+				"if (v_Stack1 == null ^ v_Stack2 == null)"+
+				"return false;"+
+				"else if (v_Stack1 != null & v_Stack2 != null)"+
+				"return Stack.mirrorFinalConservative(v_Stack1, v_Stack2);"+
+				"return true;"+
+				"}"+
+				"public void method_under_test() {"+
+				"expected_result = null;"+
+				"actual_result = null;"+
+				"e1 = null;"+
+				"e2 = null;"+
+				"try {"+
+				"expected_result = v_Stack1.elementAt(p0);"+
+				"} catch (Exception e) {"+
+				"e1 = e;"+
+				"}"+
+				"try {"+
+				"IntegerMock integer0 = v_Stack2.peek();"+
+				"actual_result = integer0;"+
+				"} catch (Exception e) {"+
+				"e2 = e;"+
+				"}"+
+				"boolean ok = mirrorFinalConservative();"+
+				"FakeVariable fake = forceConservativeRepOk;"+
+				"Analysis.ass3rt(ok);"+
+				"if (expected_result != null)"+
+				"ok = expected_result.equals(actual_result);"+
+				"else"+
+				"ok = actual_result == null;"+
+				"FakeVariable fake2 = forceConservativeRepOk2;"+
+				"Analysis.ass3rt(ok);"+
+				"if (e1 == null ^ e2 == null)"+
+				"ok = false;"+
+				"FakeVariable fake3 = forceConservativeRepOk3;"+
+				"Analysis.ass3rt(ok);"+
+				"}"+
+				"}";
 
 		assertASTEquals(actual, expected);
 	}
