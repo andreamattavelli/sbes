@@ -13,6 +13,7 @@ public class SBESShutdownInterceptor implements SignalHandler {
 	
 	@Override
 	public void handle(final Signal signal) {
+		System.out.println();
 		logger.info("User requested search stop!");
 		
 		if (interrupted) {
@@ -23,6 +24,8 @@ public class SBESShutdownInterceptor implements SignalHandler {
 		interrupted = true;
 		
 		EquivalenceRepository.getInstance().printEquivalences();
+		
+		System.exit(-1);
 	}
 
 	public static boolean isInterrupted() {
