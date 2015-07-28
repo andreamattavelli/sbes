@@ -37,6 +37,8 @@ public class EquivalenceRepositoryTest {
 		EquivalentSequence equivalence = new EquivalentSequence(body.getStmts());
 		repository.addEquivalence(equivalence);
 		
+		assertEquals(0, repository.getExcluded().size());
+		repository.addExcluded();
 		assertEquals(1, repository.getExcluded().size());
 		assertNotNull(repository.getExcluded().get(0));
 		assertEquals("public static com.google.common.collect.LinkedListMultimap " +
@@ -50,6 +52,7 @@ public class EquivalenceRepositoryTest {
 				"}");
 		repository.addEquivalence(equivalence);
 		
+		repository.addExcluded();
 		assertEquals(2, repository.getExcluded().size());
 		assertNotNull(repository.getExcluded().get(1));
 		assertEquals("public static com.google.common.collect.LinkedListMultimap " +

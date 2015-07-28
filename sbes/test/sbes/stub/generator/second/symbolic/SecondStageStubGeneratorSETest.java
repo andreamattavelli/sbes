@@ -449,7 +449,7 @@ public class SecondStageStubGeneratorSETest {
 				"e1 = e;"+
 				"}"+
 				"try {"+
-				"boolean boolean0 = v_Stack2.add(new IntegerMock(p0.intValue()));"+
+				"boolean boolean0 = v_Stack2.add(p0);"+
 				"actual_result = p0;"+
 				"} catch (Exception e) {"+
 				"e2 = e;"+

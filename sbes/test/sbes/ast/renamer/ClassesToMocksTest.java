@@ -74,12 +74,10 @@ public class ClassesToMocksTest {
 				"}");
 		
 		new ClassesToMocksRenamer().visit(stmts, null);
-//		Assert.assertTrue(stmts.toString().contains("IntegerMock "));
-//		Assert.assertTrue(stmts.toString().contains("IntegerMock("));
-//		Assert.assertFalse(stmts.toString().contains("Integer "));
-//		Assert.assertFalse(stmts.toString().contains("Integer("));
-		
-		System.out.println(stmts.toString());
+		Assert.assertTrue(stmts.toString().contains("IntegerMock "));
+		Assert.assertTrue(stmts.toString().contains("IntegerMock("));
+		Assert.assertFalse(stmts.toString().contains("Integer "));
+		Assert.assertFalse(stmts.toString().contains("Integer("));
 	}
 	
 }

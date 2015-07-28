@@ -26,11 +26,13 @@ public class EquivalenceRepository {
 	private Map<String, List<EquivalentSequence>> equivalences;
 	
 	private List<Method> excluded;
+	private List<Method> queue;
 	private Method[] methods;
 	
 	private EquivalenceRepository() {
 		equivalences = new HashMap<String, List<EquivalentSequence>>();
 		excluded = new ArrayList<Method>();
+		queue = new ArrayList<Method>();
 		initTargetMethods();
 	}
 	
@@ -57,6 +59,7 @@ public class EquivalenceRepository {
 	
 	public static void reset() {
 		getInstance().excluded.clear();
+		getInstance().queue.clear();
 		getInstance().initTargetMethods();
 	}
 	
@@ -81,8 +84,8 @@ public class EquivalenceRepository {
 				}
 			}
 			if (eligible.size() == 1) {
-				logger.info("Excluded method " + eligible.get(0).toString());
-				excluded.add(eligible.get(0));
+				logger.info("Queued method to exclude: " + eligible.get(0).toString());
+				queue.add(eligible.get(0));
 			} else {
 				int args;
 				if (mce.getArgs() == null) {
@@ -92,8 +95,8 @@ public class EquivalenceRepository {
 				}
 				for (Method method : eligible) {
 					if (method.getParameterTypes().length == args && !excluded.contains(method)) {
-						logger.info("Excluded method " + method.toString());
-						excluded.add(method);
+						logger.info("Queued method to exclude: " + method.toString());
+						queue.add(method);
 						break;
 					}
 				}
@@ -103,6 +106,13 @@ public class EquivalenceRepository {
 	
 	public List<Method> getExcluded() {
 		return excluded;
+	}
+	
+	public void addExcluded() {
+		if (!queue.isEmpty()) {
+			logger.info("Excluded method: " + queue.get(0).toString());
+			excluded.add(queue.remove(0));
+		}
 	}
 	
 	public boolean isExcluded(Method method) {

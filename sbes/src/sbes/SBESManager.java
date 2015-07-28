@@ -112,6 +112,8 @@ public class SBESManager {
 				
 				IOUtils.formatIterationStartMessage(logger, directory);
 				
+				EquivalenceRepository.getInstance().addExcluded();
+				
 				// FIRST PHASE STUB GENERATION
 				FirstStageGeneratorStub firstPhaseGenerator = FirstStageGeneratorFactory.createGenerator(initialScenarios);
 				Stub initialStub = firstPhaseGenerator.generateStub();

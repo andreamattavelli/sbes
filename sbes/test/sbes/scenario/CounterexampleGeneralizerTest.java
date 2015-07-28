@@ -203,38 +203,5 @@ public class CounterexampleGeneralizerTest {
 				"public static final String ELEMENT_0_3 = ELEMENT_0_2.toString();"
 		});
 	}
-	
-	@Test
-	public void test4() throws ParseException {
-		setUp("./test/resources/guava-12.0.1.jar", "stack.util.Stack.push(Object)");
-		
-		BlockStmt body = JavaParser.parseBlock(
-				"{"+
-				"Stack<Integer> stack = new Stack();"+
-				"stack.push(0);"+
-				"stack.push(0);"+
-				"}");
-		
-		CarvingResult cr = new CarvingResult(body, new ArrayList<ImportDeclaration>());
-		CounterexampleGeneralizer cg = new CounterexampleGeneralizer();
-		TestScenario ts = cg.counterexampleToTestScenario(cr);
-		
-		assertEquals(TestScenarioWithGenerics.class, ts.getClass());
-		TestScenarioWithGenerics tswg = (TestScenarioWithGenerics) ts;
-		assertEquals(1, tswg.getGenericToConcreteClasses().size());
-		assertTrue(tswg.getGenericToConcreteClasses().containsValue("Integer"));
-		List<String> values = new ArrayList<>(tswg.getGenericToConcreteClasses().values());
-		assertEquals("Integer", values.get(0));
-		
-		String actualScenario = ts.getScenario().toString();
-		System.out.println(actualScenario);
-//		String expectedScenario = 
-//				"{"+
-//				"Stack<Integer> stack = new Stack();"+
-//				"expected_results[0] = expected_states[0].put(ELEMENT_0_0, ELEMENT_0_3);" +
-//				"}";
-//		
-//		assertScenarioAndPrint(actualScenario, expectedScenario);
-	}
 
 }
