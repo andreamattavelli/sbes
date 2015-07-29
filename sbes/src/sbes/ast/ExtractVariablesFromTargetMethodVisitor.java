@@ -11,24 +11,26 @@ import java.util.List;
 
 public class ExtractVariablesFromTargetMethodVisitor extends VoidVisitorAdapter<String> {
 	private List<String> dependencies;
+
 	public ExtractVariablesFromTargetMethodVisitor() {
 		dependencies = new ArrayList<String>();
 	}
+
 	public List<String> getDependencies() {
 		return dependencies;
 	}
+
 	@Override
 	public void visit(final MethodCallExpr n, final String methodName) {
 		if (n.getName().equals(methodName)) {
 			if (n.getArgs() != null) {
 				for (Expression arg : n.getArgs()) {
 					if (arg instanceof NameExpr) {
-						dependencies.add(((NameExpr)arg).getName());
-					}
-					else if (arg instanceof CastExpr) {
+						dependencies.add(((NameExpr) arg).getName());
+					} else if (arg instanceof CastExpr) {
 						CastExpr ce = (CastExpr) arg;
 						if (ce.getExpr() instanceof NameExpr) {
-							dependencies.add(((NameExpr)ce.getExpr()).getName());
+							dependencies.add(((NameExpr) ce.getExpr()).getName());
 						}
 					}
 				}

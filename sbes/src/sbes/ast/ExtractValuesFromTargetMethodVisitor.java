@@ -40,8 +40,11 @@ public class ExtractValuesFromTargetMethodVisitor extends VoidVisitorAdapter<Str
 
 	@Override
 	public void visit(final MethodCallExpr n, final String methodName) {
-		if (n != null && n.getName() != null && n.getName().equals(methodName) && 
-				(targetMethod.getParameterTypes().length == 0 || (n.getArgs() != null && n.getArgs().size() == targetMethod.getParameterTypes().length))) {
+		if (n != null && 
+				n.getName() != null && 
+				n.getName().equals(methodName) && 
+				(targetMethod.getParameterTypes().length == 0 || 
+					(n.getArgs() != null && n.getArgs().size() == targetMethod.getParameterTypes().length))) {
 			if (n.getArgs() != null) {
 				for (int i = 0; i < n.getArgs().size(); i++) {
 					Expression arg = n.getArgs().get(i);
@@ -84,7 +87,7 @@ public class ExtractValuesFromTargetMethodVisitor extends VoidVisitorAdapter<Str
 				handleArgument(n, oce.getArgs().get(0), i);
 			}
 			else {
-				// we need to check its arguments, let's put it in the TODOLIST
+				// TODO: we need to check its arguments, let's put it in the TODOLIST
 			}
 		} else if (arg instanceof CastExpr) {
 			CastExpr ce = (CastExpr) arg;

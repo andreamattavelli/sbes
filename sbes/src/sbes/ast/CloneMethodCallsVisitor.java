@@ -12,7 +12,8 @@ import sbes.util.ASTUtils;
  * Retrieve all method calls on clone objects.
  */
 public class CloneMethodCallsVisitor extends VoidVisitorAdapter<Void> {
-	List<MethodCallExpr> methods = new ArrayList<MethodCallExpr>();
+	
+	private List<MethodCallExpr> methods = new ArrayList<MethodCallExpr>();
 	
 	public List<MethodCallExpr> getMethods() {
 		return methods;
