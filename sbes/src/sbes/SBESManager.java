@@ -273,10 +273,13 @@ public class SBESManager {
 		
 		String classPath = IOUtils.concatClassPath(	Options.I().getClassesPath(), 
 													Options.I().getJunitPath(),	
-													Options.I().getJbsePath(),
 													Options.I().getEvosuitePath(), 
 													directory.getSecondStubDir(),
 													this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
+		
+		if (Options.I().isSymbolicExecutionCounterexample()) {
+			classPath = IOUtils.concatClassPath(classPath, Options.I().getJbsePath());
+		}
 		
 		// compile stub
 		CompilationContext compilationContext = new CompilationContext(	testDirectory, 
@@ -302,7 +305,7 @@ public class SBESManager {
 			return null;
 		}
 		
-		if (!Options.I().isCounterexampleWithSymbolicExecution()) {
+		if (!Options.I().isSymbolicExecutionCounterexample()) {
 			dumpLog(result, directory.getSecondStubEvosuiteDir());
 		}
 		
@@ -322,7 +325,7 @@ public class SBESManager {
 			logger.info("No counterexample found!");
 			CloneMethodCallsVisitor cmcv = new CloneMethodCallsVisitor();
 			cmcv.visit(cStub.getEquivalence().getBody(), null);
-			if (!Options.I().isCounterexampleWithSymbolicExecution() && cmcv.getMethods().isEmpty()) {
+			if (!Options.I().isSymbolicExecutionCounterexample() && cmcv.getMethods().isEmpty()) {
 				logger.debug("Spurious result, iterating");
 			} else {
 				logger.info("Equivalence synthesized: ");
@@ -336,7 +339,7 @@ public class SBESManager {
 			if (candidates.size() > 1) {
 				logger.warn("More than one counterexample synthesized");
 			}
-			if (Options.I().isCounterexampleWithSymbolicExecution()) {
+			if (Options.I().isSymbolicExecutionCounterexample()) {
 				toReturn = executeTestCasesAndCarveResults(result, classPath);
 			}
 			else {

@@ -103,8 +103,8 @@ public class ClassToMocksInlinerTest {
 			cmi.reset();
 			cmi.visit(block, null);
 		}
-		System.out.println(block);
-//		Assert.assertEquals("{v_Stack2.insertElementAt(new IntegerMock(p0), p0);IntegerMock integer1 = v_Stack2.peek();v_Stack2.setElementAt(integer1, p0);actual_result = v_Stack2.pop();}".replaceAll("\\s|\t|\n", ""), block.toString().replaceAll("\\s|\t|\n", ""));
+		
+		Assert.assertEquals("{boolean boolean0 = v_Stack2.add(p0);actual_result = p0;}".replaceAll("\\s|\t|\n", ""), block.toString().replaceAll("\\s|\t|\n", ""));
 	}
 
 }

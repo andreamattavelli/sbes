@@ -10,7 +10,7 @@ public class ToolFactory {
 
 	public static Tool getTool(String classSignature, String methodSignature, String additionalClasspath) {
 		Tool tool;
-		if (Options.I().isCounterexampleWithSymbolicExecution()) {
+		if (Options.I().isSymbolicExecutionCounterexample()) {
 			tool = new JBSE(classSignature, methodSignature, additionalClasspath);
 		} else {
 			tool = new EvosuiteSecondStage(classSignature, methodSignature, additionalClasspath);
