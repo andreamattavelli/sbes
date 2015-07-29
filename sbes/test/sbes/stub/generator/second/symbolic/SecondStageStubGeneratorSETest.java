@@ -262,8 +262,7 @@ public class SecondStageStubGeneratorSETest {
 				"e1 = e;"+
 				"}"+
 				"try {"+
-				"int int0 = v_Stack2.indexOf(p0);"+
-				"actual_result = int0;"+
+				"actual_result = v_Stack2.indexOf(p0);"+
 				"} catch (Exception e) {"+
 				"e2 = e;"+
 				"}"+
@@ -544,8 +543,7 @@ public class SecondStageStubGeneratorSETest {
 				"e1 = e;"+
 				"}"+
 				"try {"+
-				"IntegerMock integer0 = v_Stack2.peek();"+
-				"actual_result = integer0;"+
+				"actual_result = v_Stack2.peek();"+
 				"} catch (Exception e) {"+
 				"e2 = e;"+
 				"}"+

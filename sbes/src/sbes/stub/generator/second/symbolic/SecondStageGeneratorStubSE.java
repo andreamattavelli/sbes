@@ -404,12 +404,6 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		mcv.visit(cloned, null);
 		MethodCallExpr mce = mcv.getMethodCall();
 
-		String resultType = getActualResultType(targetMethod);
-		int arrayDimension = 0;
-		if (targetMethod.getReturnType().isArray()) {
-			arrayDimension = 1;
-		}
-		
 		if (mce == null) {
 			logger.debug("There is no set_results method, thus it MUST be a default value");
 			Class<?> returnType = targetMethod.getReturnType();
@@ -449,7 +443,6 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 			}
 
 			if (vde != null) {
-//				String varName = vde.getVars().get(0).getId().getName();
 				Expression init = vde.getVars().get(0).getInit();
 				if (init instanceof EnclosedExpr) {
 					init = ((EnclosedExpr) init).getInner();
@@ -511,9 +504,9 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 				}
 				else if (init instanceof MethodCallExpr) {
 					// the actual_result is the return value
-					vde.setType(ASTHelper.createReferenceType(resultType, arrayDimension));
-					AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), new NameExpr(vde.getVars().get(0).getId().getName()), Operator.assign);
+					AssignExpr actualResult = new AssignExpr(ASTHelper.createNameExpr("actual_result"), vde.getVars().get(0).getInit(), Operator.assign);
 					cloned.getStmts().add(new ExpressionStmt(actualResult));
+					vde.getVars().get(0).setInit(null);
 				}
 				else if (init instanceof NameExpr) {
 					NameExpr valueName = (NameExpr) init;

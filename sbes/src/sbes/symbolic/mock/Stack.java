@@ -110,8 +110,8 @@ public class Stack<E> extends CorrespondenceHandler {
 				return false;
 			}
 			else if (stack1.elementData != null && stack2.elementData != null) {
-				return DoubleLinkedList.mirrorInitialConservative((DoubleLinkedList) stack1.elementData, 
-																	   (DoubleLinkedList) stack2.elementData);
+				return DoubleLinkedList.mirrorEachOtherInitially_conservative((DoubleLinkedList) stack1.elementData, 
+																				   (DoubleLinkedList) stack2.elementData);
 			}
 		}
 
@@ -126,7 +126,7 @@ public class Stack<E> extends CorrespondenceHandler {
 				return false;
 			}
 			else if (stack1.elementData != null && stack2.elementData != null) {
-				return DoubleLinkedList.mirrorFinalConservative((DoubleLinkedList) stack1.elementData,
+				return DoubleLinkedList.mirrorEachOtherAtEnd((DoubleLinkedList) stack1.elementData,
 																  (DoubleLinkedList) stack2.elementData);
 			}
 		}
@@ -1065,7 +1065,7 @@ public class Stack<E> extends CorrespondenceHandler {
 		}
 		return -1;
 	}
-
+	
 	public String toCode() {
 		String code = "Stack<Integer> s = new Stack<Integer>();";
 		Object[] thisArray = elementData.toArray();

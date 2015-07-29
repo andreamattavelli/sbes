@@ -1,6 +1,7 @@
 package sbes.ast.inliner;
 
 import japa.parser.ast.body.VariableDeclarator;
+import japa.parser.ast.expr.AssignExpr;
 import japa.parser.ast.expr.CastExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.MethodCallExpr;
@@ -48,6 +49,17 @@ public class Inliner extends VoidVisitorAdapter<VariableDeclarator> {
 						n.getArgs().set(j, arg.getInit());
 					}
 				}
+			}
+		}
+		super.visit(n, arg);
+	}
+	
+	@Override
+	public void visit(AssignExpr n, VariableDeclarator arg) {
+		if (n.getValue() instanceof NameExpr) {
+			NameExpr ne = (NameExpr) n.getValue();
+			if (ne.getName().equals(arg.getId().getName())) {
+				n.setValue(arg.getInit());
 			}
 		}
 		super.visit(n, arg);

@@ -15,8 +15,8 @@ instanceof sbes/symbolic/mock/Stack expands to instanceof sbes/symbolic/mock/Sta
 -- inherited DoubleLinkedList
 
 {R_ANY}/header(/next|/previous)+/element instanceof java/lang/Object not null,
-{R_ANY}/header(/next|/previous)+/element instanceof java/lang/Object aliases instanceof stack/lang/IntegerMock,
-{R_ANY}/header(/next|/previous)+/element instanceof java/lang/Object expands to instanceof stack/lang/IntegerMock,
+{R_ANY}/header(/next|/previous)+/element instanceof java/lang/Object aliases instanceof sbes/symbolic/mock/IntegerMock,
+{R_ANY}/header(/next|/previous)+/element instanceof java/lang/Object expands to instanceof sbes/symbolic/mock/IntegerMock,
 
 -- list initialization trigger
 instanceof sbes/symbolic/mock/DoubleLinkedList expands to instanceof sbes/symbolic/mock/DoubleLinkedList triggers sbes/symbolic/mock/DoubleLinkedList:(Lsbes/symbolic/mock/DoubleLinkedList;)V:_got_DoublyLinkedList_LICS:{$REF},

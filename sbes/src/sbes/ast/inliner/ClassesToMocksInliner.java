@@ -95,10 +95,8 @@ public class ClassesToMocksInliner extends VoidVisitorAdapter<Void> {
 				MethodCallExpr mce = (MethodCallExpr) oce.getArgs().get(0);
 				if (mce.getScope() instanceof NameExpr) {
 					NameExpr ne = (NameExpr) mce.getScope();
-					if (ne.getName().startsWith("p")) {
-						n.setValue(ne);
-						modified = true;
-					}
+					n.setValue(ne);
+					modified = true;
 				}
 			}
 		}

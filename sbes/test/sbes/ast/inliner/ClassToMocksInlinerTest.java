@@ -7,7 +7,7 @@ import japa.parser.ast.stmt.BlockStmt;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ClassToMocksInliner {
+public class ClassToMocksInlinerTest {
 
 	@Test
 	public void test() throws ParseException {
@@ -50,4 +50,19 @@ public class ClassToMocksInliner {
 		
 		Assert.assertEquals("{boolean boolean0 = v_Stack2.add(p0);}".replaceAll("\\s|\t|\n", ""), block.toString().replaceAll("\\s|\t|\n", ""));
 	}
+	
+	@Test
+	public void test4() throws ParseException {
+		BlockStmt block = JavaParser.parseBlock("{actual_result = new IntegerMock(integer0.intValue());}");
+		
+		ClassesToMocksInliner cmi = new ClassesToMocksInliner();
+		cmi.visit(block, null);
+		 while (cmi.isModified()) {
+			 cmi.reset();
+			 cmi.visit(block, null);
+		}
+		
+		Assert.assertEquals("{actual_result = integer0;}".replaceAll("\\s|\t|\n", ""), block.toString().replaceAll("\\s|\t|\n", ""));
+	}
+	
 }
