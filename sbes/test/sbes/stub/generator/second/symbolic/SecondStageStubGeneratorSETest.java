@@ -565,5 +565,5 @@ public class SecondStageStubGeneratorSETest {
 
 		assertASTEquals(actual, expected);
 	}
-	
+		
 }

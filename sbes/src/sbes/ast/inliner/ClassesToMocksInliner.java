@@ -50,8 +50,11 @@ public class ClassesToMocksInliner extends VoidVisitorAdapter<Void> {
 			} else if (expression instanceof ObjectCreationExpr) {
 				ObjectCreationExpr oce = (ObjectCreationExpr) expression;
 				if (oce.getType().getName().equals("IntegerMock")) {
-					n.getArgs().set(i, oce.getArgs().get(0));
-					modified = true;
+					if (oce.getArgs().get(0) instanceof MethodCallExpr) {
+						MethodCallExpr mce = (MethodCallExpr) oce.getArgs().get(0);
+						n.getArgs().set(i, mce.getScope());
+						modified = true;
+					}
 				}
 			}
 		}
@@ -70,12 +73,6 @@ public class ClassesToMocksInliner extends VoidVisitorAdapter<Void> {
 						ObjectCreationExpr oce = (ObjectCreationExpr) mce.getScope();
 						n.getArgs().set(i, oce.getArgs().get(0));
 						modified = true;
-					} else if (mce.getScope() instanceof NameExpr) {
-						NameExpr ne = (NameExpr) mce.getScope();
-						if (ne.getName().startsWith("p")) {
-							n.getArgs().set(i, ne);
-							modified = true;
-						}
 					}
 				} else if (expression instanceof ObjectCreationExpr) {
 					ObjectCreationExpr oce = (ObjectCreationExpr) expression;
