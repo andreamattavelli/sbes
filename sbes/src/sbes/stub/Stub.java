@@ -46,8 +46,7 @@ public class Stub {
 			if (!file.exists()) {
 				file.mkdirs();
 			}
-		}
-		catch(Throwable e) {
+		} catch(Throwable e) {
 			logger.error("Unable to dump stub due to: " + e.getMessage());
 		}
 		
