@@ -323,8 +323,10 @@ public class SBESManager {
 		CounterexampleStub cStub = (CounterexampleStub) secondStub;
 		if (candidates.isEmpty()) {
 			logger.info("No counterexample found!");
+			
 			CloneMethodCallsVisitor cmcv = new CloneMethodCallsVisitor();
 			cmcv.visit(cStub.getEquivalence().getBody(), null);
+			
 			if (!Options.I().isSymbolicExecutionCounterexample() && cmcv.getMethods().isEmpty()) {
 				logger.debug("Spurious result, iterating");
 			} else {
@@ -334,11 +336,14 @@ public class SBESManager {
 			}
 		} else {
 			logger.info("Counterexample found, refining search space!");
+			
 			logger.info("Discarded candidate:");
 			IOUtils.printEquivalence(cStub.getEquivalence());
+			
 			if (candidates.size() > 1) {
 				logger.warn("More than one counterexample synthesized");
 			}
+			
 			if (Options.I().isSymbolicExecutionCounterexample()) {
 				toReturn = executeTestCasesAndCarveResults(result, classPath);
 			}
@@ -367,10 +372,7 @@ public class SBESManager {
 			throw new CompilationException("Unable to compile JBSE test case " + result.getFilename());
 		}
 		
-		classPath = IOUtils.concatClassPath(classPath, result.getOutputDir());
-		
-		TestCaseExecutor junitRunner = new TestCaseExecutor(classPath);
-
+		TestCaseExecutor junitRunner = new TestCaseExecutor(IOUtils.concatClassPath(classPath, result.getOutputDir()));
 		return junitRunner.executeTests();
 	}
 

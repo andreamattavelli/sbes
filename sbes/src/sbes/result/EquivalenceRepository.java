@@ -84,7 +84,7 @@ public class EquivalenceRepository {
 				}
 			}
 			if (eligible.size() == 1) {
-				logger.info("Queued method to exclude: " + eligible.get(0).toString());
+				logger.debug("Queued method to exclude: " + eligible.get(0).toString());
 				queue.add(eligible.get(0));
 			} else {
 				int args;
@@ -95,7 +95,7 @@ public class EquivalenceRepository {
 				}
 				for (Method method : eligible) {
 					if (method.getParameterTypes().length == args && !excluded.contains(method)) {
-						logger.info("Queued method to exclude: " + method.toString());
+						logger.debug("Queued method to exclude: " + method.toString());
 						queue.add(method);
 						break;
 					}
@@ -110,7 +110,7 @@ public class EquivalenceRepository {
 	
 	public void addExcluded() {
 		if (!queue.isEmpty()) {
-			logger.info("Excluded method: " + queue.get(0).toString());
+			logger.debug("Excluded method: " + queue.get(0).toString());
 			excluded.add(queue.remove(0));
 		}
 	}

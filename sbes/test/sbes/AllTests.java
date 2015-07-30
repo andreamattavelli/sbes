@@ -10,17 +10,19 @@ import sbes.distance.AllDistanceTests;
 import sbes.result.AllResultTests;
 import sbes.scenario.AllScenarioTests;
 import sbes.stub.generator.AllGeneratorTests;
+import sbes.symbolic.AllSymbolicTests;
 import sbes.testcase.AllTestCaseTests;
 import sbes.util.AllUtilsTests;
 
 @RunWith(Suite.class)
-@SuiteClasses({ 
-	AllDistanceTests.class,
+@SuiteClasses({
 	AllInlinerTests.class,
 	AllAstRenamerTests.class,
+	AllDistanceTests.class,
 	AllResultTests.class,
 	AllScenarioTests.class,
 	AllGeneratorTests.class,
+	AllSymbolicTests.class,
 	AllTestCaseTests.class,
 	AllUtilsTests.class
 	

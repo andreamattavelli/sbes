@@ -11,6 +11,9 @@ public class IOUtils {
 	private static final String END_MESSAGE = "   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
 	private static final String START_MESSAGE = "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   ";
 
+	public IOUtils() { } // Do not instantiate me
+	
+	
 	/*
 	 * IOUTILS for printing
 	 */

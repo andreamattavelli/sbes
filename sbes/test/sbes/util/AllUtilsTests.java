@@ -7,6 +7,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({ 
 	ReflectionUtilsTest.class,
+	GenericsUtilsTest.class,
 	ASTUtilsTest.class
 })
 public class AllUtilsTests {

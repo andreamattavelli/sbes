@@ -1066,23 +1066,11 @@ public class Stack<E> extends CorrespondenceHandler {
 		return -1;
 	}
 	
-	public String toCode() {
-		String code = "Stack<Integer> s = new Stack<Integer>();";
-		Object[] thisArray = elementData.toArray();
-		int i;
-		for (i = 0; i < thisArray.length; i++) {
-			Object obj = thisArray[i];
-			if (obj == null) {
-				code += "s.add(0);";
-			} else if (obj instanceof IntegerMock) {
-				code += "s.add(" + ((IntegerMock) obj).intValue() + ");";
-			}
+	public Object[] toArray() {
+		if (elementData == null) {
+			return null;
 		}
-		if (elementData.size() > 0 && i == 0) {
-			code += "s.add(0);";
-		}
-		code += "s.method_under_test(ELEMENT_0_0);";
-		return code;
+		return elementData.toArray();
 	}
 	
 }
