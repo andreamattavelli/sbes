@@ -278,10 +278,12 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		ASTHelper.addStmt(body, new ExpressionStmt(createFakeVariable("fake", "forceConservativeRepOk")));
 		ASTHelper.addStmt(body, getAnalysisMethod("ass3rt", ASTHelper.createNameExpr("ok")));
 		//assert equal returns
-		IfStmt ifReturns = createCheckOnReturns(targetMethod);
-		ASTHelper.addStmt(body, ifReturns);
-		ASTHelper.addStmt(body, new ExpressionStmt(createFakeVariable("fake2", "forceConservativeRepOk2")));
-		ASTHelper.addStmt(body, getAnalysisMethod("ass3rt", ASTHelper.createNameExpr("ok")));
+		if (!targetMethod.getReturnType().equals(void.class)) {
+			IfStmt ifReturns = createCheckOnReturns(targetMethod);
+			ASTHelper.addStmt(body, ifReturns);
+			ASTHelper.addStmt(body, new ExpressionStmt(createFakeVariable("fake2", "forceConservativeRepOk2")));
+			ASTHelper.addStmt(body, getAnalysisMethod("ass3rt", ASTHelper.createNameExpr("ok")));
+		}
 		//assert equal exceptions
 		IfStmt ifExceptions = createCheckOnExceptions();
 		ASTHelper.addStmt(body, ifExceptions);
@@ -293,19 +295,19 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		return method_under_test;
 	}
 
-	private VariableDeclarationExpr createOkVariable() {
+	protected VariableDeclarationExpr createOkVariable() {
 		VariableDeclarationExpr okVar = ASTHelper.createVariableDeclarationExpr(ASTHelper.BOOLEAN_TYPE, "ok");
 		okVar.getVars().get(0).setInit(new MethodCallExpr(null, MIRROR_FINAL));
 		return okVar;
 	}
 	
-	private VariableDeclarationExpr createFakeVariable(String varName, String forceName) {
+	protected VariableDeclarationExpr createFakeVariable(String varName, String forceName) {
 		VariableDeclarationExpr fakeVar1 = ASTHelper.createVariableDeclarationExpr(ASTHelper.createReferenceType("FakeVariable", 0), varName);
 		fakeVar1.getVars().get(0).setInit(ASTHelper.createNameExpr(forceName));
 		return fakeVar1;
 	}
 	
-	private IfStmt createCheckOnExceptions() {
+	protected IfStmt createCheckOnExceptions() {
 		IfStmt ifExceptions = new IfStmt();
 		ifExceptions.setCondition(new BinaryExpr(
 				new BinaryExpr(ASTHelper.createNameExpr("e1"), NULL_EXPR, BinaryExpr.Operator.equals), 
@@ -315,7 +317,7 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		return ifExceptions;
 	}
 
-	private IfStmt createCheckOnReturns(Method targetMethod) {
+	protected IfStmt createCheckOnReturns(Method targetMethod) {
 		IfStmt ifReturns = new IfStmt();
 		if (targetMethod.getReturnType().isPrimitive()) {
 			ifReturns.setCondition(new BinaryExpr(ASTHelper.createNameExpr(EXP_RES), ASTHelper.createNameExpr(ACT_RES), BinaryExpr.Operator.notEquals));
@@ -334,7 +336,7 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		return ifReturns;
 	}
 	
-	private List<Statement> initVariables(Method targetMethod) {
+	protected List<Statement> initVariables(Method targetMethod) {
 		List<Statement> stmts = new ArrayList<Statement>();
 		if (!targetMethod.getReturnType().isPrimitive()) {
 			stmts.add(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr(EXP_RES), NULL_EXPR, AssignExpr.Operator.assign)));
@@ -365,7 +367,7 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		return getTry(body, getCatchClause("e1"));
 	}
 	
-	private BlockStmt getCatchClause(String exceptionVar) {
+	protected BlockStmt getCatchClause(String exceptionVar) {
 		BlockStmt catchBodyOriginal = new BlockStmt();
 		List<Statement> catchBodyOriginalStmts = new ArrayList<>();
 		catchBodyOriginalStmts.add(new ExpressionStmt(new AssignExpr(ASTHelper.createNameExpr(exceptionVar), ASTHelper.createNameExpr("e"), AssignExpr.Operator.assign)));
@@ -373,7 +375,7 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		return catchBodyOriginal;
 	}
 	
-	private TryStmt getTry(BlockStmt tryBody, BlockStmt catchBody) {
+	protected TryStmt getTry(BlockStmt tryBody, BlockStmt catchBody) {
 		TryStmt tryStmt = new TryStmt();
 		
 		// try block
@@ -392,7 +394,7 @@ public class SecondStageGeneratorStubSE extends SecondStageGeneratorStub {
 		return tryStmt;
 	}
 
-	private Statement getAnalysisMethod(String methodName, Expression parameter) {
+	protected Statement getAnalysisMethod(String methodName, Expression parameter) {
 		MethodCallExpr mce = new MethodCallExpr(ASTHelper.createNameExpr("Analysis"), methodName);
 		mce.setArgs(Arrays.asList(parameter));
 		return new ExpressionStmt(mce);
