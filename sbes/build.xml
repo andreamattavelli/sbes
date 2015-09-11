@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project basedir="." default="build" name="sbes">
 	<property name="debuglevel" value="source,lines,vars" />
-	<property name="target" value="1.7" />
-	<property name="source" value="1.7" />
+	<property name="target" value="1.8" />
+	<property name="source" value="1.8" />
 
 	<path id="sbes.classpath">
 		<pathelement location="bin" />
-		<pathelement location="lib/args4j-2.0.21.jar" />
-		<pathelement location="lib/asm-4.2.jar" />
+		<pathelement location="lib/args4j-2.32.jar" />
+		<pathelement location="lib/asm-5.0.4.jar" />
 		<pathelement location="lib/javaparser-1.0.10.jar" />
 		<pathelement location="lib/jbse-0.7.jar" />
+		<pathelement location="lib/junit.jar" />
+		<pathelement location="lib/hamcrest.jar" />
 	</path>
 
 	<target name="init">
