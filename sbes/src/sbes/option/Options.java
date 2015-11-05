@@ -5,6 +5,7 @@ import java.io.File;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.Option;
 
+import sbes.exceptions.SBESException;
 import sbes.logging.Level;
 import sbes.logging.Logger;
 import sbes.stoppingcondition.StoppingConditionType;
@@ -112,7 +113,7 @@ public class Options {
 	
 	@Option(name = "-time_measure",
 			usage = "How to measure the elapsed time: CPUTIME, GLOBALTIME",
-			handler = LevelHandler.class)
+			handler = TimeMeasureHandler.class)
 	private TimeMeasure timeMeasure = TimeMeasure.GLOBALTIME;
 	
 	@Option(name = "-verbose",
@@ -129,7 +130,7 @@ public class Options {
 	// check consistency of the options
 	public void checkConsistency() throws CmdLineException {
 		if (methodSignature == null && targetClassSignature == null) {
-			throw new CmdLineException(null, null, "Select either an input method (-target_method) or an input class (-target_class)");
+			throw new SBESException("Select either an input method (-target_method) or an input class (-target_class)");
 		}
 	}
 	
