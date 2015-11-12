@@ -29,10 +29,6 @@ public class JBSE extends Tool {
 		this.additionalClasspath = additionalClasspath;
 	}
 	
-	// Classpath and sourcepath for code under analysis
-	private final String HOME = "./";
-	private final String CLASSPATH_JRE = HOME + "data/jre/rt.jar";
-
 	public void runAnalysis() {
 		String[] methodSignature = new String[] { classSignature.replace('.', '/'), "method_under_test", "()V" };
 		final RunParameters p = new RunParameters();
@@ -44,6 +40,7 @@ public class JBSE extends Tool {
 			logger.error("ERROR: settings file " + Options.I().getHexPath() + " ill-formed. " + e.getMessage(), e);
 		}
 		List<String> classy = new ArrayList<String>();
+		String CLASSPATH_JRE = Options.I().getJbseJREPath();
 		classy.add(CLASSPATH_JRE);
 		for (String string : additionalClasspath.split(":")) {
 			classy.add(string);

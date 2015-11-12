@@ -63,6 +63,10 @@ public class Options {
 			usage = "Path to JBSE jar (included jar name). Default: \"./lib/jbse-0.7.jar\"")
 	private String jbsePath = "./lib/jbse-0.7.jar";
 	
+	@Option(name = "-jbse_jre",
+			usage = "Path to JBSE  JRE jar (included jar name).")
+	private String jbseJREPath = null;
+	
 	@Option(name = "-junit",
 			usage = "Path to JUnit 4 jar",
 			required = true)
@@ -166,6 +170,11 @@ public class Options {
 	public String getJbsePath() {
 		return jbsePath;
 	}
+
+	public String getJbseJREPath() {
+		return jbseJREPath;
+	}
+
 	
 	public String getJunitPath() {
 		return junitPath;
