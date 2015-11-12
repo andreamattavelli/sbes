@@ -88,6 +88,10 @@ public class Options {
 	@Option(name = "-norefinement",
 			usage = "Do not refine results when a counterexample is found")
 	private boolean noRefinementWhenSpurious = false;
+	
+	@Option(name = "-sbes_lib",
+			usage = "Path to sbes-lib.jar. Default: ./sbes-lib.jar")
+	private String sbeslibPath = "./sbes-lib.jar";
 
 	@Option(name = "-test_scenario",
 			usage = "Path to Java source file containing initial test scenarios",
@@ -175,6 +179,10 @@ public class Options {
 		return methodBloatFactor;
 	}
 
+	public String getSbesLibPath() {
+		return sbeslibPath;
+	}
+	
 	public int getSearchBudget() {
 		return budgetSynthesis;
 	}

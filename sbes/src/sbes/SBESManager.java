@@ -191,7 +191,7 @@ public class SBESManager {
 														Options.I().getJunitPath(), 
 														Options.I().getEvosuitePath(), 
 														directory.getFirstStubDir(),
-														this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
+														Options.I().getSbesLibPath());
 		
 		// compile stub
 		CompilationContext compilationContext = new CompilationContext(	testDirectory, 
@@ -275,7 +275,7 @@ public class SBESManager {
 													Options.I().getJunitPath(),	
 													Options.I().getEvosuitePath(), 
 													directory.getSecondStubDir(),
-													this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
+													Options.I().getSbesLibPath());
 		
 		if (Options.I().isSymbolicExecutionCounterexample()) {
 			classPath = IOUtils.concatClassPath(classPath, Options.I().getJbsePath());
