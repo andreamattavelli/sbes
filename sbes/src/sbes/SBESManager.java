@@ -13,6 +13,7 @@ import sbes.ast.CloneMethodCallsVisitor;
 import sbes.exceptions.CompilationException;
 import sbes.exceptions.GenerationException;
 import sbes.exceptions.SBESException;
+import sbes.exceptions.WorkerException;
 import sbes.execution.ExecutionManager;
 import sbes.execution.ExecutionResult;
 import sbes.execution.Tool;
@@ -160,7 +161,7 @@ public class SBESManager {
 
 						statistics.iterationFinished();
 					} // end iteration
-				} catch (CompilationException | GenerationException e) {
+				} catch (CompilationException | GenerationException | WorkerException e) {
 					logger.fatal("Iteration aborted due to: " + e.getMessage());
 					statistics.iterationFinished();
 				}
