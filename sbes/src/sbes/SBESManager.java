@@ -279,6 +279,7 @@ public class SBESManager {
 		
 		if (Options.I().isSymbolicExecutionCounterexample()) {
 			classPath = IOUtils.concatClassPath(classPath, Options.I().getJbsePath());
+			classPath = IOUtils.concatClassPath(classPath, this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
 		}
 		
 		// compile stub
