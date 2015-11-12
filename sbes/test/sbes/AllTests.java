@@ -6,7 +6,6 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import sbes.ast.inliner.AllInlinerTests;
 import sbes.ast.renamer.AllAstRenamerTests;
-import sbes.distance.AllDistanceTests;
 import sbes.result.AllResultTests;
 import sbes.scenario.AllScenarioTests;
 import sbes.stub.generator.AllGeneratorTests;
@@ -18,7 +17,6 @@ import sbes.util.AllUtilsTests;
 @SuiteClasses({
 	AllInlinerTests.class,
 	AllAstRenamerTests.class,
-	AllDistanceTests.class,
 	AllResultTests.class,
 	AllScenarioTests.class,
 	AllGeneratorTests.class,
