@@ -93,58 +93,7 @@ public class Stack<E> extends CorrespondenceHandler {
 	 */
 	protected int capacityIncrement;
 
-
-
-	public static boolean mirrorInitialConservative(Stack<?> stack1, Stack<?> stack2) {
-		if (!CorrespondenceHandler.doOrMayCorrespondInInitialState(stack1, stack2))
-			return false;
-
-		if (!stack1.mustVisitDuringAssume())
-			return true;
-
-		if (!CorrespondenceHandler.setAsCorrespondingInInitialState(stack1, stack2))
-			return false;
-
-		if (Analysis.isResolved(stack1, "elementData") || Analysis.isResolved(stack2, "elementData")) {
-			if (stack1.elementData == null ^ stack2.elementData == null) {
-				return false;
-			}
-			else if (stack1.elementData != null && stack2.elementData != null) {
-				return DoubleLinkedList.mirrorEachOtherInitially_conservative((DoubleLinkedList) stack1.elementData, 
-																				   (DoubleLinkedList) stack2.elementData);
-			}
-		}
-
-		return true;
-	}
-
-	public static boolean mirrorFinalConservative(Stack<?> stack1, Stack<?> stack2) {
-		if(!stack1.mustVisitDuringAssert()) return true;
-		
-		if (Analysis.isResolved(stack1, "elementData") || Analysis.isResolved(stack2, "elementData")) {
-			if (stack1.elementData == null ^ stack2.elementData == null) {
-				return false;
-			}
-			else if (stack1.elementData != null && stack2.elementData != null) {
-				return DoubleLinkedList.mirrorEachOtherAtEnd((DoubleLinkedList) stack1.elementData,
-																  (DoubleLinkedList) stack2.elementData);
-			}
-		}
-		
-		return true;
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
-	/**
+		/**
 	 * Constructs an empty vector with the specified initial capacity and
 	 * capacity increment.
 	 *
@@ -1071,6 +1020,45 @@ public class Stack<E> extends CorrespondenceHandler {
 			return null;
 		}
 		return elementData.toArray();
+	}
+
+	public static boolean mirrorInitialConservative(Stack<?> stack1, Stack<?> stack2) {
+		if (!CorrespondenceHandler.doOrMayCorrespondInInitialState(stack1, stack2))
+			return false;
+
+		if (!stack1.mustVisitDuringAssume())
+			return true;
+
+		if (!CorrespondenceHandler.setAsCorrespondingInInitialState(stack1, stack2))
+			return false;
+
+		if (Analysis.isResolved(stack1, "elementData") || Analysis.isResolved(stack2, "elementData")) {
+			if (stack1.elementData == null ^ stack2.elementData == null) {
+				return false;
+			}
+			else if (stack1.elementData != null && stack2.elementData != null) {
+				return DoubleLinkedList.mirrorEachOtherInitially_conservative((DoubleLinkedList) stack1.elementData, 
+																				   (DoubleLinkedList) stack2.elementData);
+			}
+		}
+
+		return true;
+	}
+
+	public static boolean mirrorFinalConservative(Stack<?> stack1, Stack<?> stack2) {
+		if(!stack1.mustVisitDuringAssert()) return true;
+		
+		if (Analysis.isResolved(stack1, "elementData") || Analysis.isResolved(stack2, "elementData")) {
+			if (stack1.elementData == null ^ stack2.elementData == null) {
+				return false;
+			}
+			else if (stack1.elementData != null && stack2.elementData != null) {
+				return DoubleLinkedList.mirrorEachOtherAtEnd((DoubleLinkedList) stack1.elementData,
+																  (DoubleLinkedList) stack2.elementData);
+			}
+		}
+		
+		return true;
 	}
 	
 }
