@@ -11,12 +11,6 @@ import java.util.Vector;
 
 import jbse.meta.Analysis;
 import sbes.symbolic.CorrespondenceHandler;
-/*
- * @(#)DoubleLinkedList.java	1.46 03/01/23
- *
- * Copyright 2003 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
 
 
 /**
@@ -140,10 +134,7 @@ public class DoubleLinkedList  extends CorrespondenceHandler {
      * @throws NullPointerException
      *             if the specified collection is null.
      */
-//STUB BEGIN
-    //public DoubleLinkedList(Collection c) {
     public DoubleLinkedList(DoubleLinkedList c) {
-//STUB END
         this();
         addAll(c);
     }
@@ -605,12 +596,13 @@ public class DoubleLinkedList  extends CorrespondenceHandler {
      *             <tt>index &lt; 0 || index &gt; size()</tt>).
      * @see List#listIterator(int)
      */
-    public ListIterator<?> listIterator(int index) {
+    @SuppressWarnings("rawtypes")
+    public ListIterator listIterator(int index) {
         return new ListItr(index);
     }
 
     @SuppressWarnings("rawtypes")
-	private class ListItr implements ListIterator {
+    private class ListItr implements ListIterator {
         private Entry lastReturned = header;
         private Entry next;
         private int nextIndex;
@@ -916,44 +908,44 @@ public class DoubleLinkedList  extends CorrespondenceHandler {
      */
     //@ ensures \result != null && \result.length == size;
     public Object[] toArray() {
-        Object[] resultForward = new Object[size];
-        boolean closedForward = true;
-        int iForward = 0;
-        for (Entry e = header.next; e != header && iForward < size; e = e.next) {
-        	if (e == null) {
-        		closedForward = false;
-        		break;
-        	}
-            resultForward[iForward++] = e.element;
-        }
-        
-        Object[] resultBackward = new Object[size];
-        boolean closedBackward = true;
-        int iBackward = size;
-        for (Entry e = header.previous; e != header && iBackward < size; e = e.previous) {
-        	if (e == null) {
-        		closedBackward = false;
-        		break;
-        	}
-            resultBackward[--iBackward] = e.element;
-        }
-        
-        if (closedForward || (!closedForward && iBackward == size)) {
-        	return resultForward;
-        }
-        else if (closedBackward || (!closedBackward && iForward == 0)) {
-        	return resultBackward;
-        }
-        else {
-        	Object[] result = new Object[size];
-        	List<?> l = Arrays.asList(resultBackward);
-        	Collections.reverse(l);
-        	resultBackward = l.toArray();
-        	System.arraycopy(resultForward, 0, result, 0, iForward);
-        	if (iForward < size)
-        		System.arraycopy(resultBackward, 0, result, iForward, (size - iBackward));
-        	return result;
-        }
+    	Object[] resultForward = new Object[size];
+    	boolean closedForward = true;
+    	int iForward = 0;
+    	for (Entry e = header.next; e != header && iForward < size; e = e.next) {
+    		if (e == null) {
+    			closedForward = false;
+    			break;
+    		}
+    		resultForward[iForward++] = e.element;
+    	}
+
+    	Object[] resultBackward = new Object[size];
+    	boolean closedBackward = true;
+    	int iBackward = size;
+    	for (Entry e = header.previous; e != header && iBackward < size; e = e.previous) {
+    		if (e == null) {
+    			closedBackward = false;
+    			break;
+    		}
+    		resultBackward[--iBackward] = e.element;
+    	}
+
+    	if (closedForward || (!closedForward && iBackward == size)) {
+    		return resultForward;
+    	}
+    	else if (closedBackward || (!closedBackward && iForward == 0)) {
+    		return resultBackward;
+    	}
+    	else {
+    		Object[] result = new Object[size];
+    		List<?> l = Arrays.asList(resultBackward);
+    		Collections.reverse(l);
+    		resultBackward = l.toArray();
+    		System.arraycopy(resultForward, 0, result, 0, iForward);
+    		if (iForward < size)
+    			System.arraycopy(resultBackward, 0, result, iForward, (size - iBackward));
+    		return result;
+    	}
     }
 
     boolean containsAllInOrder(Object[] objs) {
