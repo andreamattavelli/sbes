@@ -7,9 +7,7 @@ resolve begin
 
 {R_ANY}/elementData instanceof sbes/symbolic/mock/DoubleLinkedList not null,
 {R_ANY}/elementData instanceof sbes/symbolic/mock/DoubleLinkedList aliases nothing,
-{R_ANY}/elementData instanceof sbes/symbolic/mock/DoubleLinkedList expands to instanceof sbes/symbolic/mock/DoubleLinkedList,
-
-instanceof sbes/symbolic/mock/Stack expands to instanceof sbes/symbolic/mock/Stack triggers sbes/symbolic/mock/Stack:(Lsbes/symbolic/mock/Stack;)V:_got_Stack:{$REF},
+{R_ANY}/elementData instanceof sbes/symbolic/mock/DoubleLinkedList expands to instanceof sbes/symbolic/mock/DoubleLinkedList triggers sbes/symbolic/mock/Stack:(Lsbes/symbolic/mock/Stack;)V:_got_Stack:{$REF},
 
 -----------------------------------------
 -- inherited DoubleLinkedList
@@ -22,20 +20,20 @@ instanceof sbes/symbolic/mock/Stack expands to instanceof sbes/symbolic/mock/Sta
 instanceof sbes/symbolic/mock/DoubleLinkedList expands to instanceof sbes/symbolic/mock/DoubleLinkedList triggers sbes/symbolic/mock/DoubleLinkedList:(Lsbes/symbolic/mock/DoubleLinkedList;)V:_got_DoublyLinkedList_LICS:{$REF},
 
 -- defines the Entry._owner instrumentation field necessary to triggers
-{R_ANY}/(header)(/next|/previous)*/_owner instanceof sbes/symbolic/mock/DoubleLinkedList not null,
-{R_ANY}/(header)(/next|/previous)*/_owner instanceof sbes/symbolic/mock/DoubleLinkedList expands to nothing,
-{R_ANY}/(header)(/next|/previous)*/_owner instanceof sbes/symbolic/mock/DoubleLinkedList aliases {$R_ANY},
+{R_ANY}/header(/next|/previous)*/_owner instanceof sbes/symbolic/mock/DoubleLinkedList not null,
+{R_ANY}/header(/next|/previous)*/_owner instanceof sbes/symbolic/mock/DoubleLinkedList expands to nothing,
+{R_ANY}/header(/next|/previous)*/_owner instanceof sbes/symbolic/mock/DoubleLinkedList aliases {$R_ANY},
 
 -- list header must exist and be distinct from other nodes
-{R_ANY}/(header) instanceof sbes/symbolic/mock/DoubleLinkedList$Entry not null,
-{R_ANY}/(header) instanceof sbes/symbolic/mock/DoubleLinkedList$Entry aliases nothing,
+{R_ANY}/header instanceof sbes/symbolic/mock/DoubleLinkedList$Entry not null,
+{R_ANY}/header instanceof sbes/symbolic/mock/DoubleLinkedList$Entry aliases nothing,
 
 -- list header stores no data
 {R_ANY}/header/element instanceof java/lang/Object expands to nothing,
 {R_ANY}/header/element instanceof java/lang/Object aliases nothing,
 
 -- all list entries must have a next and a previous
-{R_ANY}/(header)(/next|/previous)* instanceof sbes/symbolic/mock/DoubleLinkedList$Entry not null,
+{R_ANY}/header(/next|/previous)* instanceof sbes/symbolic/mock/DoubleLinkedList$Entry not null,
 
 -- the size of a list must be greater than the number of list entries (by trigger)
 {R_ANY}/header instanceof sbes/symbolic/mock/DoubleLinkedList$Entry expands to instanceof sbes/symbolic/mock/DoubleLinkedList$Entry,
