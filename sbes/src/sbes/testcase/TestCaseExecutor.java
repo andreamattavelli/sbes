@@ -46,6 +46,10 @@ public class TestCaseExecutor {
 		
 		List<BlockStmt> testCases = DynamicSymbolicAnalysis.getTestcases();
 		
+		if (testCases.isEmpty()) {
+			throw new GenerationException("Unable to generate test cases through dynamic analysis");
+		}
+		
 		return new CarvingResult(testCases.get(0), (List<ImportDeclaration>) new ArrayList<ImportDeclaration>());
 	}
 	
