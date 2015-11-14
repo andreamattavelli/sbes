@@ -7,7 +7,9 @@ resolve begin
 
 {R_ANY}/elementData instanceof sbes/symbolic/mock/DoubleLinkedList not null,
 {R_ANY}/elementData instanceof sbes/symbolic/mock/DoubleLinkedList aliases nothing,
-{R_ANY}/elementData instanceof sbes/symbolic/mock/DoubleLinkedList expands to instanceof sbes/symbolic/mock/DoubleLinkedList triggers sbes/symbolic/mock/Stack:(Lsbes/symbolic/mock/Stack;)V:_got_Stack:{$REF},
+{R_ANY}/elementData instanceof sbes/symbolic/mock/DoubleLinkedList expands to instanceof sbes/symbolic/mock/DoubleLinkedList triggers sbes/symbolic/mock/DoubleLinkedList:(Lsbes/symbolic/mock/DoubleLinkedList;)V:_got_DoublyLinkedList_LICS:{$REF},
+
+instanceof sbes/symbolic/mock/Stack expands to instanceof sbes/symbolic/mock/Stack triggers sbes/symbolic/mock/Stack:(Lsbes/symbolic/mock/Stack;)V:_got_Stack:{$REF},
 
 -----------------------------------------
 -- inherited DoubleLinkedList
@@ -15,9 +17,6 @@ resolve begin
 {R_ANY}/header(/next|/previous)+/element instanceof java/lang/Object not null,
 {R_ANY}/header(/next|/previous)+/element instanceof java/lang/Object aliases instanceof sbes/symbolic/mock/IntegerMock,
 {R_ANY}/header(/next|/previous)+/element instanceof java/lang/Object expands to instanceof sbes/symbolic/mock/IntegerMock,
-
--- list initialization trigger
-instanceof sbes/symbolic/mock/DoubleLinkedList expands to instanceof sbes/symbolic/mock/DoubleLinkedList triggers sbes/symbolic/mock/DoubleLinkedList:(Lsbes/symbolic/mock/DoubleLinkedList;)V:_got_DoublyLinkedList_LICS:{$REF},
 
 -- defines the Entry._owner instrumentation field necessary to triggers
 {R_ANY}/header(/next|/previous)*/_owner instanceof sbes/symbolic/mock/DoubleLinkedList not null,
