@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sbes.ast.TestCaseVisitor;
+import sbes.exceptions.GenerationException;
 import sbes.ast.MethodCallVisitor;
 import sbes.logging.Logger;
 import sbes.option.Options;
@@ -78,7 +79,8 @@ public class Carver {
 				}
 			}
 		} catch (ParseException | IOException e) {
-			logger.error(e.getMessage());
+			logger.error("Exception during carving: " + e.getMessage());
+			throw new GenerationException("Unable to carge tests");
 		}
 		logger.debug("Carving bodies - done");
 		return bodies;
