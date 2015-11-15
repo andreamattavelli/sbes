@@ -485,6 +485,12 @@ public class DoubleLinkedList  extends CorrespondenceHandler {
         return e.element;
     }
 
+    public void setSize(int newSize) {
+    	for (int i = size(); i > newSize; i--) {
+			remove(i-1);
+		}
+    }
+    
     /**
      * Return the indexed entry.
      */

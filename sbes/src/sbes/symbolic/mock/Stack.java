@@ -991,6 +991,13 @@ public class Stack<E> extends CorrespondenceHandler {
 	public boolean empty() {
 		return size() == 0;
 	}
+	
+	public void setSize(int newSize) {
+		if (newSize < 0) {
+			throw new ArrayIndexOutOfBoundsException();
+		}
+		elementData.setSize(newSize);
+	}
 
 	/**
 	 * Returns the 1-based position where an object is on this stack.
