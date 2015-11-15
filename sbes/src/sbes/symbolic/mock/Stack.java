@@ -696,11 +696,17 @@ public class Stack<E> extends CorrespondenceHandler {
 	 *         elements (optional), or if the specified collection is null
 	 * @since 1.2
 	 */
-	public synchronized boolean retainAll(DoubleLinkedList c)  {
+	public synchronized boolean retainAll(Collection<?> c)  {
 //		Objects.requireNonNull(c);
+		DoubleLinkedList dll = new DoubleLinkedList();
+		Object array[] = c.toArray();
+		for (int i = 0; i < array.length; i++) {
+			dll.add(array[i]);
+		}
+		
 		boolean modified = false;
 		for (int i = 0; i < elementData.size();) {
-			if (c.contains(elementData.get(i))) {
+			if (dll.contains(elementData.get(i))) {
 				i++;
 			}
 			else {
