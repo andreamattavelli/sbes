@@ -43,6 +43,7 @@ public class SecondStageGeneratorStubALT extends SecondStageGeneratorStub {
 	private static final Logger logger = new Logger(SecondStageGeneratorStubALT.class);
 	
 	protected final static String classParameterName = "instance";
+	protected String className;
 
 	public SecondStageGeneratorStubALT(List<TestScenario> scenarios, Stub stub, CarvingResult candidateES) {
 		super(scenarios, stub, candidateES);
@@ -60,6 +61,7 @@ public class SecondStageGeneratorStubALT extends SecondStageGeneratorStub {
 	@Override
 	protected TypeDeclaration getClassDeclaration(Class<?> c) {
 		stubName = c.getSimpleName() + STUB_EXTENSION + "_2";
+		className = c.getCanonicalName();
 		return new ClassOrInterfaceDeclaration(Modifier.PUBLIC, false, stubName);
 	}
 
@@ -170,8 +172,7 @@ public class SecondStageGeneratorStubALT extends SecondStageGeneratorStub {
 	@Override
 	protected List<Parameter> getParameterType(Class<?>[] parameters, Method targetMethod) {
 		List<Parameter> toReturn = new ArrayList<Parameter>();
-		toReturn.add(new Parameter(ASTHelper.createReferenceType(targetMethod.getDeclaringClass().getCanonicalName(), 0), 
-									new VariableDeclaratorId(classParameterName)));
+		toReturn.add(new Parameter(ASTHelper.createReferenceType(className, 0), new VariableDeclaratorId(classParameterName)));
 		for (int i = 0; i < parameters.length; i++) {
 			Class<?> type = parameters[i];
 			VariableDeclaratorId id = new VariableDeclaratorId("p" + i);

@@ -59,6 +59,7 @@ public class SecondStageGeneratorStubWithGenericsALT extends SecondStageGenerato
 	@Override
 	protected TypeDeclaration getClassDeclaration(Class<?> c) {
 		stubName = c.getSimpleName() + STUB_EXTENSION + "_2";
+		className = c.getCanonicalName();
 		return new ClassOrInterfaceDeclaration(Modifier.PUBLIC, false, stubName);
 	}
 
@@ -145,14 +146,14 @@ public class SecondStageGeneratorStubWithGenericsALT extends SecondStageGenerato
 	protected List<Parameter> getGenericParameterType(Method targetMethod, Type[] genericParams, Class<?>[] concreteParams) {
 		List<Parameter> toReturn = new ArrayList<Parameter>();
 		
-		String className = "";
+		String cName = "";
 		if (targetMethod.getDeclaringClass().getTypeParameters().length == 0) {
-			className = targetMethod.getDeclaringClass().getCanonicalName();
+			cName = className;
 		} else {
-			className = targetMethod.getDeclaringClass().getCanonicalName() + "<" + GenericsUtils.toGenericsString(genericToConcreteClasses) + ">";
+			cName = className + "<" + GenericsUtils.toGenericsString(genericToConcreteClasses) + ">";
 		}
 		
-		toReturn.add(new Parameter(ASTHelper.createReferenceType(className, 0), new VariableDeclaratorId(classParameterName)));
+		toReturn.add(new Parameter(ASTHelper.createReferenceType(cName, 0), new VariableDeclaratorId(classParameterName)));
 		for (int i = 0; i < genericParams.length; i++) {
 			Type type = genericParams[i];
 			VariableDeclaratorId id = new VariableDeclaratorId("p" + i);
