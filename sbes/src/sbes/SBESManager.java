@@ -331,6 +331,7 @@ public class SBESManager {
 			
 			if (!Options.I().isSymbolicExecutionCounterexample() && cmcv.getMethods().isEmpty()) {
 				logger.debug("Spurious result, iterating");
+				EquivalenceRepository.getInstance().addSpuriousResult(cStub.getEquivalence());
 			} else {
 				logger.info("Equivalence synthesized: ");
 				IOUtils.printEquivalence(cStub.getEquivalence());
@@ -341,6 +342,7 @@ public class SBESManager {
 			
 			logger.info("Discarded candidate:");
 			IOUtils.printEquivalence(cStub.getEquivalence());
+			EquivalenceRepository.getInstance().addSpuriousResult(cStub.getEquivalence());
 			
 			if (candidates.size() > 1) {
 				logger.warn("More than one counterexample synthesized");

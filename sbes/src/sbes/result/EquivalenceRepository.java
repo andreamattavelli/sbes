@@ -24,6 +24,7 @@ public class EquivalenceRepository {
 	private static EquivalenceRepository instance = null;
 	
 	private Map<String, List<EquivalentSequence>> equivalences;
+	private Map<String, List<EquivalentSequence>> spurious;
 	
 	private List<Method> excluded;
 	private List<Method> queue;
@@ -138,10 +139,35 @@ public class EquivalenceRepository {
 		}
 		return false;
 	}
+	
+	public void addSpuriousResult(EquivalentSequence spuriousResult) {
+		if (!spurious.containsKey(Options.I().getTargetMethod())) {
+			spurious.put(Options.I().getTargetMethod(), new ArrayList<EquivalentSequence>());
+		}
+		spurious.get(Options.I().getTargetMethod()).add(spuriousResult);
+	}
 
 	public void printEquivalences() {
 		logger.info("Statistics: ");
-		if (equivalences.size() > 0) {
+		if (!spurious.isEmpty()) {
+			logger.info("Spurious sequences synthesized:");
+			for (Entry<String, List<EquivalentSequence>> e : spurious.entrySet()) {
+				System.out.println("Target method: " + e.getKey());
+				int i = 1;
+				for (EquivalentSequence eqSeq : e.getValue()) {
+					System.out.println("Spurious" + i++);
+					System.out.println(StringUtils.chomp(eqSeq.toString()));
+					System.out.println();
+				}
+				System.out.println("================================================================================");
+			}
+			System.out.println();
+		}
+		else {
+			logger.info("No spurious sequences synthesized");
+		}
+		
+		if (!equivalences.isEmpty()) {
 			logger.info("Equivalent sequences synthesized:");
 			for (Entry<String, List<EquivalentSequence>> e : equivalences.entrySet()) {
 				System.out.println("Target method: " + e.getKey());
