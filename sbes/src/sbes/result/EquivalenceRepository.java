@@ -32,6 +32,7 @@ public class EquivalenceRepository {
 	
 	private EquivalenceRepository() {
 		equivalences = new HashMap<String, List<EquivalentSequence>>();
+		spurious = new HashMap<String, List<EquivalentSequence>>();
 		excluded = new ArrayList<Method>();
 		queue = new ArrayList<Method>();
 		initTargetMethods();

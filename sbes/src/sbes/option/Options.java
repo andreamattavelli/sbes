@@ -114,6 +114,10 @@ public class Options {
 	@Option(name = "-symbolic_counterexample",
 			usage = "Generate counterexample with symbolic execution. Default: false")
 	private boolean symbolicExecutionCounterexample = false;
+	
+	@Option(name = "-alternative_counterexample",
+			usage = "Generate counterexample with alternative stub for SBST")
+	private boolean alternativeCounterexample = false;
 
 	@Option(name = "-target_class",
 			usage = "Java class signature under investigation")
@@ -139,6 +143,10 @@ public class Options {
 	public void checkConsistency() throws CmdLineException {
 		if (methodSignature == null && targetClassSignature == null) {
 			throw new SBESException("Select either an input method (-target_method) or an input class (-target_class)");
+		}
+		if (symbolicExecutionCounterexample && alternativeCounterexample) {
+			throw new SBESException("Select counterexample phase with either symbolic execution (-symbolic_counterexample) " + 
+									"or alternative SBST (-alternative_counterexample)");
 		}
 	}
 	
@@ -232,6 +240,10 @@ public class Options {
 		return symbolicExecutionCounterexample;
 	}
 	
+	public boolean isAlternativeCounterexample() {
+		return alternativeCounterexample;
+	}
+	
 	public boolean isGiveUpWhenSpurious() {
 		return noRefinementWhenSpurious;
 	}
@@ -266,6 +278,10 @@ public class Options {
 	
 	public void setSymbolicExecutionCounterexample(boolean symbexeCounterexample) {
 		this.symbolicExecutionCounterexample = symbexeCounterexample;
+	}
+	
+	public void setAlternativeCounterexample(boolean alternativeCounterexample) {
+		this.alternativeCounterexample = alternativeCounterexample;
 	}
 
 	public void setTargetMethod(final String methodSignature) {
