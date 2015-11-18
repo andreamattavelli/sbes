@@ -20,7 +20,6 @@ import japa.parser.ast.expr.DoubleLiteralExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.NameExpr;
-import japa.parser.ast.expr.ThisExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.stmt.BlockStmt;
 import japa.parser.ast.stmt.ExpressionStmt;
@@ -106,7 +105,7 @@ public class SecondStageGeneratorStubALT extends SecondStageGeneratorStub {
 		// if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)
 		Expression zeroDouble = new DoubleLiteralExpr("0.0d");
 		List<Expression> distanceStateArgs = new ArrayList<Expression>();
-		distanceStateArgs.add(new ThisExpr());
+		distanceStateArgs.add(ASTHelper.createNameExpr(classParameterName));
 		distanceStateArgs.add(ASTHelper.createNameExpr("clone"));
 		Expression state = new MethodCallExpr(distanceClass, distanceMethod, distanceStateArgs);
 		BinaryExpr stateCondition = new BinaryExpr(state, zeroDouble, japa.parser.ast.expr.BinaryExpr.Operator.greater);
