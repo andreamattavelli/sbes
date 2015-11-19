@@ -141,12 +141,68 @@ public class SecondStageStubGeneratorALTTest {
 				"} catch (Exception e) {"+
 				"e1 = e;"+
 				"}"+
+				"try {"+
 				"clone.addElement(p0);"+
 				"actual_result = p0;"+
-				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(instance, clone) > 0.0d)"+
+				"} catch (Exception e) {"+
+				"e2 = e;"+
+				"}"+
+				"if (e1 == null ^ e2 == null || Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(instance, clone) > 0.0d)"+
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
+		assertASTEquals(actual, expected);
+	}
+	
+	@Test
+	public void test30() throws ParseException {
+		setUp("./bin", "stack.util.Stack.add(Object)", "Stack_Stub");
+		
+		BlockStmt body = JavaParser.parseBlock("{Stack_Stub stack_Stub0 = new Stack_Stub();"+
+				"Integer integer0 = Stack_Stub.ELEMENT_0_0;"+
+				"stack_Stub0.addElement(integer0);"+
+				"boolean boolean0 = true;"+
+				"stack_Stub0.set_results(boolean0);"+
+				"stack_Stub0.method_under_test();}");
+
+		CarvingResult candidateES = new CarvingResult(body, imports);
+		Map<TypeVariable<?>, String> genericToConcrete = new LinkedHashMap<>();
+		TypeVariable<?> k = TypeVariableImpl.<GenericDeclaration>make(Object.class, "E", null, null);
+		genericToConcrete.put(k, "Integer");
+		SecondStageGeneratorStub sssg = new SecondStageGeneratorStubWithGenericsALT(
+				new ArrayList<TestScenario>(), stub, candidateES,
+				genericToConcrete);
+		Stub second = sssg.generateStub();
+		second.dumpStub("./test/resources/compilation");
+		assertCompiles("stack/util", second.getStubName(), "./bin");
+		
+		String actual = second.getAst().toString();
+		String expected = "package stack.util;"+
+						"import sbes.distance.Distance;"+
+						"import sbes.cloning.Cloner;"+
+						"public class Stack_Stub_2 {"+
+						"public void method_under_test(stack.util.Stack<Integer> instance, Integer p0) {"+
+						"Exception e1 = null;"+
+						"Exception e2 = null;"+
+						"boolean expected_result = false;"+
+						"boolean actual_result = false;"+
+						"Cloner c = new Cloner();"+
+						"Stack<Integer> clone = c.deepClone(instance);"+
+						"try {"+
+						"expected_result = instance.add(p0);"+
+						"} catch (Exception e) {"+
+						"e1 = e;"+
+						"}"+
+						"try {"+
+						"clone.addElement(p0);"+
+						"actual_result = true;"+
+						"} catch (Exception e) {"+
+						"e2 = e;"+
+						"}"+
+						"if (e1 == null ^ e2 == null || Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(instance, clone) > 0.0d)"+
+						"System.out.println(\"Executed\");"+
+						"}"+
+						"}";
 		assertASTEquals(actual, expected);
 	}
 	

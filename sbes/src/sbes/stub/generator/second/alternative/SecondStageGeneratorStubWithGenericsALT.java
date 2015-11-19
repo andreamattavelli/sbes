@@ -24,6 +24,7 @@ import japa.parser.ast.expr.DoubleLiteralExpr;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.NameExpr;
+import japa.parser.ast.expr.NullLiteralExpr;
 import japa.parser.ast.expr.VariableDeclarationExpr;
 import japa.parser.ast.stmt.BlockStmt;
 import japa.parser.ast.stmt.ExpressionStmt;
@@ -93,7 +94,7 @@ public class SecondStageGeneratorStubWithGenericsALT extends SecondStageGenerato
 			throw new GenerationException("Unable to carve candidate: no statements!");
 		}
 		equivalence = stmts;
-		stmt.getStmts().addAll(stmts);
+		ASTHelper.addStmt(stmt, createActualResultTry(stmts));
 
 		NameExpr distanceClass = ASTHelper.createNameExpr("Distance");
 		String distanceMethod = "distance";
@@ -106,6 +107,11 @@ public class SecondStageGeneratorStubWithGenericsALT extends SecondStageGenerato
 		Expression state = new MethodCallExpr(distanceClass, distanceMethod, distanceStateArgs);
 		BinaryExpr stateCondition = new BinaryExpr(state, zeroDouble, japa.parser.ast.expr.BinaryExpr.Operator.greater);
 
+		BinaryExpr exceptionsCondition = new BinaryExpr(
+				new BinaryExpr(ASTHelper.createNameExpr("e1"), new NullLiteralExpr(), BinaryExpr.Operator.equals), 
+				new BinaryExpr(ASTHelper.createNameExpr("e2"), new NullLiteralExpr(), BinaryExpr.Operator.equals), 
+				BinaryExpr.Operator.xor);
+		
 		BinaryExpr ifCondition;
 		if (!targetMethod.getReturnType().equals(void.class)) {
 			List<Expression> distanceResultArgs = new ArrayList<Expression>();
@@ -120,6 +126,8 @@ public class SecondStageGeneratorStubWithGenericsALT extends SecondStageGenerato
 			ifCondition = stateCondition;
 		}
 
+		ifCondition = new BinaryExpr(exceptionsCondition, ifCondition, japa.parser.ast.expr.BinaryExpr.Operator.or);
+		
 		IfStmt ifStmt = new IfStmt(ifCondition, new ExpressionStmt(ASTUtils.createSystemOut("Executed")), null);
 		ASTHelper.addStmt(stmt, ifStmt);
 
@@ -144,7 +152,6 @@ public class SecondStageGeneratorStubWithGenericsALT extends SecondStageGenerato
 		AssignExpr assignment = new AssignExpr(left, right, Operator.assign);
 		return new ExpressionStmt(assignment);
 	}
-
 	
 	protected List<Parameter> getGenericParameterType(Method targetMethod, Type[] genericParams, Class<?>[] concreteParams) {
 		List<Parameter> toReturn = new ArrayList<Parameter>();

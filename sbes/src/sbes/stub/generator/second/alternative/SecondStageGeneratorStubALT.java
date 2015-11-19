@@ -176,8 +176,15 @@ public class SecondStageGeneratorStubALT extends SecondStageGeneratorStub {
 		toReturn.add(new ExpressionStmt(exception2DeclExpr));
 		
 		if (!targetMethod.getReturnType().equals(void.class)) {
-			VariableDeclarator expected_resultDecl = new VariableDeclarator(new VariableDeclaratorId("expected_result"), new NullLiteralExpr());
-			VariableDeclarator actual_resultDecl = new VariableDeclarator(new VariableDeclaratorId("actual_result"), new NullLiteralExpr());
+			VariableDeclarator expected_resultDecl;
+			VariableDeclarator actual_resultDecl;
+			if (ReflectionUtils.isPrimitive(targetMethod.getReturnType())) {
+				expected_resultDecl = new VariableDeclarator(new VariableDeclaratorId("expected_result"), ASTUtils.getDefaultPrimitiveValue(targetMethod.getReturnType()));
+				actual_resultDecl = new VariableDeclarator(new VariableDeclaratorId("actual_result"), ASTUtils.getDefaultPrimitiveValue(targetMethod.getReturnType()));
+			} else { 
+				expected_resultDecl = new VariableDeclarator(new VariableDeclaratorId("expected_result"), new NullLiteralExpr());
+				actual_resultDecl = new VariableDeclarator(new VariableDeclaratorId("actual_result"), new NullLiteralExpr());
+			}
 			String className = targetMethod.getReturnType().getCanonicalName();
 			int arrayDimension = 0;
 			if (targetMethod.getReturnType().isArray()) {
@@ -228,7 +235,7 @@ public class SecondStageGeneratorStubALT extends SecondStageGeneratorStub {
 		return getTry(new BlockStmt(stmts), getCatchClause("e1"));
 	}
 	
-	private Statement createActualResultTry(List<Statement> stmts) {
+	protected Statement createActualResultTry(List<Statement> stmts) {
 		return getTry(new BlockStmt(stmts), getCatchClause("e2"));
 	}
 	
