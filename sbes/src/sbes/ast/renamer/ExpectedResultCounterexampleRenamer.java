@@ -11,6 +11,7 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 
 import java.lang.reflect.Method;
 
+import sbes.option.Options;
 import sbes.stub.generator.first.FirstStageGeneratorStub;
 import sbes.util.ASTUtils;
 
@@ -50,6 +51,10 @@ public class ExpectedResultCounterexampleRenamer extends VoidVisitorAdapter<Void
 				ExpressionStmt estmt = (ExpressionStmt) mce.getParentNode();
 				AssignExpr ae = new AssignExpr(target, mce, Operator.assign);
 				estmt.setExpression(ae);
+			}
+			
+			if (Options.I().isAlternativeCounterexample()) {
+				mce.setArgs(mce.getArgs().subList(1, mce.getArgs().size()));
 			}
 		}
 	}
