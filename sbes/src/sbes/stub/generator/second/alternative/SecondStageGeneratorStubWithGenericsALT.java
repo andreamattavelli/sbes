@@ -74,6 +74,10 @@ public class SecondStageGeneratorStubWithGenericsALT extends SecondStageGenerato
 
 		BlockStmt stmt = new BlockStmt();
 
+		for (ExpressionStmt exprStmt : createVariables(targetMethod)) {
+			ASTHelper.addStmt(stmt, exprStmt);
+		}
+		
 		// Cloner c = new Cloner();
 		ASTHelper.addStmt(stmt, createClonerObj());
 

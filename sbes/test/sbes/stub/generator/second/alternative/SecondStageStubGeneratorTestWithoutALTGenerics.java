@@ -107,18 +107,29 @@ public class SecondStageStubGeneratorTestWithoutALTGenerics {
 		assertCompiles("org/graphstream/graph/implementations", second.getStubName(), "./test/resources/gs-core-1.2.jar:./bin:./bin");
 		
 		String actual = second.getAst().toString();
-		
 		String expected = "package org.graphstream.graph.implementations;"+
 				"import sbes.distance.Distance;"+
 				"import sbes.cloning.Cloner;"+
 				"import org.graphstream.graph.implementations.AbstractEdge;"+
 				"public class AbstractEdge_Stub_2 {"+
 				"public void method_under_test(org.graphstream.graph.implementations.AbstractEdge instance) {"+
+				"Exception e1 = null;"+
+				"Exception e2 = null;"+
+				"org.graphstream.graph.Node expected_result = null;"+
+				"org.graphstream.graph.Node actual_result = null;"+
 				"Cloner c = new Cloner();"+
 				"AbstractEdge clone = c.deepClone(instance);"+
-				"org.graphstream.graph.Node expected_result = instance.getNode0();"+
-				"org.graphstream.graph.Node actual_result = clone.getSourceNode();"+
-				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
+				"try {"+
+				"expected_result = instance.getNode0();"+
+				"} catch (Exception e) {"+
+				"e1 = e;"+
+				"}"+
+				"try {"+
+				"actual_result = clone.getSourceNode();"+
+				"} catch (Exception e) {"+
+				"e2 = e;"+
+				"}"+
+				"if (e1 == null ^ e2 == null || Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(instance, clone) > 0.0d)"+
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";

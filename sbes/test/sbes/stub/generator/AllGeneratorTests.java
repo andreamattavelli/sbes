@@ -10,6 +10,8 @@ import sbes.stub.generator.first.FirstStageStubGeneratorTestWithoutGenerics;
 import sbes.stub.generator.second.SecondStageGeneratorFactoryTest;
 import sbes.stub.generator.second.SecondStageStubGeneratorTest;
 import sbes.stub.generator.second.SecondStageStubGeneratorTestWithoutGenerics;
+import sbes.stub.generator.second.alternative.SecondStageStubGeneratorALTTest;
+import sbes.stub.generator.second.alternative.SecondStageStubGeneratorTestWithoutALTGenerics;
 import sbes.stub.generator.second.symbolic.SecondStageStubGeneratorSETest;
 
 @RunWith(Suite.class)
@@ -19,6 +21,8 @@ import sbes.stub.generator.second.symbolic.SecondStageStubGeneratorSETest;
 	FirstStageStubGeneratorTestWithoutGenerics.class,
 	SecondStageGeneratorFactoryTest.class,
 	SecondStageStubGeneratorTest.class,
+	SecondStageStubGeneratorALTTest.class,
+	SecondStageStubGeneratorTestWithoutALTGenerics.class,
 	SecondStageStubGeneratorTestWithoutGenerics.class,
 	SecondStageStubGeneratorSETest.class
 })

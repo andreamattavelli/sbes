@@ -130,12 +130,20 @@ public class SecondStageStubGeneratorALTTest {
 				"import sbes.cloning.Cloner;"+
 				"public class Stack_Stub_2 {"+
 				"public void method_under_test(stack.util.Stack<Integer> instance, Integer p0) {"+
+				"Exception e1 = null;"+
+				"Exception e2 = null;"+
+				"java.lang.Object expected_result = null;"+
+				"java.lang.Object actual_result = null;"+
 				"Cloner c = new Cloner();"+
 				"Stack<Integer> clone = c.deepClone(instance);"+
-				"java.lang.Object expected_result = instance.push(p0);"+
+				"try {"+
+				"expected_result = instance.push(p0);"+
+				"} catch (Exception e) {"+
+				"e1 = e;"+
+				"}"+
 				"clone.addElement(p0);"+
-				"java.lang.Object actual_result = p0;"+
-				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(this, clone) > 0.0d)"+
+				"actual_result = p0;"+
+				"if (Distance.distance(expected_result, actual_result) > 0.0d || Distance.distance(instance, clone) > 0.0d)"+
 				"System.out.println(\"Executed\");"+
 				"}"+
 				"}";
