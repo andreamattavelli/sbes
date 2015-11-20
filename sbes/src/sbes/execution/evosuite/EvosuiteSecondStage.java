@@ -34,7 +34,12 @@ public class EvosuiteSecondStage extends Evosuite {
 	@Override
 	protected Collection<String> getAdditionalParameters() {
 		Collection<String> additional = new ArrayList<String>();
-		additional.add("-Dsbes_phase=2");
+		if (Options.I().isAlternativeCounterexample()) {
+			additional.add("-Dsbes_phase=3");
+		}
+		else {
+			additional.add("-Dsbes_phase=2");
+		}
 		additional.add("-Dgeneric_primitives=true");
 		return additional;
 	}
