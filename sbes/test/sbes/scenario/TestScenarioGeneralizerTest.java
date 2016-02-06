@@ -123,9 +123,6 @@ public class TestScenarioGeneralizerTest {
 	public void test03() throws ParseException {
 		setUp("./bin", "stack.util.Stack.push(Object)");
 		
-		Options.I().setClassesPath("/Users/andrea/Uni/PhD/Workspaces/sbes-synthesis/Stack-UseCase/bin");
-		Options.I().setTargetMethod("stack.util.Stack.push(Object)");
-		
 		BlockStmt body = JavaParser.parseBlock(
 				"{"+
 				"Stack<Integer> stack0 = new Stack<Integer>();"+
