@@ -1,0 +1,17 @@
+---
+language: java
+
+install: true
+
+sudo: false
+
+jdk:
+  - oraclejdk8
+
+script: ant -f sbes/build.xml
+
+matrix:
+  - jdk: oraclejdk8
+    script: ant -f sbes/build.xml
+  - jdk: oraclejdk7
+    script: ant -f sbes-lib/build.xml
